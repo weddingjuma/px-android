@@ -99,6 +99,14 @@ public class PaymentMethod {
         return false;
     }
 
+    public boolean isEntityTypeRequired() {
+        return isAdditionalInfoNeeded("entity_type");
+    }
+
+    public boolean isPayerInfoRequired() {
+        return isAdditionalInfoNeeded("bolbradesco_name") || isAdditionalInfoNeeded("bolbradesco_identification_type") || isAdditionalInfoNeeded("bolbradesco_identification_number");
+    }
+
     public boolean isValidForBin(String bin) {
 
         return (Setting.getSettingByBin(this.getSettings(), bin) != null);

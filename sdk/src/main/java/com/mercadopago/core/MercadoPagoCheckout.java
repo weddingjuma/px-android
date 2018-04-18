@@ -155,6 +155,8 @@ public class MercadoPagoCheckout {
     }
 
     private void startCheckoutActivity(Integer resultCode) {
+        boolean discountEnabled = true;
+
         validate(resultCode);
         Intent checkoutIntent;
         if (context != null) {
@@ -162,6 +164,11 @@ public class MercadoPagoCheckout {
         } else {
             checkoutIntent = new Intent(activity, CheckoutActivity.class);
         }
+
+        if (resultCode.equals(MercadoPagoCheckout.PAYMENT_DATA_RESULT_CODE) && !hasDiscount() && !hasPaymentDataDiscount() && !hasPaymentResultDiscount()) {
+            discountEnabled = false;
+        }
+
         checkoutIntent.putExtra("merchantPublicKey", publicKey);
         checkoutIntent.putExtra("paymentData", JsonUtil.getInstance().toJson(paymentData));
         checkoutIntent.putExtra("checkoutPreference", JsonUtil.getInstance().toJson(checkoutPreference));
@@ -174,6 +181,7 @@ public class MercadoPagoCheckout {
         checkoutIntent.putExtra("discount", JsonUtil.getInstance().toJson(discount));
         checkoutIntent.putExtra("binaryMode", binaryMode);
         checkoutIntent.putExtra("resultCode", resultCode);
+        checkoutIntent.putExtra("discountEnabled", discountEnabled);
 
         if (context != null) {
             context.startActivity(checkoutIntent);

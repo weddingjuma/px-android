@@ -2,6 +2,7 @@ package com.mercadopago.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 
 import java.math.BigDecimal;
@@ -20,7 +21,9 @@ public class PaymentMethod implements Parcelable {
     private List<Setting> settings;
     private List<String> additionalInfoNeeded;
     private List<FinancialInstitution> financialInstitutions;
+    @Nullable
     private BigDecimal minAllowedAmount;
+    @Nullable
     private BigDecimal maxAllowedAmount;
 
     /**
@@ -124,19 +127,21 @@ public class PaymentMethod implements Parcelable {
         this.deferredCapture = deferredCapture;
     }
 
+    @Nullable
     public BigDecimal getMinAllowedAmount() {
         return minAllowedAmount;
     }
 
-    public void setMinAllowedAmount(BigDecimal minAllowedAmount) {
+    public void setMinAllowedAmount(@Nullable BigDecimal minAllowedAmount) {
         this.minAllowedAmount = minAllowedAmount;
     }
 
+    @Nullable
     public BigDecimal getMaxAllowedAmount() {
         return maxAllowedAmount;
     }
 
-    public void setMaxAllowedAmount(BigDecimal maxAllowedAmount) {
+    public void setMaxAllowedAmount(@Nullable BigDecimal maxAllowedAmount) {
         this.maxAllowedAmount = maxAllowedAmount;
     }
 

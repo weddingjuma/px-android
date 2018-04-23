@@ -108,6 +108,7 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
         FlowPreference flowPreference = JsonUtil.getInstance().fromJson(getIntent().getStringExtra("flowPreference"), FlowPreference.class);
 
         Boolean binaryMode = this.getIntent().getBooleanExtra("binaryMode", false);
+        boolean discountEnabled = this.getIntent().getBooleanExtra("discountEnabled", true);
 
         Discount discount = JsonUtil.getInstance().fromJson(getIntent().getStringExtra("discount"), Discount.class);
         Boolean directDiscountEnabled = this.getIntent().getBooleanExtra("directDiscountEnabled", true);
@@ -134,6 +135,7 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
         mCheckoutPresenter.setPaymentResultInput(paymentResultInput);
         mCheckoutPresenter.setRequestedResult(mRequestedResultCode);
         mCheckoutPresenter.setServicePreference(servicePreference);
+        mCheckoutPresenter.setDiscountEnabled(discountEnabled);
     }
 
     @Override

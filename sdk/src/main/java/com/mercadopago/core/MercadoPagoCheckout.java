@@ -87,7 +87,7 @@ public class MercadoPagoCheckout {
         CheckoutStore.getInstance().setCheckoutHooks(builder.checkoutHooks);
 
         //Create flow identifier only for new checkouts
-        if(paymentResult == null && paymentData == null) {
+        if (paymentResult == null && paymentData == null) {
             FlowHandler.getInstance().generateFlowId();
         }
     }
@@ -189,6 +189,7 @@ public class MercadoPagoCheckout {
         checkoutIntent.putExtra("discount", JsonUtil.getInstance().toJson(discount));
         checkoutIntent.putExtra("binaryMode", binaryMode);
         checkoutIntent.putExtra("resultCode", resultCode);
+        checkoutIntent.putExtra("discountEnabled", shouldDiscountEnabled(resultCode));
 
         if (context != null) {
             context.startActivity(checkoutIntent);
@@ -196,6 +197,14 @@ public class MercadoPagoCheckout {
             activity.startActivityForResult(checkoutIntent, MercadoPagoCheckout.CHECKOUT_REQUEST_CODE);
         }
     }
+
+    private boolean shouldDiscountEnabled(Integer resultCode) {
+        return !(MercadoPagoCheckout.PAYMENT_DATA_RESULT_CODE.equals(resultCode) &&
+                !hasDiscount() &&
+                !hasPaymentDataDiscount() &&
+                !hasPaymentResultDiscount());
+    }
+
 
     public static class Builder {
         private Context context;

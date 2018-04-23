@@ -14,6 +14,7 @@ public class Discount {
     private String currencyId;
     private String couponCode;
     private String concept;
+    private String campaignId;
 
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode;
@@ -73,6 +74,14 @@ public class Discount {
 
     public void setCouponAmount(BigDecimal couponAmount) {
         this.couponAmount = couponAmount;
+    }
+
+    public String getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(final String campaignId) {
+        this.campaignId = campaignId;
     }
 
     public Boolean hasPercentOff() {

@@ -28,7 +28,6 @@ import com.mercadopago.model.PaymentResult;
 import com.mercadopago.model.Token;
 import com.mercadopago.mvp.MvpPresenter;
 import com.mercadopago.mvp.OnResourcesRetrievedCallback;
-import com.mercadopago.plugins.PaymentResultAction;
 import com.mercadopago.plugins.model.PaymentMethodInfo;
 import com.mercadopago.preferences.CheckoutPreference;
 import com.mercadopago.preferences.FlowPreference;
@@ -38,7 +37,6 @@ import com.mercadopago.preferences.ServicePreference;
 import com.mercadopago.providers.CheckoutProvider;
 import com.mercadopago.util.ApiUtil;
 import com.mercadopago.util.JsonUtil;
-import com.mercadopago.util.TextUtil;
 import com.mercadopago.util.TextUtils;
 import com.mercadopago.views.CheckoutView;
 
@@ -59,6 +57,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private Boolean mBinaryMode;
     private Discount mDiscount;
     private Boolean mDirectDiscountEnabled;
+    private boolean mDiscountEnabled = true;
     private PaymentData mPaymentDataInput;
     private PaymentResult mPaymentResultInput;
     private Integer mRequestedResult;
@@ -93,6 +92,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     public void initialize() {
+        resolveDiscountEnabled();
         getView().showProgress();
         try {
             validateParameters();
@@ -108,11 +108,17 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    private void resolveDiscountEnabled() {
+        if (!mDiscountEnabled) {
+            mFlowPreference.disableDiscount();
+        }
+    }
+
     private void startCheckoutForPreference() {
         try {
             validatePreference();
             getView().initializeMPTracker();
-            if(isNewFlow()) {
+            if (isNewFlow()) {
                 getView().trackScreen();
             }
             startCheckout();
@@ -139,12 +145,15 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private void startCheckout() {
         resolvePreSelectedData();
         setCheckoutTimer();
-        boolean shouldGetDiscounts = mDiscount == null && isDiscountEnabled();
-        if (shouldGetDiscounts) {
+        if (shouldRetrieveDiscount()) {
             getDiscountCampaigns();
         } else {
             retrievePaymentMethodSearch();
         }
+    }
+
+    private boolean shouldRetrieveDiscount() {
+        return isDiscountEnabled() && mDiscount == null && mPaymentResultInput == null && mPaymentDataInput == null;
     }
 
     private void setCheckoutTimer() {
@@ -503,43 +512,44 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
             final String transactionId = getTransactionID();
             getResourcesProvider().createPayment(transactionId, mCheckoutPreference,
                     paymentData, mBinaryMode, mCustomerId, new OnResourcesRetrievedCallback<Payment>() {
-                @Override
-                public void onSuccess(final Payment payment) {
-                    mCreatedPayment = payment;
-                    PaymentResult paymentResult = createPaymentResult(payment, paymentData);
-                    checkStartPaymentResultActivity(paymentResult);
-                    cleanTransactionId();
-                }
-                @Override
-                public void onFailure(final MercadoPagoError error) {
-                    if (error.isApiException() && error.getApiException().getStatus().equals(ApiUtil.StatusCodes.BAD_REQUEST)
-                            && error.getApiException().getCause() != null && !error.getApiException().getCause().isEmpty()) {
-
-                        final List<Cause> causes = error.getApiException().getCause();
-                        final Cause cause = causes.get(0);
-
-                        if (ApiException.ErrorCodes.INVALID_PAYMENT_WITH_ESC.equals(cause.getCode()) &&
-                                paymentData.getToken().getCardId() != null) {
-                            deleteESC(paymentData);
-                            continuePaymentWithoutESC();
-                        } else {
-                            recoverCreatePayment(error);
+                        @Override
+                        public void onSuccess(final Payment payment) {
+                            mCreatedPayment = payment;
+                            PaymentResult paymentResult = createPaymentResult(payment, paymentData);
+                            checkStartPaymentResultActivity(paymentResult);
+                            cleanTransactionId();
                         }
 
-                    } else {
-                        recoverCreatePayment(error);
-                    }
-                }
-            });
+                        @Override
+                        public void onFailure(final MercadoPagoError error) {
+                            if (error.isApiException() && error.getApiException().getStatus().equals(ApiUtil.StatusCodes.BAD_REQUEST)
+                                    && error.getApiException().getCause() != null && !error.getApiException().getCause().isEmpty()) {
+
+                                final List<Cause> causes = error.getApiException().getCause();
+                                final Cause cause = causes.get(0);
+
+                                if (ApiException.ErrorCodes.INVALID_PAYMENT_WITH_ESC.equals(cause.getCode()) &&
+                                        paymentData.getToken().getCardId() != null) {
+                                    deleteESC(paymentData);
+                                    continuePaymentWithoutESC();
+                                } else {
+                                    recoverCreatePayment(error);
+                                }
+
+                            } else {
+                                recoverCreatePayment(error);
+                            }
+                        }
+                    });
         }
     }
 
     private boolean hasPaymentPlugin() {
         final PaymentMethodInfo paymentMethodInfo = CheckoutStore.getInstance()
-                    .getSelectedPaymentMethod();
+                .getSelectedPaymentMethod();
         return paymentMethodInfo != null
                 && CheckoutStore.getInstance()
-                    .getPaymentPluginByMethod(paymentMethodInfo.id) != null;
+                .getPaymentPluginByMethod(paymentMethodInfo.id) != null;
     }
 
     private void continuePaymentWithoutESC() {
@@ -945,6 +955,10 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     public Discount getDiscount() {
         return mDiscount;
+    }
+
+    public void setDiscountEnabled(boolean discountEnabled) {
+        this.mDiscountEnabled = discountEnabled;
     }
 
     public boolean isDirectDiscountEnabled() {

@@ -204,8 +204,10 @@ public class PaymentMethod implements Parcelable {
         }
         merchantAccountId = in.readString();
         financialInstitutions = in.createTypedArrayList(FinancialInstitution.CREATOR);
-        minAllowedAmount = new BigDecimal(in.readString());
-        maxAllowedAmount = new BigDecimal(in.readString());
+        String minString = in.readString();
+        minAllowedAmount = minString != null ? new BigDecimal(minString) : null;
+        String maxString = in.readString();
+        maxAllowedAmount = maxString != null ? new BigDecimal(maxString) : null;
     }
 
     public static final Creator<PaymentMethod> CREATOR = new Creator<PaymentMethod>() {
@@ -248,7 +250,7 @@ public class PaymentMethod implements Parcelable {
         }
         dest.writeString(merchantAccountId);
         dest.writeTypedList(financialInstitutions);
-        dest.writeString(minAllowedAmount.toString());
-        dest.writeString(maxAllowedAmount.toString());
+        dest.writeString(minAllowedAmount != null ? minAllowedAmount.toString() : null);
+        dest.writeString(maxAllowedAmount != null ? maxAllowedAmount.toString() : null);
     }
 }

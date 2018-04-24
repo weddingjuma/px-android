@@ -22,11 +22,6 @@ import com.mercadopago.preferences.ServicePreference;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.TextUtil;
 
-
-/**
- * Created by mreverter on 1/17/17.
- */
-
 public class MercadoPagoCheckout {
 
     public static final Integer CHECKOUT_REQUEST_CODE = 5;
@@ -157,11 +152,13 @@ public class MercadoPagoCheckout {
     private void startCheckoutActivity(Integer resultCode) {
         validate(resultCode);
         Intent checkoutIntent;
+
         if (context != null) {
             checkoutIntent = new Intent(context, CheckoutActivity.class);
         } else {
             checkoutIntent = new Intent(activity, CheckoutActivity.class);
         }
+
         checkoutIntent.putExtra("merchantPublicKey", publicKey);
         checkoutIntent.putExtra("paymentData", JsonUtil.getInstance().toJson(paymentData));
         checkoutIntent.putExtra("checkoutPreference", JsonUtil.getInstance().toJson(checkoutPreference));
@@ -174,12 +171,20 @@ public class MercadoPagoCheckout {
         checkoutIntent.putExtra("discount", JsonUtil.getInstance().toJson(discount));
         checkoutIntent.putExtra("binaryMode", binaryMode);
         checkoutIntent.putExtra("resultCode", resultCode);
+        checkoutIntent.putExtra("discountEnabled", shouldDiscountEnabled(resultCode));
 
         if (context != null) {
             context.startActivity(checkoutIntent);
         } else {
             activity.startActivityForResult(checkoutIntent, MercadoPagoCheckout.CHECKOUT_REQUEST_CODE);
         }
+    }
+
+    private boolean shouldDiscountEnabled(Integer resultCode) {
+        return !(MercadoPagoCheckout.PAYMENT_DATA_RESULT_CODE.equals(resultCode) &&
+                !hasDiscount() &&
+                !hasPaymentDataDiscount() &&
+                !hasPaymentResultDiscount());
     }
 
     public static class Builder {

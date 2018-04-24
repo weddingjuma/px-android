@@ -14,6 +14,7 @@ public class Discount {
     private String currencyId;
     private String couponCode;
     private String concept;
+    private String campaignId;
 
     public void setCouponCode(String couponCode) {
         this.couponCode = couponCode;
@@ -85,6 +86,14 @@ public class Discount {
 
     public String getConcept() {
         return this.concept;
+    }
+
+    public String getCampaignId() {
+        return campaignId;
+    }
+
+    public void setCampaignId(final String campaignId) {
+        this.campaignId = campaignId;
     }
 
     public boolean isValid() {

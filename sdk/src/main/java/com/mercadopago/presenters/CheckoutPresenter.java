@@ -32,7 +32,6 @@ import com.mercadopago.preferences.ReviewScreenPreference;
 import com.mercadopago.preferences.ServicePreference;
 import com.mercadopago.providers.CheckoutProvider;
 import com.mercadopago.util.ApiUtil;
-import com.mercadopago.util.CurrenciesUtil;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.TextUtils;
 import com.mercadopago.views.CheckoutView;
@@ -53,6 +52,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private Boolean mBinaryMode;
     private Discount mDiscount;
     private Boolean mDirectDiscountEnabled;
+    private boolean mDiscountEnabled = true;
     private PaymentData mPaymentDataInput;
     private PaymentResult mPaymentResultInput;
     private Integer mRequestedResult;
@@ -87,7 +87,9 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     public void initialize() {
+        resolveDiscountEnabled();
         getView().showProgress();
+
         try {
             validateParameters();
             if (mCheckoutPreference.getId() != null) {
@@ -99,6 +101,12 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
             String userMessage = getResourcesProvider().getCheckoutExceptionMessage(e);
             String exceptionDetail = e.getMessage();
             getView().showError(new MercadoPagoError(userMessage, exceptionDetail, false));
+        }
+    }
+
+    private void resolveDiscountEnabled() {
+        if (!mDiscountEnabled) {
+            mFlowPreference.disableDiscount();
         }
     }
 
@@ -128,12 +136,15 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private void startCheckout() {
         resolvePreSelectedData();
         setCheckoutTimer();
-        boolean shouldGetDiscounts = mDiscount == null && isDiscountEnabled();
-        if (shouldGetDiscounts) {
+        if (shouldRetrieveDiscount()) {
             getDiscountCampaigns();
         } else {
             retrievePaymentMethodSearch();
         }
+    }
+
+    private boolean shouldRetrieveDiscount() {
+        return isDiscountEnabled() && mDiscount == null && mPaymentResultInput == null && mPaymentDataInput == null;
     }
 
     private void setCheckoutTimer() {
@@ -927,5 +938,9 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     public Integer getMaxSavedCardsToShow() {
         return mFlowPreference.getMaxSavedCardsToShow();
+    }
+
+    public void setDiscountEnabled(boolean discountEnabled) {
+        this.mDiscountEnabled = discountEnabled;
     }
 }

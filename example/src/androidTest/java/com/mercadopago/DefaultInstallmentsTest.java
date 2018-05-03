@@ -5,7 +5,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.preferences.CheckoutPreference;
 import com.mercadopago.testcheckout.CheckoutResource;
 import com.mercadopago.testcheckout.flows.CheckoutTestFlow;
 import com.mercadopago.testcheckout.input.Card;
@@ -35,11 +34,9 @@ public class DefaultInstallmentsTest {
 
     @Before
     public void setUp() {
-        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder();
-        builder.setCheckoutPreference(new CheckoutPreference("243966003-0e1df452-28e3-4d72-8b69-a71123b8a626"));
-        builder.setPublicKey("APP_USR-0d933ff3-b803-4999-a211-8b3c7d5c7c03");
-        builder.setActivity(activityRule.getActivity());
-        checkoutTestFlow = CheckoutTestFlow.createFlowWithCheckout(builder);
+        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder("APP_USR-0d933ff3-b803-4999-a211-8b3c7d5c7c03",
+                "243966003-0e1df452-28e3-4d72-8b69-a71123b8a626");
+        checkoutTestFlow = CheckoutTestFlow.createFlowWithCheckout(builder.build(), activityRule.getActivity());
     }
 
     @Test

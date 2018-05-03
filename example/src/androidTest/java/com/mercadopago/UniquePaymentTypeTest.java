@@ -5,7 +5,6 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.preferences.CheckoutPreference;
 import com.mercadopago.testcheckout.CheckoutResource;
 import com.mercadopago.testcheckout.flows.CheckoutTestFlow;
 import com.mercadopago.testcheckout.input.Card;
@@ -23,6 +22,7 @@ import static junit.framework.Assert.assertNotNull;
 @RunWith(AndroidJUnit4.class)
 @LargeTest
 public class UniquePaymentTypeTest {
+
     @Rule
     public HttpResource httpResource = new CheckoutResource();
 
@@ -34,11 +34,8 @@ public class UniquePaymentTypeTest {
 
     @Before
     public void setUp() {
-        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder();
-        builder.setCheckoutPreference(new CheckoutPreference("243966003-bb8f7422-39c1-4337-81dd-60a88eb787df"));
-        builder.setPublicKey("APP_USR-0d933ff3-b803-4999-a211-8b3c7d5c7c03");
-        builder.setActivity(activityRule.getActivity());
-        checkoutTestFlow = CheckoutTestFlow.createFlowWithCheckout(builder);
+        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder("APP_USR-0d933ff3-b803-4999-a211-8b3c7d5c7c03", "243966003-bb8f7422-39c1-4337-81dd-60a88eb787df");
+        checkoutTestFlow = CheckoutTestFlow.createFlowWithCheckout(builder.build(), activityRule.getActivity());
     }
 
     @Test

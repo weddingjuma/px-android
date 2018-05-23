@@ -1,5 +1,6 @@
 package com.mercadopago.model;
 
+import com.mercadopago.util.CurrenciesUtil;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -282,7 +283,7 @@ public class Payment {
     }
 
     public BigDecimal getTransactionAmount() {
-        return transactionAmount;
+        return CurrenciesUtil.getRoundedAmount(transactionAmount);
     }
 
     public void setTransactionAmount(BigDecimal transactionAmount) {

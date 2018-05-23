@@ -2,6 +2,7 @@ package com.mercadopago.uicontrollers.reviewandconfirm;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.support.annotation.NonNull;
 import android.text.Spanned;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -111,10 +112,10 @@ public class ReviewProductView implements ReviewProductViewController {
         }
     }
 
-    private void setProductAmount(Item item, String currencyId) {
+    private void setProductAmount(@NonNull final Item item, @NonNull final String currencyId) {
         if (item.getUnitPrice() != null) {
-            String priceText;
-            BigDecimal price = item.getUnitPrice();
+            final String priceText;
+            final BigDecimal price = CurrenciesUtil.getRoundedAmount(item.getUnitPrice());
 
             if (mReviewScreenPreference != null && !mReviewScreenPreference.showAmountTitle()) {
                 priceText = CurrenciesUtil.formatNumber(price, currencyId);

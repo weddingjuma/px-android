@@ -21,11 +21,9 @@ import com.mercadopago.preferences.ReviewScreenPreference;
 import com.mercadopago.preferences.ServicePreference;
 import com.mercadopago.util.JsonUtil;
 import com.mercadopago.util.TextUtil;
+import com.mercadopago.util.CurrenciesUtil;
 
-
-/**
- * Created by mreverter on 1/17/17.
- */
+import java.math.BigDecimal;
 
 public class MercadoPagoCheckout {
 

@@ -1,5 +1,6 @@
 package com.mercadopago.test;
 
+import com.mercadopago.BuildConfig;
 import java.io.IOException;
 
 import okhttp3.Interceptor;

@@ -1,11 +1,13 @@
 package com.mercadopago.util;
 
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 
 import com.mercadopago.model.Currency;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -24,6 +26,8 @@ public class CurrenciesUtil {
     public static final String CURRENCY_USA = "USD";
     public static final String CURRENCY_PERU = "PEN";
     public static final String CURRENCY_URUGUAY = "UYU";
+
+    private static final int DECIMALS_LENGTH_TO_ROUND = 2;
 
     protected CurrenciesUtil() {
 
@@ -164,5 +168,9 @@ public class CurrenciesUtil {
 
     public static Currency getCurrency(String currencyKey) {
         return currenciesList.get(currencyKey);
+    }
+
+    public static BigDecimal getRoundedAmount(@NonNull final BigDecimal amount) {
+        return amount.setScale(DECIMALS_LENGTH_TO_ROUND, RoundingMode.HALF_UP);
     }
 }

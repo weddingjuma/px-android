@@ -1,3 +1,16 @@
+## VERSION 3.6.1.2
+
+_23_05_2018_
+
+* New: Currency in MLV
+* Fix: Rounding decimals
+
+## VERSION 3.6.1.1
+
+_18_04_2018_
+
+* Fix: Discounts
+
 ## VERSION 3.6.1
 
 _13_10_2017_

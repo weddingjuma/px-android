@@ -28,7 +28,7 @@ import static org.junit.Assert.assertNotNull;
 
 @RunWith(AndroidJUnit4.class)
 @LargeTest
-public class NonSaveCardTest {
+public class NewCardTest {
     @Rule
     public HttpResource httpResource = new CheckoutResource();
 

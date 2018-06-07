@@ -1,83 +1,50 @@
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
+buildscript {
+    repositories {
+        jcenter()
+    }
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'mercadopago-sdk_android'
-
-    publishedGroupId = 'com.mercadopago'
-    libraryName = 'mercadopago-sdk_android'
-    artifact = 'sdk'
-
-    libraryDescription = 'MercadoPago Android SDK'
-
-    siteUrl = 'https://github.com/mercadopago/px-android'
-    gitUrl = 'https://github.com/mercadopago/px-android.git'
-
-    libraryVersion = '3.6.2'
-
-    developerId = 'matias.gualino'
-    developerName = 'Matias Gualino'
-    developerEmail = 'matias.gualino@gmail.com'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+    dependencies {
+        classpath 'com.dicedmelon.gradle:jacoco-android:0.1.2'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+    }
 }
 
-version = "3.6.2"
-group = "com.mercadopago"
-archivesBaseName = "sdk"
+apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion api_level.toInteger()
-    buildToolsVersion build_tools_version
+    compileSdkVersion api_level as int
+    buildToolsVersion build_tools_version as String
+
     defaultConfig {
-        minSdkVersion min_api_level.toInteger()
-        targetSdkVersion api_level.toInteger()
+        minSdkVersion min_api_level as int
+        targetSdkVersion api_level as int
         versionCode 1
-        versionName '3.6.2'
+        versionName version_to_deploy as String
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    packagingOptions {
-        exclude 'META-INF/services/com.fasterxml.jackson.core.JsonFactory'
-        exclude 'META-INF/DEPENDENCIES.txt'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/dependencies.txt'
-        exclude 'META-INF/LGPL2.1'
-        exclude 'META-INF/ASL2.0'
-        exclude 'LICENSE.txt'
+        consumerProguardFiles 'proguard-rules.txt'
     }
 
-    buildTypes {
-        debug {
-            testCoverageEnabled true
-            multiDexEnabled true
-            versionNameSuffix " Debug"
-            debuggable true
-        }
+    dexOptions {
+        preDexLibraries !(travisBuild)
     }
 
-    lintOptions {
-        abortOnError false
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
     }
 }
+
 
 dependencies {
 
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-    androidTestImplementation "com.android.support.test.espresso:espresso-core:2.2.2"
-    androidTestImplementation "com.android.support.test.espresso:espresso-intents:2.2.2"
-    androidTestImplementation("com.android.support.test.espresso:espresso-contrib:2.2.2") {
+    androidTestCompile "com.android.support.test.espresso:espresso-core:2.2.2"
+    androidTestCompile "com.android.support.test.espresso:espresso-intents:2.2.2"
+    androidTestCompile("com.android.support.test.espresso:espresso-contrib:2.2.2") {
         exclude module: 'support-v4'
         exclude group: 'com.android.support', module: 'appcompat-v7'
         exclude group: 'com.android.support', module: 'design'
@@ -85,7 +52,7 @@ dependencies {
     }
 
     testImplementation "junit:junit:$junit"
-    testImplementation "org.mockito:mockito-core:2.+"
+    testImplementation "org.mockito:mockito-core:$mockito_version"
 
     implementation "com.android.support:cardview-v7:$support_library_version"
     implementation "com.android.support:recyclerview-v7:$support_library_version"
@@ -99,141 +66,16 @@ dependencies {
     implementation "com.squareup.okhttp3:okhttp-urlconnection:$okhttp"
     implementation "com.squareup.okhttp3:logging-interceptor:$okhttp"
     implementation "com.squareup.retrofit2:retrofit:$retrofit"
-    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+
+    implementation("com.squareup.retrofit2:converter-gson:$retrofit") {
+        exclude group: "com.google.code.gson", module: "gson"
+    }
+
+    api "com.mercadopago:tracking:2.1.3"
+
+    implementation "com.google.code.gson:gson:$gson"
     implementation "com.squareup.picasso:picasso:$picasso"
-
-    //api project(':px-tracking')
 }
 
-apply plugin: 'com.github.dcendents.android-maven'
-
-group = publishedGroupId                               // Maven Group ID for the artifact
-
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-                groupId publishedGroupId
-                artifactId artifact
-
-                // Add your description here
-                name libraryName
-                description libraryDescription
-                url siteUrl
-
-                // Set your license
-                licenses {
-                    license {
-                        name licenseName
-                        url licenseUrl
-                    }
-                }
-                developers {
-                    developer {
-                        id developerId
-                        name developerName
-                        email developerEmail
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-
-                }
-            }
-        }
-    }
-}
-
-apply plugin: 'com.jfrog.bintray'
-
-version = libraryVersion
-
-if (project.hasProperty("android")) { // Android libraries
-    task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-    }
-} else { // Java libraries
-    task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
-        from sourceSets.main.allSource
-    }
-}
-
-artifacts {
-    archives sourcesJar
-}
-
-// Bintray
-Properties properties = new Properties()
-
-if (project.rootProject.file('local.properties').exists()) {
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-}
-
-
-bintray {
-    user = properties.getProperty("bintray.user")
-    key = properties.getProperty("bintray.apikey")
-
-    configurations = ['archives']
-    pkg {
-        repo = bintrayRepo
-        name = bintrayName
-        desc = libraryDescription
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-        licenses = allLicenses
-        publish = true
-        publicDownloadNumbers = true
-        version {
-            desc = libraryDescription
-            gpg {
-                sign = true //Determines whether to GPG sign the files. The default is false
-                passphrase = properties.getProperty("bintray.gpg.password")
-                //Optional. The passphrase for GPG signing'
-            }
-        }
-    }
-}
-
-
-// -- Publicar LOCAL ------------------------------------------
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "source"
-}
-
-publishing {
-    publications {
-        msdk(MavenPublication) {
-
-            groupId 'com.mercadopago'
-            artifactId 'sdk'
-            version '3.6.1_27.local'
-            artifact(bundleRelease)
-            pom.withXml {
-                def dependenciesNode = asNode().appendNode('dependencies')
-                configurations.compile.allDependencies.each {
-                    if(it.group != null && (it.name != null || "unspecified".equals(it.name)) && it.version != null) {
-                        def dependencyNode = dependenciesNode.appendNode('dependency')
-                        dependencyNode.appendNode('groupId', it.group)
-                        dependencyNode.appendNode('artifactId', it.name)
-                        dependencyNode.appendNode('version', it.version)
-                    }
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            // change to point to your repo, e.g. http://my.org/repo
-            url "${System.env.HOME}/.m2/repository"
-        }
-    }
-}
+apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/deploy.gradle"

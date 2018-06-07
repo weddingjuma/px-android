@@ -1,6 +1,5 @@
 package com.mercadopago.services;
 
-import com.mercadopago.BuildConfig;
 import com.mercadopago.adapters.MPCall;
 import com.mercadopago.model.Instructions;
 import com.mercadopago.model.PayerIntent;

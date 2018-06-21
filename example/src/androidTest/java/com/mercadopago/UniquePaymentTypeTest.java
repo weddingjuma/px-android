@@ -40,7 +40,7 @@ public class UniquePaymentTypeTest {
 
     @Test
     public void withOnlyOnePaymentMethodCardAvailablePaymentFlowWorksOk() {
-        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
+        Card card = new FakeCard(FakeCard.CardState.APRO, "5031755734530604");
         CongratsPage congratsPage = creditCardTestFlow.runCreditCardOnlyPaymentAvailable(card);
         assertNotNull(congratsPage);
     }

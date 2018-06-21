@@ -9,11 +9,8 @@ import com.mercadopago.testcheckout.assertions.DefaultValidator;
 import com.mercadopago.testcheckout.idleresources.CheckoutResource;
 import com.mercadopago.testcheckout.input.Card;
 import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.pages.CreditCardPage;
-import com.mercadopago.testcheckout.pages.ExpiryDatePage;
-import com.mercadopago.testcheckout.pages.NamePage;
-import com.mercadopago.testcheckout.pages.NoCheckoutPage;
-import com.mercadopago.testcheckout.pages.SecurityCodePage;
+import com.mercadopago.testcheckout.pages.CongratsPage;
+import com.mercadopago.testcheckout.pages.PaymentMethodPage;
 import com.mercadopago.testlib.HttpResource;
 
 import org.junit.Before;
@@ -32,120 +29,140 @@ public class BackFlowTest {
 
     @Rule
     public ActivityTestRule<CheckoutExampleActivity> activityRule =
-            new ActivityTestRule<>(CheckoutExampleActivity.class);
+        new ActivityTestRule<>(CheckoutExampleActivity.class);
 
 
     @Before
     public void setUp() {
-        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder("TEST-e4bdd1cf-bcb2-43f7-b565-ed4c9ea25be7",
-                "243966003-bb8f7422-39c1-4337-81dd-60a88eb787df");
+        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder("APP_USR-648a260d-6fd9-4ad7-9284-90f22262c18d",
+            "243966003-d0be0be0-6fd8-4769-bf2f-7f2d979655f5");
         builder.build().startForPayment(activityRule.getActivity());
     }
 
     @Test
-    public void whenDriveToIdentificationAndPressBackGoOutOfCheckout() {
+    public void whenDriveToIdentificationAndPressBackGoToPaymentMethodSelection() {
         Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .enterCreditCardNumber(card.cardNumber())
-                .enterCardholderName(card.cardHolderName())
-                .enterExpiryDate(card.expDate())
-                .enterSecurityCode(card.escNumber())
-                .pressBack();
-        assertNotNull(noCheckoutPage);
-    }
-
-    @Test
-    public void whenDriveToSecurityCodeAndPressBackGoOutOfCheckout() {
-        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .enterCreditCardNumber(card.cardNumber())
-                .enterCardholderName(card.cardHolderName())
-                .enterExpiryDate(card.expDate())
-                .pressBack();
-        assertNotNull(noCheckoutPage);
-    }
-
-    @Test
-    public void whenDriveToExpiryDateAndPressBackGoOutOfCheckout() {
-        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .enterCreditCardNumber(card.cardNumber())
-                .enterCardholderName(card.cardHolderName())
-                .pressBack();
-        assertNotNull(noCheckoutPage);
-    }
-
-    @Test
-    public void whenDriveToNamePageAndPressBackGoOutOfCheckout() {
-        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .enterCreditCardNumber(card.cardNumber())
-                .pressBack();
-        assertNotNull(noCheckoutPage);
-    }
-
-    @Test
-    public void whenDriveToCreditCardPageAndPressBackGoOutOfCheckout() {
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .pressBack();
-        assertNotNull(noCheckoutPage);
-    }
-
-
-    @Test
-    public void whenDriveToIdentificationAndPressPreviousGoOutOfCheckout() {
-        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        SecurityCodePage securityCodePage = new CreditCardPage(new DefaultValidator())
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
             .enterCreditCardNumber(card.cardNumber())
             .enterCardholderName(card.cardHolderName())
             .enterExpiryDate(card.expDate())
             .enterSecurityCode(card.escNumber())
-            .pressPrevious();
-        assertNotNull(securityCodePage);
+            .pressBack();
+        assertNotNull(paymentMethodPage);
     }
 
     @Test
-    public void whenDriveToSecurityCodeAndPressPreviousGoOutOfCheckout() {
+    public void whenDriveToSecurityCodeAndPressBackGoToPaymentMethodSelection() {
         Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        ExpiryDatePage expiryDatePage = new CreditCardPage(new DefaultValidator())
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
             .enterCreditCardNumber(card.cardNumber())
             .enterCardholderName(card.cardHolderName())
             .enterExpiryDate(card.expDate())
-            .pressPrevious();
-        assertNotNull(expiryDatePage);
+            .pressBack();
+        assertNotNull(paymentMethodPage);
     }
 
     @Test
-    public void whenDriveToExpiryDateAndPressPreviousGoOutOfCheckout() {
+    public void whenDriveToExpiryDateAndPressBackGoToPaymentMethodSelection() {
         Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NamePage namePage = new CreditCardPage(new DefaultValidator())
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
             .enterCreditCardNumber(card.cardNumber())
             .enterCardholderName(card.cardHolderName())
-            .pressPrevious();
-        assertNotNull(namePage);
+            .pressBack();
+        assertNotNull(paymentMethodPage);
     }
 
     @Test
-    public void whenDriveToNamePageAndPressPreviousGoOutOfCheckout() {
+    public void whenDriveToNamePageAndPressBackGoToPaymentMethodSelection() {
         Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        CreditCardPage creditCardPage = new CreditCardPage(new DefaultValidator())
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
             .enterCreditCardNumber(card.cardNumber())
-            .pressPrevious();
-        assertNotNull(creditCardPage);
+            .pressBack();
+        assertNotNull(paymentMethodPage);
     }
 
     @Test
-    public void whenDriveToReviewAndConfirmAndPressBackGoOutOfCheckout() {
+    public void whenDriveToCreditCardPageAndPressBackGoToPaymentMethodSelection() {
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
+            .pressBack();
+        assertNotNull(paymentMethodPage);
+    }
+
+    @Test
+    public void whenDriveToReviewAndConfirmAndPressBackGoToPaymentMethodSelection() {
         Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
-        NoCheckoutPage noCheckoutPage = new CreditCardPage(new DefaultValidator())
-                .enterCreditCardNumber(card.cardNumber())
-                .enterCardholderName(card.cardHolderName())
-                .enterExpiryDate(card.expDate())
-                .enterSecurityCode(card.escNumber())
-                .enterIdentificationNumberToIssuer(card.cardHolderIdentityNumber())
-                .enterBankOptionToInstallments(0)
-                .selectInstallments(0)
-                .pressBack();
-        assertNotNull(noCheckoutPage);
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
+            .enterCreditCardNumber(card.cardNumber())
+            .enterCardholderName(card.cardHolderName())
+            .enterExpiryDate(card.expDate())
+            .enterSecurityCode(card.escNumber())
+            .enterIdentificationNumberToIssuer(card.cardHolderIdentityNumber())
+            .enterBankOptionToInstallments(0)
+            .selectInstallments(0)
+            .pressBack();
+        assertNotNull(paymentMethodPage);
+    }
+
+    @Test
+    public void whenDriveToBankSelectionAndPressBackGoToPaymentMethodSelection() {
+        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
+            .enterCreditCardNumber(card.cardNumber())
+            .enterCardholderName(card.cardHolderName())
+            .enterExpiryDate(card.expDate())
+            .enterSecurityCode(card.escNumber())
+            .enterIdentificationNumberToIssuer(card.cardHolderIdentityNumber())
+            .pressBack();
+        assertNotNull(paymentMethodPage);
+    }
+
+    @Test
+    public void whenDriveToInstallmentsAndPressBackGoToPaymentMethodSelection() {
+        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
+        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCard()
+            .selectCreditCard()
+            .enterCreditCardNumber(card.cardNumber())
+            .enterCardholderName(card.cardHolderName())
+            .enterExpiryDate(card.expDate())
+            .enterSecurityCode(card.escNumber())
+            .enterIdentificationNumberToIssuer(card.cardHolderIdentityNumber())
+            .enterBankOptionToInstallments(0)
+            .pressBack();
+        assertNotNull(paymentMethodPage);
+    }
+
+    @Test
+    public void whenDriveToReviewAndConfirmAndPressBackAndThenFinishWithPayment() {
+        Card card = new FakeCard(FakeCard.CardState.APRO, "5323793735506106");
+        CongratsPage congratsPage = new PaymentMethodPage(new DefaultValidator())
+            .selectCash()
+            .selectMethod("Rapipago")
+            .pressBack()
+            .selectCard()
+            .selectCreditCard()
+            .enterCreditCardNumber(card.cardNumber())
+            .enterCardholderName(card.cardHolderName())
+            .enterExpiryDate(card.expDate())
+            .enterSecurityCode(card.escNumber())
+            .enterIdentificationNumberToIssuer(card.cardHolderIdentityNumber())
+            .enterBankOptionToInstallments(0)
+            .selectInstallments(0)
+            .pressConfirmButton();
+        assertNotNull(congratsPage);
     }
 }

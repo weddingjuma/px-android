@@ -9,6 +9,7 @@ import com.mercadopago.core.MercadoPagoCheckout;
 import com.mercadopago.core.MercadoPagoComponents;
 import com.mercadopago.exceptions.MercadoPagoError;
 import com.mercadopago.model.Card;
+import com.mercadopago.model.CustomSearchItem;
 import com.mercadopago.model.Discount;
 import com.mercadopago.model.Issuer;
 import com.mercadopago.model.Payer;
@@ -43,6 +44,7 @@ import com.mercadopago.util.TextUtil;
 import com.mercadopago.views.CheckoutView;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public class CheckoutActivity extends MercadoPagoBaseActivity implements CheckoutView {
 
@@ -307,9 +309,12 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             String searchItemDescription = paymentMethodSearchItem.getDescription();
             builder.setPaymentMethodCommentInfo(searchItemComment);
             builder.setPaymentMethodDescriptionInfo(searchItemDescription);
+        } else if (PaymentTypes.ACCOUNT_MONEY.equals(mCheckoutPresenter.getSelectedPaymentMethod().getPaymentTypeId())) {
+            builder.setPaymentMethodCommentInfo(getAccountMoneyComment(mCheckoutPresenter.getPaymentMethodSearch().getCustomSearchItems()));
         }
         builder.startActivity();
     }
+
 
     @Override
     public void backToReviewAndConfirm() {
@@ -523,5 +528,17 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     @Override
     public void showProgress() {
         LayoutUtil.showProgressLayout(this);
+    }
+
+    public String getAccountMoneyComment(List<CustomSearchItem> customSearchItems) {
+        String comment = "";
+
+        for (CustomSearchItem customSearchItem : customSearchItems) {
+            if (PaymentTypes.ACCOUNT_MONEY.equals(customSearchItem.getId())) {
+                comment = customSearchItem.getComment();
+            }
+        }
+
+        return comment;
     }
 }

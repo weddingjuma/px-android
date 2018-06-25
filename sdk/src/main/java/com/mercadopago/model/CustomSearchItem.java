@@ -2,9 +2,6 @@ package com.mercadopago.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
- * Created by mreverter on 6/9/16.
- */
 public class CustomSearchItem {
     private String description;
     private String id;
@@ -12,6 +9,7 @@ public class CustomSearchItem {
     @SerializedName("payment_type_id")
     private String type;
     private String paymentMethodId;
+    private String comment;
 
     public String getDescription() {
         return description;
@@ -43,5 +41,9 @@ public class CustomSearchItem {
 
     public void setPaymentMethodId(String paymentMethodId) {
         this.paymentMethodId = paymentMethodId;
+    }
+
+    public String getComment() {
+        return comment;
     }
 }

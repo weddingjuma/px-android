@@ -67,10 +67,6 @@ import java.util.Map;
 
 import static com.mercadopago.util.TextUtils.isEmpty;
 
-/**
- * Created by mreverter on 1/17/17.
- */
-
 public class MercadoPagoComponents {
 
     private MercadoPagoComponents() {

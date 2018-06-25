@@ -16,9 +16,6 @@ import com.mercadopago.preferences.DecorationPreference;
 import java.math.BigDecimal;
 import java.util.List;
 
-/**
- * Created by mreverter on 2/2/17.
- */
 public interface ReviewAndConfirmProvider extends ResourcesProvider {
     Reviewable getSummaryReviewable(PaymentMethod paymentMethod, PayerCost payerCost, BigDecimal amount, Discount discount, Site site, Issuer issuer, DecorationPreference decorationPreference, OnConfirmPaymentCallback onConfirmPaymentCallback);
 

@@ -27,9 +27,6 @@ import java.util.List;
 
 import static com.mercadopago.util.TextUtils.isEmpty;
 
-/**
- * Created by mreverter on 2/2/17.
- */
 public class ReviewAndConfirmProviderImpl implements ReviewAndConfirmProvider {
 
     private final Context context;

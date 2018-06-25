@@ -24,10 +24,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mreverter on 2/2/17.
- */
-
 public class ReviewAndConfirmPresenter extends MvpPresenter<ReviewAndConfirmView, ReviewAndConfirmProvider> {
 
     private PaymentMethod mPaymentMethod;

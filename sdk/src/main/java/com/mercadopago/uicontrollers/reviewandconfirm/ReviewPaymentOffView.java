@@ -113,6 +113,13 @@ public class ReviewPaymentOffView extends Reviewable {
             mPaymentMethodExtraInfo.setVisibility(View.GONE);
         } else {
             mPaymentDescription.setText(mPaymentMethodCommentInfo);
+            setIconTimeVisibility();
+        }
+    }
+
+    private void setIconTimeVisibility() {
+        if (PaymentMethods.ACCOUNT_MONEY.equals(mPaymentMethod.getId())) {
+            mIconTimeImageView.setVisibility(View.GONE);
         }
     }
 

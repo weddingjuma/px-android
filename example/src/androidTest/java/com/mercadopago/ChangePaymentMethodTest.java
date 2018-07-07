@@ -98,5 +98,4 @@ public class ChangePaymentMethodTest {
             .runDebitCardFlowFromPaymentMethod(card, paymentMethodPage);
         assertNotNull(congratsPage);
     }
-
 }

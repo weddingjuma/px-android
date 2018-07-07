@@ -5,15 +5,15 @@ import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
-import com.mercadopago.testcheckout.assertions.DefaultValidator;
-import com.mercadopago.testcheckout.idleresources.CheckoutResource;
-import com.mercadopago.testcheckout.input.Card;
-import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.pages.CreditCardPage;
-import com.mercadopago.testcheckout.pages.ExpiryDatePage;
-import com.mercadopago.testcheckout.pages.NamePage;
-import com.mercadopago.testcheckout.pages.NoCheckoutPage;
-import com.mercadopago.testcheckout.pages.SecurityCodePage;
+import com.mercadopago.android.px.testcheckout.assertions.DefaultValidator;
+import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
+import com.mercadopago.android.px.testcheckout.input.Card;
+import com.mercadopago.android.px.testcheckout.input.FakeCard;
+import com.mercadopago.android.px.testcheckout.pages.CreditCardPage;
+import com.mercadopago.android.px.testcheckout.pages.ExpiryDatePage;
+import com.mercadopago.android.px.testcheckout.pages.NamePage;
+import com.mercadopago.android.px.testcheckout.pages.NoCheckoutPage;
+import com.mercadopago.android.px.testcheckout.pages.SecurityCodePage;
 import com.mercadopago.testlib.HttpResource;
 
 import org.junit.Before;

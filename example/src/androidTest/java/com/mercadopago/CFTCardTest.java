@@ -5,7 +5,7 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import com.mercadopago.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.testcheckout.assertions.DefaultValidator;
 import com.mercadopago.testcheckout.flows.CreditCardTestFlow;
 import com.mercadopago.testcheckout.idleresources.CheckoutResource;

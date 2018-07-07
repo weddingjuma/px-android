@@ -4,7 +4,7 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 
-import com.mercadopago.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.testcheckout.idleresources.CheckoutResource;
 import com.mercadopago.testcheckout.flows.OffPaymentTypeTestFlow;
 import com.mercadopago.testcheckout.pages.CongratsPage;

@@ -18,7 +18,7 @@ import com.mercadopago.android.px.testcheckout.input.Visa;
 import com.mercadopago.android.px.testcheckout.pages.CreditCardPage;
 import com.mercadopago.android.px.testcheckout.pages.NamePage;
 import com.mercadopago.example.R;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.testlib.HttpResource;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;

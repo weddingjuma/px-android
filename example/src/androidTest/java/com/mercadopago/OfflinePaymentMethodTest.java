@@ -8,7 +8,7 @@ import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
 import com.mercadopago.android.px.testcheckout.flows.OffPaymentTypeTestFlow;
 import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.testlib.HttpResource;
 
 import org.junit.Before;
 import org.junit.Rule;

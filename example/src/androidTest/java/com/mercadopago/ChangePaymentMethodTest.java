@@ -17,7 +17,7 @@ import com.mercadopago.android.px.testcheckout.input.VisaDebit;
 import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
 import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
 import com.mercadopago.android.px.testcheckout.pages.ReviewAndConfirmPage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.testlib.HttpResource;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

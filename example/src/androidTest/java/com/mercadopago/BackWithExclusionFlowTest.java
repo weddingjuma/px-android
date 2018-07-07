@@ -14,7 +14,7 @@ import com.mercadopago.android.px.testcheckout.pages.ExpiryDatePage;
 import com.mercadopago.android.px.testcheckout.pages.NamePage;
 import com.mercadopago.android.px.testcheckout.pages.NoCheckoutPage;
 import com.mercadopago.android.px.testcheckout.pages.SecurityCodePage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.testlib.HttpResource;
 
 import org.junit.Before;
 import org.junit.Rule;

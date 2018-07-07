@@ -11,7 +11,7 @@ import com.mercadopago.android.px.testcheckout.input.Card;
 import com.mercadopago.android.px.testcheckout.input.FakeCard;
 import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
 import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.testlib.HttpResource;
 
 import org.junit.Before;
 import org.junit.Rule;

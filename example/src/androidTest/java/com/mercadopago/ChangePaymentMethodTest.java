@@ -3,21 +3,21 @@ package com.mercadopago;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.testcheckout.flows.CreditCardTestFlow;
-import com.mercadopago.testcheckout.flows.DebitCardTestFlow;
-import com.mercadopago.testcheckout.flows.OffPaymentTypeTestFlow;
-import com.mercadopago.testcheckout.idleresources.CheckoutResource;
-import com.mercadopago.testcheckout.input.Card;
-import com.mercadopago.testcheckout.input.Country;
-import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.input.Master;
-import com.mercadopago.testcheckout.input.Visa;
-import com.mercadopago.testcheckout.input.VisaDebit;
-import com.mercadopago.testcheckout.pages.CongratsPage;
-import com.mercadopago.testcheckout.pages.PaymentMethodPage;
-import com.mercadopago.testcheckout.pages.ReviewAndConfirmPage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.testcheckout.flows.CreditCardTestFlow;
+import com.mercadopago.android.px.testcheckout.flows.DebitCardTestFlow;
+import com.mercadopago.android.px.testcheckout.flows.OffPaymentTypeTestFlow;
+import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
+import com.mercadopago.android.px.testcheckout.input.Card;
+import com.mercadopago.android.px.testcheckout.input.Country;
+import com.mercadopago.android.px.testcheckout.input.FakeCard;
+import com.mercadopago.android.px.testcheckout.input.Master;
+import com.mercadopago.android.px.testcheckout.input.Visa;
+import com.mercadopago.android.px.testcheckout.input.VisaDebit;
+import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
+import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
+import com.mercadopago.android.px.testcheckout.pages.ReviewAndConfirmPage;
+import com.mercadopago.android.testlib.HttpResource;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -98,5 +98,4 @@ public class ChangePaymentMethodTest {
             .runDebitCardFlowFromPaymentMethod(card, paymentMethodPage);
         assertNotNull(congratsPage);
     }
-
 }

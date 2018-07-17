@@ -6,18 +6,19 @@ import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
-import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.testcheckout.assertions.DefaultValidator;
-import com.mercadopago.testcheckout.flows.CreditCardTestFlow;
-import com.mercadopago.testcheckout.idleresources.CheckoutResource;
-import com.mercadopago.testcheckout.input.Card;
-import com.mercadopago.testcheckout.input.Country;
-import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.input.Master;
-import com.mercadopago.testcheckout.input.Visa;
-import com.mercadopago.testcheckout.pages.CreditCardPage;
-import com.mercadopago.testcheckout.pages.NamePage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.testcheckout.assertions.DefaultValidator;
+import com.mercadopago.android.px.testcheckout.flows.CreditCardTestFlow;
+import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
+import com.mercadopago.android.px.testcheckout.input.Card;
+import com.mercadopago.android.px.testcheckout.input.Country;
+import com.mercadopago.android.px.testcheckout.input.FakeCard;
+import com.mercadopago.android.px.testcheckout.input.Master;
+import com.mercadopago.android.px.testcheckout.input.Visa;
+import com.mercadopago.android.px.testcheckout.pages.CreditCardPage;
+import com.mercadopago.android.px.testcheckout.pages.NamePage;
+import com.mercadopago.android.testlib.HttpResource;
+import com.mercadopago.example.R;
 import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
@@ -59,8 +60,9 @@ public class UniquePaymentMethodTest {
                 @Override
                 public void validate(@NonNull final CreditCardPage creditCardPage) {
                     super.validate(creditCardPage);
-                    final Matcher<View> messageContainerMatcher = withId(com.mercadopago.R.id.mpsdkBlackInfoContainer);
-                    onView(messageContainerMatcher).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
+                    final Matcher<View> messageContainerMatcher = withId(R.id.mpsdkBlackInfoContainer);
+                    onView(messageContainerMatcher)
+                        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
                 }
             });
         assertNotNull(creditCardPage);
@@ -74,11 +76,11 @@ public class UniquePaymentMethodTest {
                 @Override
                 public void validate(@NonNull final NamePage namePage) {
                     super.validate(namePage);
-                    final Matcher<View> messageContainerMatcher = withId(com.mercadopago.R.id.mpsdkBlackInfoContainer);
-                    onView(messageContainerMatcher).check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
+                    final Matcher<View> messageContainerMatcher = withId(R.id.mpsdkBlackInfoContainer);
+                    onView(messageContainerMatcher)
+                        .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
                 }
             });
         assertNotNull(namePage);
     }
-
 }

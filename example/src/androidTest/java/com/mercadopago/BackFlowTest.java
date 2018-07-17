@@ -3,16 +3,14 @@ package com.mercadopago;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-
-import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.testcheckout.assertions.DefaultValidator;
-import com.mercadopago.testcheckout.idleresources.CheckoutResource;
-import com.mercadopago.testcheckout.input.Card;
-import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.pages.CongratsPage;
-import com.mercadopago.testcheckout.pages.PaymentMethodPage;
-import com.mercadopago.testlib.HttpResource;
-
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.testcheckout.assertions.DefaultValidator;
+import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
+import com.mercadopago.android.px.testcheckout.input.Card;
+import com.mercadopago.android.px.testcheckout.input.FakeCard;
+import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
+import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
+import com.mercadopago.android.testlib.HttpResource;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,11 +29,11 @@ public class BackFlowTest {
     public ActivityTestRule<CheckoutExampleActivity> activityRule =
         new ActivityTestRule<>(CheckoutExampleActivity.class);
 
-
     @Before
     public void setUp() {
-        MercadoPagoCheckout.Builder builder = new MercadoPagoCheckout.Builder("APP_USR-648a260d-6fd9-4ad7-9284-90f22262c18d",
-            "243966003-d0be0be0-6fd8-4769-bf2f-7f2d979655f5");
+        MercadoPagoCheckout.Builder builder =
+            new MercadoPagoCheckout.Builder("APP_USR-648a260d-6fd9-4ad7-9284-90f22262c18d",
+                "243966003-d0be0be0-6fd8-4769-bf2f-7f2d979655f5");
         builder.build().startForPayment(activityRule.getActivity());
     }
 

@@ -5,18 +5,19 @@ import android.support.test.espresso.matcher.ViewMatchers;
 import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import com.mercadopago.core.MercadoPagoCheckout;
-import com.mercadopago.testcheckout.assertions.DefaultValidator;
-import com.mercadopago.testcheckout.flows.CreditCardTestFlow;
-import com.mercadopago.testcheckout.idleresources.CheckoutResource;
-import com.mercadopago.testcheckout.input.Card;
-import com.mercadopago.testcheckout.input.Country;
-import com.mercadopago.testcheckout.input.FakeCard;
-import com.mercadopago.testcheckout.input.Master;
-import com.mercadopago.testcheckout.input.NoInterestMaster;
-import com.mercadopago.testcheckout.pages.CongratsPage;
-import com.mercadopago.testcheckout.pages.ReviewAndConfirmPage;
-import com.mercadopago.testlib.HttpResource;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.testcheckout.assertions.DefaultValidator;
+import com.mercadopago.android.px.testcheckout.flows.CreditCardTestFlow;
+import com.mercadopago.android.px.testcheckout.idleresources.CheckoutResource;
+import com.mercadopago.android.px.testcheckout.input.Card;
+import com.mercadopago.android.px.testcheckout.input.Country;
+import com.mercadopago.android.px.testcheckout.input.FakeCard;
+import com.mercadopago.android.px.testcheckout.input.Master;
+import com.mercadopago.android.px.testcheckout.input.NoInterestMaster;
+import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
+import com.mercadopago.android.px.testcheckout.pages.ReviewAndConfirmPage;
+import com.mercadopago.android.testlib.HttpResource;
+import com.mercadopago.example.R;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -87,6 +88,4 @@ public class CFTCardTest {
                 });
         assertNotNull(congratsPage);
     }
-
-
 }

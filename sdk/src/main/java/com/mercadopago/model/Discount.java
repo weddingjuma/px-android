@@ -1,5 +1,6 @@
 package com.mercadopago.model;
 
+import android.support.annotation.Nullable;
 import com.mercadopago.util.CurrenciesUtil;
 
 import java.math.BigDecimal;
@@ -24,12 +25,14 @@ public class Discount {
         return couponCode;
     }
 
+    @Nullable
     public BigDecimal getAmountOff() {
-        return amountOff;
+        return amountOff == null ? amountOff : CurrenciesUtil.getRoundedAmount(amountOff);
     }
 
+    @Nullable
     public BigDecimal getCouponAmount() {
-        return this.couponAmount;
+        return couponAmount == null ? couponAmount : CurrenciesUtil.getRoundedAmount(couponAmount);
     }
 
     public String getCurrencyId() {

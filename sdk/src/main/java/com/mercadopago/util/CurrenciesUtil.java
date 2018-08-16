@@ -1,11 +1,13 @@
 package com.mercadopago.util;
 
+import android.support.annotation.NonNull;
 import android.text.Html;
 import android.text.Spanned;
 
 import com.mercadopago.model.Currency;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
@@ -20,10 +22,12 @@ public class CurrenciesUtil {
     public static final String CURRENCY_CHILE = "CLP";
     public static final String CURRENCY_COLOMBIA = "COP";
     public static final String CURRENCY_MEXICO = "MXN";
-    public static final String CURRENCY_VENEZUELA = "VEF";
+    public static final String CURRENCY_VENEZUELA = "VES";
     public static final String CURRENCY_USA = "USD";
     public static final String CURRENCY_PERU = "PEN";
     public static final String CURRENCY_URUGUAY = "UYU";
+
+    private static final int DECIMALS_LENGTH_TO_ROUND = 2;
 
     protected CurrenciesUtil() {
 
@@ -35,11 +39,15 @@ public class CurrenciesUtil {
         put(CURRENCY_CHILE, new Currency(CURRENCY_CHILE, "Peso chileno", "$", 0, ",".charAt(0), ".".charAt(0)));
         put(CURRENCY_COLOMBIA, new Currency(CURRENCY_COLOMBIA, "Peso colombiano", "$", 0, ",".charAt(0), ".".charAt(0)));
         put(CURRENCY_MEXICO, new Currency(CURRENCY_MEXICO, "Peso mexicano", "$", 2, ".".charAt(0), ",".charAt(0)));
-        put(CURRENCY_VENEZUELA, new Currency(CURRENCY_VENEZUELA, "Bolivar fuerte", "BsF", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_VENEZUELA, new Currency(CURRENCY_VENEZUELA, "Bolívares", "Bs.", 2, ",".charAt(0), ".".charAt(0)));
         put(CURRENCY_USA, new Currency(CURRENCY_USA, "Dolar americano", "US$", 2, ",".charAt(0), ".".charAt(0)));
         put(CURRENCY_PERU, new Currency(CURRENCY_PERU,"Soles", "S/.",2,",".charAt(0),".".charAt(0)));
         put(CURRENCY_URUGUAY , new Currency(CURRENCY_URUGUAY,"Peso Uruguayo", "$",2,",".charAt(0),".".charAt(0)));
     }};
+
+    public static BigDecimal getRoundedAmount(@NonNull final BigDecimal amount) {
+        return amount.setScale(DECIMALS_LENGTH_TO_ROUND, RoundingMode.HALF_UP);
+    }
 
     public static String formatNumber(BigDecimal amount, String currencyId) {
         // Get currency configuration

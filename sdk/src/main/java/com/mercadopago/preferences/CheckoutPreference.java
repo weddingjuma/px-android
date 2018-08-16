@@ -156,7 +156,8 @@ public class CheckoutPreference {
         if (items != null) {
             for (Item item : items) {
                 if ((item != null) && (item.getUnitPrice() != null) && (item.getQuantity() != null)) {
-                    totalAmount = totalAmount.add(item.getUnitPrice().multiply(new BigDecimal(item.getQuantity())));
+                    final BigDecimal roundedUnitPrice = CurrenciesUtil.getRoundedAmount(item.getUnitPrice());
+                    totalAmount = totalAmount.add(roundedUnitPrice.multiply(new BigDecimal(item.getQuantity())));
                 } else {
                     return null;
                 }

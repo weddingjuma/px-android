@@ -1,3 +1,23 @@
+## VERSION 3.6.2.3
+
+_08_08_2018_
+
+* New: Currency in MLV
+* Fix: Rounding decimals
+
+## VERSION 3.6.2.2
+
+* New: Asset Managment support
+
+## VERSION 3.6.2.1
+
+* Fix: Gradle
+
+## VERSION 3.6.2
+
+* New: Api 27 update
+* Fix: Discount flow
+
 ## VERSION 3.6.1.2
 
 _23_05_2018_

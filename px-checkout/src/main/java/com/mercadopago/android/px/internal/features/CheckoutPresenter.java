@@ -212,7 +212,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
                 }
 
                 @Override
-                public void driveToNewDebitCardFlow(final String defaultPaymentTypeId) {
+                public void driveToNewCardFlow(final String defaultPaymentTypeId) {
                     userSelectionRepository.select(defaultPaymentTypeId);
                     getView().showNewCardFlow();
                 }
@@ -389,7 +389,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
                         }
 
                         @Override
-                        public void driveToNewDebitCardFlow(final String defaultPaymentTypeId) {
+                        public void driveToNewCardFlow(final String defaultPaymentTypeId) {
                             cancelCheckout();
                         }
 

@@ -25,8 +25,8 @@ public class DefaultPaymentMethodDriver {
             if (isSavedCard()) {
                 final Card card = setUpSavedCard();
                 paymentMethodDriverCallback.driveToCardVault(card);
-            } else if (isNewCard()) {
-                paymentMethodDriverCallback.driveToNewCardFlow();
+            } else if (isNewDebitCard()) {
+                paymentMethodDriverCallback.driveToNewDebitCardFlow(preference.getDefaultPaymentTypeId());
             } else {
                 paymentMethodDriverCallback.doNothing();
             }
@@ -52,7 +52,7 @@ public class DefaultPaymentMethodDriver {
         return isCard() && isValid(preference.getDefaultCardId());
     }
 
-    private boolean isNewCard() {
+    private boolean isNewDebitCard() {
         return preference.getDefaultCardId() == null &&
             PaymentTypes.isCardPaymentType(preference.getDefaultPaymentTypeId());
     }
@@ -72,6 +72,6 @@ public class DefaultPaymentMethodDriver {
 
         void doNothing();
 
-        void driveToNewCardFlow();
+        void driveToNewDebitCardFlow(final String defaultPaymentTypeId);
     }
 }

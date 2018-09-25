@@ -1,4 +1,10 @@
 ## VERSION 4.0.3
+_25_09_2018_
+
+* FIX - DefaultPaymentTypeId debit card error, can't look for settings.
+* FIX - Colombia currency utils.
+
+## VERSION 4.0.3
 
 _20_09_2018_
 

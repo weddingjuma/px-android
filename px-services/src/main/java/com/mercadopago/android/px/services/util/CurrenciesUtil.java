@@ -138,11 +138,11 @@ public final class CurrenciesUtil {
         return new SpannedString(spannableAmount);
     }
 
-    public static boolean isValidCurrency(String currencyId) {
+    public static boolean isValidCurrency(final String currencyId) {
         return !TextUtil.isEmpty(currencyId) && currenciesList.containsKey(currencyId);
     }
 
-    public static Currency getCurrency(String currencyKey) {
+    public static Currency getCurrency(final String currencyKey) {
         return currenciesList.get(currencyKey);
     }
 
@@ -152,14 +152,16 @@ public final class CurrenciesUtil {
         if (hasZeroDecimals(currencyId, amount)) {
             final Character decimalSeparator = currenciesList.get(currencyId).getDecimalSeparator();
             final int decimalIndex = localized.indexOf(decimalSeparator);
-            localized = localized.substring(0, decimalIndex);
+            if (decimalIndex >= 0) {
+                localized = localized.substring(0, decimalIndex);
+            }
         }
         return localized;
     }
 
-    public static boolean hasZeroDecimals(final String currencyId, final BigDecimal amount) {
-        String decimals = getDecimals(currencyId, amount);
-        return ZERO_DECIMAL.equals(decimals);
+    private static boolean hasZeroDecimals(final String currencyId, final BigDecimal amount) {
+        final String decimals = getDecimals(currencyId, amount);
+        return ZERO_DECIMAL.equals(decimals) || TextUtil.isEmpty(decimals);
     }
 
     @NonNull
@@ -170,7 +172,7 @@ public final class CurrenciesUtil {
         SpannableStringBuilder spannableAmount = new SpannableStringBuilder(localizedAmount);
 
         if (!CurrenciesUtil.hasZeroDecimals(currencyId, amount)) {
-            int fromDecimals = localizedAmount.indexOf(CurrenciesUtil.getDecimalSeparator(currencyId));
+            final int fromDecimals = localizedAmount.indexOf(CurrenciesUtil.getDecimalSeparator(currencyId));
             localizedAmount =
                 localizedAmount.replace(String.valueOf(CurrenciesUtil.getDecimalSeparator(currencyId)), "");
             spannableAmount = new SpannableStringBuilder(localizedAmount);
@@ -182,10 +184,10 @@ public final class CurrenciesUtil {
         return spannableAmount;
     }
 
-    private static void symbolUp(final @NonNull String currencyId, final String localizedAmount,
+    private static void symbolUp(@NonNull final String currencyId, final String localizedAmount,
         final SpannableStringBuilder spannableAmount) {
-        int fromSymbolPosition = localizedAmount.indexOf(CurrenciesUtil.getSymbol(currencyId));
-        int toSymbolPosition = fromSymbolPosition + CurrenciesUtil.getSymbol(currencyId).length();
+        final int fromSymbolPosition = localizedAmount.indexOf(CurrenciesUtil.getSymbol(currencyId));
+        final int toSymbolPosition = fromSymbolPosition + CurrenciesUtil.getSymbol(currencyId).length();
         spannableAmount.setSpan(new RelativeSizeSpan(0.5f), fromSymbolPosition, toSymbolPosition,
             Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableAmount.setSpan(new SuperscriptSpanAdjuster(0.65f), fromSymbolPosition, toSymbolPosition,

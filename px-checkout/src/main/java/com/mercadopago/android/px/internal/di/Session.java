@@ -8,6 +8,8 @@ import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.datasource.AmountService;
+import com.mercadopago.android.px.internal.datasource.CardAssociationService;
+import com.mercadopago.android.px.internal.datasource.CardPaymentMethodService;
 import com.mercadopago.android.px.internal.datasource.DiscountApiService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.DiscountStorageService;
@@ -26,6 +28,7 @@ import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinat
 import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.repository.CardPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
@@ -34,6 +37,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.services.CardService;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
@@ -236,6 +240,11 @@ public final class Session extends ApplicationModule
             getMercadoPagoESC(), getDevice());
     }
 
+    @NonNull
+    public InternalConfiguration getInternalConfiguration() {
+        return internalConfiguration == null ? new InternalConfiguration(false) : internalConfiguration;
+    }
+
     /**
      * Set internal configuration after building MercadoPagoCheckout.
      *
@@ -244,11 +253,6 @@ public final class Session extends ApplicationModule
     @SuppressWarnings("unused")
     public void setInternalConfiguration(@NonNull final InternalConfiguration internalConfiguration) {
         this.internalConfiguration = internalConfiguration;
-    }
-
-    @NonNull
-    public InternalConfiguration getInternalConfiguration() {
-        return internalConfiguration == null ? new InternalConfiguration(false) : internalConfiguration;
     }
 
     //TODO move.

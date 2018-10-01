@@ -9,7 +9,6 @@ import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Issuer;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.Token;
 import java.math.BigDecimal;
 import java.util.List;
@@ -19,6 +18,8 @@ public interface GuessingCardProvider extends ResourcesProvider {
     MPTrackingContext getTrackingContext();
 
     void createTokenAsync(CardToken cardToken, final TaggedCallback<Token> taggedCallback);
+
+    void createTokenAsync(CardToken cardToken, final String accessToken, final TaggedCallback<Token> taggedCallback);
 
     void getIssuersAsync(String paymentMethodId, String bin, final TaggedCallback<List<Issuer>> taggedCallback);
 
@@ -30,6 +31,9 @@ public interface GuessingCardProvider extends ResourcesProvider {
         final TaggedCallback<List<Installment>> taggedCallback);
 
     void getIdentificationTypesAsync(final TaggedCallback<List<IdentificationType>> taggedCallback);
+
+    void getIdentificationTypesAsync(final String accessToken,
+        final TaggedCallback<List<IdentificationType>> taggedCallback);
 
     void getBankDealsAsync(final TaggedCallback<List<BankDeal>> taggedCallback);
 

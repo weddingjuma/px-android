@@ -45,7 +45,7 @@ public class DefaultPaymentMethodDriverTest {
     public void whenPaymentMethodIsCardAndCardIdIsNullThenDriveToNewCardFlow(){
         when(paymentPreference.getDefaultPaymentTypeId()).thenReturn(STUB_CREDIT_CARD);
         handler.drive(paymentMethodDriverCallback);
-        verify(paymentMethodDriverCallback).driveToNewDebitCardFlow(preference.getDefaultPaymentTypeId());
+        verify(paymentMethodDriverCallback).driveToNewDebitCardFlow(paymentPreference.getDefaultPaymentTypeId());
         verifyNoMoreInteractions(paymentMethodDriverCallback);
     }
 
@@ -54,7 +54,7 @@ public class DefaultPaymentMethodDriverTest {
         when(paymentPreference.getDefaultPaymentTypeId()).thenReturn(STUB_CREDIT_CARD);
         when(paymentPreference.getDefaultCardId()).thenReturn(null);
         handler.drive(paymentMethodDriverCallback);
-        verify(paymentMethodDriverCallback).driveToNewDebitCardFlow(preference.getDefaultPaymentTypeId());
+        verify(paymentMethodDriverCallback).driveToNewDebitCardFlow(paymentPreference.getDefaultPaymentTypeId());
         verifyNoMoreInteractions(paymentMethodDriverCallback);
     }
 

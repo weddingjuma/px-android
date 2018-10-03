@@ -315,10 +315,11 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
                     mPresenter.setPaymentTypesList(paymentTypesList);
                     mPresenter.setIdentificationTypesList(identificationTypesList);
                     mPresenter.setBankDealsList(bankDealsList);
-                    mPresenter.initializeGuessingCardNumberController();
-                    mPresenter.saveBin(savedInstanceState.getString(CARD_INFO_BIN_BUNDLE));
+                    mPresenter.setBin(savedInstanceState.getString(CARD_INFO_BIN_BUNDLE));
                     mPresenter.setIdentificationNumberRequired(savedInstanceState.getBoolean(ID_REQUIRED_BUNDLE));
                     mPresenter.setSecurityCodeRequired(savedInstanceState.getBoolean(SEC_CODE_REQUIRED_BUNDLE));
+                    mPresenter.setSecurityCodeLocation(savedInstanceState.getString(SEC_CODE_LOCATION_BUNDLE));
+                    mPresenter.setSecurityCodeLength(savedInstanceState.getInt(SEC_CODE_LENGTH_BUNDLE));
                     mPresenter.setCardNumber(savedInstanceState.getString(CARD_NUMBER_BUNDLE));
                     mPresenter.setCardholderName(savedInstanceState.getString(CARD_NAME_BUNDLE));
                     mPresenter.setExpiryMonth(savedInstanceState.getString(EXPIRY_MONTH_BUNDLE));
@@ -338,6 +339,7 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
                     mPresenter.setPaymentRecovery(JsonUtil.getInstance()
                         .fromJson(savedInstanceState.getString(PAYMENT_RECOVERY_BUNDLE), PaymentRecovery.class));
                     mLowResActive = savedInstanceState.getBoolean(LOW_RES_BUNDLE);
+                    mPresenter.initializeGuessingCardNumberController();
                     if (mCardView == null) {
                         loadViews();
                     }
@@ -350,7 +352,7 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
                         mIdentificationCardView.setIdentificationType(identificationType);
                         mIdentificationCardView.draw();
                     }
-                    mPresenter.onPaymentMethodSet(pm);
+                    mPresenter.onPaymentMethodRestored(pm);
                     mSecurityCodeEditText.getText().clear();
                     requestCardNumberFocus();
                     if (cardViewsActive()) {

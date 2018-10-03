@@ -309,6 +309,7 @@ public class GuessingCardPresenter extends MvpPresenter<GuessingCardActivityView
         mPaymentMethodGuessingController = new PaymentMethodGuessingController(
             supportedPaymentMethods, userSelectionRepository.getPaymentType(),
             mPaymentPreference.getExcludedPaymentTypes());
+        saveBin(mBin == null ? "" : mBin);
 
         startGuessingForm();
     }
@@ -373,6 +374,7 @@ public class GuessingCardPresenter extends MvpPresenter<GuessingCardActivityView
     }
 
     public void resolvePaymentMethodListSet(List<PaymentMethod> paymentMethodList, String bin) {
+        setBin(bin);
         saveBin(bin);
         if (paymentMethodList.isEmpty()) {
             getView().setCardNumberInputMaxLength(Bin.BIN_LENGTH);
@@ -433,9 +435,10 @@ public class GuessingCardPresenter extends MvpPresenter<GuessingCardActivityView
         return mBin;
     }
 
-    public void saveBin(String bin) {
-        mBin = bin;
-        mPaymentMethodGuessingController.saveBin(bin);
+    public void saveBin(@NonNull final String bin) {
+        if (mPaymentMethodGuessingController != null) {
+            mPaymentMethodGuessingController.saveBin(bin);
+        }
     }
 
     private void configureWithSettings(final PaymentMethod paymentMethod) {
@@ -990,5 +993,18 @@ public class GuessingCardPresenter extends MvpPresenter<GuessingCardActivityView
             }
         }
         return paymentTypeUndefined;
+    }
+
+    public void setBin(final String bin) {
+        mBin = bin;
+    }
+
+    public void onPaymentMethodRestored(final PaymentMethod paymentMethod) {
+        onPaymentMethodSet(paymentMethod);
+        getView().setPaymentMethod(paymentMethod);
+    }
+
+    public void setSecurityCodeLocation(final String securityCodeLocation) {
+        mSecurityCodeLocation = securityCodeLocation;
     }
 }

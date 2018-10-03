@@ -1,3 +1,8 @@
+## VERSION 4.1.0
+_04_10_2018_
+
+* ENHANCEMENT - Standalone Card Association
+
 ## VERSION 4.0.3
 _25_09_2018_
 

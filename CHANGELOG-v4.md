@@ -1,4 +1,9 @@
-## VERSION 4.0.3
+## VERSION 4.0.5
+_03_10_2018_
+
+* FIX - Show app bar when tap back from CVV screen.
+
+## VERSION 4.0.4
 _25_09_2018_
 
 * FIX - DefaultPaymentTypeId debit card error, can't look for settings.

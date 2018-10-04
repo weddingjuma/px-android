@@ -40,7 +40,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper
 
     @Override
     public void detachView() {
-        paymentRepository.detach();
+        paymentRepository.detach(this);
         super.detachView();
     }
 

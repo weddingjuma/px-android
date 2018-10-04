@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.review_and_confirm;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.DefaultProvider;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
@@ -41,7 +40,7 @@ import com.mercadopago.android.px.viewmodel.mappers.BusinessModelMapper;
 
     @Override
     public void detachView() {
-        paymentRepository.detach();
+        paymentRepository.detach(this);
         super.detachView();
     }
 

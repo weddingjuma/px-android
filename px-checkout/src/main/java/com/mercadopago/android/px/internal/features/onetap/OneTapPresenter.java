@@ -148,7 +148,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
     @Override
     public void onViewPaused() {
-        paymentRepository.detach();
+        paymentRepository.detach(this);
     }
 
     @Override

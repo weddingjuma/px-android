@@ -83,8 +83,8 @@ public class PaymentService implements PaymentRepository {
     }
 
     @Override
-    public void detach() {
-        handlerWrapper.setHandler(null);
+    public void detach(@NonNull final PaymentServiceHandler handler) {
+        handlerWrapper.detach(handler);
     }
 
     @Override

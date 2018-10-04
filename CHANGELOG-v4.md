@@ -3,6 +3,7 @@ _03_10_2018_
 
 * FIX - Show app bar when tap back from CVV screen.
 * FIX - Tracking of PaymentMethodSearchItem.
+* FIX - Payment processor - visual attach bug
 
 ## VERSION 4.0.4
 _25_09_2018_

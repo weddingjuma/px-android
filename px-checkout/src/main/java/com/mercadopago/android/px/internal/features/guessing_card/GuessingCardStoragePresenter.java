@@ -129,15 +129,6 @@ public class GuessingCardStoragePresenter extends GuessingCardPresenter {
     }
 
     @Override
-    public void onPaymentMethodSet(final PaymentMethod paymentMethod) {
-        setPaymentMethod(paymentMethod);
-        configureWithSettings(paymentMethod);
-        loadIdentificationTypes(paymentMethod);
-        getView().setPaymentMethod(paymentMethod);
-        getView().resolvePaymentMethodSet(paymentMethod);
-    }
-
-    @Override
     public void createToken() {
         gatewayService.createToken(null, accessToken, mCardToken)
             .enqueue(new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {

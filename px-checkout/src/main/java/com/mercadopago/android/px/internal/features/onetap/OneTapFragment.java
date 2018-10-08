@@ -168,19 +168,10 @@ public class OneTapFragment extends Fragment implements OneTap.View {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_OK) {
-
-            getActivity().getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    presenter.onTokenResolved();
-                }
-            });
-
-        } else if (requestCode == REQ_CODE_PAYMENT_PROCESSOR && getActivity() != null) {
-            ((CheckoutActivity) getActivity()).resolveCodes(resultCode, data);
+            presenter.onTokenResolved();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -334,6 +325,4 @@ public class OneTapFragment extends Fragment implements OneTap.View {
             .setCard(card)
             .startActivity(this, REQ_CODE_CARD_VAULT);
     }
-
-
 }

@@ -51,7 +51,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     private ExplodingFragment explodingFragment;
     private Toolbar toolbar;
     private OneTapView oneTapView;
-    private boolean explodingProcess;
 
     @SuppressWarnings("TypeMayBeWeakened")
     public static OneTapFragment getInstance(@NonNull final OneTapModel oneTapModel) {
@@ -74,9 +73,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
         super.onResume();
         final OneTapModel model = (OneTapModel) getArguments().getSerializable(ARG_ONE_TAP_MODEL);
         presenter.onViewResumed(model);
-        if (explodingFragment != null && explodingFragment.isAdded() && !explodingProcess) {
-            cancelLoading();
-        }
     }
 
     @Override
@@ -168,19 +164,10 @@ public class OneTapFragment extends Fragment implements OneTap.View {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_OK) {
-
-            getActivity().getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    presenter.onTokenResolved();
-                }
-            });
-
-        } else if (requestCode == REQ_CODE_PAYMENT_PROCESSOR && getActivity() != null) {
-            ((CheckoutActivity) getActivity()).resolveCodes(resultCode, data);
+            presenter.onTokenResolved();
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -241,7 +228,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
 
     @Override
     public void showPaymentResult(@NonNull final IPayment paymentResult) {
-        explodingProcess = false;
         //TODO refactor
         if (getActivity() != null) {
             //TODO refactor
@@ -280,9 +266,8 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     public void cancelLoading() {
         showToolbar();
         oneTapView.showButton();
-        explodingProcess = false;
         restoreStatusBar();
-        if (explodingFragment != null) {
+        if (explodingFragment != null && explodingFragment.isAdded()) {
             getChildFragmentManager().beginTransaction().remove(explodingFragment).commitNow();
         }
     }
@@ -325,7 +310,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
             .replace(R.id.exploding_frame, explodingFragment)
             .commitNowAllowingStateLoss();
         childFragmentManager.executePendingTransactions();
-        explodingProcess = true;
     }
 
     @Override
@@ -334,6 +318,4 @@ public class OneTapFragment extends Fragment implements OneTap.View {
             .setCard(card)
             .startActivity(this, REQ_CODE_CARD_VAULT);
     }
-
-
 }

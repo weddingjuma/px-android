@@ -5,6 +5,11 @@ _04_10_2018_
 * FIX - Tracking of PaymentMethodSearchItem.
 * ENHANCEMENT - Standalone Card Association
 
+## VERSION 4.0.6
+_08_10_2018_
+
+* FIX - Double congrats one tap.
+
 ## VERSION 4.0.5
 
 * FIX - Show app bar when tap back from CVV screen.

@@ -1,4 +1,9 @@
 ## VERSION 4.0.5
+_08_10_2018_
+
+* FIX - Double congrats one tap.
+
+## VERSION 4.0.5
 _03_10_2018_
 
 * FIX - Show app bar when tap back from CVV screen.

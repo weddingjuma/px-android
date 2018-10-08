@@ -167,12 +167,10 @@ public class OneTapFragment extends Fragment implements OneTap.View {
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_OK) {
             presenter.onTokenResolved();
-        } else if (requestCode == REQ_CODE_PAYMENT_PROCESSOR && getActivity() != null) {
-            ((CheckoutActivity) getActivity()).resolveCodes(resultCode, data);
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
         }
     }
 

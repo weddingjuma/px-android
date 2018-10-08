@@ -51,7 +51,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     private ExplodingFragment explodingFragment;
     private Toolbar toolbar;
     private OneTapView oneTapView;
-    private boolean explodingProcess;
 
     @SuppressWarnings("TypeMayBeWeakened")
     public static OneTapFragment getInstance(@NonNull final OneTapModel oneTapModel) {
@@ -74,9 +73,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
         super.onResume();
         final OneTapModel model = (OneTapModel) getArguments().getSerializable(ARG_ONE_TAP_MODEL);
         presenter.onViewResumed(model);
-        if (explodingFragment != null && explodingFragment.isAdded() && !explodingProcess) {
-            cancelLoading();
-        }
     }
 
     @Override
@@ -232,7 +228,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
 
     @Override
     public void showPaymentResult(@NonNull final IPayment paymentResult) {
-        explodingProcess = false;
         //TODO refactor
         if (getActivity() != null) {
             //TODO refactor
@@ -271,9 +266,8 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     public void cancelLoading() {
         showToolbar();
         oneTapView.showButton();
-        explodingProcess = false;
         restoreStatusBar();
-        if (explodingFragment != null) {
+        if (explodingFragment != null && explodingFragment.isAdded()) {
             getChildFragmentManager().beginTransaction().remove(explodingFragment).commitNow();
         }
     }
@@ -316,7 +310,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
             .replace(R.id.exploding_frame, explodingFragment)
             .commitNowAllowingStateLoss();
         childFragmentManager.executePendingTransactions();
-        explodingProcess = true;
     }
 
     @Override

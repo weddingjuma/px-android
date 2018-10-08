@@ -11,7 +11,6 @@ import com.mercadopago.android.px.testcheckout.pages.NoCheckoutPage;
 import com.mercadopago.android.px.testcheckout.pages.OneTapPage;
 import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
 import com.mercadopago.android.px.testcheckout.pages.PendingPage;
-import com.mercadopago.android.px.testcheckout.pages.RejectedPage;
 import com.mercadopago.android.px.testcheckout.pages.SecurityCodeToResultsPage;
 
 public class OneTapTestFlow extends TestFlow {

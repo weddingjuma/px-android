@@ -28,6 +28,16 @@ public class OneTapPage extends PageObject<CheckoutValidator> {
         return new SecurityCodeToResultsPage(validator);
     }
 
+    public CongratsPage pressConfirmButtonToCongratsPage() {
+        onView(withId(R.id.px_button_primary)).perform(click());
+        return new CongratsPage(validator);
+    }
+
+    public RejectedPage pressConfirmButtonToRejectedPage() {
+        onView(withId(R.id.px_button_primary)).perform(click());
+        return new RejectedPage(validator);
+    }
+
     @Override
     public OneTapPage validate(final CheckoutValidator validator) {
         validator.validate(this);

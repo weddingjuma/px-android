@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.ReviewAndConfirmConfiguration;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.MercadoPagoBaseActivity;
@@ -67,6 +69,7 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     private static final String EXTRA_PUBLIC_KEY = "extra_public_key";
     private static final String EXTRA_ITEMS = "extra_items";
     private static final String EXTRA_DISCOUNT_TERMS_AND_CONDITIONS = "extra_discount_terms_and_conditions";
+    private static final String TAG_DYNAMIC_DIALOG = "tag_dynamic_dialog";
 
     /* default */ ReviewAndConfirmPresenter presenter;
 
@@ -125,7 +128,12 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
         initializeViews();
         final Session session = Session.getSession(this);
         presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
-            session.getBusinessModelMapper());
+            session.getBusinessModelMapper(),
+            session.getConfigurationModule()
+                .getPaymentSettings()
+                .getAdvancedConfiguration()
+                .getDynamicDialogConfiguration(),
+            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference());
         presenter.attachView(this);
 
         if (savedInstanceState == null) {
@@ -158,8 +166,8 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
 
     @Override
     protected void onResume() {
-        presenter.attachView(this);
         super.onResume();
+        presenter.onViewResumed(this);
     }
 
     @Override
@@ -183,7 +191,6 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
                     resolveCardVaultRequest(resultCode, data);
                 }
             });
-
             break;
         case ErrorUtil.ERROR_REQUEST_CODE:
             resolveErrorRequest(resultCode, data);
@@ -310,9 +317,12 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
             final TermsAndConditionsModel discountTermsAndConditions =
                 extras.getParcelable(EXTRA_DISCOUNT_TERMS_AND_CONDITIONS);
 
+            final Session session = Session.getSession(this);
+            final AdvancedConfiguration advancedConfiguration = session.getConfigurationModule().getPaymentSettings()
+                .getAdvancedConfiguration();
+
             final ReviewAndConfirmConfiguration reviewAndConfirmConfiguration =
-                Session.getSession(this).getConfigurationModule().getPaymentSettings()
-                    .getAdvancedConfiguration().getReviewAndConfirmConfiguration();
+                advancedConfiguration.getReviewAndConfirmConfiguration();
 
             Tracker.trackReviewAndConfirmScreen(getApplicationContext(),
                 paymentModel);
@@ -320,6 +330,7 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
                 paymentModel,
                 summaryModel,
                 reviewAndConfirmConfiguration,
+                advancedConfiguration.getDynamicFragmentConfiguration(),
                 itemsModel, discountTermsAndConditions);
         }
 
@@ -546,5 +557,13 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
         MeliSnackbar.make(floatingConfirmLayout, error.getMessage(), Snackbar.LENGTH_LONG,
             MeliSnackbar.SnackbarType.ERROR).show();
         Tracker.trackError(getApplicationContext(), error);
+    }
+
+    @Override
+    public void showDynamicDialog(@NonNull final DynamicDialogCreator creator,
+        @NonNull final DynamicDialogCreator.CheckoutData checkoutData) {
+        if (creator.shouldShowDialog(this, checkoutData)) {
+            creator.create(this, checkoutData).show(getSupportFragmentManager(), TAG_DYNAMIC_DIALOG);
+        }
     }
 }

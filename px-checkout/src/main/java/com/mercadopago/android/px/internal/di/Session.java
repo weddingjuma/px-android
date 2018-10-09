@@ -223,7 +223,8 @@ public final class Session extends ApplicationModule
                 getContext(),
                 new EscManagerImp(getMercadoPagoESC()),
                 getTokenRepository(),
-                getInstructionsRepository());
+                getInstructionsRepository(),
+                getGroupsRepository());
         }
 
         return paymentRepository;

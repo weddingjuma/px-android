@@ -6,7 +6,6 @@ import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.viewmodel.OneTapModel;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.GenericPayment;
@@ -18,20 +17,17 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 /* default */ class OneTapPresenter extends MvpPresenter<OneTap.View, ResourcesProvider>
     implements OneTap.Actions {
 
-    @NonNull private final OneTapModel model;
     @NonNull private final PaymentRepository paymentRepository;
     private final ExplodeDecoratorMapper explodeDecoratorMapper;
 
-    /* default */ OneTapPresenter(@NonNull final OneTapModel model,
-        @NonNull final PaymentRepository paymentRepository) {
-        this.model = model;
+    /* default */ OneTapPresenter(@NonNull final PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
     }
 
     @Override
     public void confirmPayment() {
-        getView().trackConfirm(model);
+        getView().trackConfirm();
         getView().hideToolbar();
 
         if (paymentRepository.isExplodingAnimationCompatible()) {
@@ -41,7 +37,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
         // TODO improve: This was added because onetap can detach this listener on its OnDestroy
         paymentRepository.attach(this);
-        paymentRepository.startOneTapPayment(model);
+        paymentRepository.startOneTapPayment();
     }
 
     @Override
@@ -51,8 +47,8 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
     @Override
     public void onAmountShowMore() {
-        getView().trackModal(model);
-        getView().showDetailModal(model);
+        getView().trackModal();
+        getView().showDetailModal();
     }
 
     public void cancel() {
@@ -128,7 +124,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
     @Override
     public void onCvvRequired(@NonNull final Card card) {
         getView().cancelLoading();
-        getView().showCardFlow(model, card);
+        getView().showCardFlow(card);
     }
 
     @Override
@@ -137,8 +133,8 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
     }
 
     @Override
-    public void onViewResumed(final OneTapModel model) {
-        getView().updateViews(model);
+    public void onViewResumed() {
+        getView().updateViews();
         paymentRepository.attach(this);
 
         //If a payment was attempted, the exploding fragment is still visible when we go back to one tap fragment.

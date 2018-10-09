@@ -23,7 +23,6 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
-import com.mercadopago.android.px.internal.viewmodel.OneTapModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Campaign;
@@ -230,7 +229,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
         if (state.isOneTap) {
             getView().hideProgress();
-            getView().showOneTap(OneTapModel.from(paymentMethodSearch, paymentSettingRepository));
+            getView().showOneTap();
         } else {
             getView().showPaymentMethodSelection();
         }

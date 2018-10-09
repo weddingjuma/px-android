@@ -14,7 +14,6 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
-import com.mercadopago.android.px.internal.viewmodel.OneTapModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
 import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
@@ -526,7 +525,7 @@ public class CheckoutPresenterTest {
         }
 
         @Override
-        public void showOneTap(@NonNull final OneTapModel oneTapModel) {
+        public void showOneTap() {
             //Do nothing
         }
 

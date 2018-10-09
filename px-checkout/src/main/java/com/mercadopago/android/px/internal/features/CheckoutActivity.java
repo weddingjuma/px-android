@@ -27,10 +27,9 @@ import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
-import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
-import com.mercadopago.android.px.internal.viewmodel.OneTapModel;
+import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.ActionEvent;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
@@ -172,23 +171,21 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     }
 
     @Override
-    public void showOneTap(@NonNull final OneTapModel oneTapModel) {
+    public void showOneTap() {
 
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-        final OneTapFragment oneTapFragment;
-        if (fragment != null && fragment instanceof OneTapFragment) {
-            oneTapFragment = (OneTapFragment) fragment;
-        } else {
-            oneTapFragment = OneTapFragment.getInstance(oneTapModel);
+
+        Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
+
+        if (fragment == null) {
+            fragment = OneTapFragment.getInstance();
         }
 
         getSupportFragmentManager()
             .beginTransaction()
             .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
-            .replace(R.id.one_tap_fragment, oneTapFragment, TAG_ONETAP_FRAGMENT)
+            .replace(R.id.one_tap_fragment, fragment, TAG_ONETAP_FRAGMENT)
             .commitNowAllowingStateLoss();
-        getSupportFragmentManager().executePendingTransactions();
     }
 
     @Override

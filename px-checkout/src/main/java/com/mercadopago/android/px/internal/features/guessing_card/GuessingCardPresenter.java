@@ -124,10 +124,12 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     protected void trackCardIdentification() {
+        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
+            TrackingUtil.CARD_HOLDER_IDENTIFICATION);
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(TrackingUtil.SCREEN_ID_IDENTIFICATION)
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM_IDENTIFICATION_NUMBER)
+            .setScreenId(screenId)
+            .setScreenName(screenId)
             .addProperty(TrackingUtil.PROPERTY_PAYMENT_TYPE_ID,
                 getPaymentTypeId() != null ? getPaymentTypeId() : "null")
             .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID, getPaymentMethod() != null ?
@@ -137,45 +139,47 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     }
 
     protected void trackCardNumber() {
+        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
+            TrackingUtil.CARD_NUMBER);
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(
-                String.format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
-                    TrackingUtil.CARD_NUMBER))
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM_NUMBER)
+            .setScreenId(screenId)
+            .setScreenName(screenId)
             .build();
         getTrackingContext().trackEvent(event);
     }
 
     protected void trackCardHolderName() {
+        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
+            TrackingUtil.CARD_HOLDER_NAME);
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(
-                String.format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
-                    TrackingUtil.CARD_HOLDER_NAME))
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM_NAME)
+            .setScreenId(screenId)
+            .setScreenName(screenId)
             .build();
         getTrackingContext().trackEvent(event);
     }
 
     protected void trackCardExpiryDate() {
+        final String screenId = String
+            .format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
+                TrackingUtil.CARD_EXPIRATION_DATE);
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(String
-                .format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
-                    TrackingUtil.CARD_EXPIRATION_DATE))
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM_EXPIRY)
+            .setScreenId(screenId)
+            .setScreenName(screenId)
             .build();
         getTrackingContext().trackEvent(event);
     }
 
     protected void trackCardSecurityCode() {
+        final String screenId = String
+            .format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
+                TrackingUtil.CARD_SECURITY_CODE);
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(String
-                .format(Locale.US, "%s%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, getPaymentTypeId(),
-                    TrackingUtil.CARD_SECURITY_CODE))
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM_CVV)
+            .setScreenId(screenId)
+            .setScreenName(screenId)
             .build();
         getTrackingContext().trackEvent(event);
     }
@@ -696,17 +700,6 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
         mSecurityCodeLocation = CardView.CARD_SIDE_BACK;
         mIsSecurityCodeRequired = true;
         mBin = "";
-    }
-
-    public void trackScreen() {
-        final String paymentTypeId = getPaymentTypeId();
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(String.format(Locale.US, "%s%s", TrackingUtil.SCREEN_ID_CARD_FORM, paymentTypeId))
-            .setScreenName(TrackingUtil.SCREEN_NAME_CARD_FORM + " " + paymentTypeId)
-            .build();
-
-        getTrackingContext().trackEvent(event);
     }
 
     public void resolvePaymentMethodCleared() {

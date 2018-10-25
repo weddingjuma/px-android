@@ -155,7 +155,7 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
         final TermsAndConditionsComponent termsAndConditionsComponent =
             new TermsAndConditionsComponent(component.props.mercadoPagoTermsAndConditionsModel);
 
-        final View discountTermsAndConditionsView = termsAndConditionsComponent.render(parent);
-        parent.addView(discountTermsAndConditionsView);
+        final View termsAndConditionsView = termsAndConditionsComponent.render(parent);
+        parent.addView(termsAndConditionsView);
     }
 }

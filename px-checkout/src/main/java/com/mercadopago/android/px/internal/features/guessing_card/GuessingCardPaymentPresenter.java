@@ -67,7 +67,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void initialize() {
         getView().onValidStart();
-        trackScreen();
         initializeCardToken();
         resolveBankDeals();
         getPaymentMethods();

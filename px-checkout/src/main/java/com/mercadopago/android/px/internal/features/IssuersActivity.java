@@ -30,6 +30,7 @@ import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -66,8 +67,6 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mPresenter =
-            new IssuersPresenter(Session.getSession(this).getConfigurationModule().getUserSelectionRepository());
         getActivityParameters();
 
         mPresenter.attachView(this);
@@ -91,6 +90,20 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
             issuers = JsonUtil.getInstance().getGson().fromJson(getIntent().getStringExtra("issuers"), listType);
         } catch (final Exception ex) {
             issuers = null;
+        }
+
+        final PaymentMethod paymentMethod =
+            JsonUtil.getInstance().fromJson(getIntent().getStringExtra("paymentMethod"), PaymentMethod.class);
+
+        if (paymentMethod != null) {
+            // Comes from card storage flow
+            mPresenter =
+                new IssuersPresenter(paymentMethod, true);
+        } else {
+            mPresenter =
+                new IssuersPresenter(
+                    Session.getSession(this).getConfigurationModule().getUserSelectionRepository().getPaymentMethod(),
+                    false);
         }
 
         mPresenter.setCardInfo(JsonUtil.getInstance().fromJson(getIntent().getStringExtra("cardInfo"), CardInfo.class));
@@ -330,8 +343,18 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
     }
 
     @Override
-    public void finishWithResult() {
+    public void finishWithResult(final Issuer issuer) {
         setResult(RESULT_OK);
+        Session.getSession(this).getConfigurationModule().getUserSelectionRepository().select(issuer);
+        finish();
+        animateTransitionSlideInSlideOut();
+    }
+
+    @Override
+    public void finishWithResultForCardStorage(final Long issuerId) {
+        final Intent intent = new Intent();
+        intent.putExtra("issuerId", issuerId);
+        setResult(RESULT_OK, intent);
         finish();
         animateTransitionSlideInSlideOut();
     }
@@ -342,7 +365,7 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
 
     @Override
     public void onBackPressed() {
-        Intent returnIntent = new Intent();
+        final Intent returnIntent = new Intent();
         returnIntent.putExtra("backButtonPressed", true);
         setResult(RESULT_CANCELED, returnIntent);
         finish();

@@ -176,6 +176,11 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     @Override
+    public void onIssuerSelected(final Long issuerId) {
+        // Empty body, this behavior only exists on CardStoragePresenter
+    }
+
+    @Override
     public void onSaveInstanceState(final Bundle outState, final String cardSideState, final boolean lowResActive) {
         if (getPaymentMethod() != null) {
             super.onSaveInstanceState(outState, cardSideState, lowResActive);

@@ -70,6 +70,7 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
     protected static final String IDENTIFICATION_TYPES_LIST_BUNDLE = "mIdTypesList";
     protected static final String PAYMENT_RECOVERY_BUNDLE = "mPaymentRecovery";
     protected static final String LOW_RES_BUNDLE = "mLowRes";
+    protected static final String TOKEN_BUNDLE = "tokenBundle";
     //Card Info
     protected String mBin;
     protected boolean mShowPaymentTypes;
@@ -761,6 +762,8 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
 
     public abstract List<BankDeal> getBankDealsList();
 
+    public abstract void onIssuerSelected(Long issuerId);
+
     public void onSaveInstanceState(final Bundle outState, final String cardSideState,
         final boolean lowResActive) {
         outState.putString(CARD_SIDE_STATE_BUNDLE, cardSideState);
@@ -783,6 +786,7 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
         outState.putString(IDENTIFICATION_TYPES_LIST_BUNDLE,
             JsonUtil.getInstance().toJson(getIdentificationTypes()));
         outState.putBoolean(LOW_RES_BUNDLE, lowResActive);
+        outState.putString(TOKEN_BUNDLE, JsonUtil.getInstance().toJson(getToken()));
         getView().clearSecurityCodeEditText();
     }
 
@@ -809,6 +813,9 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
                 setCardholderName(savedInstanceState.getString(CARD_NAME_BUNDLE));
                 setExpiryMonth(savedInstanceState.getString(EXPIRY_MONTH_BUNDLE));
                 setExpiryYear(savedInstanceState.getString(EXPIRY_YEAR_BUNDLE));
+                final Token token = JsonUtil.getInstance()
+                    .fromJson(savedInstanceState.getString(TOKEN_BUNDLE), Token.class);
+                setToken(token);
                 final String idNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
                 setIdentificationNumber(idNumber);
                 final Identification identification = JsonUtil.getInstance()

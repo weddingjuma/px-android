@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -70,13 +71,11 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     private static final String EXTRA_ITEMS = "extra_items";
     private static final String EXTRA_DISCOUNT_TERMS_AND_CONDITIONS = "extra_discount_terms_and_conditions";
     private static final String TAG_DYNAMIC_DIALOG = "tag_dynamic_dialog";
+    private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
 
     /* default */ ReviewAndConfirmPresenter presenter;
 
     private View confirmButton;
-
-    private ExplodingFragment explodingFragment;
-
     private View floatingConfirmLayout;
 
     //TODO refactor.
@@ -515,31 +514,36 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
                 getResources().getString(R.string.px_processing_payment_button),
                 paymentTimeout);
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        explodingFragment = ExplodingFragment.newInstance(explodeParams);
+        final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
         supportFragmentManager.beginTransaction()
-            .replace(R.id.exploding_frame, explodingFragment)
+            .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
             .commitAllowingStateLoss();
         supportFragmentManager.executePendingTransactions();
     }
 
     @Override
     public void cancelLoadingButton() {
-        if (explodingFragment != null) {
-            final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
+
+        if (fragment != null && fragment.isAdded()) {
             supportFragmentManager
                 .beginTransaction()
-                .remove(explodingFragment)
+                .remove(fragment)
                 .commitAllowingStateLoss();
-            supportFragmentManager.executePendingTransactions();
-            explodingFragment = null;
         }
     }
 
     @Override
-    public void showLoadingFor(@NonNull final ExplodeDecorator decorator,
+    public void finishLoading(@NonNull final ExplodeDecorator decorator,
         @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener) {
-        getSupportFragmentManager().executePendingTransactions();
-        explodingFragment.finishLoading(decorator, explodingAnimationListener);
+
+        final FragmentManager supportFragmentManager = getSupportFragmentManager();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
+        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded()) {
+            final ExplodingFragment explodingFragment = (ExplodingFragment) fragment;
+            explodingFragment.finishLoading(decorator, explodingAnimationListener);
+        }
     }
 
     @Override

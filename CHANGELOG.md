@@ -1,3 +1,9 @@
+## VERSION 4.2.1
+_30_10_2018_
+
+* FIX - Crash NPE when processing payment in background
+* FIX - Crash on recovery payment
+
 ## VERSION 4.2.0
 _25_10_2018_
 

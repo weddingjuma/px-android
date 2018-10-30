@@ -182,6 +182,7 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
      */
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
         case REQ_CARD_VAULT:
             getWindow().getDecorView().post(new Runnable() {
@@ -192,13 +193,17 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
             });
             break;
         case ErrorUtil.ERROR_REQUEST_CODE:
-            resolveErrorRequest(resultCode, data);
+            getWindow().getDecorView().post(new Runnable() {
+                @Override
+                public void run() {
+                    resolveErrorRequest(resultCode, data);
+                }
+            });
             break;
         default:
             //Do nothing
             break;
         }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     private void initializeViews() {

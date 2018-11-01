@@ -148,23 +148,29 @@ public class ExplodingFragment extends Fragment {
         getActivity().getWindow().getDecorView().post(new Runnable() {
             @Override
             public void run() {
-                // now finish the remaining loading progress
-                final int progress = progressBar.getProgress();
-                animator.cancel();
-                animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
-                animator.setInterpolator(new AccelerateDecelerateInterpolator());
-                animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
+                // if exploding fragment is attached to activity
+                if (isAdded()) {
+                    // now finish the remaining loading progress
+                    final int progress = progressBar.getProgress();
+                    animator.cancel();
+                    animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
+                    animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                    animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
 
-                animator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(final Animator animation) {
-                        animator.removeListener(this);
-                        if (isAdded()) {
-                            createResultAnim(listener);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(final Animator animation) {
+                            animator.removeListener(this);
+                            if (isAdded()) {
+                                createResultAnim(listener);
+                            }
                         }
-                    }
-                });
-                animator.start();
+                    });
+                    animator.start();
+                } else {
+                    // when not attached then show payment result without animations
+                    listener.onAnimationFinished();
+                }
             }
         });
 

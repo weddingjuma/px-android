@@ -1,3 +1,8 @@
+## VERSION 4.1.3
+_01_11_2018_
+
+* FIX - Crash NPE on exploding button
+
 ## VERSION 4.1.2
 _31_10_2018_
 

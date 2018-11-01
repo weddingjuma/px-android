@@ -43,12 +43,12 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     private static final String ARG_ONE_TAP_MODEL = "ARG_ONETAP_MODEL";
     private static final int REQ_CODE_CARD_VAULT = 0x999;
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 0x123;
+    private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING";
 
     private CallBack callback;
 
     /* default */ OneTapPresenter presenter;
 
-    private ExplodingFragment explodingFragment;
     private Toolbar toolbar;
     private OneTapView oneTapView;
 
@@ -255,9 +255,12 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     }
 
     @Override
-    public void showLoadingFor(@NonNull final ExplodeDecorator params,
+    public void finishLoading(@NonNull final ExplodeDecorator params,
         @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener) {
-        if (explodingFragment != null && explodingFragment.isAdded()) {
+        final FragmentManager supportFragmentManager = getChildFragmentManager();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
+        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded()) {
+            final ExplodingFragment explodingFragment = (ExplodingFragment) fragment;
             explodingFragment.finishLoading(params, explodingAnimationListener);
         }
     }
@@ -267,8 +270,10 @@ public class OneTapFragment extends Fragment implements OneTap.View {
         showToolbar();
         oneTapView.showButton();
         restoreStatusBar();
-        if (explodingFragment != null && explodingFragment.isAdded()) {
-            getChildFragmentManager().beginTransaction().remove(explodingFragment).commitNow();
+        final FragmentManager supportFragmentManager = getChildFragmentManager();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
+        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded()) {
+            supportFragmentManager.beginTransaction().remove(fragment).commitNowAllowingStateLoss();
         }
     }
 
@@ -304,10 +309,10 @@ public class OneTapFragment extends Fragment implements OneTap.View {
             getContext().getResources().getString(R.string.px_processing_payment_button),
             paymentTimeout);
 
-        explodingFragment = ExplodingFragment.newInstance(explodeParams);
+        final Fragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
         final FragmentManager childFragmentManager = getChildFragmentManager();
         childFragmentManager.beginTransaction()
-            .replace(R.id.exploding_frame, explodingFragment)
+            .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
             .commitNowAllowingStateLoss();
         childFragmentManager.executePendingTransactions();
     }

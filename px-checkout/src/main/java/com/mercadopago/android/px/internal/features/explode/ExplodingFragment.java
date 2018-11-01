@@ -143,23 +143,31 @@ public class ExplodingFragment extends Fragment {
         @NonNull final ExplodingAnimationListener listener) {
 
         this.explodeDecorator = explodeDecorator;
-        // now finish the remaining loading progress
-        final int progress = progressBar.getProgress();
-        animator.cancel();
-        animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
-        animator.setInterpolator(new AccelerateDecelerateInterpolator());
-        animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
 
-        animator.addListener(new AnimatorListenerAdapter() {
+        // This is added because the view is still not created when the app comes back from background
+        getActivity().getWindow().getDecorView().post(new Runnable() {
             @Override
-            public void onAnimationEnd(final Animator animation) {
-                animator.removeListener(this);
-                if (isAdded()) {
-                    createResultAnim(listener);
-                }
+            public void run() {
+                // now finish the remaining loading progress
+                final int progress = progressBar.getProgress();
+                animator.cancel();
+                animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
+                animator.setInterpolator(new AccelerateDecelerateInterpolator());
+                animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
+
+                animator.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(final Animator animation) {
+                        animator.removeListener(this);
+                        if (isAdded()) {
+                            createResultAnim(listener);
+                        }
+                    }
+                });
+                animator.start();
             }
         });
-        animator.start();
+
     }
 
     /**

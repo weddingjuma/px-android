@@ -165,7 +165,12 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_OK) {
-            presenter.onTokenResolved();
+            getActivity().getWindow().getDecorView().post(new Runnable() {
+                @Override
+                public void run() {
+                    presenter.onTokenResolved();
+                }
+            });
         } else {
             super.onActivityResult(requestCode, resultCode, data);
         }

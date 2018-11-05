@@ -12,6 +12,17 @@ _25_10_2018_
 * ENHANCEMENT - tracking screen's names and paths unified.
 * ENHANCEMENT/FIX - card addition flow now supports installments and ESC. 
 
+## VERSION 4.1.3
+_01_11_2018_
+
+* FIX - Crash NPE on exploding button
+
+## VERSION 4.1.2
+_31_10_2018_
+
+* FIX - Crash NPE when processing payment in background
+* FIX - Crash on recovery payment
+
 ## VERSION 4.1.0
 _04_10_2018_
 

@@ -144,10 +144,10 @@ public class ExplodingFragment extends Fragment {
 
         this.explodeDecorator = explodeDecorator;
 
+        // This is added because the view is still not created when the app comes back from background
         getActivity().getWindow().getDecorView().post(new Runnable() {
             @Override
             public void run() {
-
                 // if exploding fragment is attached to activity
                 if (isAdded()) {
                     // now finish the remaining loading progress

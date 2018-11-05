@@ -481,7 +481,7 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     }
 
     //TODO remove duplication
-    private void resolveErrorRequest(final int resultCode, final Intent data) {
+    void resolveErrorRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             presenter.recoverFromFailure();
         } else {
@@ -492,7 +492,7 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     }
 
     //TODO remove duplication
-    private void resolveCardVaultRequest(final int resultCode, final Intent data) {
+    void resolveCardVaultRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             presenter.onCardFlowResponse();
         } else {
@@ -530,19 +530,17 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     public void cancelLoadingButton() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-
         if (fragment != null && fragment.isAdded()) {
             supportFragmentManager
                 .beginTransaction()
                 .remove(fragment)
-                .commitAllowingStateLoss();
+                .commitNowAllowingStateLoss();
         }
     }
 
     @Override
     public void finishLoading(@NonNull final ExplodeDecorator decorator,
         @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener) {
-
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
         if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded()) {

@@ -250,7 +250,6 @@ public class OneTapFragment extends Fragment implements OneTap.View {
     @Override
     public void finishLoading(@NonNull final ExplodeDecorator params,
         @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener) {
-
         final FragmentManager childFragmentManager = getChildFragmentManager();
         final Fragment fragment = childFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
         if (fragment != null && fragment.isAdded() && fragment instanceof ExplodingFragment) {

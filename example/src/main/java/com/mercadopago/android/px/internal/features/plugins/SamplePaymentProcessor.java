@@ -56,16 +56,20 @@ public class SamplePaymentProcessor implements PaymentProcessor {
     @Nullable
     @Override
     public Bundle getFragmentBundle(@NonNull final CheckoutData data, @NonNull final Context context) {
-        return new Bundle();
+        final Bundle bundle = new Bundle();
+        // This is just a sample, you should't do this, you must process the payment inside the fragment.
+        if (iPayment instanceof BusinessPayment) {
+            bundle.putSerializable(SamplePaymentProcessorFragment.ARG_BUSINESS, (BusinessPayment) iPayment);
+        } else if (iPayment instanceof GenericPayment) {
+            bundle.putSerializable(SamplePaymentProcessorFragment.ARG_GENERIC, (GenericPayment) iPayment);
+        }
+        return bundle;
     }
 
     @Nullable
     @Override
     public Fragment getFragment(@NonNull final CheckoutData data,
         @NonNull final Context context) {
-        final SamplePaymentProcessorFragment samplePaymentProcessorFragment = new SamplePaymentProcessorFragment();
-        // This is just a sample, you should't do this, you must process the payment inside the fragment.
-        samplePaymentProcessorFragment.setPayment(iPayment);
-        return samplePaymentProcessorFragment;
+        return new SamplePaymentProcessorFragment();
     }
 }

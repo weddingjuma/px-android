@@ -10,21 +10,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.model.BusinessPayment;
-import com.mercadopago.android.px.model.GenericPayment;
-import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.example.R;
 
 public class SamplePaymentProcessorFragment extends Fragment {
 
     private static final long CONST_TIME_MILLIS = 2000;
-    @Nullable
-    private IPayment payment;
+    public static final String ARG_BUSINESS = "ARG_BUSINESS";
+    public static final String ARG_GENERIC = "ARG_GENERIC";
+
     @Nullable
     private PaymentProcessor.OnPaymentListener paymentListener;
-
-    public void setPayment(@Nullable final IPayment payment) {
-        this.payment = payment;
-    }
 
     @Nullable
     @Override
@@ -48,15 +43,18 @@ public class SamplePaymentProcessorFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+    public void onResume() {
+        super.onResume();
         getView().postDelayed(new Runnable() {
             @Override
             public void run() {
-                if (paymentListener != null && payment != null) {
-                    if (payment instanceof BusinessPayment) {
-                        paymentListener.onPaymentFinished((BusinessPayment) payment);
-                    } else if (payment instanceof GenericPayment) {
-                        paymentListener.onPaymentFinished((GenericPayment) payment);
+                if (paymentListener != null) {
+                    if (getArguments().containsKey(ARG_BUSINESS)) {
+                        paymentListener
+                            .onPaymentFinished((BusinessPayment) getArguments().getSerializable(ARG_BUSINESS));
+                    } else if (getArguments().containsKey(ARG_GENERIC)) {
+                        paymentListener
+                            .onPaymentFinished((BusinessPayment) getArguments().getSerializable(ARG_GENERIC));
                     }
                 }
             }

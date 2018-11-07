@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.view.ActionsListener;
+import com.mercadopago.android.px.internal.view.CopyAction;
 import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
 import com.mercadopago.android.px.internal.view.RecoverPaymentAction;
@@ -24,7 +25,6 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
-import java.math.BigDecimal;
 import java.util.List;
 
 /* default */ class PaymentResultPresenter extends MvpPresenter<PaymentResultPropsView, PaymentResultProvider>
@@ -210,6 +210,8 @@ import java.util.List;
             navigator.recoverPayment(originAction);
         } else if (action instanceof LinkAction) {
             navigator.openLink(((LinkAction) action).url);
+        } else if (action instanceof CopyAction) {
+            navigator.copyToClipboard(((CopyAction) action).content);
         }
     }
 

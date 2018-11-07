@@ -14,7 +14,6 @@ import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
-import java.math.BigDecimal;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -567,6 +566,11 @@ public class PaymentResultTest {
         @Override
         public void trackScreen(ScreenViewEvent event) {
 
+        }
+
+        @Override
+        public void copyToClipboard(@NonNull final String content) {
+            // Intentionally empty
         }
     }
 }

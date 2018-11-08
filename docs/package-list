@@ -4,7 +4,6 @@ com.mercadopago.android.px.model
 com.mercadopago.android.px.model.commission
 com.mercadopago.android.px.model.exceptions
 com.mercadopago.android.px.model.requests
-com.mercadopago.android.px.plugins
 com.mercadopago.android.px.preferences
 com.mercadopago.android.px.services
 com.mercadopago.android.px.testcheckout.assertions
@@ -13,7 +12,6 @@ com.mercadopago.android.px.testcheckout.idleresources
 com.mercadopago.android.px.testcheckout.input
 com.mercadopago.android.px.testcheckout.pages
 com.mercadopago.android.px.tracking
-com.mercadopago.android.px.viewmodel.mappers
 com.mercadopago.android.testlib
 com.mercadopago.android.testlib.assertions
 com.mercadopago.android.testlib.espresso

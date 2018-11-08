@@ -4,9 +4,15 @@ _31_10_2018_
  * FEATURE - Express checkout.
  * FEATURE - Skip Payer Information.
  * FEATURE - Pec Payment Method.
+ * FEATURE - Enabled MLU (Site Uruguay)
  * FEATURE - Interactive instructions in congrats.
  * FEATURE - Configurable titles for Payment Vault Screen.
- * FEATURE - Enabled MLU
+ * FEATURE - added new tracking listener PXTrackingListener for MeliData compatibility
+ ```java
+  void setListener(@NonNull final PXTrackingListener listener,
+              @NonNull final Map<String, ? extends Object> flowDetail, 
+              @Nullable final String flowName)
+```
 
 ## VERSION 4.2.1
 _30_10_2018_

@@ -23,6 +23,9 @@ public final class Sites {
     public static final Site USA = new Site("USA", "USD", "");
     public static final Site PERU =
         new Site("MPE", "PEN", "https://www.mercadopago.com.pe/ayuda/terminos-condiciones-uso_2483");
+    public static final Site URUGUAY =
+        new Site("MLU", "UYU", "https://www.mercadopago.com.uy/ayuda/terminos-y-condiciones-uy_2834");
+
 
     private static final Iterable<Site> SITES = Arrays.asList(
         ARGENTINA,
@@ -32,7 +35,8 @@ public final class Sites {
         COLOMBIA,
         VENEZUELA,
         USA,
-        PERU
+        PERU,
+        URUGUAY
     );
 
     private Sites() {

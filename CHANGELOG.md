@@ -5,6 +5,7 @@ _31_10_2018_
  * FEATURE - Pec Payment Method.
  * FEATURE - Interactive instructions in congrats.
  * FEATURE - Configurable titles for Payment Vault Screen.
+ * FEATURE - Enabled MLU
 
 ## VERSION 4.2.1
 _30_10_2018_

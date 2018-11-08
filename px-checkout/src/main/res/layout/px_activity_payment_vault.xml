@@ -40,8 +40,8 @@
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/mpsdkToolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/px_toolbar_height"
                     android:theme="@style/ToolbarTheme"
+                    android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin">
 
                     <com.mercadopago.android.px.internal.view.MPTextView

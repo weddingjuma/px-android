@@ -20,4 +20,6 @@ public abstract class Style extends ChainFormatter {
     }
 
     public abstract Spannable apply(final int holder, final Context context);
+
+    public abstract Spannable toSpannable();
 }

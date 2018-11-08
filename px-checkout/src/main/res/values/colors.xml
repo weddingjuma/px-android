@@ -18,7 +18,7 @@
     <color name="ui_components_primary_color_pressed">#157FAE</color>
 
     <color name="ui_components_android_color_accent">@color/ui_components_android_color_primary</color>
-    
+
     <color name="ui_components_primary_color_disabled">@color/ui_components_mid_grey_color</color>
 
     <color name="px_real_black">#000000</color>
@@ -120,7 +120,6 @@
     <color name="px_color_unlock_card">#FFF4C3</color>
 
     <!-- Summary -->
-
     <color name="px_default_disclaimer">#777777</color>
 
     <!-- Payment Result components -->
@@ -136,9 +135,7 @@
     <!-- Discounts Same color - Buttons / link -->
     <color name="px_discount_coupon">@color/ui_components_primary_color</color>
 
-
     <!-- Customized colors -->
-
     <!-- Toolbar and status bar default -->
     <color name="px_colorPrimary">@color/ui_components_android_color_primary</color>
     <color name="px_colorPrimaryDark">@color/ui_components_android_color_primary_dark</color>
@@ -169,5 +166,15 @@
     <color name="px_background_loading">@color/ui_components_white_color</color>
 
     <color name="px_paymentMethodTint">@color/px_colorPrimary</color>
+
+    <!-- ExpressMetadata checkout configurations-->
+    <color name="px_expressCheckoutTextColor">@color/px_white</color>
+    <color name="px_expressCheckoutTextColorDiscount">@color/px_white</color>
+    <color name="px_expressCheckoutImageDiscount">@color/px_white</color>
+    <color name="px_expressCheckoutTextColorDetail">#B3FFFFFF</color>
+    <color name="px_expressCheckoutSeparatorLine">#19000000</color>
+    <color name="px_expressCheckoutScrollIndicatorColor">@color/px_expressCheckoutSeparatorLine</color>
+    <color name="px_expressCheckoutChangePaymentMethodColor">#ffeae8e8</color>
+    <color name="px_expressCheckoutInstallmentTitle">#73000000</color>
 
 </resources>

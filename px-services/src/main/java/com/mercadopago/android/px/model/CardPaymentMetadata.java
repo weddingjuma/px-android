@@ -6,6 +6,10 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
+/**
+ * Old One tap Metadata
+ */
+@Deprecated
 public class CardPaymentMetadata implements Parcelable, Serializable {
 
     private String id;

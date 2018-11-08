@@ -11,6 +11,9 @@
     <!-- one tap -->
     <string name="px_payment_detail_title_modal">Detalhes</string>
     <string name="px_processing_payment_button">Processando o seu pagamento</string>
+    <string name="px_summary_detail_item_description">Sua compra</string>
+    <string name="px_total_in_mercado_pago">Total no Mercado Pago: %1$s</string>
+    <string name="px_pay">Pagar</string>
 
     <!-- Banks deals -->
     <string name="px_empty_bank_deals">Você não tem nenhuma promoção disponível</string>
@@ -37,6 +40,7 @@
 
     <!-- Payer Information -->
     <string name="px_payer_information_modify">Modificar</string>
+    <string name="px_select_installments_title">Selecione o parcelamento</string>
 
     <!-- Terms And Conditions -->
     <string name="px_terms_and_conditions_message">Ao pagar, declaro que sou maior de idade e aceito os</string>
@@ -202,6 +206,7 @@
 
     <!-- Review and Confirm -->
     <string name="px_change_payment">Alterar meio de pagamento</string>
+    <string name="px_add_new_card">Adicionar um novo cartão</string>
     <string name="px_review_off_text_default">Você pagará %1$s\n%2$s</string>
     <string name="px_review_off_text">Você pagará %1$s com\n%2$s</string>
     <string name="px_review_off_text_2">Você pagará %1$s no\n%2$s</string>

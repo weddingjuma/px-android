@@ -17,7 +17,7 @@ import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.MPAnimationUtils;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
-import com.mercadopago.android.px.internal.util.MPCardUIUtils;
+import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
@@ -136,7 +136,7 @@ public class FrontCardView {
         mCardContainer.setVisibility(View.VISIBLE);
     }
 
-    public View inflateInParent(ViewGroup parent, boolean attachToRoot) {
+    public View inflateInParent(final ViewGroup parent, final boolean attachToRoot) {
         mView = LayoutInflater.from(mContext)
             .inflate(R.layout.px_card_front, parent, attachToRoot);
         return mView;
@@ -256,8 +256,10 @@ public class FrontCardView {
     }
 
     public void transitionPaymentMethodSet() {
-        fadeInColor(MPCardUIUtils.getCardColor(mPaymentMethod, mContext));
-        int fontColor = MPCardUIUtils.getCardFontColor(mPaymentMethod, mContext);
+        final String pmId = mPaymentMethod == null ? "" : mPaymentMethod.getId();
+        fadeInColor(ResourceUtil.getCardColor(mPaymentMethod.getId(), mContext));
+        final int fontColor =
+            ResourceUtil.getCardFontColor(pmId, mContext);
         setFontColor(fontColor, mCardNumberTextView);
         setFontColor(fontColor, mCardholderNameTextView);
         setFontColor(fontColor, mCardExpiryMonthTextView);
@@ -265,7 +267,7 @@ public class FrontCardView {
         setFontColor(fontColor, mCardExpiryYearTextView);
         setFontColor(fontColor, mCardSecurityCodeTextView);
         enableEditingFontColor(mCardNumberTextView);
-        transitionImage(getCardImage(mPaymentMethod), true);
+        transitionImage(ResourceUtil.getCardImage(mContext, pmId), true);
     }
 
     public void fillCardHolderName(String cardholderName) {
@@ -278,14 +280,14 @@ public class FrontCardView {
 
     public void transitionClearPaymentMethod() {
         mPaymentMethod = null;
-        fadeOutColor(MPCardUIUtils.NEUTRAL_CARD_COLOR);
+        fadeOutColor(ResourceUtil.NEUTRAL_CARD_COLOR);
         clearCardImage();
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardNumberTextView);
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardholderNameTextView);
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardExpiryMonthTextView);
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardDateDividerTextView);
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardExpiryYearTextView);
-        setFontColor(MPCardUIUtils.FULL_TEXT_VIEW_COLOR, mCardSecurityCodeTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardNumberTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardholderNameTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardExpiryMonthTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardDateDividerTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardExpiryYearTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardSecurityCodeTextView);
         enableEditingFontColor(mCardNumberTextView);
         mCardSecurityCodeTextView.setText("");
     }
@@ -342,7 +344,7 @@ public class FrontCardView {
         textView.setTextColor(ContextCompat.getColor(mContext, color));
     }
 
-    private void transitionImage(int image, boolean animate) {
+    private void transitionImage(final int image, final boolean animate) {
         mBaseImageCard.clearAnimation();
         mImageCardContainer.clearAnimation();
         mBaseImageCard.setVisibility(View.INVISIBLE);
@@ -351,11 +353,6 @@ public class FrontCardView {
         if (animate) {
             mImageCardContainer.startAnimation(mAnimFadeIn);
         }
-    }
-
-    private int getCardImage(PaymentMethod paymentMethod) {
-        String imageName = "px_ico_card_" + paymentMethod.getId().toLowerCase();
-        return mContext.getResources().getIdentifier(imageName, "drawable", mContext.getPackageName());
     }
 
     private void resize() {
@@ -406,14 +403,15 @@ public class FrontCardView {
 
     private void enableEditingFontColor(TextView textView) {
         int alpha = EDITING_TEXT_VIEW_ALPHA;
-        int fontColor = MPCardUIUtils.getCardFontColor(mPaymentMethod, mContext);
+
+        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
         int color = ContextCompat.getColor(mContext, fontColor);
         int newColor = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
         textView.setTextColor(newColor);
     }
 
     private void disableEditingFontColor(TextView textView) {
-        int fontColor = MPCardUIUtils.getCardFontColor(mPaymentMethod, mContext);
+        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
         setFontColor(fontColor, textView);
     }
 
@@ -421,9 +419,10 @@ public class FrontCardView {
         if (mPaymentMethod == null) {
             return;
         }
-        setCardColor(MPCardUIUtils.getCardColor(mPaymentMethod, mContext));
-        setCardImage(getCardImage(mPaymentMethod));
-        int fontColor = MPCardUIUtils.getCardFontColor(mPaymentMethod, mContext);
+        final String pmId = mPaymentMethod.getId();
+        setCardColor(ResourceUtil.getCardColor(pmId, mContext));
+        setCardImage(ResourceUtil.getCardImage(mContext, pmId));
+        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
         setFontColor(fontColor, mCardNumberTextView);
     }
 
@@ -439,7 +438,7 @@ public class FrontCardView {
         }
     }
 
-    private void fadeOutColor(int color) {
+    private void fadeOutColor(final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCardLowApiImageView.setVisibility(View.GONE);
             mCardLollipopImageView.setVisibility(View.VISIBLE);

@@ -185,8 +185,8 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
 
         final ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(TrackingUtil.SCREEN_ID_ISSUERS)
-            .setScreenName(TrackingUtil.SCREEN_ID_ISSUERS)
+            .setScreenId(TrackingUtil.VIEW_PATH_ISSUERS)
+            .setScreenName(TrackingUtil.VIEW_PATH_ISSUERS)
             .addProperty(TrackingUtil.PROPERTY_PAYMENT_TYPE_ID, mPresenter.getPaymentMethod().getPaymentTypeId())
             .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID, mPresenter.getPaymentMethod().getId())
             .build();

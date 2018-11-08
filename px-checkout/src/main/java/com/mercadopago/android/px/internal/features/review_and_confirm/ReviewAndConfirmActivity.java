@@ -64,7 +64,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHAN
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERROR;
 
 public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity implements
-    ReviewAndConfirm.View, ActionDispatcher {
+    ReviewAndConfirm.View, ActionDispatcher, ExplodingFragment.ExplodingAnimationListener {
 
     private static final int REQ_CARD_VAULT = 0x01;
 
@@ -175,9 +175,9 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     }
 
     @Override
-    protected void onPause() {
+    protected void onDestroy() {
         presenter.detachView();
-        super.onPause();
+        super.onDestroy();
     }
 
     /**
@@ -580,13 +580,14 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
     }
 
     @Override
-    public void finishLoading(@NonNull final ExplodeDecorator decorator,
-        @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener) {
+    public void finishLoading(@NonNull final ExplodeDecorator decorator) {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded()) {
+        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded() && fragment.isVisible()) {
             final ExplodingFragment explodingFragment = (ExplodingFragment) fragment;
-            explodingFragment.finishLoading(decorator, explodingAnimationListener);
+            explodingFragment.finishLoading(decorator);
+        } else {
+            presenter.hasFinishPaymentAnimation();
         }
     }
 
@@ -612,5 +613,10 @@ public final class ReviewAndConfirmActivity extends MercadoPagoBaseActivity impl
         if (creator.shouldShowDialog(this, checkoutData)) {
             creator.create(this, checkoutData).show(getSupportFragmentManager(), TAG_DYNAMIC_DIALOG);
         }
+    }
+
+    @Override
+    public void onAnimationFinished() {
+        presenter.hasFinishPaymentAnimation();
     }
 }

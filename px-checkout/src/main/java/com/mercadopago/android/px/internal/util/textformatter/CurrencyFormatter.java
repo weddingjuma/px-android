@@ -20,7 +20,7 @@ public class CurrencyFormatter extends ChainFormatter {
         hasSymbol = true;
     }
 
-    public AmountFormatter amount(@NonNull BigDecimal amount) {
+    public AmountFormatter amount(@NonNull final BigDecimal amount) {
         return new AmountFormatter(amount, this);
     }
 
@@ -42,7 +42,7 @@ public class CurrencyFormatter extends ChainFormatter {
     }
 
     public CurrencyFormatter noSymbol() {
-        this.hasSymbol = false;
+        hasSymbol = false;
         return this;
     }
 }

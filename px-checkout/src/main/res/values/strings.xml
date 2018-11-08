@@ -9,11 +9,16 @@
     <string name="px_card_association_result_error_retry_button_text">Try again</string>
 
     <!-- One tap -->
+    <string name="px_amount_with_installments_holder">%1$sx %2$s</string>
     <string name="px_total_amount_holder" translatable="false">(%1$s)</string>
     <string name="px_string_holder" translatable="false">%1$s</string>
     <string name="px_payment_detail_title_modal">Detail</string>
     <string name="px_quantity_modal" translatable="false">%1$d %2$s</string>
     <string name="px_processing_payment_button">Processing your payment</string>
+    <string name="px_summary_detail_item_description">Your purchase</string>
+    <string name="px_total_in_mercado_pago">Total in Mercado Pago: %1$s</string>
+    <string name="px_pay">Pay</string>
+    <string name="px_prefix_discount_amount" translatable="false">- %1$s</string>
 
     <!-- Banks deals -->
     <string name="px_empty_bank_deals">No promotions available for you</string>
@@ -37,6 +42,7 @@
 
     <!-- Installments -->
     <string name="px_card_installments_title">How many installments?</string>
+    <string name="px_select_installments_title">Select the installment plan</string>
 
     <string name="px_installments_by" translatable="false">x</string>
     <string name="px_installments_cft" translatable="false">CFT: %1$s</string>
@@ -84,7 +90,6 @@
     <string name="px_name_and_lastname_identification_label">NAME AND SURNAME</string>
     <string name="px_card_identification_number">Number</string>
     <string name="px_card_identification_type">Type</string>
-    <string name="px_card_hint" translatable="false">%1$s ···· %2$s</string>
     <string name="px_identification_card_holder_hint" translatable="false">•• ••• •••</string>
     <string name="px_cardholder_name_short">NAME SURNAME</string>
 
@@ -211,6 +216,7 @@
 
     <!-- Review and Confirm -->
     <string name="px_change_payment">Change payment method</string>
+    <string name="px_add_new_card">Add new card</string>
     <string name="px_your_atm">ATM of</string>
     <string name="px_review_off_text_default">You will pay %1$s\n%2$s</string>
     <string name="px_review_off_text">You will pay %1$s in a\n%2$s</string>
@@ -237,15 +243,14 @@
 
     <!-- Discount -->
     <string name="px_discount_percent_off" translatable="false">%1$s%% OFF</string>
-    <string name="px_discount_amount_off" translatable="false">- %1$s OFF</string>
+    <string name="px_discount_amount_off_with_minus" translatable="false">- %1$s OFF</string>
+    <string name="px_discount_amount_off" translatable="false">%1$s OFF</string>
 
     <string name="px_invalid_code">Invalid code</string>
     <string name="px_merchant_without_discount_available">Merchant without discount available</string>
     <string name="px_ran_out_of_quantity_uses_quantity">Ran out of quantity uses of discount </string>
     <string name="px_amount_doesnt_match">Amount out of reach</string>
     <string name="px_campaign_expired">Campaign expired</string>
-    <string name="px_discount_percent_off_percent" translatable="false">%1$s%% OFF</string>
-    <string name="px_discount_percent_off_amount" translatable="false">- %1$s OFF</string>
 
     <string name="px_something_went_wrong">Oops! Something went wrong…</string>
     <string name="px_we_apply_the_best_available_discount">Discounts are not cumulative. We apply the best available discount</string>

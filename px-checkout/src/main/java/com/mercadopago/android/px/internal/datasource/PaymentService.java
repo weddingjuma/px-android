@@ -17,10 +17,10 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.mappers.CardMapper;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodMapper;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPayment;
-import com.mercadopago.android.px.model.OneTapMetadata;
+import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -47,8 +47,6 @@ public class PaymentService implements PaymentRepository {
     @NonNull private final Context context;
     @NonNull private final TokenRepository tokenRepository;
     @NonNull private final GroupsRepository groupsRepository;
-    @NonNull private final PaymentMethodMapper paymentMethodMapper;
-    @NonNull private final CardMapper cardMapper;
     @NonNull private final EscManager escManager;
 
     @NonNull private final PaymentServiceHandlerWrapper handlerWrapper;
@@ -77,8 +75,6 @@ public class PaymentService implements PaymentRepository {
         this.context = context;
         this.tokenRepository = tokenRepository;
         this.groupsRepository = groupsRepository;
-        paymentMethodMapper = new PaymentMethodMapper();
-        cardMapper = new CardMapper();
         handlerWrapper = new PaymentServiceHandlerWrapper(this, escManager, instructionsRepository);
     }
 
@@ -130,38 +126,39 @@ public class PaymentService implements PaymentRepository {
 
     /**
      * This method presets all user information ahead before the payment is processed.
+     * @param expressMetadata model
      */
     @Override
-    public void startOneTapPayment() {
+    public void startExpressPayment(@NonNull final ExpressMetadata expressMetadata,
+        @Nullable final PayerCost payerCost) {
 
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
 
-                final OneTapMetadata oneTapMetadata = paymentMethodSearch.getOneTapMetadata();
-                final String paymentTypeId = oneTapMetadata.getPaymentTypeId();
-                final String paymentMethodId = oneTapMetadata.getPaymentMethodId();
+                final String paymentTypeId = expressMetadata.getPaymentTypeId();
+                final String paymentMethodId = expressMetadata.getPaymentMethodId();
 
                 if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
                     // Saved card.
-                    final Card card = cardMapper.map(paymentMethodSearch);
+                    final Card card = new CardMapper(paymentMethodSearch).map(expressMetadata);
                     userSelectionRepository.select(card);
-                    userSelectionRepository.select(oneTapMetadata.getCard().getAutoSelectedInstallment());
+                    userSelectionRepository.select(payerCost);
                 } else if (PaymentTypes.isPlugin(paymentTypeId)) {
                     // Account money plugin / No second factor.
                     userSelectionRepository
                         .select(pluginRepository.getPluginAsPaymentMethod(paymentMethodId, paymentTypeId));
                 } else {
-                    // Other - not implemented
-                    userSelectionRepository.select(paymentMethodMapper.map(paymentMethodSearch));
+                    throw new IllegalStateException("payment method selected can not be used for express payment");
                 }
 
                 startPayment();
+
             }
 
             @Override
             public void failure(final ApiException apiException) {
-                throw new IllegalStateException("something fail with groups cache - PaymentService - OneTap");
+                throw new IllegalStateException("empty payment methods");
             }
         });
     }

@@ -30,7 +30,7 @@ public class PayerCostRow {
     private MPTextView mZeroRateText;
     private MPTextView mTotalText;
 
-    public PayerCostRow(Context context, Site site) {
+    public PayerCostRow(final Context context, final Site site) {
         mContext = context;
         mCurrencyId = site.getCurrencyId();
         mSite = site;
@@ -90,7 +90,7 @@ public class PayerCostRow {
 
     public View inflateInParent(ViewGroup parent, boolean attachToRoot) {
         mView = LayoutInflater.from(mContext)
-            .inflate(R.layout.px_row_payer_cost_list, parent, attachToRoot);
+            .inflate(R.layout.px_view_payer_cost_item, parent, attachToRoot);
         return mView;
     }
 

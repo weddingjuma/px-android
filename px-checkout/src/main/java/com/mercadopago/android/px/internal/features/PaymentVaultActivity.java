@@ -9,6 +9,7 @@ import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -69,6 +70,7 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
     public static final int COLUMNS = 2;
     private static final int PAYER_INFORMATION_REQUEST_CODE = 22;
     private static final int REQ_CARD_VAULT = 102;
+    private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
 
     // Local vars
     protected boolean mActivityActive;
@@ -90,6 +92,14 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
 
     private AmountView amountView;
     private OnCodeDiscountCallback onCodeDiscountCallback;
+
+    public static void startWithPaymentMethodSelected(@NonNull final AppCompatActivity from,
+        @NonNull final PaymentMethodSearchItem item) {
+        final Intent intent = new Intent(from, PaymentVaultActivity.class);
+        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.getInstance().toJson(item));
+        from.startActivityForResult(intent, Constants.Activities.PAYMENT_VAULT_REQUEST_CODE);
+        from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -126,9 +136,9 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
 
         final JsonUtil instance = JsonUtil.getInstance();
 
-        if (intent.getStringExtra("selectedSearchItem") != null) {
+        if (intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM) != null) {
             presenter.setSelectedSearchItem(instance
-                .fromJson(intent.getStringExtra("selectedSearchItem"), PaymentMethodSearchItem.class));
+                .fromJson(intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM), PaymentMethodSearchItem.class));
         }
     }
 
@@ -273,12 +283,8 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
     }
 
     @Override
-    public void showSelectedItem(PaymentMethodSearchItem item) {
-        final Intent intent = new Intent(this, PaymentVaultActivity.class);
-        intent.putExtras(getIntent());
-        intent.putExtra("selectedSearchItem", JsonUtil.getInstance().toJson(item));
-        startActivityForResult(intent, Constants.Activities.PAYMENT_VAULT_REQUEST_CODE);
-        overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+    public void showSelectedItem(final PaymentMethodSearchItem item) {
+        startWithPaymentMethodSelected(this, item);
     }
 
     @Override

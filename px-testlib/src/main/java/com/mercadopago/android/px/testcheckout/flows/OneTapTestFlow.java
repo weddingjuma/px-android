@@ -13,6 +13,10 @@ import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
 import com.mercadopago.android.px.testcheckout.pages.PendingPage;
 import com.mercadopago.android.px.testcheckout.pages.SecurityCodeToResultsPage;
 
+/**
+ * @deprecated this flow does not exists anymore.
+ */
+@Deprecated
 public class OneTapTestFlow extends TestFlow {
 
     public OneTapTestFlow() {

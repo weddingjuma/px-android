@@ -10,6 +10,7 @@
 
     <style name="ToolbarTheme" parent="Theme.MercadoPagoTheme.NoActionBar">
         <item name="colorControlNormal">@color/px_toolbar_text</item>
+        <item name="android:background">@color/px_background</item>
     </style>
 
     <style name="ReviewToolbarTheme" parent="Theme.MercadoPagoTheme.NoActionBar">

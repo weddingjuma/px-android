@@ -40,6 +40,10 @@ public class Campaign implements Serializable, Parcelable {
         endDate = builder.endDate;
     }
 
+    public int getMaxRedeemPerUser() {
+        return maxRedeemPerUser;
+    }
+
     public String getId() {
         return id;
     }

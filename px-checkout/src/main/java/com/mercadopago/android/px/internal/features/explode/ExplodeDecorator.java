@@ -1,9 +1,11 @@
 package com.mercadopago.android.px.internal.features.explode;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 
-public final class ExplodeDecorator {
+public final class ExplodeDecorator implements Parcelable {
 
     private final int primaryColor;
     private final int darkPrimaryColor;
@@ -16,6 +18,24 @@ public final class ExplodeDecorator {
         this.darkPrimaryColor = darkPrimaryColor;
         this.statusIcon = statusIcon;
     }
+
+    protected ExplodeDecorator(final Parcel in) {
+        primaryColor = in.readInt();
+        darkPrimaryColor = in.readInt();
+        statusIcon = in.readInt();
+    }
+
+    public static final Creator<ExplodeDecorator> CREATOR = new Creator<ExplodeDecorator>() {
+        @Override
+        public ExplodeDecorator createFromParcel(final Parcel in) {
+            return new ExplodeDecorator(in);
+        }
+
+        @Override
+        public ExplodeDecorator[] newArray(final int size) {
+            return new ExplodeDecorator[size];
+        }
+    };
 
     @ColorRes
     public int getPrimaryColor() {
@@ -30,5 +50,17 @@ public final class ExplodeDecorator {
     @DrawableRes
     public int getStatusIcon() {
         return statusIcon;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeInt(primaryColor);
+        dest.writeInt(darkPrimaryColor);
+        dest.writeInt(statusIcon);
     }
 }

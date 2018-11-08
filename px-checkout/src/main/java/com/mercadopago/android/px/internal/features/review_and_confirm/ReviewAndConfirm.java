@@ -5,7 +5,6 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
-import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.Card;
@@ -33,8 +32,7 @@ public interface ReviewAndConfirm {
 
         void cancelLoadingButton();
 
-        void finishLoading(@NonNull final ExplodeDecorator decorator,
-            @NonNull final ExplodingFragment.ExplodingAnimationListener explodingAnimationListener);
+        void finishLoading(@NonNull final ExplodeDecorator decorator);
 
         void hideConfirmButton();
 
@@ -68,5 +66,7 @@ public interface ReviewAndConfirm {
         void executePostPaymentAction(@NonNull PostPaymentAction postPaymentAction);
 
         void onViewResumed(View view);
+
+        void hasFinishPaymentAnimation();
     }
 }

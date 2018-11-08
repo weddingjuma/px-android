@@ -21,18 +21,18 @@ public class SecurityCodeToResultsPage extends PageObject<CheckoutValidator> {
         super(validator);
     }
 
-    public CongratsPage enterSecurityCodeToCongratsPage(final String escNumber) {
-        enterSecurityCode(escNumber);
+    public CongratsPage enterSecurityCodeToCongratsPage(final String cvv) {
+        enterSecurityCode(cvv);
         return new CongratsPage(validator);
     }
 
-    public PendingPage enterSecurityCodeToPendingPage(final String escNumber) {
-        enterSecurityCode(escNumber);
+    public PendingPage enterSecurityCodeToPendingPage(final String cvv) {
+        enterSecurityCode(cvv);
         return new PendingPage(validator);
     }
 
-    public CallForAuthPage enterSecurityCodeToCallForAuthPage(final String escNumber) {
-        enterSecurityCode(escNumber);
+    public CallForAuthPage enterSecurityCodeToCallForAuthPage(final String cvv) {
+        enterSecurityCode(cvv);
         return new CallForAuthPage(validator);
     }
 

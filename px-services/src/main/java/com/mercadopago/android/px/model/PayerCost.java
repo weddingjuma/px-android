@@ -210,4 +210,32 @@ public class PayerCost implements Parcelable, Serializable {
             dest.writeString(installmentAmount.toString());
         }
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof PayerCost)) {
+            return false;
+        }
+
+        final PayerCost payerCost = (PayerCost) o;
+
+        if (!installments.equals(payerCost.installments)) {
+            return false;
+        }
+        if (!totalAmount.equals(payerCost.totalAmount)) {
+            return false;
+        }
+        return installmentAmount.equals(payerCost.installmentAmount);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = installments.hashCode();
+        result = 31 * result + totalAmount.hashCode();
+        result = 31 * result + installmentAmount.hashCode();
+        return result;
+    }
 }

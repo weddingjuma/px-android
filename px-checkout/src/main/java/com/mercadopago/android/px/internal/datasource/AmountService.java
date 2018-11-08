@@ -67,6 +67,13 @@ public class AmountService implements AmountRepository {
             .add(chargeRepository.getChargeAmount());
     }
 
+    @NonNull
+    @Override
+    public BigDecimal getAmountWithDiscount() {
+        return paymentSetting.getCheckoutPreference().getTotalAmount()
+            .subtract(getDiscountAmount());
+    }
+
     private BigDecimal getDiscountAmount() {
         final Discount discount = discountRepository.getDiscount();
         return discount == null ? BigDecimal.ZERO : discount.getCouponAmount();

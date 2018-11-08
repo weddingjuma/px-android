@@ -35,10 +35,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 
 public class ExplodingFragment extends Fragment {
 
-    public interface ExplodingAnimationListener {
-        void onAnimationFinished();
-    }
-
+    private static final String BUNDLE_DECORATOR = "BUNDLE_DECORATOR";
     private static final String ARG_EXPLODING_PARAMS = "ARG_EXPLODING_PARAMS";
 
     private static final int MAX_LOADING_TIME = 20000; // the max loading time in milliseconds
@@ -59,6 +56,16 @@ public class ExplodingFragment extends Fragment {
     private String buttonText;
     //TODO add loading time payment processor
     private int maxLoadingTime;
+
+    private ExplodingAnimationListener listener;
+
+    public boolean hasFinished() {
+        return explodeDecorator == null;
+    }
+
+    public interface ExplodingAnimationListener {
+        void onAnimationFinished();
+    }
 
     public static ExplodingFragment newInstance(final ExplodeParams explodeParams) {
         final ExplodingFragment explodingFragment = new ExplodingFragment();
@@ -126,6 +133,24 @@ public class ExplodingFragment extends Fragment {
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putParcelable(BUNDLE_DECORATOR, explodeDecorator);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null && savedInstanceState.containsKey(BUNDLE_DECORATOR)) {
+            explodeDecorator = savedInstanceState.getParcelable(BUNDLE_DECORATOR);
+
+            if (explodeDecorator != null) {
+                finishLoading(explodeDecorator);
+            }
+        }
+    }
+
     private void adjustHeight(final ImageView view) {
         final ViewGroup.LayoutParams params = view.getLayoutParams();
         params.height = buttonHeight;
@@ -139,49 +164,32 @@ public class ExplodingFragment extends Fragment {
      * @param explodeDecorator information about the order result,
      * useful for styling the view.
      */
-    public void finishLoading(@NonNull final ExplodeDecorator explodeDecorator,
-        @NonNull final ExplodingAnimationListener listener) {
-
+    public void finishLoading(@NonNull final ExplodeDecorator explodeDecorator) {
         this.explodeDecorator = explodeDecorator;
+        // now finish the remaining loading progress
+        final int progress = progressBar.getProgress();
+        animator.cancel();
+        animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
+        animator.setInterpolator(new AccelerateDecelerateInterpolator());
+        animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
 
-        // This is added because the view is still not created when the app comes back from background
-        getActivity().getWindow().getDecorView().post(new Runnable() {
+        animator.addListener(new AnimatorListenerAdapter() {
             @Override
-            public void run() {
-                // if exploding fragment is attached to activity
+            public void onAnimationEnd(final Animator animation) {
+                animator.removeListener(this);
                 if (isAdded()) {
-                    // now finish the remaining loading progress
-                    final int progress = progressBar.getProgress();
-                    animator.cancel();
-                    animator = ObjectAnimator.ofInt(progressBar, "progress", progress, maxLoadingTime);
-                    animator.setInterpolator(new AccelerateDecelerateInterpolator());
-                    animator.setDuration(getResources().getInteger(R.integer.px_long_animation_time));
-
-                    animator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(final Animator animation) {
-                            animator.removeListener(this);
-                            if (isAdded()) {
-                                createResultAnim(listener);
-                            }
-                        }
-                    });
-                    animator.start();
-                } else {
-                    // when not attached then show payment result without animations
-                    listener.onAnimationFinished();
+                    createResultAnim();
                 }
             }
         });
+        animator.start();
     }
 
     /**
      * Transform the progress bar into the result icon background.
      * The color and the shape are animated.
-     *
-     * @param listener
      */
-    /* default */ void createResultAnim(final ExplodingAnimationListener listener) {
+    /* default */ void createResultAnim() {
         @ColorInt
         final int color = ContextCompat.getColor(getContext(), explodeDecorator.getDarkPrimaryColor());
         circle.setColorFilter(color);
@@ -230,7 +238,7 @@ public class ExplodingFragment extends Fragment {
                 animation.removeAllListeners();
                 ((ValueAnimator) animation).removeAllUpdateListeners();
                 if (isAdded()) {
-                    createResultIconAnim(listener);
+                    createResultIconAnim();
                 }
             }
         });
@@ -243,8 +251,8 @@ public class ExplodingFragment extends Fragment {
     /**
      * @return the shape of the progress bar to transform
      */
-    private GradientDrawable getProgressBarShape(int color, int radius) {
-        GradientDrawable drawable = new GradientDrawable();
+    private GradientDrawable getProgressBarShape(final int color, final int radius) {
+        final GradientDrawable drawable = new GradientDrawable();
         drawable.setColor(color);
         drawable.setCornerRadius(radius);
         return drawable;
@@ -253,10 +261,8 @@ public class ExplodingFragment extends Fragment {
     /**
      * Now that the icon background is visible, animate the icon.
      * The icon will start big and transparent and become small and opaque
-     *
-     * @param listener
      */
-    private void createResultIconAnim(final ExplodingAnimationListener listener) {
+    private void createResultIconAnim() {
         progressBar.setVisibility(View.INVISIBLE);
         icon.setVisibility(View.VISIBLE);
         circle.setVisibility(View.VISIBLE);
@@ -269,10 +275,10 @@ public class ExplodingFragment extends Fragment {
             .setDuration(getResources().getInteger(R.integer.px_default_animation_time))
             .setListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(final Animator animation) {
                     animation.removeAllListeners();
                     if (isAdded()) {
-                        createCircularReveal(listener);
+                        createCircularReveal();
                     }
                 }
             }).start();
@@ -280,10 +286,8 @@ public class ExplodingFragment extends Fragment {
 
     /**
      * Wait so that the icon is visible for a while.. then fill the whole screen with the appropriate color.
-     *
-     * @param listener
      */
-    private void createCircularReveal(final ExplodingAnimationListener listener) {
+    private void createCircularReveal() {
         // when the icon anim has finished, paint the whole screen with the result color
         final float finalRadius = (float) Math.hypot(rootView.getWidth(), rootView.getHeight());
         final int startRadius = buttonHeight / 2;
@@ -320,10 +324,14 @@ public class ExplodingFragment extends Fragment {
 
             @Override
             public void onAnimationEnd(final Animator animation) {
-                animation.removeAllListeners();
-                listener.onAnimationFinished();
+                if (listener != null) {
+                    explodeDecorator = null;
+                    animation.removeAllListeners();
+                    listener.onAnimationFinished();
+                }
             }
         });
+
         anim.start();
     }
 
@@ -334,6 +342,8 @@ public class ExplodingFragment extends Fragment {
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
+        configureListener(context);
+
         // lock the orientation during the loading
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
@@ -342,8 +352,19 @@ public class ExplodingFragment extends Fragment {
         }
     }
 
+    private void configureListener(final Context context) {
+
+        if (context instanceof ExplodingAnimationListener) {
+            listener = (ExplodingAnimationListener) context;
+        } else if (getParentFragment() != null) {
+            final Fragment fragment = getParentFragment();
+            listener = (ExplodingAnimationListener) fragment;
+        }
+    }
+
     @Override
     public void onDetach() {
+        listener = null;
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
         super.onDetach();
     }

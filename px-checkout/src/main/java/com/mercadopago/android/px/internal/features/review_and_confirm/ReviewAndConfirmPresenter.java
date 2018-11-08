@@ -7,13 +7,13 @@ import com.mercadopago.android.px.internal.base.DefaultProvider;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
-import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.GenericPayment;
+import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -51,6 +51,18 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
     public void onViewResumed(final ReviewAndConfirm.View view) {
         attachView(view);
         resolveDynamicDialog(DynamicDialogConfiguration.DialogLocation.ENTER_REVIEW_AND_CONFIRM);
+    }
+
+    @Override
+    public void hasFinishPaymentAnimation() {
+        final IPayment payment = paymentRepository.getPayment();
+        if (payment instanceof Payment) {
+            getView().showResult(paymentRepository.createPaymentResult(payment));
+        } else if (payment instanceof GenericPayment) {
+            getView().showResult(paymentRepository.createPaymentResult(payment));
+        } else if (payment instanceof BusinessPayment) {
+            getView().showResult(businessModelMapper.map((BusinessPayment) payment));
+        }
     }
 
     private void resolveDynamicDialog(@NonNull final DynamicDialogConfiguration.DialogLocation location) {
@@ -128,37 +140,19 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
     @Override
     public void onPaymentFinished(@NonNull final Payment payment) {
         getView().hideConfirmButton();
-        getView().finishLoading(explodeDecoratorMapper.map(payment),
-            new ExplodingFragment.ExplodingAnimationListener() {
-                @Override
-                public void onAnimationFinished() {
-                    getView().showResult(paymentRepository.createPaymentResult(payment));
-                }
-            });
+        getView().finishLoading(explodeDecoratorMapper.map(payment));
     }
 
     @Override
     public void onPaymentFinished(@NonNull final GenericPayment genericPayment) {
         getView().hideConfirmButton();
-        getView().finishLoading(explodeDecoratorMapper.map(genericPayment),
-            new ExplodingFragment.ExplodingAnimationListener() {
-                @Override
-                public void onAnimationFinished() {
-                    getView().showResult(paymentRepository.createPaymentResult(genericPayment));
-                }
-            });
+        getView().finishLoading(explodeDecoratorMapper.map(genericPayment));
     }
 
     @Override
     public void onPaymentFinished(@NonNull final BusinessPayment businessPayment) {
         getView().hideConfirmButton();
-        getView().finishLoading(explodeDecoratorMapper.map(businessPayment),
-            new ExplodingFragment.ExplodingAnimationListener() {
-                @Override
-                public void onAnimationFinished() {
-                    getView().showResult(businessModelMapper.map(businessPayment));
-                }
-            });
+        getView().finishLoading(explodeDecoratorMapper.map(businessPayment));
     }
 
     @Override
@@ -209,7 +203,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
             }
 
             @Override
-            public void changePaymentMethod() {
+            public void onChangePaymentMethod() {
                 //do nothing
             }
         });

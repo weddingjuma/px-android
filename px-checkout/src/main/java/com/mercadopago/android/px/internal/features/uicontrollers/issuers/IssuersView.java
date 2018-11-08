@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Issuer;
 
@@ -14,8 +15,6 @@ import com.mercadopago.android.px.model.Issuer;
  */
 
 public class IssuersView implements IssuersViewController {
-
-    public static final String CARD_IMAGE_PREFIX = "px_issuer_";
 
     private final Context mContext;
     private View mView;
@@ -50,8 +49,8 @@ public class IssuersView implements IssuersViewController {
     }
 
     @Override
-    public void drawIssuer(Issuer issuer) {
-        int image = getCardImage(issuer);
+    public void drawIssuer(final Issuer issuer) {
+        int image = ResourceUtil.getIssuerImage(mContext, issuer.getId());
         if (image == 0) {
             mIssuerImageView.setVisibility(View.GONE);
             mIssuerTextView.setVisibility(View.VISIBLE);
@@ -59,12 +58,7 @@ public class IssuersView implements IssuersViewController {
         } else {
             mIssuerImageView.setVisibility(View.VISIBLE);
             mIssuerTextView.setVisibility(View.GONE);
-            mIssuerImageView.setImageResource(getCardImage(issuer));
+            mIssuerImageView.setImageResource(ResourceUtil.getIssuerImage(mContext, issuer.getId()));
         }
-    }
-
-    private int getCardImage(Issuer issuer) {
-        String imageName = CARD_IMAGE_PREFIX + String.valueOf(issuer.getId());
-        return mContext.getResources().getIdentifier(imageName, "drawable", mContext.getPackageName());
     }
 }

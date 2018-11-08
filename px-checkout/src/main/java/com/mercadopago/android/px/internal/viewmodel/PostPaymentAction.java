@@ -72,6 +72,6 @@ public abstract class PostPaymentAction implements Parcelable {
 
         void recoverFromOneTap();
 
-        void changePaymentMethod();
+        void onChangePaymentMethod();
     }
 }

@@ -32,20 +32,20 @@ import com.mercadopago.android.px.internal.tracker.FlowHandler;
 import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.internal.util.MPCardUIUtils;
+import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.Token;
-import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.ScreenViewEvent;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
+import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 
 public class SecurityCodeActivity extends MercadoPagoBaseActivity implements SecurityCodeActivityView {
 
@@ -260,7 +260,7 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
     }
 
     private void setSecurityCodeCardColorFilter() {
-        int color = MPCardUIUtils.getCardColor(mSecurityCodePresenter.getPaymentMethod(), this);
+        final int color = ResourceUtil.getCardColor(mSecurityCodePresenter.getPaymentMethod().getId(), this);
         mSecurityCodeCardIcon.setColorFilter(ContextCompat.getColor(this, color), PorterDuff.Mode.DST_OVER);
     }
 
@@ -287,7 +287,7 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
             .build();
 
         final String screenId =
-            TrackingUtil.SCREEN_ID_PAYMENT_VAULT + "/" + mSecurityCodePresenter.getPaymentMethod().getPaymentTypeId() +
+            TrackingUtil.VIEW_PATH_PAYMENT_VAULT + "/" + mSecurityCodePresenter.getPaymentMethod().getPaymentTypeId() +
                 TrackingUtil.CARD_SECURITY_CODE;
         ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())

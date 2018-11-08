@@ -5,28 +5,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.controllers.CheckoutErrorHandler;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
-import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.model.ScreenViewEvent;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.tracking.internal.model.ErrorView;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 
 public class ErrorActivity extends MercadoPagoBaseActivity {
 
     private MercadoPagoError mMercadoPagoError;
-    private String mPublicKey;
     private TextView mErrorMessageTextView;
+    private TextView titleMessageTextView;
     private View mRetryView;
     private View mExit;
+    private String message;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -43,6 +41,7 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
         if (validParameters()) {
             initializeControls();
             fillData();
+            trackScreen();
         } else {
             Intent intent = new Intent();
             setResult(RESULT_CANCELED, intent);
@@ -61,11 +60,12 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
     private void getActivityParameters() {
         mMercadoPagoError = JsonUtil.getInstance()
             .fromJson(getIntent().getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
-        mPublicKey = getIntent().getStringExtra(ErrorUtil.PUBLIC_KEY_EXTRA);
     }
 
     private void initializeControls() {
         mErrorMessageTextView = findViewById(R.id.mpsdkErrorMessage);
+        titleMessageTextView = findViewById(R.id.titleErrorMessage);
+        titleMessageTextView.setText(getResources().getString(R.string.px_error_title));
         mRetryView = findViewById(R.id.mpsdkErrorRetry);
         mExit = findViewById(R.id.mpsdkExit);
         mExit.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +77,6 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
     }
 
     private void fillData() {
-        String message;
         if (mMercadoPagoError.getApiException() != null) {
             message = getApiExceptionMessage(this, mMercadoPagoError.getApiException());
         } else {
@@ -98,6 +97,12 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
         } else {
             mRetryView.setVisibility(View.GONE);
         }
+    }
+
+    private void trackScreen() {
+        final String errorMessage = titleMessageTextView.getText() + " " + message;
+        Tracker.trackGenericError(TrackingUtil.EVENT_PATH_GENERIC_ERROR, ErrorView.ErrorType.SCREEN, mMercadoPagoError,
+            errorMessage);
     }
 
     @Override

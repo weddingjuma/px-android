@@ -59,4 +59,5 @@ public final class PaymentTypes {
     public static boolean isCreditCardPaymentType(final String paymentTypeId) {
         return PaymentTypes.CREDIT_CARD.equals(paymentTypeId);
     }
+
 }

@@ -19,4 +19,41 @@
         <attr name="errorColor" format="reference"/>
     </declare-styleable>
 
+    <declare-styleable name="PXElementDescriptorView">
+        <attr name="px_element_icon_height" format="dimension" />
+        <attr name="px_element_icon_width" format="dimension" />
+        <attr name="px_element_label_size" format="dimension" />
+        <attr name="px_element_label_text_color" format="color"/>
+    </declare-styleable>
+
+    <declare-styleable name="PXFixedAspectRatioFrameLayout">
+        <attr name="px_aspectRatioWidth" format="integer"/>
+        <attr name="px_aspectRatioHeight" format="integer"/>
+    </declare-styleable>
+
+    <declare-styleable name="PXScrollingPagerIndicator">
+        <attr name="px_spi_dotColor" format="color"/>
+        <attr name="px_spi_dotSelectedColor" format="color"/>
+        <attr name="px_spi_dotSize" format="dimension"/>
+        <attr name="px_spi_dotSelectedSize" format="dimension"/>
+        <attr name="px_spi_dotSpacing" format="dimension"/>
+        <attr name="px_spi_visibleDotCount" format="integer"/>
+        <attr name="px_spi_visibleDotThreshold" format="integer"/>
+        <attr name="px_spi_looped" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="PXCircularImageView">
+        <attr name="px_civ_stroke_width" format="dimension"/>
+    </declare-styleable>
+
+    <style name="PXScrollingPagerIndicator">
+        <item name="px_spi_dotColor">@android:color/darker_gray</item>
+        <item name="px_spi_dotSelectedColor">@android:color/darker_gray</item>
+        <item name="px_spi_dotSize">6dp</item>
+        <item name="px_spi_dotSelectedSize">10dp</item>
+        <item name="px_spi_dotSpacing">8dp</item>
+        <item name="px_spi_visibleDotCount">5</item>
+        <item name="px_spi_visibleDotThreshold">2</item>
+        <item name="px_spi_looped">false</item>
+    </style>
+
 </resources>

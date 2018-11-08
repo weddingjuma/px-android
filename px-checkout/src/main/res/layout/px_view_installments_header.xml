@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center_vertical"
+             android:paddingBottom="@dimen/px_s_margin"
+             android:paddingTop="@dimen/px_s_margin">
+
+    <com.mercadopago.android.px.internal.view.TitlePager
+        android:id="@+id/title_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.mercadopago.android.px.internal.view.InstallmentsDescriptorView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/px_m_margin"
+            android:paddingRight="@dimen/px_title_pager_padding_right"
+            android:textSize="@dimen/px_s_text"
+            tools:text="1x $1200 CFT: 0,00%"/>
+
+        <com.mercadopago.android.px.internal.view.InstallmentsDescriptorView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/px_m_margin"
+            android:paddingRight="@dimen/px_title_pager_padding_right"
+            android:textSize="@dimen/px_s_text"/>
+
+        <com.mercadopago.android.px.internal.view.InstallmentsDescriptorView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="@dimen/px_m_margin"
+            android:paddingRight="@dimen/px_title_pager_padding_right"
+            android:textSize="@dimen/px_s_text"/>
+    </com.mercadopago.android.px.internal.view.TitlePager>
+
+    <com.mercadopago.android.px.internal.view.MPTextView
+        android:id="@+id/installments_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/px_m_margin"
+        android:paddingRight="@dimen/px_title_pager_padding_right"
+        android:text="@string/px_select_installments_title"
+        android:textAppearance="@style/MLFont.Regular"
+        android:textColor="@color/px_expressCheckoutInstallmentTitle"
+        android:textSize="@dimen/px_s_text"
+        android:visibility="gone"/>
+
+    <ImageView
+        android:id="@+id/arrow"
+        android:layout_width="15dp"
+        android:layout_height="10dp"
+        android:layout_gravity="center_vertical|right"
+        android:layout_marginRight="@dimen/px_l_margin"
+        android:src="@drawable/px_shape_arrow_down"/>
+</FrameLayout>

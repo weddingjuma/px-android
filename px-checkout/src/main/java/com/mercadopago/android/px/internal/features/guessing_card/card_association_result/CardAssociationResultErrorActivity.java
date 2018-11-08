@@ -2,18 +2,18 @@ package com.mercadopago.android.px.internal.features.guessing_card.card_associat
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
+import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import java.util.Collections;
 
 public class CardAssociationResultErrorActivity extends AppCompatActivity {
     public static final String PARAM_ACCESS_TOKEN = "accessToken";
@@ -60,6 +60,8 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
                 finish();
             }
         });
+
+        trackScreen();
     }
 
     @Override
@@ -74,5 +76,10 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
             accessToken = savedInstanceState.getString(PARAM_ACCESS_TOKEN);
         }
         super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    private void trackScreen() {
+        MPTracker.getInstance().trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_ERROR,
+            Collections.<String, Object>emptyMap());
     }
 }

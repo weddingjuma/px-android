@@ -16,7 +16,7 @@ import android.widget.LinearLayout;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.adapters.PayerCostsAdapter;
+import com.mercadopago.android.px.internal.adapters.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.callbacks.OnCodeDiscountCallback;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
 import com.mercadopago.android.px.internal.callbacks.RecyclerItemClickListener;
@@ -61,7 +61,7 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     protected boolean mActivityActive;
 
     //View controls
-    protected PayerCostsAdapter mPayerCostsAdapter;
+    protected InstallmentsAdapter mInstallmentsAdapter;
     protected RecyclerView mInstallmentsRecyclerView;
 
     //ViewMode
@@ -204,8 +204,8 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
 
         ScreenViewEvent event = new ScreenViewEvent.Builder()
             .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(TrackingUtil.SCREEN_ID_INSTALLMENTS)
-            .setScreenName(TrackingUtil.SCREEN_ID_INSTALLMENTS)
+            .setScreenId(TrackingUtil.VIEW_PATH_INSTALLMENTS)
+            .setScreenName(TrackingUtil.VIEW_PATH_INSTALLMENTS)
             .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID, presenter.getPaymentMethod().getId())
             .build();
 
@@ -306,8 +306,8 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     }
 
     private void initializeAdapter(OnSelectedCallback<Integer> onSelectedCallback) {
-        mPayerCostsAdapter = new PayerCostsAdapter(configuration.getCheckoutPreference().getSite(), onSelectedCallback);
-        initializeAdapterListener(mPayerCostsAdapter, mInstallmentsRecyclerView);
+        mInstallmentsAdapter = new InstallmentsAdapter(configuration.getCheckoutPreference().getSite(), onSelectedCallback);
+        initializeAdapterListener(mInstallmentsAdapter, mInstallmentsRecyclerView);
     }
 
     private void initializeAdapterListener(RecyclerView.Adapter adapter, RecyclerView view) {
@@ -342,7 +342,7 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
         //We track after evaluating default installments or autoselected installments
         trackScreen();
         initializeAdapter(onSelectedCallback);
-        mPayerCostsAdapter.addResults(payerCostList);
+        mInstallmentsAdapter.addResults(payerCostList);
     }
 
     @Override

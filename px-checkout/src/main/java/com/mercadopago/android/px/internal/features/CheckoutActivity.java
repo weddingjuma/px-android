@@ -12,17 +12,15 @@ import com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
+import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.hooks.Hook;
 import com.mercadopago.android.px.internal.features.hooks.HookActivity;
-import com.mercadopago.android.px.internal.features.onetap.OneTapFragment;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
 import com.mercadopago.android.px.internal.features.providers.CheckoutProviderImpl;
 import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAndConfirmBuilder;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -30,7 +28,6 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
-import com.mercadopago.android.px.model.ActionEvent;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.GenericPayment;
@@ -39,7 +36,6 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_PAYMENT_RESULT;
@@ -55,7 +51,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYM
 import static com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity.EXTRA_RESULT_CODE;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
 
-public class CheckoutActivity extends MercadoPagoBaseActivity implements CheckoutView, OneTapFragment.CallBack {
+public class CheckoutActivity extends MercadoPagoBaseActivity implements CheckoutView, ExpressPaymentFragment.CallBack {
 
     private static final String EXTRA_PAYMENT_METHOD_CHANGED = "paymentMethodChanged";
     private static final String EXTRA_PRIVATE_KEY = "extra_private_key";
@@ -132,10 +128,18 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             merchantPublicKey = savedInstanceState.getString(EXTRA_PUBLIC_KEY);
             configurePresenter();
 
-            if (presenter.getState().isOneTap) {
+            if (presenter.getState().isExpressCheckout) {
                 presenter.retrievePaymentMethodSearch();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (presenter != null && presenter.getState().isExpressCheckout) {
+            presenter.trackAbortExpress();
+        }
+        super.onBackPressed();
     }
 
     protected CheckoutPresenter getActivityParameters() {
@@ -178,7 +182,7 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
         Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
 
         if (fragment == null) {
-            fragment = OneTapFragment.getInstance();
+            fragment = ExpressPaymentFragment.getInstance();
         }
 
         getSupportFragmentManager()
@@ -222,8 +226,8 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     public void startPayment() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-        if (fragment != null && fragment instanceof OneTapFragment) {
-            ((OneTapFragment) fragment).startPayment();
+        if (fragment != null && fragment instanceof ExpressPaymentFragment) {
+            ((ExpressPaymentFragment) fragment).startPayment();
         }
     }
 
@@ -499,11 +503,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     @Override
     public boolean isActive() {
         return !isFinishing();
-    }
-
-    @Override
-    public void onChangePaymentMethod() {
-        presenter.onChangePaymentMethod();
     }
 
     @Override

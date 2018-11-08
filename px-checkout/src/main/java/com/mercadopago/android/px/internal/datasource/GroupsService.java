@@ -16,7 +16,6 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.requests.GroupsIntent;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.ArrayList;
@@ -95,11 +94,13 @@ public class GroupsService implements GroupsRepository {
     @NonNull
     MPCall<PaymentMethodSearch> newRequest() {
         //TODO add preference service.
+        final boolean expressPaymentEnabled =
+            paymentSettingRepository.getAdvancedConfiguration().isExpressPaymentEnabled();
         final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
+        final Integer defaultInstallments = checkoutPreference.getPaymentPreference().getDefaultInstallments();
 
         final Collection<String> excludedPaymentTypesSet = new HashSet<>(checkoutPreference.getExcludedPaymentTypes());
         excludedPaymentTypesSet.addAll(getUnsupportedPaymentTypes(checkoutPreference.getSite()));
-        final GroupsIntent groupsIntent = new GroupsIntent(paymentSettingRepository.getPrivateKey());
 
         final String excludedPaymentTypesAppended =
             getListAsString(new ArrayList<>(excludedPaymentTypesSet), SEPARATOR);
@@ -118,12 +119,14 @@ public class GroupsService implements GroupsRepository {
                 amountRepository.getAmountToPay(),
                 excludedPaymentTypesAppended,
                 excludedPaymentMethodsAppended,
-                groupsIntent,
                 checkoutPreference.getSite().getId(),
                 ProcessingModes.AGGREGATOR,
                 cardsWithEscAppended,
                 supportedPluginsAppended,
-                differentialPricingId);
+                differentialPricingId,
+                defaultInstallments,
+                expressPaymentEnabled,
+                paymentSettingRepository.getPrivateKey());
     }
 
     @NonNull

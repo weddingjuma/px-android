@@ -1,6 +1,7 @@
 ## VERSION 4.3.0
 _31_10_2018_
 
+ * FEATURE - Express checkout.
  * FEATURE - Skip Payer Information.
  * FEATURE - Pec Payment Method.
  * FEATURE - Interactive instructions in congrats.

@@ -18,12 +18,14 @@
 
 
 -keep class com.mercadopago.android.px.model.** { *; } #dtos
+-keep class com.mercadopago.android.px.tracking.internal.model.** { *; } #dtos
 -keep class com.mercadopago.android.px.internal.viewmodel.** { *; } #dtos
 -keep class com.mercadopago.android.px.configuration.** { *; } #dtos
 -keep class com.mercadopago.android.px.constants.PaymentTypes { *; } #dtos
 
 -dontnote com.mercadopago.android.px.configuration.**
 -dontnote com.mercadopago.android.px.model.**
+-dontnote com.mercadopago.android.px.tracking.internal.model.**
 -dontnote com.mercadopago.android.px.internal.viewmodel.**
 -dontnote com.mercadopago.android.px.constants.PaymentTypes
 -dontnote com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl #se usa esta clase pero no se tiene la lib

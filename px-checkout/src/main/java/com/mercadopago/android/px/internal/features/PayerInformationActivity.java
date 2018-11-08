@@ -642,19 +642,19 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     }
 
     private void requestIdentificationNumberFocus() {
-        Tracker.trackScreen(TrackingUtil.SCREEN_ID_BOLBRADESCO_CPF, TrackingUtil.SCREEN_ID_BOLBRADESCO_CPF, getApplicationContext());
+        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_CPF, TrackingUtil.VIEW_PATH_BOLBRADESCO_CPF, getApplicationContext());
         mCurrentEditingEditText = IDENTIFICATION_NUMBER_INPUT;
         openKeyboard(mIdentificationNumberEditText);
     }
 
     private void requestIdentificationNameFocus() {
-        Tracker.trackScreen(TrackingUtil.SCREEN_ID_BOLBRADESCO_NAME, TrackingUtil.SCREEN_ID_BOLBRADESCO_NAME, getApplicationContext());
+        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_NAME, TrackingUtil.VIEW_PATH_BOLBRADESCO_NAME, getApplicationContext());
         mCurrentEditingEditText = IDENTIFICATION_NAME_INPUT;
         openKeyboard(mIdentificationNameEditText);
     }
 
     private void requestIdentificationLastNameFocus() {
-        Tracker.trackScreen(TrackingUtil.SCREEN_ID_BOLBRADESCO_LASTNAME, TrackingUtil.SCREEN_ID_BOLBRADESCO_LASTNAME, getApplicationContext());
+        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_LASTNAME, TrackingUtil.VIEW_PATH_BOLBRADESCO_LASTNAME, getApplicationContext());
         mCurrentEditingEditText = IDENTIFICATION_LAST_NAME_INPUT;
         openKeyboard(mIdentificationLastNameEditText);
     }

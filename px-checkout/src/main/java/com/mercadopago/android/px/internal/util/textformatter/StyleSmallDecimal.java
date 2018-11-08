@@ -26,6 +26,11 @@ class StyleSmallDecimal extends Style {
         return makeSmallAfterSeparator(decimalSeparator, totalText);
     }
 
+    @Override
+    public Spannable toSpannable() {
+        return apply(null);
+    }
+
     private Spannable makeSmallAfterSeparator(final Character decimalSeparator, final String totalText) {
         if (totalText.contains(decimalSeparator.toString())) {
             final String[] splitted = totalText.split(decimalSeparator.toString());

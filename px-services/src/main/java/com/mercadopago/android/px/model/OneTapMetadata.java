@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
+@Deprecated
 public class OneTapMetadata implements Parcelable, Serializable {
 
     @SerializedName("payment_method_id")
@@ -55,8 +56,13 @@ public class OneTapMetadata implements Parcelable, Serializable {
         return card;
     }
 
+    public boolean isCard() {
+        return card != null;
+    }
+
     public boolean isValidOneTapType() {
         return PaymentTypes.isPlugin(paymentTypeId) ||
             (PaymentTypes.isCardPaymentType(paymentTypeId) && card != null);
     }
+
 }

@@ -3,7 +3,6 @@ package com.mercadopago.android.px.tracking.internal.services;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import com.mercadopago.android.px.internal.util.HttpClientUtil;
-import com.mercadopago.android.px.model.EventTrackIntent;
 import com.mercadopago.android.px.model.PaymentIntent;
 import com.mercadopago.android.px.model.TrackingIntent;
 import com.mercadopago.android.px.tracking.internal.Settings;
@@ -29,11 +28,11 @@ public class MPTrackingServiceImpl implements MPTrackingService {
     }
 
     private TrackingAPI createClient() {
-        return new Retrofit.Builder()
-            .client(HttpClientUtil.createClient(CONNECT_TIMEOUT, READ_TIMEOUT, WRITE_TIMEOUT))
+        return new Retrofit.Builder().client(HttpClientUtil.createClient(CONNECT_TIMEOUT, READ_TIMEOUT, WRITE_TIMEOUT))
                 .addConverterFactory(GsonConverterFactory.create(JsonConverter.getInstance().getGson()))
                 .baseUrl(BASE_URL)
-            .build().create(TrackingAPI.class);
+            .build()
+            .create(TrackingAPI.class);
     }
 
     @Override
@@ -72,35 +71,5 @@ public class MPTrackingServiceImpl implements MPTrackingService {
                 Log.e("Failure", "Service failure");
             }
         });
-    }
-
-    @Override
-    public void trackEvents(final String publicKey, final EventTrackIntent eventTrackIntent) {
-
-        final Call<Void> call =
-            trackingAPI
-                .trackEvents(Settings.eventsTrackingVersion, Settings.servicesVersion, publicKey, eventTrackIntent);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(@NonNull final Call<Void> call, @NonNull final Response<Void> response) {
-                if (response.code() == 400) {
-                    Log.e("Failure", "Error 400, parameter invalid");
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull final Call<Void> call, @NonNull final Throwable t) {
-                Log.e("Failure", "Service failure");
-            }
-        });
-    }
-
-    @Override
-    public void trackEvents(final String publicKey, final EventTrackIntent eventTrackIntent,
-        final Callback<Void> callback) {
-        final Call<Void> call =
-            trackingAPI
-                .trackEvents(Settings.eventsTrackingVersion, Settings.servicesVersion, publicKey, eventTrackIntent);
-        call.enqueue(callback);
     }
 }

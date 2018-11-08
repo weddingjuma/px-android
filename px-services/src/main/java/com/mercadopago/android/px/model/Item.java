@@ -4,12 +4,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.Size;
 import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Model that represents the item which will be paid.
@@ -122,10 +120,6 @@ public class Item implements Serializable, Parcelable {
             totalAmount = totalAmount.add(getItemTotalAmount(item));
         }
         return totalAmount;
-    }
-
-    public static String getItemsTitle(@NonNull @Size(min = 1) final List<Item> items, final String multipleDefault) {
-        return items.size() > 1 ? multipleDefault : items.get(0).getTitle();
     }
 
     /* default */ Item(final Parcel in) {

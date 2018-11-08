@@ -13,6 +13,7 @@ import com.mercadopago.android.px.testcheckout.pages.DiscountCodeInputPage;
 import com.mercadopago.android.px.testcheckout.pages.DiscountCongratsPage;
 import com.mercadopago.android.px.testcheckout.pages.DiscountDetailPage;
 import com.mercadopago.android.px.testcheckout.pages.ExpiryDatePage;
+import com.mercadopago.android.px.testcheckout.pages.ExpressPaymentPage;
 import com.mercadopago.android.px.testcheckout.pages.IdentificationPage;
 import com.mercadopago.android.px.testcheckout.pages.InstallmentsPage;
 import com.mercadopago.android.px.testcheckout.pages.IssuerPage;
@@ -144,6 +145,7 @@ public class DefaultValidator implements CheckoutValidator {
         //TODO implement default PX Validations
     }
 
+    @Deprecated
     @Override
     public void validate(@NonNull final OneTapPage oneTapPage) {
         //TODO implement default PX Validations
@@ -161,6 +163,11 @@ public class DefaultValidator implements CheckoutValidator {
 
     @Override
     public void validate(@NonNull final RejectedPage rejectedPage) {
+        //TODO implement default PX Validations
+    }
+
+    @Override
+    public void validate(final ExpressPaymentPage expressPaymentPage) {
         //TODO implement default PX Validations
     }
 

@@ -14,12 +14,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:minHeight="@dimen/px_promotion_logo_height">
+        android:minHeight="@dimen/px_s_height">
 
         <ImageView
             android:id="@+id/mpsdkBankImg"
             android:layout_width="@dimen/px_promotion_logo_width"
-            android:layout_height="@dimen/px_promotion_logo_height"
+            android:layout_height="@dimen/px_s_height"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
             android:contentDescription="@string/px_bank"

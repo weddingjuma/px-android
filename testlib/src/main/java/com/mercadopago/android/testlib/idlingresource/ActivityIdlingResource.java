@@ -39,7 +39,7 @@ public class ActivityIdlingResource implements IdlingResource {
 
     private Activity getActivityInstance() {
         final Activity[] mActivity = new Activity[1];
-        Collection<Activity> resumedActivities =
+        final Collection<Activity> resumedActivities =
             ActivityLifecycleMonitorRegistry.getInstance().getActivitiesInStage(Stage.RESUMED);
         mActivity[0] = resumedActivities.iterator().next();
         return mActivity[0];

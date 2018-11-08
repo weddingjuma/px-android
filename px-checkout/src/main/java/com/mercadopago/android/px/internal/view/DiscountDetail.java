@@ -36,7 +36,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
         return mainContainer;
     }
 
-    private void configureSubDetailsMessage(View mainContainer) {
+    private void configureSubDetailsMessage(final View mainContainer) {
         if (props.discountRepository.isNotAvailableDiscount()) {
             mainContainer.findViewById(R.id.px_discount_detail_line).setVisibility(View.GONE);
             mainContainer.findViewById(R.id.px_discount_sub_details).setVisibility(View.GONE);
@@ -78,7 +78,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
             mainContainer.getContext().getResources().getDimensionPixelSize(R.dimen.px_xxs_margin));
     }
 
-    private void setDetailMessage(TextView detailTextView, int detailId, View view) {
+    private void setDetailMessage(final TextView detailTextView, final int detailId, final View view) {
         String detailMessage = view.getResources().getString(detailId);
 
         if (isEndDateApplicable()) {

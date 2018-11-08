@@ -36,6 +36,10 @@ public final class PaymentConfigurationUtils {
 
         return new PaymentConfiguration.Builder(paymentProcessor)
             .addPaymentMethodPlugin(paymentMethodPlugin)
+            .setDiscountConfiguration(
+                DiscountConfiguration.withDiscount(new Discount.Builder("1", Sites.ARGENTINA.getCurrencyId(),
+                        new BigDecimal("10.5")).setAmountOff(new BigDecimal("10.5")).build(),
+                    new Campaign.Builder("1").setMaxCouponAmount(new BigDecimal("200")).build()))
             .build();
     }
 

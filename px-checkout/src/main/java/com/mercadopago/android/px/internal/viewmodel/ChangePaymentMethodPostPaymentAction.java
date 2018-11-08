@@ -15,7 +15,7 @@ public class ChangePaymentMethodPostPaymentAction extends PostPaymentAction {
 
     @Override
     public void execute(@NonNull final ActionController actionController) {
-        actionController.changePaymentMethod();
+        actionController.onChangePaymentMethod();
     }
 
     public static final Creator<ChangePaymentMethodPostPaymentAction> CREATOR =

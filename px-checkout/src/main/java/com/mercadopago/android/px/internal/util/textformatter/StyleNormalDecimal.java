@@ -21,4 +21,9 @@ class StyleNormalDecimal extends Style {
     protected Spannable apply(final CharSequence charSequence) {
         return amountFormatter.apply(charSequence);
     }
+
+    @Override
+    public Spannable toSpannable() {
+        return apply(null);
+    }
 }

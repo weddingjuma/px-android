@@ -16,6 +16,7 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
 import com.mercadopago.android.px.mocks.Payments;
 import com.mercadopago.android.px.model.Card;
@@ -38,7 +39,6 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.utils.PluginInitializationSuccess;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import java.util.ArrayList;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -47,7 +47,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHANGE_PAYMENT_METHOD;
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubExpiredPreference;
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItem;
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItemAndPayer;
@@ -303,8 +302,9 @@ public class CheckoutPresenterTest {
     public void whenPaymentIsCanceledBecauseUserWantsToSelectOtherPaymentMethodThenShowPaymentMethodSelection() {
         final CheckoutPresenter presenter = getPresenter();
 
-        presenter.changePaymentMethod();
+        presenter.onChangePaymentMethod();
 
+        verify(checkoutView).transitionOut();
         verify(checkoutView).showPaymentMethodSelection();
         verifyNoMoreInteractions(checkoutView);
         verifyNoMoreInteractions(checkoutProvider);
@@ -316,20 +316,10 @@ public class CheckoutPresenterTest {
         when(paymentRepository.getPayment()).thenReturn(mock(Payment.class));
         when(internalConfiguration.shouldExitOnPaymentMethodChange()).thenReturn(true);
 
-        presenter.changePaymentMethod();
-
-        verify(checkoutView).finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) paymentRepository.getPayment());
-    }
-
-    @Test
-    public void whenUserSelectChangePaymentMethodFromReviewAndConfirmAndExitOnIsTrueThenNotShowPaymentMehotdSelection() {
-        final CheckoutPresenter presenter = getPresenter();
-
-        when(internalConfiguration.shouldExitOnPaymentMethodChange()).thenReturn(true);
-
         presenter.onChangePaymentMethod();
 
-        verify(checkoutView).finishWithPaymentResult(RESULT_CHANGE_PAYMENT_METHOD);
+        verify(checkoutView).transitionOut();
+        verify(checkoutView).finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) paymentRepository.getPayment());
     }
 
     @Test

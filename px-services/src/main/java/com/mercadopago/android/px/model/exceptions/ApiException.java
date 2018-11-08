@@ -1,5 +1,7 @@
 package com.mercadopago.android.px.model.exceptions;
 
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import java.io.Serializable;
@@ -59,6 +61,18 @@ public class ApiException implements Serializable {
             }
         }
         return found;
+    }
+
+    @Nullable
+    public Cause getFirstCause() {
+        if (cause != null) {
+            for (final Cause c : cause) {
+                if (!TextUtil.isEmpty(c.getCode())) {
+                    return c;
+                }
+            }
+        }
+        return null;
     }
 
     public class ErrorCodes {

@@ -6,9 +6,9 @@ import android.os.StrictMode;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ProgressBar;
+import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.tracking.internal.Settings;
 import com.mercadopago.android.px.tracking.internal.TrackingEnvironments;
-import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.utils.ExamplesUtils;
 import com.mercadopago.example.R;
 
@@ -33,6 +33,7 @@ public class CheckoutExampleActivity extends AppCompatActivity {
         Settings.setTrackingEnvironment(TrackingEnvironments.STAGING);
 
         setContentView(R.layout.activity_checkout_example);
+
         mProgressBar = findViewById(R.id.progressBar);
         mRegularLayout = findViewById(R.id.regularLayout);
 

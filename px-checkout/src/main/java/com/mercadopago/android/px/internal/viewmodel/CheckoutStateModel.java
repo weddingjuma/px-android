@@ -8,13 +8,13 @@ public final class CheckoutStateModel {
     private static final String EXTRA_PM_EDITED = "EXTRA_PM_EDITED";
     private static final String EXTRA_EDITED_FROM_RYC = "EXTRA_EDITED_FROM_RYC";
     private static final String EXTRA_UNIQUE_PM = "EXTRA_UNIQUE_PM";
-    private static final String EXTRA_IS_ONE_TAP = "EXTRA_IS_ONE_TAP";
+    private static final String EXTRA_IS_EXPRESS_CHECKOUT = "EXTRA_IS_EXPRESS_CHECKOUT";
 
     public boolean paymentMethodEdited;
     public boolean editPaymentMethodFromReviewAndConfirm;
 
     public boolean isUniquePaymentMethod;
-    public boolean isOneTap;
+    public boolean isExpressCheckout;
 
     public CheckoutStateModel() {
     }
@@ -23,7 +23,7 @@ public final class CheckoutStateModel {
         bundle.putBoolean(EXTRA_PM_EDITED, paymentMethodEdited);
         bundle.putBoolean(EXTRA_EDITED_FROM_RYC, editPaymentMethodFromReviewAndConfirm);
         bundle.putBoolean(EXTRA_UNIQUE_PM, isUniquePaymentMethod);
-        bundle.putBoolean(EXTRA_IS_ONE_TAP, isOneTap);
+        bundle.putBoolean(EXTRA_IS_EXPRESS_CHECKOUT, isExpressCheckout);
     }
 
     public static CheckoutStateModel fromBundle(@NonNull final Bundle bundle) {
@@ -31,7 +31,7 @@ public final class CheckoutStateModel {
         stateModel.paymentMethodEdited = bundle.getBoolean(EXTRA_PM_EDITED);
         stateModel.editPaymentMethodFromReviewAndConfirm = bundle.getBoolean(EXTRA_EDITED_FROM_RYC);
         stateModel.isUniquePaymentMethod = bundle.getBoolean(EXTRA_UNIQUE_PM);
-        stateModel.isOneTap = bundle.getBoolean(EXTRA_IS_ONE_TAP);
+        stateModel.isExpressCheckout = bundle.getBoolean(EXTRA_IS_EXPRESS_CHECKOUT);
         return stateModel;
     }
 }

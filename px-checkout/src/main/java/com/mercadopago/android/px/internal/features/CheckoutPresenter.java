@@ -21,9 +21,11 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginInitTask;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Card;
@@ -40,11 +42,8 @@ import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
-import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import java.util.List;
 import java.util.Map;
-
-import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHANGE_PAYMENT_METHOD;
 
 public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvider> implements PaymentServiceHandler,
     PostPaymentAction.ActionController {
@@ -68,7 +67,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     private final InternalConfiguration internalConfiguration;
 
     @NonNull
-    private BusinessModelMapper businessModelMapper;
+    private final BusinessModelMapper businessModelMapper;
 
     private transient FailureRecovery failureRecovery;
 
@@ -224,10 +223,10 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     /* default */ void noDefaultPaymentMethods(final PaymentMethodSearch paymentMethodSearch) {
-        saveIsOneTap(paymentMethodSearch);
+        saveIsExpressCheckout(paymentMethodSearch);
         savePaymentMethodQuantity(paymentMethodSearch);
 
-        if (state.isOneTap) {
+        if (state.isExpressCheckout) {
             getView().hideProgress();
             getView().showOneTap();
         } else {
@@ -532,15 +531,15 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
      */
     public void cancelCheckout() {
         //TODO improve this
-        if (state.isOneTap) {
+        if (state.isExpressCheckout) {
             getView().hideProgress();
         } else {
             getView().cancelCheckout();
         }
     }
 
-    private void saveIsOneTap(final PaymentMethodSearch paymentMethodSearch) {
-        state.isOneTap = paymentMethodSearch.hasOneTapMetadata();
+    private void saveIsExpressCheckout(final PaymentMethodSearch paymentMethodSearch) {
+        state.isExpressCheckout = paymentMethodSearch.hasExpressCheckoutMetadata();
     }
 
     /**
@@ -548,31 +547,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
      */
     public void exitWithCode(final int resCode) {
         getView().exitCheckout(resCode);
-    }
-
-    public void onChangePaymentMethodFromReviewAndConfirm() {
-        //TODO remove when navigation is corrected and works with stack.
-        onChangePaymentMethod(true);
-    }
-
-    public void onChangePaymentMethod() {
-        onChangePaymentMethod(false);
-    }
-
-    private void onChangePaymentMethod(final boolean fromReviewAndConfirm) {
-        if (fromReviewAndConfirm) {
-            //Button "change payment method" in R&C
-            getView().transitionOut();
-        }
-
-        if (internalConfiguration.shouldExitOnPaymentMethodChange()) {
-            getView().finishWithPaymentResult(RESULT_CHANGE_PAYMENT_METHOD);
-        } else {
-            //TODO remove when navigation is corrected and works with stack.
-            state.editPaymentMethodFromReviewAndConfirm = fromReviewAndConfirm;
-            state.paymentMethodEdited = true;
-            getView().showPaymentMethodSelection();
-        }
     }
 
     public boolean isUniquePaymentMethod() {
@@ -638,19 +612,31 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         recoverPayment();
     }
 
+    //TODO separate with better navigation when we have a proper driver.
     @Override
-    public void changePaymentMethod() {
+    public void onChangePaymentMethod() {
+        state.paymentMethodEdited = true;
+        getView().transitionOut();
+
         if (internalConfiguration.shouldExitOnPaymentMethodChange()) {
             final IPayment payment = paymentRepository.getPayment();
-            if (payment instanceof Payment) {
-                getView().finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD,
-                    (Payment) payment);
+            if (payment != null && payment instanceof Payment) {
+                getView().finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) payment);
             } else {
                 getView().finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD);
             }
         } else {
-            state.paymentMethodEdited = true;
             getView().showPaymentMethodSelection();
         }
+    }
+
+    //TODO separate with better navigation when we have a proper driver.
+    public void onChangePaymentMethodFromReviewAndConfirm() {
+        state.editPaymentMethodFromReviewAndConfirm = true;
+        onChangePaymentMethod();
+    }
+
+    public void trackAbortExpress() {
+        Tracker.trackAbortExpress();
     }
 }

@@ -125,7 +125,7 @@ public class BusinessPaymentRenderer extends Renderer<BusinessPaymentContainer> 
         final Context context = linearLayout.getContext();
         final Header header = new Header(HeaderProps.from(component.props.payment, context), component.getDispatcher());
         final View render = RendererFactory.create(context, header).render(linearLayout);
-        return render.findViewById(R.id.mpsdkPaymentResultContainerHeader);
+        return render.findViewById(R.id.headerContainer);
     }
 
     @NonNull

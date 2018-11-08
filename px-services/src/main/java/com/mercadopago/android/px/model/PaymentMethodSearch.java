@@ -9,19 +9,134 @@ import java.util.List;
 
 public class PaymentMethodSearch implements Serializable {
 
+    /**
+     * express list contains the list of
+     * user related payment methods to offer inside ExpressCheckout
+     */
+    @Nullable
+    private List<ExpressMetadata> express;
+
     private List<PaymentMethodSearchItem> groups;
 
     @SerializedName("custom_options")
     private List<CustomSearchItem> customSearchItems;
 
-    @SerializedName("one_tap")
-    private OneTapMetadata oneTapMetadata;
-
     private List<PaymentMethod> paymentMethods;
 
     private List<Card> cards;
 
+    //region deprecated
+    /**
+     * old account money support that no longer exists.
+     * we will delete this attr on px v5
+     */
+    @Deprecated
     private AccountMoney accountMoney;
+
+    /**
+     * @deprecated use new {{@link #express}}
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    @SerializedName("one_tap")
+    private OneTapMetadata oneTapMetadata;
+
+    /**
+     * @deprecated please use new {{@link #hasExpressCheckoutMetadata()}
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public boolean hasOneTapMetadata() {
+        return oneTapMetadata != null && getOneTapMetadata().isValidOneTapType();
+    }
+
+    /**
+     * @deprecated please use new {{@link #getExpress()}}
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public OneTapMetadata getOneTapMetadata() {
+        return oneTapMetadata;
+    }
+
+    /**
+     * @deprecated please do not modify this information on runtime.
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public void setCards(List<Card> cards) {
+        this.cards = cards;
+    }
+
+    /**
+     * @deprecated please do not modify this information on runtime.
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
+        this.paymentMethods = paymentMethods;
+    }
+
+    /**
+     * old account money support that no longer exists.
+     *
+     * @deprecated please do not modify this information on runtime.
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public void setAccountMoney(AccountMoney accountMoney) {
+        this.accountMoney = accountMoney;
+    }
+
+    /**
+     * old account money support that no longer exists.
+     *
+     * @deprecated we will delete this method on px v5
+     */
+    @Deprecated
+    public AccountMoney getAccountMoney() {
+        return accountMoney;
+    }
+
+    /**
+     * @deprecated we will delete this method on px v5
+     */
+    @Deprecated
+    public boolean hasSavedCards() {
+        return cards != null && !cards.isEmpty();
+    }
+
+    /**
+     * @deprecated we will delete this method on px v5
+     */
+    @Deprecated
+    public void setCards(List<Card> cards, String lastFourDigitsText) {
+        if (cards != null) {
+            customSearchItems = new ArrayList<>();
+            this.cards = new ArrayList<>();
+
+            for (Card card : cards) {
+                CustomSearchItem searchItem = new CustomSearchItem();
+                searchItem.setDescription(lastFourDigitsText + " " + card.getLastFourDigits());
+                searchItem.setType(card.getPaymentMethod().getPaymentTypeId());
+                searchItem.setId(card.getId());
+                searchItem.setPaymentMethodId(card.getPaymentMethod().getId());
+                customSearchItems.add(searchItem);
+                this.cards.add(card);
+            }
+        }
+    }
+
+    /**
+     * @deprecated please do not modify this information on runtime.
+     * we will delete this method on px v5
+     */
+    @Deprecated
+    public void setGroups(List<PaymentMethodSearchItem> groups) {
+        this.groups = groups;
+    }
+
+    //endregion deprecated
 
     public List<PaymentMethodSearchItem> getGroups() {
         return groups;
@@ -29,10 +144,6 @@ public class PaymentMethodSearch implements Serializable {
 
     public List<PaymentMethod> getPaymentMethods() {
         return paymentMethods;
-    }
-
-    public void setGroups(List<PaymentMethodSearchItem> groups) {
-        this.groups = groups;
     }
 
     public boolean hasSearchItems() {
@@ -83,7 +194,7 @@ public class PaymentMethodSearch implements Serializable {
 
     private PaymentMethodSearchItem searchItemInList(List<PaymentMethodSearchItem> list, PaymentMethod paymentMethod) {
         PaymentMethodSearchItem requiredItem = null;
-        for (PaymentMethodSearchItem currentItem : list) {
+        for (final PaymentMethodSearchItem currentItem : list) {
 
             //Case like "pagofacil", without the payment type in the item id.
             if (itemMatchesPaymentMethod(currentItem, paymentMethod) &&
@@ -113,7 +224,7 @@ public class PaymentMethodSearch implements Serializable {
     public PaymentMethod getPaymentMethodById(@Nullable String paymentMethodId) {
         PaymentMethod foundPaymentMethod = null;
         if (paymentMethods != null) {
-            for (PaymentMethod paymentMethod : paymentMethods) {
+            for (final PaymentMethod paymentMethod : paymentMethods) {
                 if (paymentMethod.getId().equals(paymentMethodId)) {
                     foundPaymentMethod = paymentMethod;
                     break;
@@ -123,10 +234,11 @@ public class PaymentMethodSearch implements Serializable {
         return foundPaymentMethod;
     }
 
-    public Card getCardById(String cardId) {
+    @Nullable
+    public Card getCardById(@NonNull final String cardId) {
         Card foundCard = null;
         if (cards != null) {
-            for (Card card : cards) {
+            for (final Card card : cards) {
                 if (card.getId().equals(cardId)) {
                     foundCard = card;
                     break;
@@ -136,10 +248,12 @@ public class PaymentMethodSearch implements Serializable {
         return foundCard;
     }
 
+    @Nullable
     public List<CustomSearchItem> getCustomSearchItems() {
         return customSearchItems;
     }
 
+    @Nullable
     public List<Card> getCards() {
         return cards;
     }
@@ -148,49 +262,19 @@ public class PaymentMethodSearch implements Serializable {
         return customSearchItems != null && !customSearchItems.isEmpty();
     }
 
-    public AccountMoney getAccountMoney() {
-        return accountMoney;
+    /**
+     * @return the list of express options for the user to select.
+     */
+    @Nullable
+    public List<ExpressMetadata> getExpress() {
+        return express;
     }
 
-    public void setAccountMoney(AccountMoney accountMoney) {
-        this.accountMoney = accountMoney;
-    }
-
-    public boolean hasSavedCards() {
-        return cards != null && !cards.isEmpty();
-    }
-
-    public void setCards(List<Card> cards, String lastFourDigitsText) {
-        if (cards != null) {
-            customSearchItems = new ArrayList<>();
-            this.cards = new ArrayList<>();
-
-            for (Card card : cards) {
-                CustomSearchItem searchItem = new CustomSearchItem();
-                searchItem.setDescription(lastFourDigitsText + " " + card.getLastFourDigits());
-                searchItem.setType(card.getPaymentMethod().getPaymentTypeId());
-                searchItem.setId(card.getId());
-                searchItem.setPaymentMethodId(card.getPaymentMethod().getId());
-                customSearchItems.add(searchItem);
-                this.cards.add(card);
-            }
-        }
-    }
-
-    public boolean hasOneTapMetadata() {
-        return oneTapMetadata != null && getOneTapMetadata().isValidOneTapType();
-    }
-
-    public void setCards(List<Card> cards) {
-        this.cards = cards;
-    }
-
-    public void setPaymentMethods(List<PaymentMethod> paymentMethods) {
-        this.paymentMethods = paymentMethods;
-    }
-
-    public OneTapMetadata getOneTapMetadata() {
-        return oneTapMetadata;
+    /**
+     * @return boolean that represents if there is express information.
+     */
+    public boolean hasExpressCheckoutMetadata() {
+        return express != null && !express.isEmpty();
     }
 
     @Nullable

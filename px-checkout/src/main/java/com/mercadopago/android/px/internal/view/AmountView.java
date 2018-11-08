@@ -240,14 +240,14 @@ public class AmountView extends LinearLayoutCompat {
                 .amount(discount.getPercentOff())
                 .normalDecimals()
                 .into(amountDescription)
-                .holder(R.string.px_discount_percent_off_percent);
+                .holder(R.string.px_discount_percent_off);
         } else {
             TextFormatter.withCurrencyId(discount.getCurrencyId())
                 .withSpace()
                 .amount(discount.getAmountOff())
                 .normalDecimals()
                 .into(amountDescription)
-                .holder(R.string.px_discount_amount_off);
+                .holder(R.string.px_discount_amount_off_with_minus);
         }
     }
 }

@@ -4,10 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import com.mercadopago.android.px.model.ActionEvent;
 import com.mercadopago.android.px.model.AppInformation;
 import com.mercadopago.android.px.model.DeviceInfo;
 import com.mercadopago.android.px.model.Event;
@@ -15,17 +11,10 @@ import com.mercadopago.android.px.model.PaymentIntent;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.TrackingIntent;
 import com.mercadopago.android.px.tracking.PXEventListener;
+import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.services.MPTrackingService;
 import com.mercadopago.android.px.tracking.internal.services.MPTrackingServiceImpl;
-import com.mercadopago.android.px.tracking.internal.strategies.BatchTrackingStrategy;
-import com.mercadopago.android.px.tracking.internal.strategies.ConnectivityCheckerImpl;
-import com.mercadopago.android.px.tracking.internal.strategies.EventsDatabaseImpl;
-import com.mercadopago.android.px.tracking.internal.strategies.ForcedStrategy;
-import com.mercadopago.android.px.tracking.internal.strategies.NoOpStrategy;
-import com.mercadopago.android.px.tracking.internal.strategies.RealTimeTrackingStrategy;
-import com.mercadopago.android.px.tracking.internal.strategies.TrackingStrategy;
-import com.mercadopago.android.px.tracking.internal.utils.JsonConverter;
-import java.lang.reflect.Type;
+import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,11 +28,20 @@ public final class MPTracker {
      */
     @SuppressLint("StaticFieldLeak") private static MPTracker mMPTrackerInstance;
 
-    private EventsDatabaseImpl database;
-
     private PXEventListener mPXEventListener;
 
+    private PXTrackingListener pxTrackingListener;
+
     private MPTrackingService mMPTrackingService;
+
+    /**
+     * Added in 4.3.0 version - temporal replacement for tracking additional params.
+     */
+    @Nullable private Map<String, ?> flowDetail;
+    /**
+     * Added in 4.3.0 version - temporal replacement for tracking additional params.
+     */
+    @Nullable private String flowName;
 
     private String mPublicKey;
     private String mSdkVersion;
@@ -54,10 +52,10 @@ public final class MPTracker {
     private static final String SDK_TYPE = "native";
     private static final String DEFAULT_FLAVOUR = "3";
 
-    private Boolean trackerInitialized = false;
+    private static final String FLOW_DETAIL_KEY = "flow_detail";
+    private static final String FLOW_NAME_KEY = "flow";
 
-    private TrackingStrategy trackingStrategy;
-    private Event mEvent;
+    private Boolean trackerInitialized = false;
 
     private MPTracker() {
         //Do nothing
@@ -76,37 +74,43 @@ public final class MPTracker {
         }
     }
 
-    /* default */
-    @VisibleForTesting
-    TrackingStrategy getTrackingStrategy() {
-        return trackingStrategy;
-    }
-
-    /* default */
-    @VisibleForTesting
-    void setMPTrackingService(final MPTrackingService trackingService) {
-        mMPTrackingService = trackingService;
-    }
-
-    /* default */
-    @VisibleForTesting
-    Event getEvent() {
-        return mEvent;
-    }
-
-    public void clearExpiredTracks() {
-        if (isDatabaseInitialized()) {
-            database.clearExpiredTracks();
-        }
+    /**
+     * Set listener to track library's screens and events in the app.
+     *
+     * @param PXEventListener PXEventListener implementing the tracking methods
+     * @deprecated Deprecated due to new tracking implementation standards.
+     * Use {@link com.mercadopago.android.px.tracking.internal.MPTracker#setPXTrackingListener(PXTrackingListener)} instead.
+     */
+    @Deprecated
+    public void setTracksListener(final PXEventListener PXEventListener) {
+        mPXEventListener = PXEventListener;
     }
 
     /**
      * Set listener to track library's screens and events in the app.
      *
-     * @param PXEventListener PXEventListener implementing the tracking methods
+     * @param pxTrackingListener implementing the tracking methods
      */
-    public void setTracksListener(final PXEventListener PXEventListener) {
-        mPXEventListener = PXEventListener;
+    public void setPXTrackingListener(final PXTrackingListener pxTrackingListener) {
+        this.pxTrackingListener = pxTrackingListener;
+    }
+
+    /**
+     * Set a map to add information to the library's screen and event tracks.
+     *
+     * @param flowDetail A map with extra information about the flow in your app that uses the checkout.
+     */
+    public void setFlowDetail(@NonNull final Map<String, ? extends Object> flowDetail) {
+        this.flowDetail = flowDetail;
+    }
+
+    /**
+     * Set a name to identify the flow in your app that opens the checkout.
+     *
+     * @param flowName The name that identifies your flow
+     */
+    public void setFlowName(@Nullable final String flowName) {
+        this.flowName = flowName;
     }
 
     /**
@@ -147,7 +151,9 @@ public final class MPTracker {
      * @param deviceInfo Info about the device that is using the app
      * @param event Event to track
      * @param context Application context
+     * @deprecated Old tracking listener.
      */
+    @Deprecated
     public void trackEvent(final String publicKey,
         final AppInformation appInformation,
         final DeviceInfo deviceInfo,
@@ -163,7 +169,9 @@ public final class MPTracker {
      * @param deviceInfo Info about the device that is using the app
      * @param event Event to track
      * @param context Application context
+     * @deprecated Old tracking listener.
      */
+    @Deprecated
     public void trackEvent(final String publicKey,
         final AppInformation appInformation,
         final DeviceInfo deviceInfo,
@@ -173,49 +181,51 @@ public final class MPTracker {
 
         initializeMPTrackingService();
 
-        mEvent = event;
         mContext = context;
 
-        setTrackingStrategy(context, trackingStrategy);
-
-        if (this.trackingStrategy != null) {
-            this.trackingStrategy.setPublicKey(publicKey);
-            this.trackingStrategy.setAppInformation(appInformation);
-            this.trackingStrategy.setDeviceInfo(deviceInfo);
-            this.trackingStrategy.trackEvent(event, context);
-
-            if (this.trackingStrategy.readsEventFromDB()) {
-                database.persist(event);
-            }
-        }
-
-        if (event.getType().equals(Event.TYPE_ACTION)) {
-            final ActionEvent actionEvent = (ActionEvent) event;
-            final Map<String, Object> eventMap = createEventMap(actionEvent);
-            trackEventPerformedListener(eventMap);
-        } else if (event.getType().equals(Event.TYPE_SCREEN_VIEW)) {
+        if (event.getType().equals(Event.TYPE_SCREEN_VIEW)) {
             final ScreenViewEvent screenViewEvent = (ScreenViewEvent) event;
-            trackScreenLaunchedListener(screenViewEvent.getScreenId(), new HashMap<String, String>());
+            trackOldView(screenViewEvent.getScreenId());
+            //New listener tracking compatible.
+            trackViewCompat(screenViewEvent.getScreenId());
         }
     }
 
-    private void initializeDatabase() {
-        if (!isDatabaseInitialized()) {
-            database = new EventsDatabaseImpl(mContext);
+    private void trackViewCompat(@NonNull final String path) {
+        if (pxTrackingListener != null) {
+            pxTrackingListener.onView(path, flowDetail == null ? new HashMap<String, Object>() : flowDetail);
         }
     }
 
-    private boolean isDatabaseInitialized() {
-        return database != null;
+    private void trackOldView(@NonNull final String screenName) {
+        if (mPXEventListener != null) {
+            mPXEventListener.onScreenLaunched(screenName, new HashMap<String, String>());
+        }
     }
 
-    private Map<String, Object> createEventMap(final ActionEvent actionEvent) {
+    public void trackView(@NonNull final String path, @NonNull final Map<String, Object> data) {
+        addAdditionalFlowInfo(data);
+        if (pxTrackingListener != null) {
+            pxTrackingListener.onView(path, data);
+        }
+        //Old tracking Compatibility.
+        trackOldView(path);
+    }
 
-        final String eventJson = JsonConverter.getInstance().toJson(actionEvent);
-        final Type type = new TypeToken<Map<String, Object>>() {
-        }.getType();
-        final Map<String, Object> actionEventDataMap = new Gson().fromJson(eventJson, type);
-        return new HashMap<>(actionEventDataMap);
+    public void trackEvent(@NonNull final String path, @NonNull final Map<String, Object> data) {
+
+        if (pxTrackingListener != null) {
+            // Event friction case needs to add flow detail in a different way. We ignore this case for now.
+            if (!TrackingUtil.EVENT_PATH_FRICTION.equals(path)) {
+                addAdditionalFlowInfo(data);
+            }
+            pxTrackingListener.onEvent(path, data);
+        }
+    }
+
+    private void addAdditionalFlowInfo(@NonNull final Map<String, Object> data) {
+        data.put(FLOW_DETAIL_KEY, flowDetail);
+        data.put(FLOW_NAME_KEY, flowName);
     }
 
     /**
@@ -262,46 +272,5 @@ public final class MPTracker {
      */
     private boolean isTrackerInitialized() {
         return mPublicKey != null && mSdkVersion != null && mSiteId != null && mContext != null;
-    }
-
-    private TrackingStrategy setTrackingStrategy(final Context context, final String strategy) {
-        if (isBatchStrategy(strategy)) {
-            initializeDatabase();
-            trackingStrategy =
-                new BatchTrackingStrategy(database, new ConnectivityCheckerImpl(context), mMPTrackingService);
-        } else if (isForcedStrategy(strategy)) {
-            initializeDatabase();
-            trackingStrategy = new ForcedStrategy(database, new ConnectivityCheckerImpl(context), mMPTrackingService);
-        } else if (isRealTimeStrategy(strategy)) {
-            trackingStrategy = new RealTimeTrackingStrategy(mMPTrackingService);
-        } else {
-            trackingStrategy = new NoOpStrategy();
-        }
-        return trackingStrategy;
-    }
-
-    private boolean isForcedStrategy(final String strategy) {
-        return StrategyMode.FORCED_STRATEGY.equals(strategy);
-    }
-
-    private boolean isBatchStrategy(final String strategy) {
-        return StrategyMode.BATCH_STRATEGY.equals(strategy);
-    }
-
-    private boolean isRealTimeStrategy(final String strategy) {
-        return StrategyMode.REALTIME_STRATEGY.equals(strategy);
-    }
-
-    private void trackScreenLaunchedListener(@NonNull final String screenName,
-        @Nullable final Map<String, String> extraParams) {
-        if (mPXEventListener != null) {
-            mPXEventListener.onScreenLaunched(screenName, extraParams);
-        }
-    }
-
-    private void trackEventPerformedListener(final Map<String, Object> eventMap) {
-        if (mPXEventListener != null) {
-            mPXEventListener.onEvent(eventMap);
-        }
     }
 }

@@ -3,6 +3,7 @@ package com.mercadopago.android.testlib.matchers;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import org.hamcrest.BaseMatcher;
@@ -53,7 +54,7 @@ public final class UtilityMatchers {
         };
     }
 
-    public static Matcher<View> withBackgroundColor(final int color) {
+    public static Matcher<View> withBackgroundColor(@ColorInt final int color) {
         return new TypeSafeMatcher<View>() {
             @Override
             protected boolean matchesSafely(final View item) {

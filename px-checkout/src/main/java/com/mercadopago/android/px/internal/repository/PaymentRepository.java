@@ -3,7 +3,9 @@ package com.mercadopago.android.px.internal.repository;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
+import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPayment;
+import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -12,7 +14,8 @@ public interface PaymentRepository {
 
     void startPayment();
 
-    void startOneTapPayment();
+    void startExpressPayment(@NonNull final ExpressMetadata selectedPaymentMethod,
+        @Nullable final PayerCost payerCost);
 
     boolean isExplodingAnimationCompatible();
 

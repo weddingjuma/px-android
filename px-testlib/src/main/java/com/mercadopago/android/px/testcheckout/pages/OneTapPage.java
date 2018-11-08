@@ -8,6 +8,10 @@ import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
+/**
+ * @deprecated this page does not exists anymore.
+ */
+@Deprecated
 public class OneTapPage extends PageObject<CheckoutValidator> {
 
     public OneTapPage() {
@@ -19,7 +23,6 @@ public class OneTapPage extends PageObject<CheckoutValidator> {
     }
 
     public DiscountDetailPage pressOnDiscountDetail() {
-        onView(withId(R.id.amount_with_discount)).perform(click());
         return new DiscountDetailPage(validator);
     }
 

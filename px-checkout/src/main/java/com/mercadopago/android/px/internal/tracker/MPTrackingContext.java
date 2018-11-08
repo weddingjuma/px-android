@@ -51,10 +51,6 @@ public class MPTrackingContext {
         MPTracker.getInstance().trackEvent(publicKey, appInformation, deviceInfo, event, context, trackingStrategy);
     }
 
-    public void clearExpiredTracks() {
-        MPTracker.getInstance().clearExpiredTracks();
-    }
-
     public static class Builder {
         private final Context context;
         private String publicKey;

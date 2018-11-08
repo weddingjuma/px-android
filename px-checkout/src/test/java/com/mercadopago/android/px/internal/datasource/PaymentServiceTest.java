@@ -15,8 +15,8 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Card;
-import com.mercadopago.android.px.model.CardPaymentMetadata;
-import com.mercadopago.android.px.model.OneTapMetadata;
+import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
@@ -26,6 +26,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,17 +54,17 @@ public class PaymentServiceTest {
     @Mock private TokenRepository tokenRepository;
     @Mock private InstructionsRepository instructionsRepository;
     @Mock private GroupsRepository groupsRepository;
-
     @Mock private PaymentMethodSearch paymentMethodSearch;
-    @Mock OneTapMetadata oneTapMetadata;
+    @Mock private List<ExpressMetadata> expressMetadata;
+
+    @Mock private ExpressMetadata node;
+    @Mock private CardMetadata cardMetadata;
+    @Mock private PayerCost payerCost;
 
     private PaymentService paymentService;
 
-    @Mock CardPaymentMetadata cardPaymentMetadata;
-
     @Before
     public void setUp() {
-        when(paymentMethodSearch.getOneTapMetadata()).thenReturn(oneTapMetadata);
 
         paymentService = new PaymentService(userSelectionRepository,
             paymentSettingRepository,
@@ -84,7 +85,7 @@ public class PaymentServiceTest {
     public void whenOneTapPaymentIsCardSelectCard() {
         final Card card = creditCardPresetMock();
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
         verify(userSelectionRepository).select(card);
     }
 
@@ -92,17 +93,17 @@ public class PaymentServiceTest {
     public void whenOneTapPaymentIsCardSelectPayerCost() {
         creditCardPresetMock();
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
-        verify(userSelectionRepository).select(cardPaymentMetadata.getAutoSelectedInstallment());
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
+        verify(userSelectionRepository).select(payerCost);
     }
 
     @Test
-    public void whenOneTapPaymentIsCardPayerCostAndCardSetted() {
+    public void whenOneTapPaymentIsCardPayerCostAndCardSet() {
         final Card card = creditCardPresetMock();
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
         verify(userSelectionRepository).select(card);
-        verify(userSelectionRepository).select(cardPaymentMetadata.getAutoSelectedInstallment());
+        verify(userSelectionRepository).select(payerCost);
     }
 
     @Test
@@ -112,7 +113,7 @@ public class PaymentServiceTest {
         when(tokenRepository.createToken(card)).thenReturn(new StubFailMpCall(mock(ApiException.class)));
 
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
 
         verify(escManager).hasEsc(card);
         verifyNoMoreInteractions(escManager);
@@ -134,7 +135,7 @@ public class PaymentServiceTest {
         when(tokenRepository.createToken(card)).thenReturn(tokenMPCall);
 
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
 
         verify(escManager).hasEsc(card);
         verifyNoMoreInteractions(escManager);
@@ -149,7 +150,7 @@ public class PaymentServiceTest {
         when(escManager.hasEsc(card)).thenReturn(false);
 
         paymentService.attach(handler);
-        paymentService.startOneTapPayment();
+        paymentService.startExpressPayment(expressMetadata.get(0), payerCost);
 
         verify(escManager).hasEsc(card);
         verifyNoMoreInteractions(escManager);
@@ -169,14 +170,13 @@ public class PaymentServiceTest {
     }
 
     private Card creditCardPresetMock() {
-        final Card card = mock(Card.class);
         when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
-        when(oneTapMetadata.getCard()).thenReturn(cardPaymentMetadata);
-        when(oneTapMetadata.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
-        when(paymentMethodSearch.getOneTapMetadata()).thenReturn(oneTapMetadata);
-        when(paymentMethodSearch.getCardById(cardPaymentMetadata.getId())).thenReturn(card);
-        when(paymentMethodSearch.getPaymentMethodById(oneTapMetadata.getPaymentMethodId()))
-            .thenReturn(mock(PaymentMethod.class));
+        when(expressMetadata.get(0)).thenReturn(node);
+        when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
+        when(node.getCard()).thenReturn(cardMetadata);
+        final Card card = mock(Card.class);
+        when(paymentMethodSearch.getCardById(node.getCard().id)).thenReturn(card);
+        when(paymentMethodSearch.getPaymentMethodById(node.getPaymentMethodId())).thenReturn(mock(PaymentMethod.class));
         return card;
     }
 }

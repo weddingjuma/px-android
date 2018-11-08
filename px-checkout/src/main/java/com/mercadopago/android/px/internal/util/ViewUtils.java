@@ -2,8 +2,12 @@ package com.mercadopago.android.px.internal.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Typeface;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.Spannable;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +15,12 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import com.mercadolibre.android.ui.font.Font;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
+import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
 import static android.view.View.GONE;
 
@@ -123,5 +129,41 @@ public final class ViewUtils {
         params.height = (int) context.getResources().getDimension(height);
         params.width = (int) context.getResources().getDimension(width);
         viewGroup.setLayoutParams(params);
+    }
+
+    public static void setColorInSpannable(final int color, final int indexStart, final int indexEnd,
+        @NonNull final Spannable spannable) {
+        if (color != 0) {
+            spannable.setSpan(new ForegroundColorSpan(color), indexStart, indexEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+    }
+
+    //TODO refactor
+    public static void setFontInSpannable(final int indexStart, final int indexEnd,
+        @NonNull final Spannable spannable, @NonNull final String fontStylePath, @NonNull final Context context) {
+        final Typeface typeface = TypefaceUtils.load(context.getAssets(), fontStylePath);
+        final StyleSpan styleSpan = new StyleSpan(typeface.getStyle());
+        setFontInSpannable(indexStart, indexEnd, spannable, styleSpan);
+    }
+
+    //TODO refactor
+    private static void setFontInSpannable(final int indexStart, final int indexEnd,
+        @NonNull final Spannable spannable, @NonNull final StyleSpan styleSpan) {
+        spannable.setSpan(styleSpan, indexStart, indexEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    }
+
+    //TODO refactor
+    public static void setSemiBoldFontInSpannable(final int indexStart, final int indexEnd,
+        @NonNull final Spannable spannable, @NonNull final Context context) {
+        final String fontStylePath = Font.SEMI_BOLD.getFontPath();
+        final StyleSpan styleSpan;
+        if (fontStylePath == null) {
+            styleSpan = new StyleSpan(Typeface.BOLD);
+        } else {
+            final Typeface typeface = TypefaceUtils.load(context.getAssets(), fontStylePath);
+            styleSpan = new StyleSpan(typeface.getStyle());
+        }
+        setFontInSpannable(indexStart, indexEnd, spannable, styleSpan);
     }
 }

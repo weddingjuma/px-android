@@ -16,6 +16,7 @@ public class AdvancedConfiguration implements Serializable {
      */
     private final boolean bankDealsEnabled;
     private final boolean escEnabled;
+    private final boolean expressEnabled;
     @NonNull private final PaymentResultScreenConfiguration paymentResultScreenConfiguration;
     @NonNull private final ReviewAndConfirmConfiguration reviewAndConfirmConfiguration;
     @NonNull private final DynamicFragmentConfiguration dynamicFragmentConfiguration;
@@ -25,6 +26,7 @@ public class AdvancedConfiguration implements Serializable {
     /* default */ AdvancedConfiguration(final Builder builder) {
         bankDealsEnabled = builder.bankDealsEnabled;
         escEnabled = builder.escEnabled;
+        expressEnabled = builder.expressEnabled;
         paymentResultScreenConfiguration = builder.paymentResultScreenConfiguration;
         reviewAndConfirmConfiguration = builder.reviewAndConfirmConfiguration;
         dynamicFragmentConfiguration = builder.dynamicFragmentConfiguration;
@@ -60,6 +62,10 @@ public class AdvancedConfiguration implements Serializable {
         return reviewAndConfirmConfiguration;
     }
 
+    public boolean isExpressPaymentEnabled() {
+        return expressEnabled;
+    }
+
     @NonNull
     public CustomStringConfiguration getCustomStringConfiguration(){
         return customStringConfiguration;
@@ -69,6 +75,7 @@ public class AdvancedConfiguration implements Serializable {
     public static class Builder {
         /* default */ boolean bankDealsEnabled = true;
         /* default */ boolean escEnabled = false;
+        /* default */ boolean expressEnabled = false;
         /* default */ @NonNull PaymentResultScreenConfiguration paymentResultScreenConfiguration =
             new PaymentResultScreenConfiguration.Builder().build();
         /* default */ @NonNull ReviewAndConfirmConfiguration reviewAndConfirmConfiguration =
@@ -79,7 +86,6 @@ public class AdvancedConfiguration implements Serializable {
             new DynamicDialogConfiguration.Builder().build();
         /* default */ @NonNull CustomStringConfiguration customStringConfiguration =
             new CustomStringConfiguration.Builder().build();
-
 
 
         /**
@@ -162,6 +168,18 @@ public class AdvancedConfiguration implements Serializable {
         }
 
         /**
+         * By default express checkout is disabled. This configuration
+         * allows you to turn on the express behaviour if you have a private key available.
+         *
+         * @param enabled if your checkout supports express mode
+         * @return builder to keep operating
+         */
+        public Builder setExpressPaymentEnable(final boolean enabled) {
+            expressEnabled = enabled;
+            return this;
+        }
+
+        /**
          * Enable to preset configurations to configure specific wordings on
          * several screen locations see {@link CustomStringConfiguration.Builder}
          *
@@ -178,5 +196,6 @@ public class AdvancedConfiguration implements Serializable {
         public AdvancedConfiguration build() {
             return new AdvancedConfiguration(this);
         }
+
     }
 }

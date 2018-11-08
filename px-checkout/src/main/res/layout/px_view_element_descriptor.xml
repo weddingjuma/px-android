@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       xmlns:app="http://schemas.android.com/apk/res-auto"
+       xmlns:tools="http://schemas.android.com/tools"
+       tools:layout_height="wrap_content"
+       tools:layout_width="wrap_content"
+       tools:orientation="vertical"
+       tools:background="@color/coral"
+       tools:parentTag="android.widget.LinearLayout">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/px_xxxs_height"
+        android:foreground="@drawable/px_ring_shape"
+        tools:src="@drawable/px_review_item_default"/>
+
+    <com.mercadopago.android.px.internal.view.MPTextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="@dimen/px_xxxs_margin"
+        android:layout_marginLeft="@dimen/px_xxs_margin"
+        android:layout_marginRight="@dimen/px_xxs_margin"
+        android:layout_marginStart="@dimen/px_xxs_margin"
+        android:layout_marginEnd="@dimen/px_xxs_margin"
+        android:layout_marginTop="@dimen/px_xxxs_margin"
+        android:textAppearance="@style/MLFont.Bold.Semi"
+        android:textColor="@color/ui_meli_black"
+        android:ellipsize="end"
+        android:textSize="@dimen/px_l_text"
+        android:lineSpacingExtra="0sp"
+        app:font_style="bold"
+        tools:text="@string/loading_message"/>
+
+</merge>

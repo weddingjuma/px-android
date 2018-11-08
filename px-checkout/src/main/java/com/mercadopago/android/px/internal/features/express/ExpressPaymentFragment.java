@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.express;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -271,10 +272,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (context instanceof CallBack) {
             callback = (CallBack) context;
         }
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
     public void onDetach() {
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         callback = null;
         presenter.detachView();
         super.onDetach();

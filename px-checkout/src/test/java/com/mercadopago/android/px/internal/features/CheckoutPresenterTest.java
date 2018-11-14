@@ -21,6 +21,7 @@ import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
 import com.mercadopago.android.px.mocks.Payments;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Customer;
+import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PayerCost;
@@ -40,6 +41,7 @@ import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.utils.PluginInitializationSuccess;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.ArrayList;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,6 +54,7 @@ import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubP
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItemAndPayer;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -119,15 +122,15 @@ public class CheckoutPresenterTest {
 
         when(pluginRepository.getInitTask(false)).thenReturn(new PluginInitializationSuccess());
 
-        final CheckoutStateModel model = new CheckoutStateModel();
-        final CheckoutPresenter presenter = new CheckoutPresenter(model, paymentSettingRepository, amountRepository,
-            userSelectionRepository, discountRepository,
-            groupsRepository,
-            pluginRepository,
-            paymentRepository,
-            internalConfiguration,
-            businessModelMapper
-        );
+        final CheckoutPresenter presenter =
+            new CheckoutPresenter(new CheckoutStateModel(), paymentSettingRepository, amountRepository,
+                userSelectionRepository, discountRepository,
+                groupsRepository,
+                pluginRepository,
+                paymentRepository,
+                internalConfiguration,
+                businessModelMapper
+            );
         presenter.attachResourcesProvider(provider);
         presenter.attachView(view);
         return presenter;
@@ -319,7 +322,20 @@ public class CheckoutPresenterTest {
         presenter.onChangePaymentMethod();
 
         verify(checkoutView).transitionOut();
-        verify(checkoutView).finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) paymentRepository.getPayment());
+        verify(checkoutView)
+            .finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD, (Payment) paymentRepository.getPayment());
+    }
+
+    @Test
+    public void whenUserSelectChangePaymentMethodWithoutPaymentAndExitOnIsTrueThenFinishWithPaymentResultChangePaymentMethodCode() {
+        final CheckoutPresenter presenter = getPresenter();
+        when(internalConfiguration.shouldExitOnPaymentMethodChange()).thenReturn(true);
+
+        presenter.onChangePaymentMethod();
+
+        verify(checkoutView).transitionOut();
+        verify(checkoutView)
+            .finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD);
     }
 
     @Test
@@ -490,6 +506,56 @@ public class CheckoutPresenterTest {
         final CheckoutPresenter presenter = getPaymentPresenterWithDefaultAdvancedConfigurationMla();
         presenter.initialize();
         assertTrue(stubView.initTracked);
+    }
+
+    @Test
+    public void whenNoDefaultPaymentMethodsAndIsExpressCheckoutThenShowExpressCheckout() {
+        final CheckoutPresenter presenter = getPresenter();
+        final PaymentMethodSearch search = mock(PaymentMethodSearch.class);
+
+        when(search.hasExpressCheckoutMetadata()).thenReturn(true);
+
+        presenter.noDefaultPaymentMethods(search);
+
+        verifyShowOneTap();
+        verifyNoMoreInteractions(checkoutView);
+        verifyNoMoreInteractions(checkoutProvider);
+    }
+
+    private void verifyShowOneTap() {
+        verify(checkoutView, atLeastOnce()).hideProgress();
+        verify(checkoutView).showOneTap();
+    }
+
+    @Test
+    public void whenCancelExpressCheckoutThenHideProgress() {
+        final CheckoutPresenter presenter = getPresenter();
+        final PaymentMethodSearch search = mock(PaymentMethodSearch.class);
+        final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
+
+        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
+        when(checkoutPreference.getPaymentPreference()).thenReturn(null);
+        when(search.hasExpressCheckoutMetadata()).thenReturn(true);
+
+        presenter.startFlow(search);
+        presenter.cancelCheckout();
+
+        verifyShowOneTap();
+        verify(checkoutView, atLeastOnce()).hideProgress();
+        verifyNoMoreInteractions(checkoutView);
+        verifyNoMoreInteractions(checkoutProvider);
+    }
+
+    @Test
+    public void whenCancelRegularCheckoutThenCancelCheckout() {
+        final CheckoutPresenter presenter = getPresenter();
+
+        presenter.cancelCheckout();
+
+        verify(checkoutView).cancelCheckout();
+
+        verifyNoMoreInteractions(checkoutView);
+        verifyNoMoreInteractions(checkoutProvider);
     }
 
     private static class MockedView implements CheckoutView {

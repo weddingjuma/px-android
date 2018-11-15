@@ -29,8 +29,8 @@ public final class InstallmentsDescriptorNoPayerCost extends InstallmentsDescrip
         if (card == null) {
             return new InstallmentsDescriptorNoPayerCost(currencyId, null);
         } else {
-            return new InstallmentsDescriptorNoPayerCost(currencyId, card.payerCosts,
-                card.defaultPayerCostIndex);
+            return new InstallmentsDescriptorNoPayerCost(currencyId, card.getPayerCosts(),
+                card.getDefaultPayerCostIndex());
         }
     }
 

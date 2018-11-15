@@ -252,7 +252,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     public void onInstallmentsRowPressed(final int currentItem) {
         final CardMetadata cardMetadata = expressMetadataList.get(currentItem).getCard();
         if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
-            final List<PayerCost> payerCostList = cardMetadata.payerCosts;
+            final List<PayerCost> payerCostList = cardMetadata.getPayerCosts();
             if (payerCostList != null && !payerCostList.isEmpty()) {
                 getView().showInstallmentsList(payerCostList, payerCostSelection.get(currentItem));
                 trackInstallments(expressMetadataList.get(currentItem));
@@ -295,7 +295,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     @Override
     public void onPayerCostSelected(final int paymentMethodIndex, final PayerCost payerCostSelected) {
         final CardMetadata cardMetadata = expressMetadataList.get(paymentMethodIndex).getCard();
-        final int selected = cardMetadata.payerCosts.indexOf(payerCostSelected);
+        final int selected = cardMetadata.getPayerCosts().indexOf(payerCostSelected);
         updateElementPosition(paymentMethodIndex, selected);
         getView().collapseInstallmentsSelection();
     }

@@ -100,7 +100,7 @@ public class ElementDescriptorView extends LinearLayout {
             .into(icon);
     }
 
-    public static final class Model {
+    public static class Model {
 
         @NonNull private final String label;
         @NonNull private final String urlIcon;

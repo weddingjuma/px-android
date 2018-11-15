@@ -34,10 +34,10 @@ public class ExpressInstallmentsView implements Serializable {
         @NonNull final String currencyId, @NonNull final BigDecimal totalAmount) {
         final String paymentMethodType = expressMetadata.getPaymentTypeId();
         final String paymentMethodId = expressMetadata.getPaymentMethodId();
-        final String cardId = expressMetadata.getCard().id;
-        final Long issuerId = expressMetadata.getCard().displayInfo.issuerId;
+        final String cardId = expressMetadata.getCard().getId();
+        final Long issuerId = expressMetadata.getCard().getDisplayInfo().issuerId;
         final List<AvailableInstallment> availableInstallments =
-            AvailableInstallment.createFrom(expressMetadata.getCard().payerCosts, currencyId);
+            AvailableInstallment.createFrom(expressMetadata.getCard().getPayerCosts(), currencyId);
 
         return new ExpressInstallmentsView(paymentMethodType, paymentMethodId, issuerId, cardId, totalAmount,
             availableInstallments, currencyId);

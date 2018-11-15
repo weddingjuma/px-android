@@ -175,7 +175,7 @@ public class PaymentServiceTest {
         when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(node.getCard()).thenReturn(cardMetadata);
         final Card card = mock(Card.class);
-        when(paymentMethodSearch.getCardById(node.getCard().id)).thenReturn(card);
+        when(paymentMethodSearch.getCardById(node.getCard().getId())).thenReturn(card);
         when(paymentMethodSearch.getPaymentMethodById(node.getPaymentMethodId())).thenReturn(mock(PaymentMethod.class));
         return card;
     }

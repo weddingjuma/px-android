@@ -21,7 +21,7 @@ public class CardMapper extends Mapper<ExpressMetadata, Card> {
         final CardMetadata cardMetadata = data.getCard();
         final PaymentMethod paymentMethod =
             paymentMethodSearch.getPaymentMethodById(data.getPaymentMethodId());
-        final Card card = paymentMethodSearch.getCardById(cardMetadata.id);
+        final Card card = paymentMethodSearch.getCardById(cardMetadata.getId());
         card.setSecurityCode(paymentMethod != null ? paymentMethod.getSecurityCode() : null);
         card.setPaymentMethod(paymentMethod);
         return card;

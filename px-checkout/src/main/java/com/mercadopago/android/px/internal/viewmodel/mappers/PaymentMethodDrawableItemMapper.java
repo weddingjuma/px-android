@@ -18,7 +18,7 @@ public class PaymentMethodDrawableItemMapper extends Mapper<List<ExpressMetadata
         for (final ExpressMetadata expressMetadata : val) {
             if (expressMetadata.isCard()) {
                 result.add(new SavedCardDrawableFragmentItem(expressMetadata.getPaymentMethodId(),
-                    expressMetadata.getCard().displayInfo));
+                    expressMetadata.getCard().getDisplayInfo()));
             } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
                 result.add(new AccountMoneyDrawableFragmentItem(expressMetadata.getAccountMoney()));
             }

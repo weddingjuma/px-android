@@ -29,7 +29,7 @@ public final class InstallmentsDescriptorWithPayerCost extends InstallmentsDescr
         @NonNull final CardMetadata card, final int selected) {
         final CheckoutPreference checkoutPreference = configuration.getCheckoutPreference();
         final String currencyId = checkoutPreference.getSite().getCurrencyId();
-        return new InstallmentsDescriptorWithPayerCost(currencyId, card.payerCosts, selected);
+        return new InstallmentsDescriptorWithPayerCost(currencyId, card.getPayerCosts(), selected);
     }
 
     private InstallmentsDescriptorWithPayerCost(@NonNull String currencyId,

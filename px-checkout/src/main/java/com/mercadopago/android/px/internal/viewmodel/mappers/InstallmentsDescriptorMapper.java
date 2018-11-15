@@ -42,7 +42,7 @@ public class InstallmentsDescriptorMapper
         if (PaymentTypes.isCreditCardPaymentType(paymentTypeId)) {
             //This model is useful for Credit Card only
             return InstallmentsDescriptorWithPayerCost
-                .createFrom(configuration, cardMetadata, cardMetadata.defaultPayerCostIndex);
+                .createFrom(configuration, cardMetadata, cardMetadata.getDefaultPayerCostIndex());
         } else if (!expressMetadata.isCard() || PaymentTypes.DEBIT_CARD.equals(paymentTypeId) ||
             PaymentTypes.PREPAID_CARD.equals(paymentTypeId)) {
             //This model is useful in case of One payment method (account money or debit) to represent an empty row

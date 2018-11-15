@@ -20,6 +20,6 @@ public class CardExtraInfo extends ExtraInfo {
     public static CardExtraInfo createFrom(@NonNull final CardMetadata cardMetadata, @NonNull final PayerCost payerCost,
         @NonNull final String currencyId) {
         final AvailableInstallment selectedInstallment = AvailableInstallment.createFrom(payerCost, currencyId);
-        return new CardExtraInfo(selectedInstallment, cardMetadata.id, cardMetadata.displayInfo.issuerId);
+        return new CardExtraInfo(selectedInstallment, cardMetadata.getId(), cardMetadata.getDisplayInfo().issuerId);
     }
 }

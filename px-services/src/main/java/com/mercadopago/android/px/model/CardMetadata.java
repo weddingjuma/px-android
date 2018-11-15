@@ -8,10 +8,10 @@ import java.util.List;
 
 public class CardMetadata implements Parcelable, Serializable {
 
-    public final String id;
-    @SerializedName("selected_payer_cost_index") public final int defaultPayerCostIndex;
-    public final List<PayerCost> payerCosts;
-    public final CardDisplayInfo displayInfo;
+    private String id;
+    @SerializedName("selected_payer_cost_index") private int defaultPayerCostIndex;
+    private List<PayerCost> payerCosts;
+    private CardDisplayInfo displayInfo;
 
     protected CardMetadata(Parcel in) {
         id = in.readString();
@@ -43,6 +43,22 @@ public class CardMetadata implements Parcelable, Serializable {
         dest.writeInt(defaultPayerCostIndex);
         dest.writeTypedList(payerCosts);
         dest.writeParcelable(displayInfo, flags);
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public int getDefaultPayerCostIndex() {
+        return defaultPayerCostIndex;
+    }
+
+    public List<PayerCost> getPayerCosts() {
+        return payerCosts;
+    }
+
+    public CardDisplayInfo getDisplayInfo() {
+        return displayInfo;
     }
 
     public PayerCost getPayerCost(final int userSelectedPayerCost) {

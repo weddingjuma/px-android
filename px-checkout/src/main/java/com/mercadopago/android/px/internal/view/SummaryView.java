@@ -104,7 +104,7 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         listener = callback;
     }
 
-    public static final class Model {
+    public static class Model {
 
         /* default */ @NonNull final List<AmountDescriptorView.Model> elements;
 

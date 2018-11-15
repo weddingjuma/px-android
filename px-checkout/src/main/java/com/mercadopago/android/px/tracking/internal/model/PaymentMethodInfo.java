@@ -25,7 +25,7 @@ public class PaymentMethodInfo {
         @NonNull final String currencyId) {
         ExtraInfo extraInfo = null;
         if (expressMetadata.isCard()) {
-            final int expressInstallmentIndex = expressMetadata.getCard().selectedPayerCostIndex;
+            final int expressInstallmentIndex = expressMetadata.getCard().defaultPayerCostIndex;
             final PayerCost payerCost = expressMetadata.getCard().getPayerCost(expressInstallmentIndex);
             extraInfo = CardExtraInfo.createFrom(expressMetadata.getCard(), payerCost, currencyId);
         } else {

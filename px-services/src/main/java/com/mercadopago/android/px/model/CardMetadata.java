@@ -2,19 +2,20 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.List;
 
 public class CardMetadata implements Parcelable, Serializable {
 
     public final String id;
-    public final int selectedPayerCostIndex;
+    @SerializedName("selected_payer_cost_index") public final int defaultPayerCostIndex;
     public final List<PayerCost> payerCosts;
     public final CardDisplayInfo displayInfo;
 
     protected CardMetadata(Parcel in) {
         id = in.readString();
-        selectedPayerCostIndex = in.readInt();
+        defaultPayerCostIndex = in.readInt();
         payerCosts = in.createTypedArrayList(PayerCost.CREATOR);
         displayInfo = in.readParcelable(CardDisplayInfo.class.getClassLoader());
     }
@@ -39,14 +40,14 @@ public class CardMetadata implements Parcelable, Serializable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(id);
-        dest.writeInt(selectedPayerCostIndex);
+        dest.writeInt(defaultPayerCostIndex);
         dest.writeTypedList(payerCosts);
         dest.writeParcelable(displayInfo, flags);
     }
 
     public PayerCost getPayerCost(final int userSelectedPayerCost) {
         if (userSelectedPayerCost == -1) {
-            return payerCosts.get(selectedPayerCostIndex);
+            return payerCosts.get(defaultPayerCostIndex);
         } else {
             return payerCosts.get(userSelectedPayerCost);
         }

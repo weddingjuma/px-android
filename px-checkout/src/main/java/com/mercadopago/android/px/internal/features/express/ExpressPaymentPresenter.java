@@ -14,16 +14,14 @@ import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.NoConnectivityException;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
-import com.mercadopago.android.px.internal.view.InstallmentsDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryDetailDescriptorFactory;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
-import com.mercadopago.android.px.internal.viewmodel.EmptyInstallmentsDescriptor;
-import com.mercadopago.android.px.internal.viewmodel.InstallmentsDescriptorNoPayerCost;
-import com.mercadopago.android.px.internal.viewmodel.InstallmentsDescriptorWithPayerCost;
+import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
 import com.mercadopago.android.px.internal.viewmodel.TotalDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.TotalLocalized;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentsDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
@@ -35,11 +33,9 @@ import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorView.Model.SELECTED_PAYER_COST_NONE;
@@ -54,7 +50,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ElementDescriptorMapper elementDescriptorMapper;
 
-    private int userSelectedPayerCost = SELECTED_PAYER_COST_NONE;
+    private PayerCostSelection payerCostSelection;
 
     //TODO remove.
     private List<ExpressMetadata> expressMetadataList;
@@ -78,6 +74,8 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 expressMetadataList = paymentMethodSearch.getExpress();
+                //Plus one to compensate for add new payment method
+                payerCostSelection = new PayerCostSelection(expressMetadataList.size() + 1);
             }
 
             @Override
@@ -91,16 +89,15 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     public void trackConfirmButton(final int paymentMethodSelectedIndex) {
         //Track event: confirm one tap
         final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodSelectedIndex);
-        Tracker.trackConfirmExpress(expressMetadata, userSelectedPayerCost,
+        Tracker.trackConfirmExpress(expressMetadata, payerCostSelection.get(paymentMethodSelectedIndex),
             configuration.getCheckoutPreference().getSite().getCurrencyId());
     }
 
     @Override
     public void trackExpressView() {
-            Tracker.trackExpressView(amountRepository.getAmountToPay(),
-                configuration.getCheckoutPreference().getSite().getCurrencyId(), discountRepository.getDiscount(),
-                discountRepository.getCampaign(), configuration.getCheckoutPreference().getItems(),
-                expressMetadataList);
+        Tracker.trackExpressView(amountRepository.getAmountToPay(),
+            configuration.getCheckoutPreference().getSite().getCurrencyId(), discountRepository.getDiscount(),
+            discountRepository.getCampaign(), configuration.getCheckoutPreference().getItems(), expressMetadataList);
     }
 
     @Override
@@ -115,9 +112,8 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         paymentRepository.attach(this);
 
         final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodSelectedIndex);
-        //TODO fix installment selected.
-        final PayerCost payerCost =
-            expressMetadata.isCard() ? expressMetadata.getCard().getPayerCost(userSelectedPayerCost) : null;
+        final PayerCost payerCost = expressMetadata.isCard() ? expressMetadata.getCard()
+            .getPayerCost(payerCostSelection.get(paymentMethodSelectedIndex)) : null;
 
         paymentRepository.startExpressPayment(expressMetadata, payerCost);
     }
@@ -201,7 +197,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     @Override
     public void updateElementPosition(final int paymentMethodIndex) {
         getView().hideInstallmentsSelection();
-        getView().showInstallmentsDescriptionRow(paymentMethodIndex, userSelectedPayerCost);
+        getView().showInstallmentsDescriptionRow(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex));
 
         if (isLastElement(paymentMethodIndex)) {
             getView().disablePaymentButton();
@@ -211,36 +207,8 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     }
 
     private void updateElementPosition(final int paymentMethodIndex, final int selectedPayerCost) {
-        userSelectedPayerCost = selectedPayerCost;
+        payerCostSelection.save(paymentMethodIndex, selectedPayerCost);
         updateElementPosition(paymentMethodIndex);
-    }
-
-    private InstallmentsDescriptorView.Model createInstallmentsDescriptorModel(final int paymentMethodIndex) {
-
-        if (isLastElement(paymentMethodIndex)) {
-            //Last card is Add new payment method card
-            return EmptyInstallmentsDescriptor.create();
-        } else {
-            final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
-            final String paymentTypeId = expressMetadata.getPaymentTypeId();
-
-            final CardMetadata cardMetadata = expressMetadata.getCard();
-
-            if (PaymentTypes.isCreditCardPaymentType(paymentTypeId)) {
-                //This model is useful for Credit Card only
-
-                return InstallmentsDescriptorWithPayerCost.createFrom(configuration, cardMetadata,
-                    userSelectedPayerCost == SELECTED_PAYER_COST_NONE ? cardMetadata.selectedPayerCostIndex
-                        : userSelectedPayerCost);
-            } else if (!expressMetadata.isCard() || PaymentTypes.DEBIT_CARD.equals(paymentTypeId) ||
-                PaymentTypes.PREPAID_CARD.equals(paymentTypeId)) {
-                //This model is useful in case of One payment method (account money or debit) to represent an empty row
-                return EmptyInstallmentsDescriptor.create();
-            } else {
-                //This model is useful in case of Two payment methods (account money and debit) to represent the Debit row
-                return InstallmentsDescriptorNoPayerCost.createFrom(configuration, cardMetadata);
-            }
-        }
     }
 
     private boolean isLastElement(final int position) {
@@ -272,17 +240,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
 
         getView().configurePagerAndInstallments(paymentMethodDrawableItemMapper.map(expressMetadataList),
             configuration.getCheckoutPreference().getSite(), SELECTED_PAYER_COST_NONE,
-            getInstallmentsModel());
-    }
-
-    private List<InstallmentsDescriptorView.Model> getInstallmentsModel() {
-        final List<InstallmentsDescriptorView.Model> models = new ArrayList<>();
-
-        for (int index = 0; index <= expressMetadataList.size(); index++) {
-            models.add(createInstallmentsDescriptorModel(index));
-        }
-
-        return models;
+            new InstallmentsDescriptorMapper(configuration).map(expressMetadataList));
     }
 
     @Override
@@ -296,9 +254,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
             final List<PayerCost> payerCostList = cardMetadata.payerCosts;
             if (payerCostList != null && !payerCostList.isEmpty()) {
-                getView().showInstallmentsList(payerCostList,
-                    userSelectedPayerCost == SELECTED_PAYER_COST_NONE ? cardMetadata.selectedPayerCostIndex
-                        : userSelectedPayerCost);
+                getView().showInstallmentsList(payerCostList, payerCostSelection.get(currentItem));
                 trackInstallments(expressMetadataList.get(currentItem));
             }
         }
@@ -310,8 +266,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     }
 
     /**
-     * When user cancel the payer cost selection this method
-     * will be called with the current payment method position
+     * When user cancel the payer cost selection this method will be called with the current payment method position
      *
      * @param position current payment method position.
      */
@@ -322,19 +277,17 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     }
 
     /**
-     * When user selects a new payment method
-     * this method will be called with the new current paymentMethodIndex.
+     * When user selects a new payment method this method will be called with the new current paymentMethodIndex.
      *
      * @param paymentMethodIndex current payment method paymentMethodIndex.
      */
     @Override
     public void onSliderOptionSelected(final int paymentMethodIndex) {
-        updateElementPosition(paymentMethodIndex, SELECTED_PAYER_COST_NONE);
+        updateElementPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex));
     }
 
     /**
-     * When user selects a new payer cost for certain payment method
-     * this method will be called.
+     * When user selects a new payer cost for certain payment method this method will be called.
      *
      * @param paymentMethodIndex current payment method position.
      * @param payerCostSelected user selected payerCost.
@@ -354,13 +307,13 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     }
 
     // Keep - Save state
-    public int getSelected() {
-        return userSelectedPayerCost;
+    public PayerCostSelection getPayerCostSelection() {
+        return payerCostSelection;
     }
 
     // Keep - Restored state
-    public void setSelectedPayerCost(final int selectedPayerCost) {
-        userSelectedPayerCost = selectedPayerCost;
+    public void setPayerCostSelection(final PayerCostSelection payerCostSelection) {
+        this.payerCostSelection = payerCostSelection;
     }
 
     @Override

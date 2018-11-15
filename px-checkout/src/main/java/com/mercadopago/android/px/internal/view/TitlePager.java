@@ -106,20 +106,18 @@ public class TitlePager extends FrameLayout implements ViewTreeObserver.OnGlobal
         refreshData(currentIndex, payerCostSelected);
     }
 
-    private void refreshData(int currentIndex, final int payerCostSelected) {
+    private void refreshData(final int currentIndex, final int payerCostSelected) {
         if (currentIndex > 0) {
-            InstallmentsDescriptorView.Model previousModel = models.get(currentIndex - 1);
-            previousModel.setCurrentPayerCost(SELECTED_PAYER_COST_NONE);
+            final InstallmentsDescriptorView.Model previousModel = models.get(currentIndex - 1);
             previousView.update(previousModel);
         }
 
-        InstallmentsDescriptorView.Model currentModel = models.get(currentIndex);
+        final InstallmentsDescriptorView.Model currentModel = models.get(currentIndex);
         currentModel.setCurrentPayerCost(payerCostSelected);
         currentView.update(currentModel);
 
         if (currentIndex + 1 < models.size()) {
-            InstallmentsDescriptorView.Model nextModel = models.get(currentIndex + 1);
-            nextModel.setCurrentPayerCost(SELECTED_PAYER_COST_NONE);
+            final InstallmentsDescriptorView.Model nextModel = models.get(currentIndex + 1);
             nextView.update(nextModel);
         }
     }

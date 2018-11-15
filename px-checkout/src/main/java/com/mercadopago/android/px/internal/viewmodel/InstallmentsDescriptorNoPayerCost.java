@@ -30,7 +30,7 @@ public final class InstallmentsDescriptorNoPayerCost extends InstallmentsDescrip
             return new InstallmentsDescriptorNoPayerCost(currencyId, null);
         } else {
             return new InstallmentsDescriptorNoPayerCost(currencyId, card.payerCosts,
-                card.selectedPayerCostIndex);
+                card.defaultPayerCostIndex);
         }
     }
 

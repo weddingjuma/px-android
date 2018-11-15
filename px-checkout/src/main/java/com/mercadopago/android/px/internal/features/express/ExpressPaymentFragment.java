@@ -51,6 +51,7 @@ import com.mercadopago.android.px.internal.view.InstallmentsDescriptorView;
 import com.mercadopago.android.px.internal.view.InstallmentsHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
+import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -71,7 +72,6 @@ import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
-import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorView.Model.SELECTED_PAYER_COST_NONE;
 
 public class ExpressPaymentFragment extends Fragment implements ExpressPayment.View, ViewPager.OnPageChangeListener,
     InstallmentsAdapter.ItemListener, SummaryView.OnFitListener, AmountDescriptorView.OnClickListener,
@@ -81,7 +81,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private static final int REQ_CODE_CARD_VAULT = 0x999;
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 0x123;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
-    private static final String STATE_SELECTED_PAYER_COST = "STATE_SELECTED_PAYER_COST";
+    private static final String BUNDLE_STATE_PAYER_COST =
+        "com.mercadopago.android.px.internal.features.express.PAYER_COST";
 
     // Width / Height
     @NonNull private static final Pair<Integer, Integer> ASPECT_RATIO_HIGH_RES = new Pair<>(850, 460);
@@ -241,15 +242,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
         if (savedInstanceState != null) {
-            final int selectedPayerCost =
-                savedInstanceState.getInt(STATE_SELECTED_PAYER_COST, SELECTED_PAYER_COST_NONE);
-            presenter.setSelectedPayerCost(selectedPayerCost);
+            final PayerCostSelection payerCostSelection = savedInstanceState.getParcelable(BUNDLE_STATE_PAYER_COST);
+            presenter.setPayerCostSelection(payerCostSelection);
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
-        outState.putInt(STATE_SELECTED_PAYER_COST, presenter.getSelected());
+        outState.putParcelable(BUNDLE_STATE_PAYER_COST, presenter.getPayerCostSelection());
         super.onSaveInstanceState(outState);
     }
 

@@ -56,9 +56,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
     @Override
     public void hasFinishPaymentAnimation() {
         final IPayment payment = paymentRepository.getPayment();
-        if (payment instanceof Payment) {
-            getView().showResult(paymentRepository.createPaymentResult(payment));
-        } else if (payment instanceof GenericPayment) {
+        if (payment instanceof Payment || payment instanceof GenericPayment) {
             getView().showResult(paymentRepository.createPaymentResult(payment));
         } else if (payment instanceof BusinessPayment) {
             getView().showResult(businessModelMapper.map((BusinessPayment) payment));

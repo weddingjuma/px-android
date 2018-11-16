@@ -4,12 +4,12 @@ import android.support.test.espresso.IdlingRegistry;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.testlib.idlingresource.ActivityIdlingResource;
 
-public class WaitForCongrats {
+public class WaitForPaymentResult {
 
     private final IdlingRegistry register;
     private final ActivityIdlingResource activityIdlingResource;
 
-    public WaitForCongrats() {
+    public WaitForPaymentResult() {
         register = IdlingRegistry.getInstance();
         activityIdlingResource = new ActivityIdlingResource(PaymentResultActivity.class);
     }

@@ -253,7 +253,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         final CardMetadata cardMetadata = expressMetadataList.get(currentItem).getCard();
         if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
             final List<PayerCost> payerCostList = cardMetadata.getPayerCosts();
-            if (payerCostList != null && !payerCostList.isEmpty()) {
+            if (payerCostList != null && payerCostList.size() > 1) {
                 getView().showInstallmentsList(payerCostList, payerCostSelection.get(currentItem));
                 trackInstallments(expressMetadataList.get(currentItem));
             }

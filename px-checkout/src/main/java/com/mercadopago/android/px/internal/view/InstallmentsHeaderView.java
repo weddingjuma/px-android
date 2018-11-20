@@ -93,7 +93,7 @@ public class InstallmentsHeaderView extends LinearLayout {
         titlePager.updateData(paymentMethodIndex, payerCostSelected);
         installmentsTitleView.setVisibility(GONE);
 
-        setClickable(!installmentModels.get(currentIndex).isEmpty());
+        setClickable(installmentModels.get(currentIndex).hasPayerCostList());
     }
 
     public void updatePosition(final float positionOffset, final int position) {
@@ -116,17 +116,17 @@ public class InstallmentsHeaderView extends LinearLayout {
             goingToModel = installmentModels.get(position + 1);
         }
 
-        if (currentModel.isEmpty()) {
-            if (goingToModel != null && !goingToModel.isEmpty()) {
-                arrow.setAlpha(relativeOffset);
-            } else {
-                arrow.setAlpha(0.0f);
-            }
-        } else {
-            if (goingToModel != null && goingToModel.isEmpty()) {
+        if (currentModel.hasPayerCostList()) {
+            if (goingToModel != null && !goingToModel.hasPayerCostList()) {
                 arrow.setAlpha(1.0f - relativeOffset);
             } else {
                 arrow.setAlpha(1.0f);
+            }
+        } else {
+            if (goingToModel != null && goingToModel.hasPayerCostList()) {
+                arrow.setAlpha(relativeOffset);
+            } else {
+                arrow.setAlpha(0.0f);
             }
         }
     }

@@ -117,8 +117,12 @@ public class InstallmentsDescriptorView extends MPTextView {
         }
 
         protected boolean hasMultipleInstallments() {
-            PayerCost payerCost = getCurrentPayerCost();
+            final PayerCost payerCost = getCurrentPayerCost();
             return payerCost != null && payerCost.getInstallments() > 1;
+        }
+
+        public boolean hasPayerCostList() {
+            return payerCostList != null && payerCostList.size() > 1;
         }
 
         public abstract void updateInstallmentsDescriptionSpannable(

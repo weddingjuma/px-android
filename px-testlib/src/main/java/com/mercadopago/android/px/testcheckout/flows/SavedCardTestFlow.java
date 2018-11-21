@@ -65,19 +65,16 @@ public class SavedCardTestFlow extends TestFlow {
     }
 
     public CongratsPage runInvalidDefaultCardIdPaymentFlow() {
-        PaymentMethodPage paymentMethodPage = new PaymentMethodPage(null);
+        final PaymentMethodPage paymentMethodPage = new PaymentMethodPage(null);
         startCheckout();
-        paymentMethodPage.selectSavedDebitCard()
+
+        paymentMethodPage
+            .selectSavedDebitCard()
             .enterSecurityCodeForNewCard(CVV_NUMBER);
         return new ReviewAndConfirmPage().pressConfirmButton();
     }
 
     public CongratsPage runSavedCardFlowWithoutEsc(@NonNull final String lastFourDigits) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         startCheckout();
 
         return new PaymentMethodPage(null).selectVisaCreditCardWithoutEsc(lastFourDigits)
@@ -87,11 +84,6 @@ public class SavedCardTestFlow extends TestFlow {
     }
 
     public CongratsPage runSavedCardFlowWithEsc(@NonNull final String lastFourDigits) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         startCheckout();
 
         return new PaymentMethodPage(null).selectVisaCreditCardWithoutEsc(lastFourDigits)
@@ -99,13 +91,18 @@ public class SavedCardTestFlow extends TestFlow {
             .pressConfirmButton();
     }
 
+    public CongratsPage runSavedCardFlowWithInvalidEsc(@NonNull final String lastFourDigits) {
+        startCheckout();
+
+        return new PaymentMethodPage(null)
+            .selectVisaCreditCardWithoutEsc(lastFourDigits)
+            .selectInstallmentsForSavedCardWithEsc(1)
+            .pressConfirmButtonWithInvalidEsc()
+            .enterSecurityCodeForSavedCard(CVV_NUMBER)
+            .pressConfirmButton();
+    }
 
     public CongratsPage runNewCardPaymentFlow(@NonNull final Card card) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         startCheckout();
         return new DebitCardPage()
             .enterCreditCardNumber(card.cardNumber())

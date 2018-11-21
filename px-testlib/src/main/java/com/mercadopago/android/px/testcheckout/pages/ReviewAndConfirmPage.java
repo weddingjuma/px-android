@@ -27,6 +27,11 @@ public class ReviewAndConfirmPage extends PageObject<CheckoutValidator> {
         return new CongratsPage(validator);
     }
 
+    public SecurityCodePage pressConfirmButtonWithInvalidEsc() {
+        onView(withId(R.id.floating_confirm)).perform(click());
+        return new SecurityCodePage(validator);
+    }
+
     @Override
     public ReviewAndConfirmPage validate(CheckoutValidator validator) {
         validator.validate(this);

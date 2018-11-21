@@ -2,13 +2,16 @@ package com.mercadopago.android.px.internal.features.review_and_confirm;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
+import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
+import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.Payment;
+import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -57,10 +60,7 @@ public class ReviewAndConfirmPresenterTest {
 
     private void verifyAttachView() {
         reviewAndConfirmPresenter.attachView(view);
-
-        verify(paymentRepository).attach(reviewAndConfirmPresenter);
-        verifyNoMoreInteractions(view);
-        verifyNoMoreInteractions(paymentRepository);
+        verify(paymentRepository, atLeastOnce()).attach(reviewAndConfirmPresenter);
     }
 
     @Test
@@ -139,7 +139,7 @@ public class ReviewAndConfirmPresenterTest {
     }
 
     @Test
-    public void whenRecoverFromFailureThenPay(){
+    public void whenRecoverFromFailureThenPay() {
         final MercadoPagoError mercadoPagoError = mock(MercadoPagoError.class);
 
         when(paymentRepository.isExplodingAnimationCompatible()).thenReturn(true);
@@ -154,6 +154,152 @@ public class ReviewAndConfirmPresenterTest {
         verifyNoMoreInteractions(paymentRepository);
     }
 
+    @Test
+    public void whenViewIsResumedThenAttachItAndResolveDynamicDialogWithoutCreator() {
+
+        reviewAndConfirmPresenter.onViewResumed(view);
+
+        verifyAttachView();
+        verify(paymentRepository).getPaymentData();
+        verify(dynamicDialogConfiguration, atLeastOnce())
+            .hasCreatorFor(DynamicDialogConfiguration.DialogLocation.ENTER_REVIEW_AND_CONFIRM);
+
+        verifyNoMoreInteractions(view);
+        verifyNoMoreInteractions(paymentRepository);
+        verifyNoMoreInteractions(dynamicDialogConfiguration);
+    }
+
+    @Test
+    public void whendViewDetachedThenPaymentRepositoryViewDetachmentIsPerformed() {
+        reviewAndConfirmPresenter.detachView();
+
+        verify(paymentRepository).detach(reviewAndConfirmPresenter);
+        verifyNoMoreInteractions(view);
+        verifyNoMoreInteractions(paymentRepository);
+    }
+
+    @Test
+    public void whenPaymentConfirmationThenTrackItAndPay() {
+        when(paymentRepository.isExplodingAnimationCompatible()).thenReturn(true);
+
+        reviewAndConfirmPresenter.onPaymentConfirm();
+
+        verify(view).trackPaymentConfirmation();
+        verifyPaymentExplodingCompatible();
+        verifyNoMoreInteractions(view);
+        verifyNoMoreInteractions(paymentRepository);
+    }
+
+    @Test
+    public void whenCardFlowResponseThenPay() {
+        when(paymentRepository.isExplodingAnimationCompatible()).thenReturn(true);
+
+        reviewAndConfirmPresenter.onCardFlowResponse();
+
+        verify(view).cancelLoadingButton();
+        verify(view).showConfirmButton();
+        verifyPaymentExplodingCompatible();
+        verifyNoMoreInteractions(view);
+        verifyNoMoreInteractions(paymentRepository);
+    }
+
+    @Test
+    public void whenErrorThenCancelCheckoutAndInformError() {
+        final MercadoPagoError mercadoPagoError = mock(MercadoPagoError.class);
+
+        reviewAndConfirmPresenter.onError(mercadoPagoError);
+
+        verify(view).cancelLoadingButton();
+        verify(view).showConfirmButton();
+        verify(view).cancelCheckoutAndInformError(mercadoPagoError);
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenCvvRequiredThenShowCardCvvRequired() {
+        final Card card = mock(Card.class);
+
+        reviewAndConfirmPresenter.onCvvRequired(card);
+
+        verify(view).cancelLoadingButton();
+        verify(view).showConfirmButton();
+        verify(view).showCardCVVRequired(card);
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenVisualPaymentThenShowPaymentProcessor() {
+        reviewAndConfirmPresenter.onVisualPayment();
+
+        verify(view).cancelLoadingButton();
+        verify(view).showConfirmButton();
+        verify(view).showPaymentProcessor();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenRecoverPaymentWithEscInvalidThenStartPaymentRecoveryFlow() {
+        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
+
+        reviewAndConfirmPresenter.onRecoverPaymentEscInvalid(paymentRecovery);
+
+        verify(view).cancelLoadingButton();
+        verify(view).showConfirmButton();
+        verify(view).startPaymentRecoveryFlow(paymentRecovery);
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenPaymentFinishedThenFinishLoadingWithExplodeDecorator() {
+        final Payment payment = mock(Payment.class);
+        when(payment.getPaymentStatus()).thenReturn(Payment.StatusCodes.STATUS_APPROVED);
+        when(payment.getPaymentStatusDetail()).thenReturn(Payment.StatusDetail.STATUS_DETAIL_PENDING_WAITING_PAYMENT);
+
+        reviewAndConfirmPresenter.onPaymentFinished(payment);
+
+        verifyPaymentFinished();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenGenericPaymentFinishedThenFinishLoadingWithExplodeDecorator() {
+        final GenericPayment genericPayment = mock(GenericPayment.class);
+        when(genericPayment.getPaymentStatus()).thenReturn(Payment.StatusCodes.STATUS_APPROVED);
+        when(genericPayment.getPaymentStatusDetail())
+            .thenReturn(Payment.StatusDetail.STATUS_DETAIL_PENDING_WAITING_PAYMENT);
+
+        reviewAndConfirmPresenter.onPaymentFinished(genericPayment);
+
+        verifyPaymentFinished();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenBusinessPaymentFinishedThenFinishLoadingWithExplodeDecorator() {
+        final BusinessPayment businessPayment = mock(BusinessPayment.class);
+        when(businessPayment.getPaymentStatus()).thenReturn(Payment.StatusCodes.STATUS_APPROVED);
+        when(businessPayment.getPaymentStatusDetail())
+            .thenReturn(Payment.StatusDetail.STATUS_DETAIL_PENDING_WAITING_PAYMENT);
+
+        reviewAndConfirmPresenter.onPaymentFinished(businessPayment);
+
+        verifyPaymentFinished();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenPayerInformationResponseThenReloadBody() {
+        reviewAndConfirmPresenter.onPayerInformationResponse();
+
+        verify(view).reloadBody();
+        verifyNoMoreInteractions(view);
+    }
+
+    private void verifyPaymentFinished() {
+        verify(view).hideConfirmButton();
+        verify(view).finishLoading(any(ExplodeDecorator.class));
+    }
+
     private void verifyPaymentExplodingCompatible() {
         verify(paymentRepository).isExplodingAnimationCompatible();
         verify(paymentRepository).getPaymentTimeout();
@@ -163,7 +309,7 @@ public class ReviewAndConfirmPresenterTest {
         verify(paymentRepository).startPayment();
     }
 
-    private void verifyShowErrorScreen(@NonNull final MercadoPagoError mercadoPagoError){
+    private void verifyShowErrorScreen(@NonNull final MercadoPagoError mercadoPagoError) {
         verifyOnPaymentError(mercadoPagoError);
         verify(view).showErrorScreen(mercadoPagoError);
     }

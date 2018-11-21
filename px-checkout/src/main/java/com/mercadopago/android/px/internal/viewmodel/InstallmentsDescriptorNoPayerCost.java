@@ -4,11 +4,14 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.util.textformatter.CurrencyFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.InstallmentFormatter;
+import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.InstallmentsDescriptorView;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.PayerCost;
@@ -16,7 +19,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
 
 /**
- * Model used to instanciate InstallmentsDescriptorView
+ * Model used to instantiate InstallmentsDescriptorView
  * For payment methods without payer costs: debit_card, account_money, prepaid_card
  */
 public final class InstallmentsDescriptorNoPayerCost extends InstallmentsDescriptorView.Model {
@@ -34,41 +37,29 @@ public final class InstallmentsDescriptorNoPayerCost extends InstallmentsDescrip
         }
     }
 
-    private InstallmentsDescriptorNoPayerCost(@NonNull String currencyId,
-        @Nullable List<PayerCost> payerCostList) {
+    private InstallmentsDescriptorNoPayerCost(@NonNull final String currencyId,
+        @Nullable final List<PayerCost> payerCostList) {
         super(currencyId, payerCostList);
     }
 
-    private InstallmentsDescriptorNoPayerCost(@NonNull String currencyId,
-        @NonNull List<PayerCost> payerCostList, int currentPayerCost) {
+    private InstallmentsDescriptorNoPayerCost(@NonNull final String currencyId,
+        @NonNull final List<PayerCost> payerCostList, final int currentPayerCost) {
         super(currencyId, payerCostList, currentPayerCost);
     }
 
     @Override
     public void updateInstallmentsDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
-        @NonNull final Context context, @NonNull final CharSequence amount, @NonNull final TextView textView) {
+        @NonNull final Context context, @NonNull final TextView textView) {
+
+        final CurrencyFormatter currencyFormatter = TextFormatter.withCurrencyId(getCurrencyId());
+        final Spannable amount = currencyFormatter.amount(getCurrentPayerCost().getInstallmentAmount())
+            .normalDecimals()
+            .into(textView)
+            .toSpannable();
+
         final InstallmentFormatter installmentFormatter = new InstallmentFormatter(spannableStringBuilder, context)
             .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_black))
             .withSemiBoldStyle();
         installmentFormatter.build(amount);
     }
-
-    @Override
-    public void updateInterestDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
-        @NonNull final Context context) {
-        //Do nothing
-    }
-
-    @Override
-    public void updateTotalAmountDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
-        @NonNull final Context context) {
-        //Do nothing
-    }
-
-    @Override
-    public void updateCFTSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
-        @NonNull final Context context) {
-        //Do nothing
-    }
-
 }

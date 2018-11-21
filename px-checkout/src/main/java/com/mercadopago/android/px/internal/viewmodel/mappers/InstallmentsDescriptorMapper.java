@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.InstallmentsDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.EmptyInstallmentsDescriptor;
+import com.mercadopago.android.px.internal.viewmodel.AccountMoneyDescriptor;
 import com.mercadopago.android.px.internal.viewmodel.InstallmentsDescriptorNoPayerCost;
 import com.mercadopago.android.px.internal.viewmodel.InstallmentsDescriptorWithPayerCost;
 import com.mercadopago.android.px.model.CardMetadata;
@@ -36,13 +37,14 @@ public class InstallmentsDescriptorMapper
 
     private InstallmentsDescriptorView.Model createInstallmentsDescriptorModel(final ExpressMetadata expressMetadata) {
         final String paymentTypeId = expressMetadata.getPaymentTypeId();
-
         final CardMetadata cardMetadata = expressMetadata.getCard();
 
         if (PaymentTypes.isCreditCardPaymentType(paymentTypeId)) {
             //This model is useful for Credit Card only
             return InstallmentsDescriptorWithPayerCost
                 .createFrom(configuration, cardMetadata, cardMetadata.getDefaultPayerCostIndex());
+        } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
+            return AccountMoneyDescriptor.createFrom(expressMetadata.getAccountMoney());
         } else if (!expressMetadata.isCard() || PaymentTypes.DEBIT_CARD.equals(paymentTypeId) ||
             PaymentTypes.PREPAID_CARD.equals(paymentTypeId)) {
             //This model is useful in case of One payment method (account money or debit) to represent an empty row

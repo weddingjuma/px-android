@@ -272,5 +272,8 @@
     <string name="px_fill_your_data">Digite seus dados…</string>
     <string name="px_bolbradesco_rejection">Não foi possível processar o seu pagamento, desculpe-nos</string>
 
+    <!-- Invested Account Money -->
+    <string name="px_invested_account_money">Você está usando dinheiro investido</string>
+
     <string name="px_empty_string"></string>
 </resources>

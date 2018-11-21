@@ -6,10 +6,10 @@ import java.io.Serializable;
 
 public class ExpressMetadata implements Parcelable, Serializable {
 
-    private String paymentMethodId;
-    private String paymentTypeId;
-    private CardMetadata card;
-    private AccountMoneyMetadata accountMoney;
+    private final String paymentMethodId;
+    private final String paymentTypeId;
+    private final CardMetadata card;
+    private final AccountMoneyMetadata accountMoney;
 
     public String getPaymentMethodId() {
         return paymentMethodId;

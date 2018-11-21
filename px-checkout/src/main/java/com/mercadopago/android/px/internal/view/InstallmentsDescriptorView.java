@@ -3,12 +3,9 @@ package com.mercadopago.android.px.internal.view;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.widget.TextView;
-import com.mercadopago.android.px.internal.util.textformatter.CurrencyFormatter;
-import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.PayerCost;
 
 import java.util.List;
@@ -45,26 +42,16 @@ public class InstallmentsDescriptorView extends MPTextView {
 
     private void updateInstallmentsDescription(@NonNull final Model model,
         @NonNull final SpannableStringBuilder spannableStringBuilder) {
-        final CurrencyFormatter currencyFormatter = TextFormatter.withCurrencyId(model.getCurrencyId());
-
-        final Spannable spannable = currencyFormatter.amount(model.getCurrentPayerCost().getInstallmentAmount())
-            .normalDecimals()
-            .into(this)
-            .toSpannable();
-
-        model.updateInstallmentsDescriptionSpannable(spannableStringBuilder, getContext(), spannable, this);
+        model.updateInstallmentsDescriptionSpannable(spannableStringBuilder, getContext(), this);
     }
 
     private void updateInterestDescription(@NonNull final Model model,
         @NonNull final SpannableStringBuilder spannableStringBuilder) {
-
         model.updateInterestDescriptionSpannable(spannableStringBuilder, getContext());
-
     }
 
     private void updateTotalAmountDescription(@NonNull final Model model,
         @NonNull final SpannableStringBuilder spannableStringBuilder) {
-
         model.updateTotalAmountDescriptionSpannable(spannableStringBuilder, getContext());
     }
 
@@ -95,7 +82,6 @@ public class InstallmentsDescriptorView extends MPTextView {
         }
 
         protected Model() {
-
         }
 
         public boolean isEmpty() {
@@ -108,11 +94,11 @@ public class InstallmentsDescriptorView extends MPTextView {
 
         @Nullable
         public PayerCost getCurrentPayerCost() {
-            return payerCostList==null ? null : payerCostList.get(currentPayerCost);
+            return payerCostList == null ? null : payerCostList.get(currentPayerCost);
         }
 
         public void setCurrentPayerCost(final int currentPayerCost) {
-            this.currentPayerCost = currentPayerCost==SELECTED_PAYER_COST_NONE ?
+            this.currentPayerCost = currentPayerCost == SELECTED_PAYER_COST_NONE ?
                 defaultPayerCost : currentPayerCost;
         }
 
@@ -125,19 +111,27 @@ public class InstallmentsDescriptorView extends MPTextView {
             return payerCostList != null && payerCostList.size() > 1;
         }
 
-        public abstract void updateInstallmentsDescriptionSpannable(
+        public void updateInstallmentsDescriptionSpannable(
             @NonNull final SpannableStringBuilder spannableStringBuilder,
-            @NonNull final Context context, @NonNull final CharSequence amount, @NonNull final TextView textView);
+            @NonNull final Context context, @NonNull final TextView textView) {
+            //Do nothing
+        }
 
-        public abstract void updateInterestDescriptionSpannable(
+        public void updateInterestDescriptionSpannable(
             @NonNull final SpannableStringBuilder spannableStringBuilder,
-            @NonNull final Context context);
+            @NonNull final Context context) {
+            //Do nothing
+        }
 
-        public abstract void updateTotalAmountDescriptionSpannable(
+        public void updateTotalAmountDescriptionSpannable(
             @NonNull final SpannableStringBuilder spannableStringBuilder,
-            @NonNull final Context context);
+            @NonNull final Context context) {
+            //Do nothing
+        }
 
-        public abstract void updateCFTSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
-            @NonNull final Context context);
+        public void updateCFTSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
+            @NonNull final Context context) {
+            //Do nothing
+        }
     }
 }

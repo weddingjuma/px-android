@@ -1,3 +1,11 @@
+## VERSION 4.3.1
+_21_11_2018_
+
+* FIX - Installments selection in express flow
+* FIX - Account money invested in express flow
+* FIX - PEC and payer information assets
+* FIX - Instructions padding
+
 ## VERSION 4.3.0
 _31_10_2018_
 

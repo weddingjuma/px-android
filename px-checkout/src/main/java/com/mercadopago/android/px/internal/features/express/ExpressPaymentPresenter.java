@@ -254,7 +254,11 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
             final List<PayerCost> payerCostList = cardMetadata.getPayerCosts();
             if (payerCostList != null && payerCostList.size() > 1) {
-                getView().showInstallmentsList(payerCostList, payerCostSelection.get(currentItem));
+                int selectedPayerCostIndex = payerCostSelection.get(currentItem);
+                if (selectedPayerCostIndex == SELECTED_PAYER_COST_NONE) {
+                    selectedPayerCostIndex = cardMetadata.getDefaultPayerCostIndex();
+                }
+                getView().showInstallmentsList(payerCostList, selectedPayerCostIndex);
                 trackInstallments(expressMetadataList.get(currentItem));
             }
         }

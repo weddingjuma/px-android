@@ -1,31 +1,41 @@
 apply plugin: 'jacoco'
 
-task jacocoCheckoutTestReport(type: JacocoReport, dependsOn: ['createDebugCoverageReport', 'testDebugUnitTest']) {
+jacoco {
+    toolVersion = '0.8.0'
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+}
+
+
+task jacocoTestReport(type:JacocoReport, dependsOn:['testDebugUnitTest', 'createDebugCoverageReport']) {
 
     reports {
+        xml.enabled = true
         html.enabled = true
-        xml.enabled = false
-        csv.enabled = false
     }
 
-    classDirectories = fileTree(
-        dir:"${buildDir}/intermediates/classes/debug",
-        excludes:['**/R*.class',
-                  '**/BuildConfig.*',
-                  '**/Manifest*.*',
-                  '**/model/*.*',
-                  '**/model/**',
-                  '**/models/*.*',
-                  '**/models/**',
-                  '**/viewmodel/*.*',
-                  '**/viewmodel/**',
-                  '**/*Test*.*'
-        ])
+    def fileFilter = ['**/R.class',
+                      '**/R$*.class',
+                      '**/BuildConfig.*',
+                      '**/Manifest*.*',
+                      '**/*Test*.*',
+                      'android/**/*.*',
+                      '**/model/*.*',
+                      '**/model/**',
+                      '**/models/*.*',
+                      '**/models/**',
+                      '**/viewmodel/*.*',
+                      '**/viewmodel/**']
 
-    def mainSrc = "${project.projectDir}/src/main/java"
+    def debugTree = fileTree(dir:"$project.buildDir/intermediates/classes/debug", excludes:fileFilter)
+    def mainSrc = "$project.projectDir/src/main/java"
+
     sourceDirectories = files([mainSrc])
-    executionData = fileTree(dir: "$buildDir", includes: [
-            "jacoco/testDebugUnitTest.exec", "outputs/code-coverage/connected/flavors/DEV/*coverage.ec"
+    classDirectories = files([debugTree])
+    executionData = fileTree(dir:project.buildDir, includes:[
+        'jacoco/testDebugUnitTest.exec', 'outputs/code-coverage/connected/*coverage.ec'
     ])
 }
 

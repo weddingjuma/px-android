@@ -12,6 +12,7 @@ buildscript {
         // If we upload to 3.1.4 then you will be asked to set builtools in 27.0.3
         // If we upload buildtools to 27.0.3 we will have to upload appcompat to 27.0.3 and
         // we can't do so because release won't work on MercadoLibre's App.
+        classpath 'org.jacoco:org.jacoco.core:0.8.0'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
         classpath 'com.monits:static-code-analysis-plugin:2.6.7'

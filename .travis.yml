@@ -2,12 +2,21 @@ language: android
 jdk: oraclejdk8
 # Use the Travis Container-Based Infrastructure
 sudo: false
+
+before_install:
+- yes | sdkmanager "platforms;android-27"
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/2.9
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
     - $HOME/.gradle/daemon
     - $HOME/.gradle/native
-    - $HOME/.gradle/wrapper
+    - $HOME/.android/build-cache
+
 env:
   global:
     - GRADLE_OPTS="-Xmx512m"
@@ -20,31 +29,32 @@ android:
     - platform-tools
     - tools # intentional, see travis-ci/docs-travis-ci-com#779
     - build-tools-27.0.2
-    - android-22 # avd creation fails without this
+    # For androidTests avd creation fails without this
+    - android-22
+    # emulator image
+    - sys-img-armeabi-v7a-android-22
     - android-27 # compile sdk
     - extra-android-m2repository
-    - sys-img-armeabi-v7a-android-22 # emulator image
 
     # Additional components
     - extra-android-m2repository
     - extra-google-m2repository
     - extra-android-support
-    - extra-google-google_play_services
+#    - extra-google-google_play_services
 
-script:
+before_script:
   # Config for instrumentation and unit tests
-  - ./gradlew :px-checkout:lint
   - echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
   - emulator -avd test -no-skin -no-audio -no-window &
   - android-wait-for-emulator
   - adb shell input keyevent 82 &
   - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
-  - ./gradlew :px-checkout:jacocoCheckoutTestReport
+
+script:
+  - ./gradlew :px-checkout:lint
+  - ./gradlew :px-checkout:jacocoTestReport
 
 after_success:
 - pip install --user codecov
 - codecov
 - bash <(curl -s https://codecov.io/bash)
-
-before_install:
-- yes | sdkmanager "platforms;android-27"

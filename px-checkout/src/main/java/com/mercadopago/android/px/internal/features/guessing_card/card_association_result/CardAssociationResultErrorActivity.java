@@ -13,7 +13,7 @@ import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardAc
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
-import java.util.Collections;
+import java.util.HashMap;
 
 public class CardAssociationResultErrorActivity extends AppCompatActivity {
     public static final String PARAM_ACCESS_TOKEN = "accessToken";
@@ -80,6 +80,6 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
 
     private void trackScreen() {
         MPTracker.getInstance().trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_ERROR,
-            Collections.<String, Object>emptyMap());
+            new HashMap<String, Object>());
     }
 }

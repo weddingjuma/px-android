@@ -32,6 +32,10 @@ public class Token implements CardInformation {
         return securityCodeLength;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setSecurityCodeLength(Integer securityCodeLength) {
         this.securityCodeLength = securityCodeLength;
     }
@@ -41,6 +45,10 @@ public class Token implements CardInformation {
         return expirationMonth;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setExpirationMonth(Integer expirationMonth) {
         this.expirationMonth = expirationMonth;
     }
@@ -50,6 +58,10 @@ public class Token implements CardInformation {
         return expirationYear;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setExpirationYear(Integer expirationYear) {
         this.expirationYear = expirationYear;
     }
@@ -58,6 +70,10 @@ public class Token implements CardInformation {
         return lastModifiedDate;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setLastModifiedDate(Date lastModifiedDate) {
         this.lastModifiedDate = lastModifiedDate;
     }
@@ -66,6 +82,10 @@ public class Token implements CardInformation {
         return dueDate;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
     }
@@ -74,6 +94,10 @@ public class Token implements CardInformation {
         return cardId;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setCardId(String cardId) {
         this.cardId = cardId;
     }
@@ -82,6 +106,10 @@ public class Token implements CardInformation {
         return luhnValidation;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setLuhnValidation(String luhnValidation) {
         this.luhnValidation = luhnValidation;
     }
@@ -90,6 +118,10 @@ public class Token implements CardInformation {
         return status;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setStatus(String status) {
         this.status = status;
     }
@@ -98,6 +130,10 @@ public class Token implements CardInformation {
         return usedDate;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setUsedDate(String usedDate) {
         this.usedDate = usedDate;
     }
@@ -106,6 +142,10 @@ public class Token implements CardInformation {
         return cardNumberLength;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setCardNumberLength(Integer cardNumberLength) {
         this.cardNumberLength = cardNumberLength;
     }
@@ -114,6 +154,10 @@ public class Token implements CardInformation {
         return creationDate;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setCreationDate(Date creationDate) {
         this.creationDate = creationDate;
     }
@@ -122,6 +166,10 @@ public class Token implements CardInformation {
         return truncCardNumber;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setTruncCardNumber(String truncCardNumber) {
         this.truncCardNumber = truncCardNumber;
     }
@@ -138,6 +186,10 @@ public class Token implements CardInformation {
         return publicKey;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setPublicKey(String publicKey) {
         this.publicKey = publicKey;
     }
@@ -147,6 +199,10 @@ public class Token implements CardInformation {
         return firstSixDigits;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setFirstSixDigits(String firstSixDigits) {
         this.firstSixDigits = firstSixDigits;
     }
@@ -156,6 +212,10 @@ public class Token implements CardInformation {
         return lastFourDigits;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setLastFourDigits(String lastFourDigits) {
         this.lastFourDigits = lastFourDigits;
     }
@@ -165,6 +225,10 @@ public class Token implements CardInformation {
         return cardholder;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setCardholder(Cardholder cardholder) {
         this.cardholder = cardholder;
     }
@@ -173,10 +237,19 @@ public class Token implements CardInformation {
         return esc;
     }
 
+    /**
+     * @deprecated should be non-mutable DTO
+     */
+    @Deprecated
     public void setEsc(String esc) {
         this.esc = esc;
     }
 
+    /**
+     * @return json string
+     * @deprecated Should not be it's responsibility - will delete it.
+     */
+    @Deprecated
     public String toJson() {
         Gson gson =
             new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).serializeNulls()

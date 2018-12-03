@@ -141,8 +141,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         configureViews(view);
 
         //Order is important - On click and events should be wired AFTER view is attached.
-        presenter = createPresenter(view.getContext());
-        presenter.attachView(this);
+        //TODO remove try catch after session is persisted
+        try {
+            presenter = createPresenter(view.getContext());
+            presenter.attachView(this);
+            if (savedInstanceState == null) {
+                presenter.trackExpressView();
+            }
+        } catch (final Exception e) {
+            //Nothing to do here
+        }
 
         //Add interaction listeners.
         summaryView.setOnFitListener(this);
@@ -171,10 +179,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             }
         });
         paymentMethodPager.addOnPageChangeListener(this);
-
-        if (savedInstanceState == null) {
-            presenter.trackExpressView();
-        }
     }
 
     private void configureViews(@NonNull final View view) {
@@ -241,7 +245,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        if (savedInstanceState != null) {
+        //TODO remove presenter null check after session is persisted
+        if (savedInstanceState != null && presenter != null) {
             final PayerCostSelection payerCostSelection = savedInstanceState.getParcelable(BUNDLE_STATE_PAYER_COST);
             presenter.setPayerCostSelection(payerCostSelection);
         }
@@ -256,8 +261,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onResume() {
         super.onResume();
-        presenter.onViewResumed();
-        presenter.updateElementPosition(paymentMethodPager.getCurrentItem());
+        //TODO remove null check after session is persisted
+        if (presenter != null) {
+            presenter.onViewResumed();
+            presenter.updateElementPosition(paymentMethodPager.getCurrentItem());
+        }
     }
 
     @Override
@@ -279,7 +287,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void onDetach() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         callback = null;
-        presenter.detachView();
+        //TODO remove null check after session is persisted
+        if (presenter != null) {
+            presenter.detachView();
+        }
         super.onDetach();
     }
 

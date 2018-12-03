@@ -12,7 +12,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
-import java.util.Collections;
+import java.util.HashMap;
 
 public class CardAssociationResultSuccessActivity extends AppCompatActivity {
 
@@ -45,6 +45,6 @@ public class CardAssociationResultSuccessActivity extends AppCompatActivity {
 
     private void trackScreen() {
         MPTracker.getInstance()
-            .trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_SUCCESS, Collections.<String, Object>emptyMap());
+            .trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_SUCCESS, new HashMap<String, Object>());
     }
 }

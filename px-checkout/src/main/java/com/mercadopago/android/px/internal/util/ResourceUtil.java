@@ -27,14 +27,12 @@ public final class ResourceUtil {
     private static int getPaymentMethodIcon(final Context context, String id) {
         int resource;
         id = SDK_PREFIX + id;
-        try {
-            resource = context.getResources().getIdentifier(id, DEF_TYPE_DRAWABLE, context.getPackageName());
-        } catch (final Exception e) {
-            try {
-                resource = context.getResources()
-                    .getIdentifier(SDK_PREFIX + BANK_SUFFIX, DEF_TYPE_DRAWABLE, context.getPackageName());
-            } catch (final Exception ex) {
-                return R.drawable.px_none;
+        resource = context.getResources().getIdentifier(id, DEF_TYPE_DRAWABLE, context.getPackageName());
+        if (resource == 0) {
+            resource = context.getResources()
+                .getIdentifier(SDK_PREFIX + BANK_SUFFIX, DEF_TYPE_DRAWABLE, context.getPackageName());
+            if (resource == 0) {
+                resource = R.drawable.px_none;
             }
         }
         return resource;

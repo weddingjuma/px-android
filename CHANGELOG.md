@@ -1,3 +1,8 @@
+## VERSION 4.3.3
+_4_12_2018_
+
+* FIX - Crash in Checkout, PaymentResult and BusinessResult on application kill
+
 ## VERSION 4.3.2
 _30_11_2018_
 

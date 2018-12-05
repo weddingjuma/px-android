@@ -114,22 +114,28 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             final Session session = Session.getSession(this);
             final ConfigurationModule configurationModule = session.getConfigurationModule();
 
-            presenter =
-                new CheckoutPresenter(CheckoutStateModel.fromBundle(savedInstanceState),
-                    configurationModule.getPaymentSettings(), session.getAmountRepository(),
-                    configurationModule.getUserSelectionRepository(),
-                    session.getDiscountRepository(),
-                    session.getGroupsRepository(),
-                    session.getPluginRepository(),
-                    session.getPaymentRepository(),
-                    session.getInternalConfiguration(),
-                    session.getBusinessModelMapper());
-            privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
-            merchantPublicKey = savedInstanceState.getString(EXTRA_PUBLIC_KEY);
-            configurePresenter();
+            //TODO remove try catch after session is persisted
+            try {
+                presenter =
+                    new CheckoutPresenter(CheckoutStateModel.fromBundle(savedInstanceState),
+                        configurationModule.getPaymentSettings(), session.getAmountRepository(),
+                        configurationModule.getUserSelectionRepository(),
+                        session.getDiscountRepository(),
+                        session.getGroupsRepository(),
+                        session.getPluginRepository(),
+                        session.getPaymentRepository(),
+                        session.getInternalConfiguration(),
+                        session.getBusinessModelMapper());
 
-            if (presenter.getState().isExpressCheckout) {
-                presenter.retrievePaymentMethodSearch();
+                privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
+                merchantPublicKey = savedInstanceState.getString(EXTRA_PUBLIC_KEY);
+                configurePresenter();
+
+                if (presenter.getState().isExpressCheckout) {
+                    presenter.retrievePaymentMethodSearch();
+                }
+            } catch (final Exception e) {
+                exitCheckout(RESULT_CANCELED);
             }
         }
     }
@@ -494,9 +500,12 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
 
     @Override
     protected void onDestroy() {
-        presenter.cancelInitialization();
-        presenter.detachResourceProvider();
-        presenter.detachView();
+        //TODO remove null check after session is persisted
+        if (presenter != null) {
+            presenter.cancelInitialization();
+            presenter.detachResourceProvider();
+            presenter.detachView();
+        }
         super.onDestroy();
     }
 

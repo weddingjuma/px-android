@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
@@ -80,7 +79,7 @@ public class InstallmentsActivity extends MercadoPagoBaseActivity
     protected MPTextView mTimerTextView;
 
     private MPTextView mNoInstallmentsRateTextView;
-    private LinearLayout mNoInstallmentsRate;
+    private FrameLayout mNoInstallmentsRate;
 
     private AmountView amountView;
     private PaymentSettingRepository configuration;

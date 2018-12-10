@@ -4,16 +4,15 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:background="@color/px_white"
-              android:weightSum="1">
+              android:background="@color/px_white">
 
     <include layout="@layout/px_regular_toolbar"/>
 
     <include layout="@layout/px_view_progress_bar"/>
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:fillViewport="true"
         android:layout_weight="1">
 
@@ -23,49 +22,38 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/mpsdkNoInstallmentsRate"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:layout_gravity="top|center"
-                android:gravity="center_horizontal"
                 android:visibility="gone"
-                android:background="@color/px_background_blue">
+                android:background="@color/px_background">
 
                 <com.mercadopago.android.px.internal.view.MPTextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
                     app:font_style="light"
-                    android:textSize="14dp"
-                    android:background="@color/px_background_blue"
-                    android:textColor="@color/px_white"
+                    android:textSize="@dimen/px_xs_text"
+                    android:textColor="@color/px_toolbar_text"
                     android:id="@+id/mpsdkNoInstallmentsRateTextView"/>
 
-            </LinearLayout>
+            </FrameLayout>
 
             <FrameLayout
                 android:id="@+id/mpsdkRegularLayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent"
+                android:background="@color/px_white">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:background="@color/px_white"
-                    android:visibility="visible">
-
-                    <include layout="@layout/px_new_card_installments"/>
-                </LinearLayout>
+                <include layout="@layout/px_new_card_installments"/>
             </FrameLayout>
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
     <com.mercadopago.android.px.internal.view.AmountView
         android:id="@+id/amount_view"
-        android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
         android:background="@color/px_white"/>
 </LinearLayout>

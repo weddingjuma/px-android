@@ -78,7 +78,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:text="@string/json_config_button_text"
-                android:textColor="@color/px_background_blue"/>
+                android:textColor="@color/px_background"/>
 
 
         </LinearLayout>

@@ -51,8 +51,7 @@ before_script:
   - adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
 
 script:
-  - ./gradlew :px-checkout:lint
-  - ./gradlew :px-checkout:jacocoTestReport
+  - ./gradlew :px-checkout:lint && ./gradlew :px-checkout:jacocoTestReport && ./scripts/cd_script.sh
 
 after_success:
 - pip install --user codecov

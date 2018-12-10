@@ -223,7 +223,7 @@ public class CardTokenTest extends BaseTest<CheckoutActivity> {
 
     public void testExpiryDateShortYear() {
         CardToken cardToken = StaticMock.getCardToken();
-        cardToken.setExpirationYear(18);
+        cardToken.setExpirationYear(23);
 
         assertTrue(cardToken.validateExpiryDate());
     }

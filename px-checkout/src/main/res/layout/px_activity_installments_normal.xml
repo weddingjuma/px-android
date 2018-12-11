@@ -1,36 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:fitsSystemWindows="true">
 
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                 xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                 android:layout_width="match_parent"
-                                                 android:layout_height="match_parent"
-                                                 android:background="@color/px_white"
-                                                 android:fitsSystemWindows="true">
-
-    <include layout="@layout/px_view_progress_bar_small"/>
-
-
-    <android.support.design.widget.AppBarLayout
-        android:id="@+id/mpsdkInstallmentesAppBar"
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:background="@color/px_background"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark"
-        app:elevation="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/px_white">
 
-        <include layout="@layout/px_scrolling_toolbar"/>
+        <include layout="@layout/px_view_progress_bar_small"/>
 
-    </android.support.design.widget.AppBarLayout>
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/mpsdkInstallmentesAppBar"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:background="@color/px_background"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark"
+            app:elevation="0dp">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <include layout="@layout/px_scrolling_toolbar"/>
+        </android.support.design.widget.AppBarLayout>
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -38,25 +38,23 @@
                 android:focusableInTouchMode="true"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <FrameLayout
                     android:id="@+id/mpsdkNoInstallmentsRate"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_gravity="top|center"
-                    android:background="@color/px_background_blue"
-                    android:gravity="center_horizontal"
+                    android:background="@color/px_background"
                     android:visibility="gone">
 
                     <com.mercadopago.android.px.internal.view.MPTextView
                         android:id="@+id/mpsdkNoInstallmentsRateTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@color/px_background_blue"
-                        android:textColor="@color/px_white"
-                        android:textSize="14dp"
+                        android:layout_gravity="center_horizontal"
+                        android:textColor="@color/px_toolbar_text"
+                        android:textSize="@dimen/px_xs_text"
                         app:font_style="light"
-                        />
-                </LinearLayout>
+                        tools:text="Este es el texto de advertencia"/>
+                </FrameLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/mpsdkActivityInstallmentsView"
@@ -64,10 +62,11 @@
                     android:layout_height="match_parent"
                     android:background="@color/px_white"
                     android:descendantFocusability="afterDescendants"
-                    android:visibility="visible"/>
+                    android:visibility="visible"
+                    tools:listitem="@layout/px_view_payer_cost_item"/>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
-    </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
 
     <com.mercadopago.android.px.internal.view.AmountView
         android:id="@+id/amount_view"
@@ -75,4 +74,4 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/px_white"/>
-</android.support.design.widget.CoordinatorLayout>
+</LinearLayout>

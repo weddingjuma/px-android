@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CollapsingToolbarLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                       xmlns:android="http://schemas.android.com/apk/res/android"
-                                                       android:id="@+id/mpsdkCollapsingToolbar"
-                                                       android:layout_width="match_parent"
-                                                       android:layout_height="match_parent"
-                                                       android:fitsSystemWindows="true"
-                                                       app:contentScrim="@color/px_background"
-                                                       android:minHeight="@dimen/px_toolbar_height"
-                                                       app:expandedTitleTextAppearance="@style/px_collapsing_toolbar_text_medium"
-                                                       app:collapsedTitleTextAppearance="@style/px_collapsing_toolbar_text_medium"
-                                                       app:expandedTitleMarginTop="45dp"
-                                                       app:expandedTitleMarginBottom="25dp"
-                                                       app:expandedTitleGravity="top|center_horizontal"
-                                                       app:layout_scrollFlags="scroll|exitUntilCollapsed"
-                                                       android:background="@color/px_transparent">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mpsdkCollapsingToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    app:contentScrim="@color/px_background"
+    android:minHeight="@dimen/px_toolbar_height"
+    app:expandedTitleTextAppearance="@style/px_collapsing_toolbar_text_medium"
+    app:collapsedTitleTextAppearance="@style/px_collapsing_toolbar_text_medium"
+    app:expandedTitleMarginTop="45dp"
+    app:expandedTitleMarginBottom="25dp"
+    app:expandedTitleGravity="top|center_horizontal"
+    app:layout_scrollFlags="scroll|exitUntilCollapsed"
+    android:background="@color/px_transparent">
 
     <FrameLayout
         android:id="@+id/mpsdkActivityCardContainer"

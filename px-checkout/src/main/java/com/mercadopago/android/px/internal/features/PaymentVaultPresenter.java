@@ -21,7 +21,6 @@ import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
-import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -294,19 +293,16 @@ public class PaymentVaultPresenter extends MvpPresenter<PaymentVaultView, Paymen
             skipHook = false;
             if (selectedPaymentMethod == null) {
                 showMismatchingPaymentMethodError();
-            } else if (PaymentMethods.BRASIL.BOLBRADESCO.equalsIgnoreCase(selectedPaymentMethod.getId())
-                || PaymentMethods.BRASIL.PEC.equalsIgnoreCase(selectedPaymentMethod.getId())) {
-                handleCollectPayerInformation();
             } else {
-                getView().finishPaymentMethodSelection(selectedPaymentMethod);
+                handleCollectPayerInformation(selectedPaymentMethod);
             }
         } else {
             resumeItem = item;
         }
     }
 
-    private void handleCollectPayerInformation() {
-        new DefaultPayerInformationDriver(configuration.getCheckoutPreference().getPayer())
+    private void handleCollectPayerInformation(final PaymentMethod selectedPaymentMethod) {
+        new DefaultPayerInformationDriver(configuration.getCheckoutPreference().getPayer(), selectedPaymentMethod)
             .drive(
                 new DefaultPayerInformationDriver.PayerInformationDriverCallback() {
                     @Override
@@ -316,7 +312,7 @@ public class PaymentVaultPresenter extends MvpPresenter<PaymentVaultView, Paymen
 
                     @Override
                     public void driveToReviewConfirm() {
-                        getView().finishPaymentMethodSelection(userSelectionRepository.getPaymentMethod());
+                        getView().finishPaymentMethodSelection(selectedPaymentMethod);
                     }
                 });
     }

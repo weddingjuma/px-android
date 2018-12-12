@@ -9,6 +9,7 @@ import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.DynamicFragmentConfiguration;
 import com.mercadopago.android.px.core.DynamicFragmentCreator;
+import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePayerInformationAction;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
@@ -23,6 +24,7 @@ import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 import com.mercadopago.android.px.internal.view.TermsAndConditionsComponent;
 import com.mercadopago.android.px.model.Payer;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 
 public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer> {
@@ -50,7 +52,11 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
                 component.props.preferences.getTopFragment());
         }
 
-        new DefaultPayerInformationDriver(component.props.payer).drive(
+        final Session session = Session.getSession(context);
+        final ConfigurationModule configurationModule = session.getConfigurationModule();
+        final PaymentMethod paymentMethod = configurationModule.getUserSelectionRepository().getPaymentMethod();
+
+        new DefaultPayerInformationDriver(component.props.payer, paymentMethod).drive(
             new DefaultPayerInformationDriver.PayerInformationDriverCallback() {
                 @Override
                 public void driveToNewPayerData() {
@@ -63,9 +69,8 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
                 }
             });
 
-        final Session session = Session.getSession(context);
         final CheckoutPreference checkoutPreference =
-            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference();
+            configurationModule.getPaymentSettings().getCheckoutPreference();
 
         final DynamicFragmentCreator.CheckoutData data =
             new DynamicFragmentCreator.CheckoutData(checkoutPreference, session.getPaymentRepository().getPaymentData());

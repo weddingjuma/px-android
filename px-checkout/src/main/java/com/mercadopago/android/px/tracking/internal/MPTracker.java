@@ -23,8 +23,8 @@ import static android.text.TextUtils.isEmpty;
 public final class MPTracker {
 
     /**
-     * This singleton instance is safe because session will work with
-     * application context. Application context it's never leaking.
+     * This singleton instance is safe because session will work with application context. Application context it's
+     * never leaking.
      */
     @SuppressLint("StaticFieldLeak") private static MPTracker mMPTrackerInstance;
 
@@ -78,8 +78,8 @@ public final class MPTracker {
      * Set listener to track library's screens and events in the app.
      *
      * @param PXEventListener PXEventListener implementing the tracking methods
-     * @deprecated Deprecated due to new tracking implementation standards.
-     * Use {@link com.mercadopago.android.px.tracking.internal.MPTracker#setPXTrackingListener(PXTrackingListener)} instead.
+     * @deprecated Deprecated due to new tracking implementation standards. Use {@link com.mercadopago.android.px.tracking.internal.MPTracker#setPXTrackingListener(PXTrackingListener)}
+     * instead.
      */
     @Deprecated
     public void setTracksListener(final PXEventListener PXEventListener) {
@@ -193,7 +193,9 @@ public final class MPTracker {
 
     private void trackViewCompat(@NonNull final String path) {
         if (pxTrackingListener != null) {
-            pxTrackingListener.onView(path, flowDetail == null ? new HashMap<String, Object>() : flowDetail);
+            final HashMap<String, Object> data = new HashMap<>();
+            addAdditionalFlowInfo(data);
+            pxTrackingListener.onView(path, data);
         }
     }
 

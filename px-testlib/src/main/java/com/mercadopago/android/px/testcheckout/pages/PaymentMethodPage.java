@@ -41,7 +41,7 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
         return new CardPage(validator);
     }
 
-    public  CreditCardPage selectCardWhenSavedPresent() {
+    public CreditCardPage selectCardWhenSavedPresent() {
         onView(withId(R.id.mpsdkGroupsList))
             .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
         return new CreditCardPage(validator);
@@ -53,16 +53,16 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
         return new CashPage(validator);
     }
 
-    public ReviewAndConfirmPage selectTicketWithDefaultPayer() {
+    public ReviewAndConfirmPage selectTicketWithDefaultPayer(final int paymentMethodPosition) {
         onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        return new ReviewAndConfirmPage();
+            .perform(RecyclerViewActions.actionOnItemAtPosition(paymentMethodPosition, click()));
+        return new ReviewAndConfirmPage(validator);
     }
 
-    public PayerInformationPage selectTicketWithoutPayer() {
+    public PayerInformationPage selectTicketWithoutPayer(final int paymentMethodPosition) {
         onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        return new PayerInformationPage();
+            .perform(RecyclerViewActions.actionOnItemAtPosition(paymentMethodPosition, click()));
+        return new PayerInformationPage(validator);
     }
 
     public DiscountDetailPage pressOnDiscountDetail() {

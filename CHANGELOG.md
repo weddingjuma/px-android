@@ -1,3 +1,11 @@
+## VERSION 4.4.0
+_13_12_2018_
+
+* FIX - Installments list clip in groups flow
+* FIX - Invalid tracks
+* ENHANCEMENT - Check for additional info for payer
+* ENHANCEMENT - Better deploy scripts
+
 ## VERSION 4.3.3
 _4_12_2018_
 

@@ -56,18 +56,11 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final PaymentMethod paymentMethod = configurationModule.getUserSelectionRepository().getPaymentMethod();
 
-        new DefaultPayerInformationDriver(component.props.payer, paymentMethod).drive(
-            new DefaultPayerInformationDriver.PayerInformationDriverCallback() {
-                @Override
-                public void driveToNewPayerData() {
-                    // If payer is not valid, do nothing
-                }
-
-                @Override
-                public void driveToReviewConfirm() {
-                    addPayerInformation(component.props.payer, component.getDispatcher(), linearLayout);
-                }
-            });
+        final DefaultPayerInformationDriver defaultPayerInformationDriver =
+            new DefaultPayerInformationDriver(component.props.payer, paymentMethod);
+        if (defaultPayerInformationDriver.hasToShowPayer()) {
+            addPayerInformation(component.props.payer, component.getDispatcher(), linearLayout);
+        }
 
         final CheckoutPreference checkoutPreference =
             configurationModule.getPaymentSettings().getCheckoutPreference();

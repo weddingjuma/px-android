@@ -33,6 +33,10 @@ public class DefaultPayerInformationDriver {
         }
     }
 
+    public boolean hasToShowPayer() {
+        return resolveAdditionalInfo(selectedPaymentMethod) && isPayerInformationValid(payer);
+    }
+
     private boolean isPayerInformationValid(@Nullable final Payer payer) {
         return payer != null
             && !(!isIdentificationValid(payer.getIdentification())
@@ -49,9 +53,10 @@ public class DefaultPayerInformationDriver {
     private boolean resolveAdditionalInfo(@NonNull final PaymentMethod selectedPaymentMethod) {
         final String paymentMethodId = selectedPaymentMethod.getId();
         final List<String> additionalInfoNeeded = selectedPaymentMethod.getAdditionalInfoNeeded();
-        return additionalInfoNeeded != null && (additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_NAME)
-            || additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_IDENTIFICATION_TYPE)
-            || additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_IDENTIFICATION_NUMBER));
+        return additionalInfoNeeded != null &&
+            (additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_NAME)
+                || additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_IDENTIFICATION_TYPE)
+                || additionalInfoNeeded.contains(paymentMethodId + "_" + ADDITIONAL_INFO_IDENTIFICATION_NUMBER));
     }
 
     public interface PayerInformationDriverCallback {
@@ -59,4 +64,5 @@ public class DefaultPayerInformationDriver {
 
         void driveToReviewConfirm();
     }
+
 }

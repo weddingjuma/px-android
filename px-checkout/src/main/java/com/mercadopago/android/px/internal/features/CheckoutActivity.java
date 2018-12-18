@@ -251,10 +251,10 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             resolveCardVaultRequest(resultCode, data);
             break;
         default:
+            resolveCodes(resultCode, data);
             break;
         }
 
-        resolveCodes(resultCode, data);
     }
 
     public void resolveCodes(final int resultCode, final Intent data) {

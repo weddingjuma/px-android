@@ -422,12 +422,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     }
 
     @Override
-    public void backToReviewAndConfirm() {
-        showReviewAndConfirm(presenter.isUniquePaymentMethod());
-        overrideTransitionOut();
-    }
-
-    @Override
     public void showPaymentMethodSelection() {
         if (isActive()) {
             new Constants.Activities.PaymentVaultActivityBuilder()

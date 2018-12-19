@@ -189,6 +189,7 @@ public class PaymentVaultPresenter extends MvpPresenter<PaymentVaultView, Paymen
 
     private void selectItem(final PaymentMethodSearchItem item, final Boolean automaticSelection) {
         userSelectionRepository.select((Card) null);
+
         if (item.hasChildren()) {
             getView().showSelectedItem(item);
         } else if (item.isPaymentType()) {

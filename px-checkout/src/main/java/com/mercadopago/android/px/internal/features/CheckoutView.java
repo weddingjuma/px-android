@@ -23,8 +23,6 @@ public interface CheckoutView extends MvpView {
 
     void showPaymentResult(PaymentResult paymentResult);
 
-    void backToReviewAndConfirm();
-
     void finishWithPaymentResult();
 
     void finishWithPaymentResult(Integer customResultCode);

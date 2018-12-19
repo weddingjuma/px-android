@@ -235,7 +235,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     private void showReviewAndConfirm() {
-        state.editPaymentMethodFromReviewAndConfirm = false;
         getView().showReviewAndConfirm(isUniquePaymentMethod());
     }
 
@@ -326,21 +325,11 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     public void onPaymentMethodSelectionError(final MercadoPagoError mercadoPagoError) {
-        if (!state.editPaymentMethodFromReviewAndConfirm) {
-            getView().cancelCheckout(mercadoPagoError);
-        } else {
-            state.editPaymentMethodFromReviewAndConfirm = false;
-            getView().backToReviewAndConfirm();
-        }
+        getView().cancelCheckout(mercadoPagoError);
     }
 
     public void onPaymentMethodSelectionCancel() {
-        if (!state.editPaymentMethodFromReviewAndConfirm) {
-            cancelCheckout();
-        } else {
-            state.editPaymentMethodFromReviewAndConfirm = false;
-            getView().backToReviewAndConfirm();
-        }
+        cancelCheckout();
     }
 
     public void onReviewAndConfirmCancel() {
@@ -488,7 +477,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     public void hook2Continue() {
-        state.editPaymentMethodFromReviewAndConfirm = false;
         showReviewAndConfirm();
     }
 
@@ -632,7 +620,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     //TODO separate with better navigation when we have a proper driver.
     public void onChangePaymentMethodFromReviewAndConfirm() {
-        state.editPaymentMethodFromReviewAndConfirm = true;
         onChangePaymentMethod();
     }
 

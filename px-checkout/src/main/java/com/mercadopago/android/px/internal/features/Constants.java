@@ -51,7 +51,6 @@ public final class Constants {
         public static final int CONGRATS_REQUEST_CODE = 16;
         public static final int PAYMENT_TYPES_REQUEST_CODE = 17;
         public static final int SECURITY_CODE_REQUEST_CODE = 18;
-        public static final int REVIEW_PAYMENT_METHODS_REQUEST_CODE = 21;
 
         public static final int HOOK_1 = 50;
         public static final int HOOK_1_PLUGIN = 52;
@@ -245,7 +244,6 @@ public final class Constants {
             private Card card;
             private Token token;
             private PaymentRecovery paymentRecovery;
-            private String reason;
 
             public SecurityCodeActivityBuilder setActivity(final Activity activity) {
                 this.activity = activity;
@@ -254,11 +252,6 @@ public final class Constants {
 
             public SecurityCodeActivityBuilder setCardInfo(final CardInfo cardInformation) {
                 this.cardInformation = cardInformation;
-                return this;
-            }
-
-            public SecurityCodeActivityBuilder setTrackingReason(final String reason) {
-                this.reason = reason;
                 return this;
             }
 
@@ -310,7 +303,6 @@ public final class Constants {
                 intent.putExtra("card", JsonUtil.getInstance().toJson(card));
                 intent.putExtra("cardInfo", JsonUtil.getInstance().toJson(cardInformation));
                 intent.putExtra("paymentRecovery", JsonUtil.getInstance().toJson(paymentRecovery));
-                intent.putExtra("reason", reason);
                 activity.startActivityForResult(intent, SECURITY_CODE_REQUEST_CODE);
             }
         }
@@ -392,41 +384,6 @@ public final class Constants {
                     bankDealsIntent.putExtra("bankDeals", JsonUtil.getInstance().toJson(bankDeals));
                 }
                 activity.startActivityForResult(bankDealsIntent, BANK_DEALS_REQUEST_CODE);
-            }
-        }
-
-        public static class ReviewPaymentMethodsActivityBuilder {
-
-            private Activity activity;
-            private List<PaymentMethod> paymentMethods;
-
-            public ReviewPaymentMethodsActivityBuilder setActivity(@NonNull final Activity activity) {
-                this.activity = activity;
-                return this;
-            }
-
-            public ReviewPaymentMethodsActivityBuilder setPaymentMethods(final List<PaymentMethod> paymentMethods) {
-                this.paymentMethods = paymentMethods;
-                return this;
-            }
-
-            public void startActivity() {
-                if (activity == null) {
-                    throw new IllegalStateException("activity is null");
-                }
-                if (paymentMethods == null) {
-                    throw new IllegalStateException("payment methods is null");
-                }
-                if (paymentMethods.isEmpty()) {
-                    throw new IllegalStateException("payment methods is empty");
-                }
-                startReviewPaymentMethodsActivity();
-            }
-
-            private void startReviewPaymentMethodsActivity() {
-                final Intent intent = new Intent(activity, ReviewPaymentMethodsActivity.class);
-                intent.putExtra("paymentMethods", JsonUtil.getInstance().toJson(paymentMethods));
-                activity.startActivityForResult(intent, REVIEW_PAYMENT_METHODS_REQUEST_CODE);
             }
         }
     }

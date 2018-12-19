@@ -258,7 +258,8 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     public void resolveTokenRequest(final Token token) {
         mToken = token;
         mPaymentSettingRepository.configure(mToken);
-        MPTracker.getInstance().trackToken(mToken.getId());
+        MPTracker.getInstance().trackTokenId(mToken.getId(), mPaymentSettingRepository.getPublicKey(),
+            mPaymentSettingRepository.getCheckoutPreference().getSite());
         getIssuers();
     }
 

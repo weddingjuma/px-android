@@ -14,7 +14,6 @@ import com.mercadopago.android.px.internal.datasource.MercadoPagoPaymentConfigur
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -57,7 +56,6 @@ public class MercadoPagoCheckout {
         privateKey = builder.privateKey;
         paymentConfiguration = builder.paymentConfiguration;
         checkoutPreference = builder.checkoutPreference;
-        FlowHandler.getInstance().generateFlowId();
         CallbackHolder.getInstance().clean();
     }
 
@@ -162,12 +160,6 @@ public class MercadoPagoCheckout {
 
         /* default */ @Nullable String privateKey;
 
-        /* default */ @Deprecated String regularFontPath;
-
-        /* default */ @Deprecated String lightFontPath;
-
-        /* default */ @Deprecated String monoFontPath;
-
         /**
          * Checkout builder allow you to create a {@link MercadoPagoCheckout}
          * {@see  <a href="http://developers.mercadopago.com/">our developers site</a>}
@@ -238,16 +230,6 @@ public class MercadoPagoCheckout {
             this.advancedConfiguration = advancedConfiguration;
             return this;
         }
-
-//        /**
-//         * @deprecated we will not support this mechanism anymore.
-//         */
-//        @Deprecated
-//        public Builder setCustomMonoFont(@NonNull final String monoFontPath, final Context context) {
-//            this.monoFontPath = monoFontPath;
-//            setCustomFont(context, FontCache.CUSTOM_MONO_FONT, this.monoFontPath);
-//            return this;
-//        }
 
         /**
          * @return {@link MercadoPagoCheckout} instance

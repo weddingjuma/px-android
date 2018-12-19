@@ -54,7 +54,8 @@ public class TokenizeService implements TokenRepository {
                 token.setLastFourDigits(card.getLastFourDigits());
                 mercadoPagoESC.saveESC(card.getId(), token.getEsc());
                 paymentSettingRepository.configure(token);
-                MPTracker.getInstance().trackToken(token.getId());
+                MPTracker.getInstance().trackTokenId(token.getId(), paymentSettingRepository.getPublicKey(),
+                    paymentSettingRepository.getCheckoutPreference().getSite());
                 callback.success(token);
             }
 

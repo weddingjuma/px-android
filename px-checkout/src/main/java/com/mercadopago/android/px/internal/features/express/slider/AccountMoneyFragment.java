@@ -9,9 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AccountMoneyDrawableFragmentItem;
 import com.mercadopago.android.px.model.AccountMoneyMetadata;
 
@@ -52,21 +50,11 @@ public class AccountMoneyFragment extends Fragment {
 
     private void setMessage(final TextView message,
         final AccountMoneyMetadata metadata) {
-        if (TextUtil.isEmpty(metadata.message)) {
-            final String currencyId = Session.getSession(message.getContext()).getConfigurationModule()
-                .getPaymentSettings()
-                .getCheckoutPreference()
-                .getSite().getCurrencyId();
-
-            //TODO add translation.
-            TextFormatter.withCurrencyId(currencyId)
-                .withSpace()
-                .amount(metadata.balance)
-                .normalDecimals()
-                .into(message)
-                .holder(R.string.px_total_in_mercado_pago);
+        if (TextUtil.isEmpty(metadata.displayInfo.message)) {
+            message.setVisibility(View.GONE);
         } else {
-            message.setText(metadata.message);
+            message.setVisibility(View.VISIBLE);
+            message.setText(metadata.displayInfo.message);
         }
     }
 }

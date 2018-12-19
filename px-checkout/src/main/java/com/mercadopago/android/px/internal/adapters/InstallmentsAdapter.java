@@ -18,7 +18,7 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentsAdapte
 
     private final Site mSite;
     private List<PayerCost> mInstallmentsList;
-    private final OnSelectedCallback<Integer> mCallback;
+    /* default */ final OnSelectedCallback<Integer> mCallback;
 
     public InstallmentsAdapter(Site site, OnSelectedCallback<Integer> callback) {
         mSite = site;

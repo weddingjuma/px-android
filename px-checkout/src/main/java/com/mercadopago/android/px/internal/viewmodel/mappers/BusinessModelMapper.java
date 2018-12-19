@@ -6,7 +6,6 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
-import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.PaymentData;
 

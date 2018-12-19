@@ -110,7 +110,8 @@ public class PaymentVaultActivity extends MercadoPagoBaseActivity
             session.getConfigurationModule().getUserSelectionRepository(),
             session.getPluginRepository(),
             session.getDiscountRepository(),
-            session.getGroupsRepository());
+            session.getGroupsRepository(),
+            session.getMercadoPagoESC());
 
         getActivityParameters();
         configurePresenter();

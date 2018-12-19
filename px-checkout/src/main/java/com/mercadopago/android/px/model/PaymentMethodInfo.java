@@ -9,8 +9,7 @@ public class PaymentMethodInfo implements PaymentMethodInfoModel, Serializable {
     private final String id;
     private final String name;
     private final String description;
-    @DrawableRes public final
-    int icon;
+    @DrawableRes public final int icon;
 
     public PaymentMethodInfo(@NonNull final String id,
         @NonNull final String name,
@@ -22,6 +21,7 @@ public class PaymentMethodInfo implements PaymentMethodInfoModel, Serializable {
         this.icon = icon;
     }
 
+    @Deprecated
     public PaymentMethodInfo(@NonNull final String id,
         @NonNull final String name,
         @DrawableRes final int icon) {

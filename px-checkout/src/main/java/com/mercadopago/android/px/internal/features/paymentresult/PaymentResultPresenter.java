@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.view.ActionsListener;
 import com.mercadopago.android.px.internal.view.CopyAction;
@@ -20,18 +19,17 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.List;
 
 /* default */ class PaymentResultPresenter extends MvpPresenter<PaymentResultPropsView, PaymentResultProvider>
     implements ActionsListener {
     private PaymentResult paymentResult;
 
-    private final PaymentResultNavigator navigator;
+    /* default */ final PaymentResultNavigator navigator;
     private final PaymentSettingRepository paymentSettings;
     private final InstructionsRepository instructionsRepository;
 
@@ -68,32 +66,10 @@ import java.util.List;
     }
 
     protected void onValidStart() {
-        initializeTracking();
+        new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult).track();
         getView().setPropPaymentResult(paymentSettings.getCheckoutPreference().getSite().getCurrencyId(), paymentResult,
             paymentResult.isOffPayment());
         checkGetInstructions();
-    }
-
-    private void initializeTracking() {
-        final String screenId = Tracker.getScreenIdByPaymentResult(paymentResult);
-        final ScreenViewEvent.Builder builder = new ScreenViewEvent.Builder()
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_IS_EXPRESS, TrackingUtil.IS_EXPRESS_DEFAULT_VALUE)
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_TYPE_ID,
-                paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId())
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID,
-                paymentResult.getPaymentData().getPaymentMethod().getId())
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_STATUS, paymentResult.getPaymentStatus())
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_STATUS_DETAIL, paymentResult.getPaymentStatusDetail())
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_ID, String.valueOf(paymentResult.getPaymentId()));
-        if (paymentResult.getPaymentData().getIssuer() != null &&
-            paymentResult.getPaymentData().getIssuer().getId() != null) {
-            builder.addProperty(TrackingUtil.PROPERTY_ISSUER_ID,
-                String.valueOf(paymentResult.getPaymentData().getIssuer().getId()));
-        }
-
-        navigator.trackScreen(builder.build());
     }
 
     private boolean isPaymentResultValid() {
@@ -161,11 +137,11 @@ import java.util.List;
         }
     }
 
-    private void setFailureRecovery(final FailureRecovery failureRecovery) {
+    /* default */ void setFailureRecovery(final FailureRecovery failureRecovery) {
         this.failureRecovery = failureRecovery;
     }
 
-    private void resolveInstructions(final List<Instruction> instructionsList) {
+    /* default */ void resolveInstructions(final List<Instruction> instructionsList) {
         final Instruction instruction = getInstruction(instructionsList);
         if (instruction == null) {
             navigator.showError(new MercadoPagoError(getResourcesProvider().getStandardErrorMessage(), false),

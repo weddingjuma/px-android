@@ -564,11 +564,6 @@ public class PaymentResultTest {
         }
 
         @Override
-        public void trackScreen(ScreenViewEvent event) {
-
-        }
-
-        @Override
         public void copyToClipboard(@NonNull final String content) {
             // Intentionally empty
         }

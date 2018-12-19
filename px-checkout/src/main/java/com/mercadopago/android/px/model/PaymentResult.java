@@ -73,6 +73,7 @@ public class PaymentResult implements Serializable {
         return Payment.StatusCodes.STATUS_REJECTED.equals(getPaymentStatus());
     }
 
+    //TODO rename method
     public boolean isInstructions() {
         return (Payment.StatusCodes.STATUS_PENDING.equals(getPaymentStatus()) ||
             Payment.StatusCodes.STATUS_IN_PROCESS.equals(getPaymentStatus())) &&

@@ -24,7 +24,5 @@ public interface PaymentResultNavigator {
 
     void recoverPayment(@NonNull final PostPaymentAction.OriginAction originAction);
 
-    void trackScreen(ScreenViewEvent event);
-
     void copyToClipboard(@NonNull final String content);
 }

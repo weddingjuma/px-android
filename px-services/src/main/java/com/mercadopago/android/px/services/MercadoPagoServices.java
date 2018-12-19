@@ -101,7 +101,8 @@ public class MercadoPagoServices {
         final String cardsWithEscAppended = getListAsString(cardsWithEsc, separator);
         final String supportedPluginsAppended = getListAsString(supportedPlugins, separator);
 
-        service.getPaymentMethodSearch(Settings.servicesVersion,
+        service.getPaymentMethodSearch(
+//            Settings.servicesVersion,
             LocaleUtil.getLanguage(context), publicKey, amount,
             excludedPaymentTypesAppended, excludedPaymentMethodsAppended, site.getId(),
             processingMode, cardsWithEscAppended, supportedPluginsAppended,
@@ -136,7 +137,8 @@ public class MercadoPagoServices {
         final String cardsWithEscAppended = getListAsString(cardsWithEsc, separator);
         final String supportedPluginsAppended = getListAsString(supportedPlugins, separator);
 
-        service.getPaymentMethodSearch(Settings.servicesVersion,
+        service.getPaymentMethodSearch(
+//            Settings.servicesVersion,
             LocaleUtil.getLanguage(context), publicKey, amount,
             excludedPaymentTypesAppended, excludedPaymentMethodsAppended, site.getId(),
             processingMode, cardsWithEscAppended, supportedPluginsAppended,

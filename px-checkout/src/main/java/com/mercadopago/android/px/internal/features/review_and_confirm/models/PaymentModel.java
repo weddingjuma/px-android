@@ -18,10 +18,10 @@ public class PaymentModel implements Parcelable {
     public final long issuerId;
     private final String cardId;
 
-    public PaymentModel(PaymentMethod paymentMethod,
-        Token token,
-        Issuer issuer,
-        boolean moreThanOnePaymentMethod) {
+    public PaymentModel(final PaymentMethod paymentMethod,
+        final Token token,
+        final Issuer issuer,
+        final boolean moreThanOnePaymentMethod) {
 
         paymentMethodId = paymentMethod.getId();
         paymentMethodName = paymentMethod.getName();

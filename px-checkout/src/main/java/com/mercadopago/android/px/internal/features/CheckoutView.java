@@ -41,8 +41,6 @@ public interface CheckoutView extends MvpView {
 
     void startPaymentRecoveryFlow(PaymentRecovery paymentRecovery);
 
-    void initializeMPTracker();
-
     void trackScreen();
 
     void showHook(final Hook hook, final int requestCode);

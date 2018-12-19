@@ -1,11 +1,14 @@
 package com.mercadopago.android.px.tracking.internal.model;
 
+import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
+@SuppressWarnings("unused")
+@Keep
 public class ApiErrorInfo {
 
     private String apiStatusCode;

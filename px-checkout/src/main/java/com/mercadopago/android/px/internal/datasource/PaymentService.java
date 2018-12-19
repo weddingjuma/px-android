@@ -16,6 +16,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.viewmodel.mappers.AccountMoneyMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.CardMapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -33,23 +34,24 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import javax.annotation.Nonnull;
 
 import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public class PaymentService implements PaymentRepository {
 
-    @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
-    @NonNull private final PluginRepository pluginRepository;
     @NonNull private final DiscountRepository discountRepository;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final PaymentProcessor paymentProcessor;
     @NonNull private final Context context;
+    @Nonnull private final PluginRepository pluginRepository;
     @NonNull private final TokenRepository tokenRepository;
     @NonNull private final GroupsRepository groupsRepository;
     @NonNull private final EscManager escManager;
 
-    @NonNull private final PaymentServiceHandlerWrapper handlerWrapper;
+    @NonNull /* default */ final PaymentServiceHandlerWrapper handlerWrapper;
 
     @Nullable private IPayment payment;
 
@@ -67,8 +69,8 @@ public class PaymentService implements PaymentRepository {
 
         this.escManager = escManager;
         this.userSelectionRepository = userSelectionRepository;
-        this.paymentSettingRepository = paymentSettingRepository;
         this.pluginRepository = pluginRepository;
+        this.paymentSettingRepository = paymentSettingRepository;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
         this.paymentProcessor = paymentProcessor;
@@ -126,6 +128,7 @@ public class PaymentService implements PaymentRepository {
 
     /**
      * This method presets all user information ahead before the payment is processed.
+     *
      * @param expressMetadata model
      */
     @Override
@@ -137,7 +140,6 @@ public class PaymentService implements PaymentRepository {
             public void success(final PaymentMethodSearch paymentMethodSearch) {
 
                 final String paymentTypeId = expressMetadata.getPaymentTypeId();
-                final String paymentMethodId = expressMetadata.getPaymentMethodId();
 
                 if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
                     // Saved card.
@@ -145,15 +147,18 @@ public class PaymentService implements PaymentRepository {
                     userSelectionRepository.select(card);
                     userSelectionRepository.select(payerCost);
                 } else if (PaymentTypes.isPlugin(paymentTypeId)) {
-                    // Account money plugin / No second factor.
                     userSelectionRepository
-                        .select(pluginRepository.getPluginAsPaymentMethod(paymentMethodId, paymentTypeId));
+                        .select(pluginRepository
+                            .getPluginAsPaymentMethod(expressMetadata.getPaymentMethodId(), paymentTypeId));
+                } else if (PaymentTypes.isAccountMoney(paymentTypeId)) {
+                    final PaymentMethod paymentMethod =
+                        new AccountMoneyMapper(paymentMethodSearch).map(expressMetadata);
+                    userSelectionRepository.select(paymentMethod);
                 } else {
                     throw new IllegalStateException("payment method selected can not be used for express payment");
                 }
 
                 startPayment();
-
             }
 
             @Override
@@ -169,7 +174,7 @@ public class PaymentService implements PaymentRepository {
         checkPaymentMethod();
     }
 
-    private void checkPaymentMethod() {
+    /* default */ void checkPaymentMethod() {
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
         if (paymentMethod != null) {
             processPaymentMethod(paymentMethod);

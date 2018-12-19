@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.google.gson.reflect.TypeToken;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.IssuersAdapter;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
@@ -22,8 +21,6 @@ import com.mercadopago.android.px.internal.features.providers.IssuersProviderImp
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
@@ -31,10 +28,8 @@ import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -174,24 +169,6 @@ public class IssuersActivity extends MercadoPagoBaseActivity implements IssuersA
         loadViews();
         hideHeader();
         showTimer();
-        trackScreen();
-    }
-
-    protected void trackScreen() {
-        final String publicKey = Session.getSession(this).getConfigurationModule().getPaymentSettings().getPublicKey();
-        final MPTrackingContext mpTrackingContext = new MPTrackingContext.Builder(this, publicKey)
-            .setVersion(BuildConfig.VERSION_NAME)
-            .build();
-
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(TrackingUtil.VIEW_PATH_ISSUERS)
-            .setScreenName(TrackingUtil.VIEW_PATH_ISSUERS)
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_TYPE_ID, mPresenter.getPaymentMethod().getPaymentTypeId())
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID, mPresenter.getPaymentMethod().getId())
-            .build();
-
-        mpTrackingContext.trackEvent(event);
     }
 
     private void loadViews() {

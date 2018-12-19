@@ -38,7 +38,6 @@ import com.mercadopago.android.px.internal.features.express.installments.Install
 import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodFragmentAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodFragmentAdapterLowRes;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
@@ -63,8 +62,6 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.model.ErrorView;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -99,8 +96,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private View installmentsSelectorSeparator;
     private MeliButton confirmButton;
     private RecyclerView installmentsRecyclerView;
-    private ViewPager paymentMethodPager;
-    private View pagerAndConfirmButtonContainer;
+    /* default */ ViewPager paymentMethodPager;
+    /* default */ View pagerAndConfirmButtonContainer;
     private ScrollingPagerIndicator indicator;
     private InstallmentsAnimation installmentsAnimation;
     private FadeAnim fadeAnimation;
@@ -108,7 +105,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private InstallmentsAdapter installmentsAdapter;
     private FixedAspectRatioFrameLayout aspectRatioContainer;
     private InstallmentsHeaderView installmentsHeaderView;
-    private View recyclerContainer;
+    /* default */ View recyclerContainer;
 
     public static Fragment getInstance() {
         return new ExpressPaymentFragment();
@@ -406,8 +403,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showErrorSnackBar(@NonNull final MercadoPagoError error) {
-        Tracker.trackGenericError(TrackingUtil.VIEW_PATH_EXPRESS_CHECKOUT, ErrorView.ErrorType.SNACKBAR, error,
-            error.getMessage());
         if (getView() != null && getActivity() != null) {
             MeliSnackbar.make(getView(), error.getMessage(), Snackbar.LENGTH_LONG,
                 MeliSnackbar.SnackbarType.ERROR).show();
@@ -497,14 +492,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 @Override
                 public void onClick(final View v) {
                     presenter.cancel();
-                    trackAbortExpress();
                 }
             });
         }
-    }
-
-    void trackAbortExpress() {
-        Tracker.trackAbortExpress();
     }
 
     @Override
@@ -567,7 +557,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onPageSelected(final int position) {
-        Tracker.trackSwipeExpress();
         presenter.onSliderOptionSelected(position);
         VibrationUtils.smallVibration(getContext());
     }
@@ -589,7 +578,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onAmountDescriptorClicked() {
-        Tracker.trackExpressDiscountView();
         DiscountDetailDialog.showDialog(getFragmentManager());
     }
 

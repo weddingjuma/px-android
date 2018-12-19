@@ -30,7 +30,6 @@ import com.mercadopago.android.px.internal.features.card.TicketIdentificationNam
 import com.mercadopago.android.px.internal.features.card.TicketIdentificationNumberTextWatcher;
 import com.mercadopago.android.px.internal.features.providers.PayerInformationProviderImpl;
 import com.mercadopago.android.px.internal.features.uicontrollers.identification.IdentificationTicketView;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
@@ -41,7 +40,9 @@ import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.tracking.internal.views.CPFViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.LastNameViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.NameViewTracker;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -65,21 +66,16 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
 
-    public static void start(final Activity activity, final int reqCode) {
-        final Intent payerInformationIntent = new Intent(activity, PayerInformationActivity.class);
-        activity.startActivityForResult(payerInformationIntent, reqCode);
-    }
-
     // Local vars
     protected PayerInformationPresenter mPresenter;
     private boolean mActivityActive;
 
     //View controls
-    private ScrollView mScrollView;
+    /* default */ ScrollView mScrollView;
     private ViewGroup mProgressLayout;
 
     //Input controls
-    private String mCurrentEditingEditText;
+    /* default */ String mCurrentEditingEditText;
     private String mErrorState;
     private LinearLayout mInputContainer;
     private LinearLayout mIdentificationNumberInput;
@@ -92,8 +88,8 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     private FrameLayout mIdentificationCardContainer;
     private FrameLayout mErrorContainer;
     private Spinner mIdentificationTypeSpinner;
-    private MPEditText mIdentificationNumberEditText;
-    private MPEditText mIdentificationNameEditText;
+    /* default */ MPEditText mIdentificationNumberEditText;
+    /* default */ MPEditText mIdentificationNameEditText;
     private MPEditText mIdentificationLastNameEditText;
     private MPTextView mErrorTextView;
     private Toolbar mLowResToolbar;
@@ -102,7 +98,12 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
 
     private boolean mLowResActive;
 
-    private IdentificationTicketView mIdentificationTicketView;
+    /* default */ IdentificationTicketView mIdentificationTicketView;
+
+    public static void start(final Activity activity, final int reqCode) {
+        final Intent payerInformationIntent = new Intent(activity, PayerInformationActivity.class);
+        activity.startActivityForResult(payerInformationIntent, reqCode);
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -137,12 +138,12 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         super.onRestoreInstanceState(savedInstanceState);
 
         if (savedInstanceState != null) {
-            String identificationNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
-            String identificationName = savedInstanceState.getString(IDENTIFICATION_NAME_BUNDLE);
-            String identificationLastName = savedInstanceState.getString(IDENTIFICATION_LAST_NAME_BUNDLE);
-            Identification identification = JsonUtil.getInstance()
+            final String identificationNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
+            final String identificationName = savedInstanceState.getString(IDENTIFICATION_NAME_BUNDLE);
+            final String identificationLastName = savedInstanceState.getString(IDENTIFICATION_LAST_NAME_BUNDLE);
+            final Identification identification = JsonUtil.getInstance()
                 .fromJson(savedInstanceState.getString(IDENTIFICATION_BUNDLE), Identification.class);
-            IdentificationType identificationType = JsonUtil.getInstance()
+            final IdentificationType identificationType = JsonUtil.getInstance()
                 .fromJson(savedInstanceState.getString(IDENTIFICATION_TYPE_BUNDLE), IdentificationType.class);
             List<IdentificationType> identificationTypesList;
             try {
@@ -318,7 +319,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
                 }
 
                 @Override
-                public void saveIdentificationNumber(CharSequence string) {
+                public void saveIdentificationNumber(final CharSequence string) {
                     mPresenter.saveIdentificationNumber(string.toString());
 
                     mIdentificationTicketView.setIdentificationNumber(string.toString());
@@ -334,14 +335,14 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
                 }
 
                 @Override
-                public void toggleLineColorOnError(boolean toggle) {
+                public void toggleLineColorOnError(final boolean toggle) {
                     setAlphaColorText();
                     mIdentificationNumberEditText.toggleLineColorOnError(toggle);
                 }
             }));
     }
 
-    private void setAlphaColorText() {
+    /* default */ void setAlphaColorText() {
         mIdentificationTicketView.setAlphaColorNameText();
         mIdentificationTicketView.setAlphaColorLastNameText();
     }
@@ -440,7 +441,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         mIdentificationTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                IdentificationType identificationType =
+                final IdentificationType identificationType =
                     (IdentificationType) mIdentificationTypeSpinner.getSelectedItem();
 
                 mIdentificationTicketView.setIdentificationType(identificationType);
@@ -485,7 +486,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         });
     }
 
-    private void finishWithCancelResult() {
+    /* default */ void finishWithCancelResult() {
         Intent returnIntent = new Intent();
         returnIntent.putExtra("backButtonPressed", true);
         setResult(RESULT_CANCELED, returnIntent);
@@ -529,7 +530,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         text.setFilters(fArray);
     }
 
-    private boolean onNextKey(int actionId, KeyEvent event) {
+    /* default */ boolean onNextKey(int actionId, KeyEvent event) {
         if (isNextKey(actionId, event)) {
             validateCurrentEditText();
             return true;
@@ -550,9 +551,9 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         }
     }
 
-    private void openKeyboard(MPEditText ediText) {
+    /* default */ void openKeyboard(final MPEditText ediText) {
         ediText.requestFocus();
-        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        final InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.showSoftInput(ediText, InputMethodManager.SHOW_IMPLICIT);
         fullScrollDown();
     }
@@ -618,7 +619,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         finishWithPayer();
     }
 
-    private boolean checkIsEmptyOrValid() {
+    /* default */ boolean checkIsEmptyOrValid() {
         switch (mCurrentEditingEditText) {
         case IDENTIFICATION_NAME_INPUT:
             if (mPresenter.checkIsEmptyOrValidName()) {
@@ -642,19 +643,19 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     }
 
     private void requestIdentificationNumberFocus() {
-        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_CPF, TrackingUtil.VIEW_PATH_BOLBRADESCO_CPF, getApplicationContext());
+        new CPFViewTracker().track();
         mCurrentEditingEditText = IDENTIFICATION_NUMBER_INPUT;
         openKeyboard(mIdentificationNumberEditText);
     }
 
     private void requestIdentificationNameFocus() {
-        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_NAME, TrackingUtil.VIEW_PATH_BOLBRADESCO_NAME, getApplicationContext());
+        new NameViewTracker().track();
         mCurrentEditingEditText = IDENTIFICATION_NAME_INPUT;
         openKeyboard(mIdentificationNameEditText);
     }
 
     private void requestIdentificationLastNameFocus() {
-        Tracker.trackScreen(TrackingUtil.VIEW_PATH_BOLBRADESCO_LASTNAME, TrackingUtil.VIEW_PATH_BOLBRADESCO_LASTNAME, getApplicationContext());
+        new LastNameViewTracker().track();
         mCurrentEditingEditText = IDENTIFICATION_LAST_NAME_INPUT;
         openKeyboard(mIdentificationLastNameEditText);
     }
@@ -665,7 +666,7 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     }
 
     @Override
-    public void showError(MercadoPagoError error, String requestOrigin) {
+    public void showError(final MercadoPagoError error, final String requestOrigin) {
         if (error.isApiException()) {
             showApiException(error.getApiException(), requestOrigin);
         } else {
@@ -673,13 +674,13 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
         }
     }
 
-    public void showApiException(ApiException apiException, String requestOrigin) {
+    public void showApiException(final ApiException apiException, final String requestOrigin) {
         if (mActivityActive) {
             ErrorUtil.showApiExceptionError(this, apiException, requestOrigin);
         }
     }
 
-    private void checkChangeErrorView() {
+    /* default */ void checkChangeErrorView() {
         if (ERROR_STATE.equals(mErrorState)) {
             clearErrorView();
         }
@@ -694,14 +695,14 @@ public class PayerInformationActivity extends MercadoPagoBaseActivity implements
     }
 
     @Override
-    public void setErrorView(String message) {
+    public void setErrorView(final String message) {
         mButtonContainer.setVisibility(View.GONE);
         mErrorContainer.setVisibility(View.VISIBLE);
         mErrorTextView.setText(message);
         setErrorState(ERROR_STATE);
     }
 
-    private void setErrorState(String mErrorState) {
+    private void setErrorState(final String mErrorState) {
         this.mErrorState = mErrorState;
     }
 

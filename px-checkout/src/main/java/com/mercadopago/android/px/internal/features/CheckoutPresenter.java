@@ -21,7 +21,6 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginInitTask;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
@@ -48,8 +47,8 @@ import java.util.Map;
 public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvider> implements PaymentServiceHandler,
     PostPaymentAction.ActionController {
 
-    @NonNull private final CheckoutStateModel state;
-    @NonNull private final PluginRepository pluginRepository;
+    @NonNull /* default */ final CheckoutStateModel state;
+    @NonNull /* default */ final PluginRepository pluginRepository;
     @NonNull private final PaymentRepository paymentRepository;
 
     @NonNull
@@ -57,11 +56,11 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     @NonNull
     private final DiscountRepository discountRepository;
     @NonNull
-    private final PaymentSettingRepository paymentSettingRepository;
+    /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull
     private final AmountRepository amountRepository;
     @NonNull
-    private final UserSelectionRepository userSelectionRepository;
+    /* default */ final UserSelectionRepository userSelectionRepository;
 
     @NonNull
     private final InternalConfiguration internalConfiguration;
@@ -123,10 +122,9 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
-    private void startCheckoutForPreference() {
+    /* default */ void startCheckoutForPreference() {
         try {
             getCheckoutPreference().validate();
-            getView().initializeMPTracker();
             getView().trackScreen();
             startCheckout();
         } catch (CheckoutPreferenceException e) {
@@ -162,7 +160,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         };
     }
 
-    private void finishInitializingPluginsData() {
+    /* default */ void finishInitializingPluginsData() {
         discountRepository.configureDiscountAutomatically(amountRepository.getAmountToPay())
             .enqueue(new Callback<Boolean>() {
                 @Override
@@ -526,8 +524,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     /**
-     * Send intention to close checkout
-     * if the checkout has oneTap data then it should not close.
+     * Send intention to close checkout if the checkout has oneTap data then it should not close.
      */
     public void cancelCheckout() {
         //TODO improve this
@@ -634,9 +631,5 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     public void onChangePaymentMethodFromReviewAndConfirm() {
         state.editPaymentMethodFromReviewAndConfirm = true;
         onChangePaymentMethod();
-    }
-
-    public void trackAbortExpress() {
-        Tracker.trackAbortExpress();
     }
 }

@@ -18,7 +18,7 @@ public class PaymentMethodComponent extends CompactComponent<PaymentModel, Payme
         void onPaymentMethodChangeClicked();
     }
 
-    public PaymentMethodComponent(PaymentModel props, Actions actions) {
+    public PaymentMethodComponent(final PaymentModel props, final Actions actions) {
         super(props, actions);
     }
 
@@ -26,6 +26,8 @@ public class PaymentMethodComponent extends CompactComponent<PaymentModel, Payme
     CompactComponent resolveComponent() {
         if (PaymentTypes.isCardPaymentType(props.getPaymentType())) {
             return new MethodCard(MethodCard.Props.createFrom(props));
+        } else if (PaymentTypes.isAccountMoney(props.getPaymentType())) {
+            return new MethodAccountMoney(MethodAccountMoney.Props.createFrom(props));
         } else if (PaymentTypes.isPlugin(props.getPaymentType())) {
             return new MethodPlugin(MethodPlugin.Props.createFrom(props));
         } else {
@@ -36,11 +38,11 @@ public class PaymentMethodComponent extends CompactComponent<PaymentModel, Payme
     @Override
     public View render(@NonNull final ViewGroup parent) {
 
-        ViewGroup paymentMethodView = (ViewGroup) resolveComponent().render(parent);
+        final ViewGroup paymentMethodView = (ViewGroup) resolveComponent().render(parent);
 
         if (shouldShowPaymentMethodButton()) {
-            String changeLabel = parent.getContext().getString(R.string.px_change_payment);
-            ButtonLink buttonLink = new ButtonLink(new Button.Props(changeLabel, null), new Button.Actions() {
+            final String changeLabel = parent.getContext().getString(R.string.px_change_payment);
+            final ButtonLink buttonLink = new ButtonLink(new Button.Props(changeLabel, null), new Button.Actions() {
                 @Override
                 public void onClick(final Action action) {
                     if (getActions() != null) {

@@ -12,6 +12,7 @@ import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.views.IssuersViewTrack;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,6 +60,7 @@ public class IssuersPresenter extends MvpPresenter<IssuersActivityView, IssuersP
         } else {
             getView().showHeader();
             getView().showIssuers(issuers, getDpadSelectionCallback());
+            new IssuersViewTrack(issuers, paymentMethod).track();
         }
     }
 

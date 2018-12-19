@@ -14,11 +14,11 @@ public class CardTokenException extends Exception {
     private final int errorCode;
     private String extraParams;
 
-    public CardTokenException(int errorCode) {
+    public CardTokenException(final int errorCode) {
         this.errorCode = errorCode;
     }
 
-    public CardTokenException(int errorCode, String extraParams) {
+    public CardTokenException(final int errorCode, final String extraParams) {
         this.errorCode = errorCode;
         this.extraParams = extraParams;
     }

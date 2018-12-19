@@ -14,10 +14,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.BankDeal;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.tracking.internal.views.BankDealsDetailViewTracker;
 import com.squareup.picasso.Callback;
 
 public class BankDealDetailActivity extends AppCompatActivity implements Callback {
@@ -69,12 +68,12 @@ public class BankDealDetailActivity extends AppCompatActivity implements Callbac
 
         public static final Creator<BankDealDetailModel> CREATOR = new Creator<BankDealDetailModel>() {
             @Override
-            public BankDealDetailModel createFromParcel(Parcel in) {
+            public BankDealDetailModel createFromParcel(final Parcel in) {
                 return new BankDealDetailModel(in);
             }
 
             @Override
-            public BankDealDetailModel[] newArray(int size) {
+            public BankDealDetailModel[] newArray(final int size) {
                 return new BankDealDetailModel[size];
             }
         };
@@ -96,24 +95,18 @@ public class BankDealDetailActivity extends AppCompatActivity implements Callbac
 
     public static void startWithBankDealLegals(@NonNull final Context context,
         @NonNull final BankDeal bankDeal) {
-        Intent intent = new Intent(context, BankDealDetailActivity.class);
+        final Intent intent = new Intent(context, BankDealDetailActivity.class);
         intent.putExtra(EXTRA_MODEL, BankDealDetailModel.createWith(bankDeal));
         context.startActivity(intent);
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.px_activity_bank_deal_detail);
-        BankDealDetailModel model = getIntent().getParcelableExtra(EXTRA_MODEL);
+        new BankDealsDetailViewTracker().track();
+        final BankDealDetailModel model = getIntent().getParcelableExtra(EXTRA_MODEL);
         initView(model);
-        trackScreen();
-    }
-
-    protected void trackScreen() {
-        Tracker.trackScreen(TrackingUtil.VIEW_PATH_PROMOTIONS_TERMS_AND_CONDITIONS,
-            TrackingUtil.VIEW_PATH_PROMOTIONS_TERMS_AND_CONDITIONS,
-            getApplicationContext());
     }
 
     private void initView(final BankDealDetailModel model) {
@@ -141,10 +134,10 @@ public class BankDealDetailActivity extends AppCompatActivity implements Callbac
     }
 
     private void initToolbar() {
-        Toolbar toolbar = findViewById(R.id.mpsdkToolbar);
-        TextView titleToolbar = toolbar.findViewById(R.id.mpsdkTitle);
+        final Toolbar toolbar = findViewById(R.id.mpsdkToolbar);
+        final TextView titleToolbar = toolbar.findViewById(R.id.mpsdkTitle);
         setSupportActionBar(toolbar);
-        ActionBar supportActionBar = getSupportActionBar();
+        final ActionBar supportActionBar = getSupportActionBar();
         supportActionBar.setDisplayShowTitleEnabled(false);
         supportActionBar.setDisplayShowTitleEnabled(false);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
@@ -152,7 +145,7 @@ public class BankDealDetailActivity extends AppCompatActivity implements Callbac
         titleToolbar.setText(R.string.bank_deal_details_title);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(final View v) {
                 onBackPressed();
             }
         });

@@ -42,10 +42,9 @@ import static org.mockito.Mockito.when;
 public class PaymentServiceTest {
 
     @Mock private PaymentServiceHandler handler;
-
+    @Mock private PluginRepository pluginRepository;
     @Mock private UserSelectionRepository userSelectionRepository;
     @Mock private PaymentSettingRepository paymentSettingRepository;
-    @Mock private PluginRepository pluginRepository;
     @Mock private DiscountRepository discountRepository;
     @Mock private AmountRepository amountRepository;
     @Mock private PaymentProcessor paymentProcessor;

@@ -11,12 +11,11 @@ import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
-import java.util.HashMap;
+import com.mercadopago.android.px.tracking.internal.views.CardAssociationResultViewTrack;
 
 public class CardAssociationResultErrorActivity extends AppCompatActivity {
     public static final String PARAM_ACCESS_TOKEN = "accessToken";
+
     /* default */ String accessToken;
 
     public static void startCardAssociationResultErrorActivity(final Activity callerActivity,
@@ -61,7 +60,7 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
             }
         });
 
-        trackScreen();
+        new CardAssociationResultViewTrack(CardAssociationResultViewTrack.Type.ERROR).track();
     }
 
     @Override
@@ -76,10 +75,5 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
             accessToken = savedInstanceState.getString(PARAM_ACCESS_TOKEN);
         }
         super.onRestoreInstanceState(savedInstanceState);
-    }
-
-    private void trackScreen() {
-        MPTracker.getInstance().trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_ERROR,
-            new HashMap<String, Object>());
     }
 }

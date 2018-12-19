@@ -92,4 +92,8 @@ public class CardDisplayInfo implements Parcelable, Serializable {
 
         return String.valueOf(chars);
     }
+
+    public long getIssuerId() {
+        return issuerId;
+    }
 }

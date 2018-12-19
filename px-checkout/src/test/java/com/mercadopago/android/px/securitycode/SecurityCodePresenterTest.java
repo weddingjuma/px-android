@@ -21,11 +21,14 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.SavedCardToken;
 import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.SecurityCode;
+import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.MVPStructure;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -35,6 +38,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SecurityCodePresenterTest {
@@ -43,10 +47,17 @@ public class SecurityCodePresenterTest {
     private static final String CARD_AND_TOKEN_NOT_SET = "card_and_token_not_set";
     private static final String CARD_AND_TOKEN_SET_WITHOUT_RECOVERY = "card_and_token_set_without_recovery";
     private static final String CARD_INFO_NOT_SET = "card_info_not_set";
-    private static final String ERROR_SECURITY_CODE = "error_security_code";
     private static final int CARD_TOKEN_INVALID_SECURITY_CODE = 9;
 
     @Mock private PaymentSettingRepository configuration;
+    @Mock private CheckoutPreference checkoutPreference;
+    @Mock private Site site;
+
+    @Before
+    public void setUp() {
+        when(configuration.getCheckoutPreference()).thenReturn(checkoutPreference);
+        when(checkoutPreference.getSite()).thenReturn(site);
+    }
 
     @Test
     public void showErrorWhenInvalidParameters() {
@@ -732,11 +743,6 @@ public class SecurityCodePresenterTest {
         @Override
         public void finishWithResult() {
             this.finishWithResult = true;
-        }
-
-        @Override
-        public void trackScreen() {
-            screenTracked = true;
         }
 
         @Override

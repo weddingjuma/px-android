@@ -225,7 +225,8 @@ public final class Session extends ApplicationModule
                 getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
             paymentRepository = new PaymentService(configurationModule.getUserSelectionRepository(),
                 configurationModule.getPaymentSettings(),
-                getPluginRepository(), getDiscountRepository(), getAmountRepository(),
+                pluginRepository,
+                getDiscountRepository(), getAmountRepository(),
                 paymentProcessor,
                 getContext(),
                 new EscManagerImp(getMercadoPagoESC()),

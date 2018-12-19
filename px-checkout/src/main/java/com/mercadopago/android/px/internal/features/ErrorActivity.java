@@ -7,13 +7,12 @@ import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.controllers.CheckoutErrorHandler;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Cause;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.model.ErrorView;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.views.ErrorViewTracker;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 
@@ -41,12 +40,23 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
         if (validParameters()) {
             initializeControls();
             fillData();
-            trackScreen();
+            track();
         } else {
             Intent intent = new Intent();
             setResult(RESULT_CANCELED, intent);
             finish();
         }
+    }
+
+    private void track() {
+        final String errorMessage = titleMessageTextView.getText() + " " + message;
+        final ErrorViewTracker errorViewTracker = new ErrorViewTracker(errorMessage, mMercadoPagoError);
+        errorViewTracker.track();
+
+        FrictionEventTracker.with(errorViewTracker.getViewPath(), FrictionEventTracker.Id.GENERIC,
+            FrictionEventTracker.Style.SCREEN,
+            mMercadoPagoError)
+            .track();
     }
 
     private void animateErrorScreenLaunch() {
@@ -97,12 +107,6 @@ public class ErrorActivity extends MercadoPagoBaseActivity {
         } else {
             mRetryView.setVisibility(View.GONE);
         }
-    }
-
-    private void trackScreen() {
-        final String errorMessage = titleMessageTextView.getText() + " " + message;
-        Tracker.trackGenericError(TrackingUtil.EVENT_PATH_GENERIC_ERROR, ErrorView.ErrorType.SCREEN, mMercadoPagoError,
-            errorMessage);
     }
 
     @Override

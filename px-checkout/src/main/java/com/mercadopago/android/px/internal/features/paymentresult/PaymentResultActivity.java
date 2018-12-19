@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
@@ -52,7 +51,6 @@ import com.mercadopago.android.px.internal.features.paymentresult.components.Pay
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultProps;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.Component;
@@ -64,7 +62,6 @@ import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaym
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
@@ -291,16 +288,6 @@ public class PaymentResultActivity extends AppCompatActivity implements PaymentR
         new RecoverPaymentPostPaymentAction(originAction).addToIntent(returnIntent);
         setResult(RESULT_ACTION, returnIntent);
         finish();
-    }
-
-    @Override
-    public void trackScreen(final ScreenViewEvent event) {
-        final String publicKey = Session.getSession(this).getConfigurationModule().getPaymentSettings().getPublicKey();
-        final MPTrackingContext mpTrackingContext = new MPTrackingContext.Builder(this, publicKey)
-            .setVersion(BuildConfig.VERSION_NAME)
-            .build();
-
-        mpTrackingContext.trackEvent(event);
     }
 
     @Override

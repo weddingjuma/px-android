@@ -10,9 +10,7 @@ import android.view.View;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
-import java.util.HashMap;
+import com.mercadopago.android.px.tracking.internal.views.CardAssociationResultViewTrack;
 
 public class CardAssociationResultSuccessActivity extends AppCompatActivity {
 
@@ -40,11 +38,6 @@ public class CardAssociationResultSuccessActivity extends AppCompatActivity {
             }
         });
 
-        trackScreen();
-    }
-
-    private void trackScreen() {
-        MPTracker.getInstance()
-            .trackView(TrackingUtil.SCREEN_ID_CARD_ASSOCIATION_SUCCESS, new HashMap<String, Object>());
+        new CardAssociationResultViewTrack(CardAssociationResultViewTrack.Type.SUCCESS).track();
     }
 }

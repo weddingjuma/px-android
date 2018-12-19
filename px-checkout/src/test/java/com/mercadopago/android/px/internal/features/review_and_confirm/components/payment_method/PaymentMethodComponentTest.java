@@ -30,23 +30,31 @@ public class PaymentMethodComponentTest {
     @Test
     public void whenPaymentTypeIsCardResolveComponentReturnsAMethodCardInstance() {
         when(model.getPaymentType()).thenReturn(PaymentTypes.CREDIT_CARD);
-        CompactComponent instance = component.resolveComponent();
+        final CompactComponent instance = component.resolveComponent();
         assertTrue(instance instanceof MethodCard);
     }
 
     @Test
     public void whenPaymentTypeIsOffThenResolveComponentReturnsAMethodOffInstance() {
         when(model.getPaymentType()).thenReturn(PaymentTypes.BANK_TRANSFER);
-        CompactComponent instance = component.resolveComponent();
+        final CompactComponent instance = component.resolveComponent();
         assertTrue(instance instanceof MethodOff);
     }
 
     @Test
-    public void whenPaymentTypeIsAccountMoneyThenResolveComponentReturnsAMethodPluginInstance() {
+    public void whenPaymentTypeIsAccountMoneyThenResolveComponentReturnsAMethodAccountMoneyInstance() {
         when(model.getPaymentType()).thenReturn(PaymentTypes.ACCOUNT_MONEY);
-        CompactComponent instance = component.resolveComponent();
+        final CompactComponent instance = component.resolveComponent();
+        assertTrue(instance instanceof MethodAccountMoney);
+    }
+
+    @Test
+    public void whenPaymentTypeIsPluginThenResolveComponentReturnsAMethodPluginInstance() {
+        when(model.getPaymentType()).thenReturn(PaymentTypes.PLUGIN);
+        final CompactComponent instance = component.resolveComponent();
         assertTrue(instance instanceof MethodPlugin);
     }
+
 
     @Test
     public void whenPaymentMethodIsOnlyAvailableAndIsNotCreditCardShouldNotShowPaymentMethodButton() {

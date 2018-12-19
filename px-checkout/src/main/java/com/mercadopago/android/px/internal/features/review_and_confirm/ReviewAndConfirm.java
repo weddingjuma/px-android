@@ -16,8 +16,6 @@ public interface ReviewAndConfirm {
 
     interface View extends MvpView {
 
-        void trackPaymentConfirmation();
-
         void showCardCVVRequired(@NonNull final Card card);
 
         void cancelCheckoutAndInformError(@NonNull final MercadoPagoError mercadoPagoError);
@@ -48,6 +46,8 @@ public interface ReviewAndConfirm {
             @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
 
         void reloadBody();
+
+        void finishAndChangePaymentMethod();
     }
 
     interface Action extends PaymentServiceHandler {
@@ -68,5 +68,7 @@ public interface ReviewAndConfirm {
         void onViewResumed(View view);
 
         void hasFinishPaymentAnimation();
+
+        void changePaymentMethod();
     }
 }

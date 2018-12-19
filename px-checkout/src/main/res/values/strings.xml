@@ -16,7 +16,6 @@
     <string name="px_quantity_modal" translatable="false">%1$d %2$s</string>
     <string name="px_processing_payment_button">Processing your payment</string>
     <string name="px_summary_detail_item_description">Your purchase</string>
-    <string name="px_total_in_mercado_pago">Total in Mercado Pago: %1$s</string>
     <string name="px_pay">Pay</string>
     <string name="px_prefix_discount_amount" translatable="false">- %1$s</string>
 
@@ -288,9 +287,6 @@
     <string name="px_fill_your_data">Enter your data…</string>
     <string name="px_bolbradesco_rejection">Payment could not be processed</string>
     <string name="px_ticket_card_holder_identification_hint" translatable="false">*** *** *** **</string>
-
-    <!-- Invested Account Money -->
-    <string name="px_invested_account_money">You are using invested money</string>
 
     <string name="px_empty_string"></string>
 </resources>

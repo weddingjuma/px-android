@@ -9,7 +9,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.Pair;
-import android.util.Log;
 import android.widget.Toast;
 import com.mercadopago.SampleTopFragment;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
@@ -28,14 +27,10 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.tracking.PXEventListener;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static android.app.Activity.RESULT_CANCELED;
 
@@ -99,6 +94,7 @@ public final class ExamplesUtils {
 
     public static List<Pair<String, Builder>> getOptions() {
         final List<Pair<String, Builder>> options = new ArrayList<>(BusinessSamples.getAll());
+        AccountMoneySamples.addAll(options);
         OneTapSamples.addAll(options);
         ChargesSamples.addAll(options);
         DiscountSamples.addAll(options);
@@ -146,19 +142,6 @@ public final class ExamplesUtils {
     }
 
     private static Builder startBaseFlowWithTrackListener() {
-        MPTracker.getInstance().setTracksListener(new PXEventListener<HashMap<String, String>>() {
-
-            @Override
-            public void onScreenLaunched(@NonNull final String screenName,
-                @NonNull final Map<String, String> extraParams) {
-                Log.d("Screen track: ", screenName + " " + extraParams);
-            }
-
-            @Override
-            public void onEvent(@NonNull final HashMap<String, String> event) {
-                Log.d("Event track: ", event.toString());
-            }
-        });
         return createBase();
     }
 

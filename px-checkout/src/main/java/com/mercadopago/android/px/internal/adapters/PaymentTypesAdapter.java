@@ -20,7 +20,7 @@ import java.util.List;
 public class PaymentTypesAdapter extends RecyclerView.Adapter<PaymentTypesAdapter.ViewHolder> {
 
     private final List<PaymentType> mPaymentTypes;
-    private final OnSelectedCallback<Integer> mCallback;
+    /* default */ final OnSelectedCallback<Integer> mCallback;
 
     public PaymentTypesAdapter(OnSelectedCallback<Integer> callback) {
         mPaymentTypes = new ArrayList<>();

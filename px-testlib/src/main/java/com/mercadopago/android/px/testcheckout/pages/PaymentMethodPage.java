@@ -29,6 +29,12 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
         return new InstallmentsPage(validator);
     }
 
+    public ReviewAndConfirmPage selectAccountMoney() {
+        onView(withId(R.id.mpsdkGroupsList))
+            .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        return new ReviewAndConfirmPage(validator);
+    }
+
     public SecurityCodePage selectSavedDebitCard() {
         onView(withId(R.id.mpsdkGroupsList))
             .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));

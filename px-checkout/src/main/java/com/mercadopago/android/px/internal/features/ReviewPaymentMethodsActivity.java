@@ -1,6 +1,10 @@
 package com.mercadopago.android.px.internal.features;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Size;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -10,55 +14,62 @@ import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.ReviewPaymentMethodsAdapter;
 import com.mercadopago.android.px.internal.features.providers.ReviewPaymentMethodsProviderImpl;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.lang.reflect.Type;
 import java.util.List;
 
 public class ReviewPaymentMethodsActivity extends MercadoPagoBaseActivity implements ReviewPaymentMethodsView {
 
-    //Controls
-    protected ReviewPaymentMethodsPresenter mPresenter;
-    //View controls
-    protected RecyclerView mPaymentMethodsView;
-    protected ReviewPaymentMethodsAdapter mAdapter;
-    protected FrameLayout mTryOtherCardButton;
+    private static final String EXTRA_PAYMENT_METHODS = "EXTRA_PAYMENT_METHODS";
+    private ReviewPaymentMethodsPresenter presenter;
+    private RecyclerView recyclerView;
+
+    public static void start(final Activity activity, final List<PaymentMethod> paymentMethods,
+        final int reqCode) {
+        final Intent intent = new Intent(activity, ReviewPaymentMethodsActivity.class);
+        intent.putExtra(EXTRA_PAYMENT_METHODS, JsonUtil.getInstance().toJson(paymentMethods));
+        activity.startActivityForResult(intent, reqCode);
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstance) {
+    protected void onCreate(final Bundle savedInstance) {
         super.onCreate(savedInstance);
-
-        createPresenter();
-        getActivityParameters();
-        configurePresenter();
-
-        setContentView();
-        initializeControls();
-        setListeners();
-        mPresenter.initialize();
-
-        Tracker.trackScreen(TrackingUtil.VIEW_PATH_EXCLUDED_CARD, TrackingUtil.VIEW_PATH_EXCLUDED_CARD,
-            getApplicationContext());
+        setContentView(R.layout.px_activity_review_payment_methods);
+        recyclerView = findViewById(R.id.mpsdkReviewPaymentMethodsView);
+        final FrameLayout mTryOtherCardButton = findViewById(R.id.tryOtherCardButton);
+        mTryOtherCardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                finish();
+                overridePendingTransition(R.anim.px_no_change_animation, R.anim.px_slide_down_activity);
+            }
+        });
+        initPresenter();
     }
 
-    protected void createPresenter() {
-        mPresenter = new ReviewPaymentMethodsPresenter();
-    }
-
-    protected void getActivityParameters() {
+    protected void initPresenter() {
         List<PaymentMethod> supportedPaymentMethods = null;
         try {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<PaymentMethod>>() {
+            final Gson gson = new Gson();
+            final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            supportedPaymentMethods = gson.fromJson(getIntent().getStringExtra("paymentMethods"), listType);
-        } catch (Exception ex) {
-            showError(new MercadoPagoError(mPresenter.getResourcesProvider().getStandardErrorMessage(), false), "");
+            supportedPaymentMethods = gson.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_METHODS), listType);
+        } catch (final Exception ex) {
+            showError(new MercadoPagoError(presenter.getResourcesProvider().getStandardErrorMessage(), false), "");
         }
-        mPresenter.setSupportedPaymentMethods(supportedPaymentMethods);
+
+        if (supportedPaymentMethods != null && !supportedPaymentMethods.isEmpty()) {
+            presenter = new ReviewPaymentMethodsPresenter(supportedPaymentMethods);
+            presenter.attachView(this);
+            presenter.attachResourcesProvider(new ReviewPaymentMethodsProviderImpl(this));
+            presenter.initialize();
+        } else {
+            //Invalid data.
+            finish();
+        }
     }
 
     @Override
@@ -66,34 +77,11 @@ public class ReviewPaymentMethodsActivity extends MercadoPagoBaseActivity implem
         ErrorUtil.startErrorActivity(this, error);
     }
 
-    private void configurePresenter() {
-        mPresenter.attachView(this);
-        mPresenter.attachResourcesProvider(new ReviewPaymentMethodsProviderImpl(this));
-    }
-
-    protected void setContentView() {
-        setContentView(R.layout.px_activity_review_payment_methods);
-    }
-
-    protected void initializeControls() {
-        mPaymentMethodsView = findViewById(R.id.mpsdkReviewPaymentMethodsView);
-        mTryOtherCardButton = findViewById(R.id.tryOtherCardButton);
-    }
-
     @Override
-    public void initializeSupportedPaymentMethods(List<PaymentMethod> supportedPaymentMethods) {
-        mAdapter = new ReviewPaymentMethodsAdapter(supportedPaymentMethods);
-        mPaymentMethodsView.setAdapter(mAdapter);
-        mPaymentMethodsView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    protected void setListeners() {
-        mTryOtherCardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-                overridePendingTransition(R.anim.px_no_change_animation, R.anim.px_slide_down_activity);
-            }
-        });
+    public void initializeSupportedPaymentMethods(
+        @Size(min = 1) @NonNull final List<PaymentMethod> supportedPaymentMethods) {
+        final ReviewPaymentMethodsAdapter mAdapter = new ReviewPaymentMethodsAdapter(supportedPaymentMethods);
+        recyclerView.setAdapter(mAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 }

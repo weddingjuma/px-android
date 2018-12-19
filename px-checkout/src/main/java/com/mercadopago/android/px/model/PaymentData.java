@@ -87,11 +87,12 @@ public class PaymentData implements Serializable {
         this.transactionAmount = transactionAmount;
     }
 
+    public void setCampaign(@Nullable final Campaign campaign) {
+        this.campaign = campaign;
+    }
+
     public boolean containsCardInfo() {
         return getToken() != null && !TextUtil.isEmpty(getToken().getCardId());
     }
 
-    public void setCampaign(@Nullable final Campaign campaign) {
-        this.campaign = campaign;
-    }
 }

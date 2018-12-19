@@ -14,8 +14,6 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.providers.GuessingCardProvider;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
@@ -31,19 +29,22 @@ import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentType;
-import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.SecurityCode;
 import com.mercadopago.android.px.model.Setting;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.views.CardHolderNameViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.CardNumberViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.CvvGuessingViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.ExpirationDateViewTracker;
+import com.mercadopago.android.px.tracking.internal.views.IdentificationViewTracker;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 import static com.mercadopago.android.px.model.Card.CARD_DEFAULT_SECURITY_CODE_LENGTH;
 
@@ -120,74 +121,41 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             session.getCardAssociationService(), session.getMercadoPagoESC(), session.getGatewayService());
     }
 
-    private MPTrackingContext getTrackingContext() {
-        return getResourcesProvider().getTrackingContext();
+    /* default */ void trackCardNumber() {
+        new CardNumberViewTracker().track();
     }
 
-    protected void trackCardIdentification() {
-        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.VIEW_PATH_CARD_FORM, getPaymentTypeId(),
-            TrackingUtil.CARD_HOLDER_IDENTIFICATION);
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_TYPE_ID,
-                getPaymentTypeId() != null ? getPaymentTypeId() : "null")
-            .addProperty(TrackingUtil.PROPERTY_PAYMENT_METHOD_ID, getPaymentMethod() != null ?
-                getPaymentMethod().getId() : "null")
-            .build();
-        getTrackingContext().trackEvent(event);
+    /* default */ void trackCardIdentification() {
+        if (TextUtil.isNotEmpty(getPaymentTypeId()) && getPaymentMethod() != null) {
+            new IdentificationViewTracker(getPaymentTypeId(), getPaymentMethod().getId()).track();
+        }
     }
 
-    protected void trackCardNumber() {
-        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.VIEW_PATH_CARD_FORM, getPaymentTypeId(),
-            TrackingUtil.CARD_NUMBER);
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .build();
-        getTrackingContext().trackEvent(event);
+    /* default */ void trackCardHolderName() {
+        if (TextUtil.isNotEmpty(getPaymentTypeId()) && getPaymentMethod() != null) {
+            new CardHolderNameViewTracker(getPaymentTypeId(), getPaymentMethod().getId()).track();
+        }
     }
 
-    protected void trackCardHolderName() {
-        final String screenId = String.format(Locale.US, "%s%s%s", TrackingUtil.VIEW_PATH_CARD_FORM, getPaymentTypeId(),
-            TrackingUtil.CARD_HOLDER_NAME);
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .build();
-        getTrackingContext().trackEvent(event);
+    /* default */ void trackCardExpiryDate() {
+        if (TextUtil.isNotEmpty(getPaymentTypeId()) && getPaymentMethod() != null) {
+            new ExpirationDateViewTracker(getPaymentTypeId(), getPaymentMethod().getId()).track();
+        }
     }
 
-    protected void trackCardExpiryDate() {
-        final String screenId = String
-            .format(Locale.US, "%s%s%s", TrackingUtil.VIEW_PATH_CARD_FORM, getPaymentTypeId(),
-                TrackingUtil.CARD_EXPIRATION_DATE);
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .build();
-        getTrackingContext().trackEvent(event);
-    }
-
-    protected void trackCardSecurityCode() {
-        final String screenId = String
-            .format(Locale.US, "%s%s%s", TrackingUtil.VIEW_PATH_CARD_FORM, getPaymentTypeId(),
-                TrackingUtil.CARD_SECURITY_CODE);
-        final ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .build();
-        getTrackingContext().trackEvent(event);
+    /* default */ void trackCardSecurityCode() {
+        if (TextUtil.isNotEmpty(getPaymentTypeId()) && getPaymentMethod() != null) {
+            new CvvGuessingViewTracker(getPaymentTypeId(), getPaymentMethod().getId()).track();
+        }
     }
 
     public void resolvePaymentMethodListSet(final List<PaymentMethod> paymentMethodList, final String bin) {
         saveBin(bin);
         if (paymentMethodList.isEmpty()) {
+            FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_BIN,
+                new CardNumberViewTracker(),
+                FrictionEventTracker.Style.SNACKBAR);
+
             getView().setCardNumberInputMaxLength(Bin.BIN_LENGTH);
             setInvalidCardMessage();
         } else if (paymentMethodList.size() == 1) {
@@ -207,7 +175,6 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             paymentTypesList.add(type);
         }
         mPaymentTypesList = paymentTypesList;
-
         mShowPaymentTypes = true;
     }
 
@@ -322,6 +289,12 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             getView().clearErrorView();
             getView().clearErrorIdentificationNumber();
         } else {
+
+            FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_DOCUMENT,
+                new IdentificationViewTracker(getPaymentMethod().getPaymentTypeId(),
+                    getPaymentMethod().getId()), FrictionEventTracker.Style.CUSTOM_COMPONENT,
+                getPaymentMethod()).track();
+
             getView().setErrorView(getResourcesProvider().getInvalidIdentificationNumberErrorMessage());
             getView().setErrorIdentificationNumber();
         }
@@ -353,6 +326,12 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             getView().clearErrorView();
             return true;
         } else {
+
+            FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_NAME,
+                new CardHolderNameViewTracker(getPaymentMethod().getPaymentTypeId(),
+                    getPaymentMethod().getId()), FrictionEventTracker.Style.CUSTOM_COMPONENT,
+                getPaymentMethod()).track();
+
             getView().setErrorView(getResourcesProvider().getInvalidEmptyNameErrorMessage());
             getView().setErrorCardholderName();
             return false;
@@ -370,6 +349,12 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             getView().clearErrorView();
             return true;
         } else {
+            FrictionEventTracker
+                .with(FrictionEventTracker.Id.INVALID_EXP_DATE,
+                    new ExpirationDateViewTracker(getPaymentMethod().getPaymentTypeId(), getPaymentMethod().getId()),
+                    FrictionEventTracker.Style.CUSTOM_COMPONENT,
+                    getPaymentMethod())
+                .track();
             getView().setErrorView(getResourcesProvider().getInvalidExpiryDateErrorMessage());
             getView().setErrorExpiryDate();
             return false;
@@ -640,7 +625,14 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             getView().clearErrorView();
             return true;
         } catch (final CardTokenException e) {
+
+            FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_CVV,
+                new CvvGuessingViewTracker(getPaymentMethod().getPaymentTypeId(),
+                    getPaymentMethod().getId()), FrictionEventTracker.Style.CUSTOM_COMPONENT, getPaymentMethod())
+                .track();
+
             setCardSecurityCodeErrorView(e);
+
             return false;
         }
     }
@@ -670,6 +662,13 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
             getView().clearErrorView();
             return true;
         } catch (final CardTokenException e) {
+
+            FrictionEventTracker
+                .with(FrictionEventTracker.Id.INVALID_CC_NUMBER,
+                    new CardNumberViewTracker(),
+                    FrictionEventTracker.Style.CUSTOM_COMPONENT,
+                    getPaymentMethod());
+
             getView().setErrorView(e);
             getView().setErrorCardNumber();
             return false;
@@ -746,6 +745,7 @@ public abstract class GuessingCardPresenter extends MvpPresenter<GuessingCardAct
 
     public abstract void initialize();
 
+    @Nullable
     public abstract String getPaymentTypeId();
 
     public abstract PaymentMethod getPaymentMethod();

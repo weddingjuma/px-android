@@ -11,7 +11,6 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.mocks.BankDeals;
 import com.mercadopago.android.px.mocks.Cards;
 import com.mercadopago.android.px.mocks.DummyCard;
@@ -35,12 +34,14 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentType;
 import com.mercadopago.android.px.model.PaymentTypes;
+import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.utils.CardTestUtils;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.math.BigDecimal;
@@ -68,7 +69,6 @@ public class GuessingCardPaymentPresenterTest {
 
     private final MockedView mockedView = new MockedView();
     private final MockedProvider provider = new MockedProvider();
-    @Mock /* default */ MPTrackingContext trackingContext;
     private GuessingCardPaymentPresenter presenter;
 
     @Mock private AmountRepository amountRepository;
@@ -79,11 +79,13 @@ public class GuessingCardPaymentPresenterTest {
     @Mock private PaymentSettingRepository paymentSettingRepository;
     @Mock private CheckoutPreference checkoutPreference;
     @Mock private PaymentPreference paymentPreference;
+    @Mock private Site site;
 
     @Before
     public void setUp() {
         // No charge initialization.
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
+        when(checkoutPreference.getSite()).thenReturn(site);
         when(checkoutPreference.getPaymentPreference()).thenReturn(paymentPreference);
         final List<PaymentMethod> pm = PaymentMethods.getPaymentMethodListMLA();
         when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
@@ -1150,11 +1152,6 @@ public class GuessingCardPaymentPresenterTest {
         /* default */ void setPaymentMethodsResponse(final MercadoPagoError exception) {
             shouldFail = true;
             failedResponse = exception;
-        }
-
-        @Override
-        public MPTrackingContext getTrackingContext() {
-            return trackingContext;
         }
 
         @Override

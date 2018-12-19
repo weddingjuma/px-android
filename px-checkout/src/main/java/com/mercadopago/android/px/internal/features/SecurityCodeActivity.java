@@ -18,7 +18,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.callbacks.card.CardSecurityCodeEditTextCallback;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
@@ -28,8 +27,6 @@ import com.mercadopago.android.px.internal.features.providers.SecurityCodeProvid
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
@@ -39,17 +36,14 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 
 public class SecurityCodeActivity extends MercadoPagoBaseActivity implements SecurityCodeActivityView {
 
-    private static final String REASON_BUNDLE = "mReason";
     private static final String CARD_INFO_BUNDLE = "cardInfoBundle";
     private static final String PAYMENT_RECOVERY_BUNDLE = "paymentRecoveryBundle";
 
@@ -57,7 +51,6 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
 
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
-    protected String mReason;
 
     //View controls
     protected ViewGroup mProgressLayout;
@@ -80,7 +73,7 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
     protected MPTextView mTimerTextView;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         if (savedInstanceState == null) {
@@ -93,10 +86,9 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(final Bundle outState) {
         outState.putSerializable(CARD_INFO_BUNDLE, mSecurityCodePresenter.getCardInfo());
         outState.putSerializable(PAYMENT_RECOVERY_BUNDLE, mSecurityCodePresenter.getPaymentRecovery());
-        outState.putString(REASON_BUNDLE, mReason);
 
         super.onSaveInstanceState(outState);
     }
@@ -115,7 +107,6 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
             mSecurityCodePresenter.setCardInfo((CardInfo) savedInstanceState.getSerializable(CARD_INFO_BUNDLE));
             mSecurityCodePresenter
                 .setPaymentRecovery((PaymentRecovery) savedInstanceState.getSerializable(PAYMENT_RECOVERY_BUNDLE));
-            mReason = savedInstanceState.getString(REASON_BUNDLE);
 
             configurePresenter();
             setContentView();
@@ -147,7 +138,6 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
     }
 
     private void getActivityParameters() {
-        mReason = getIntent().getStringExtra("reason");
 
         CardInfo cardInfo = JsonUtil.getInstance().fromJson(getIntent().getStringExtra("cardInfo"), CardInfo.class);
         Card card = JsonUtil.getInstance().fromJson(getIntent().getStringExtra("card"), Card.class);
@@ -277,26 +267,6 @@ public class SecurityCodeActivity extends MercadoPagoBaseActivity implements Sec
             mTimerTextView.setVisibility(View.VISIBLE);
             mTimerTextView.setText(CheckoutTimer.getInstance().getCurrentTime());
         }
-    }
-
-    @Override
-    public void trackScreen() {
-        final String publicKey = Session.getSession(this).getConfigurationModule().getPaymentSettings().getPublicKey();
-        final MPTrackingContext mpTrackingContext = new MPTrackingContext.Builder(this, publicKey)
-            .setVersion(BuildConfig.VERSION_NAME)
-            .build();
-
-        final String screenId =
-            TrackingUtil.VIEW_PATH_PAYMENT_VAULT + "/" + mSecurityCodePresenter.getPaymentMethod().getPaymentTypeId() +
-                TrackingUtil.CARD_SECURITY_CODE;
-        ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(screenId)
-            .setScreenName(screenId)
-            .addProperty(TrackingUtil.PROPERTY_SECURITY_CODE_REASON, mReason)
-            .build();
-
-        mpTrackingContext.trackEvent(event);
     }
 
     @Override

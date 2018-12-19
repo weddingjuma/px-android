@@ -12,6 +12,7 @@ import java.util.Collection;
 public class PaymentConfiguration {
 
     @NonNull private final PaymentProcessor paymentProcessor;
+    //TODO remove payment method plugin code on future version.
     @NonNull private final ArrayList<PaymentMethodPlugin> paymentMethodPluginList;
     @NonNull private final ArrayList<ChargeRule> charges;
     @Nullable private final DiscountConfiguration discountConfiguration;
@@ -68,12 +69,14 @@ public class PaymentConfiguration {
 
         /**
          * Add your own payment method option to pay.
+         * Deprecated on version 4.5.0 due to native support of account money feature.
+         * This method is now NOOP.
          *
          * @param paymentMethodPlugin your payment method plugin.
          * @return builder
          */
+        @Deprecated
         public Builder addPaymentMethodPlugin(@NonNull final PaymentMethodPlugin paymentMethodPlugin) {
-            paymentMethodPluginList.add(paymentMethodPlugin);
             return this;
         }
 

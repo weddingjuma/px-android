@@ -29,8 +29,8 @@ public class MPTrackingServiceImpl implements MPTrackingService {
 
     private TrackingAPI createClient() {
         return new Retrofit.Builder().client(HttpClientUtil.createClient(CONNECT_TIMEOUT, READ_TIMEOUT, WRITE_TIMEOUT))
-                .addConverterFactory(GsonConverterFactory.create(JsonConverter.getInstance().getGson()))
-                .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(JsonConverter.getInstance().getGson()))
+            .baseUrl(BASE_URL)
             .build()
             .create(TrackingAPI.class);
     }

@@ -19,7 +19,6 @@ public final class PaymentTypes {
 
     public static String BANK_TRANSFER = "bank_transfer";
 
-    @Deprecated
     public static String ACCOUNT_MONEY = "account_money";
 
     public static String PLUGIN = "payment_method_plugin";
@@ -33,14 +32,16 @@ public final class PaymentTypes {
             PaymentTypes.PREPAID_CARD.equals(paymentType);
     }
 
-    @Deprecated
     public static boolean isAccountMoney(final String type) {
         return PaymentTypes.ACCOUNT_MONEY.equals(type);
     }
 
+    /**
+     *  We don't support account money plugin since 4.5.0
+     */
+    @Deprecated
     public static boolean isPlugin(final String type) {
-        return PaymentTypes.ACCOUNT_MONEY.equals(type)
-            || PaymentTypes.PLUGIN.equals(type);
+        return PaymentTypes.PLUGIN.equals(type);
     }
 
     public static List<String> getAllPaymentTypes() {

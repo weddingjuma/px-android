@@ -36,10 +36,10 @@ public class PaymentMethodSearchGetPaymentMethodTest {
     }
 
     public PaymentMethodSearchGetPaymentMethodTest(String itemId, String paymentMethodId, String paymentTypeId) {
-        this.paymentMethodSearch = getPaymentMethodSearch();
-        this.mItemId = itemId;
-        this.mPaymentMethodId = paymentMethodId;
-        this.mPaymentTypeId = paymentTypeId;
+        paymentMethodSearch = getPaymentMethodSearch();
+        mItemId = itemId;
+        mPaymentMethodId = paymentMethodId;
+        mPaymentTypeId = paymentTypeId;
     }
 
     @Test

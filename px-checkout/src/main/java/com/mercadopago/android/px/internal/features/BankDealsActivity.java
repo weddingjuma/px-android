@@ -7,25 +7,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import com.google.gson.reflect.TypeToken;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.adapters.BankDealsAdapter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
+import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.FlowHandler;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.BankDeal;
-import com.mercadopago.android.px.model.ScreenViewEvent;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.views.BankDealsViewTracker;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -40,26 +36,12 @@ public class BankDealsActivity extends MercadoPagoActivity implements OnSelected
 
     @Override
     protected void onValidStart() {
+        new BankDealsViewTracker().track();
         final Session session = Session.getSession(this);
         final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();
-
         mMercadoPago = new MercadoPagoServicesAdapter(getActivity(), paymentSettings.getPublicKey(),
             paymentSettings.getPrivateKey());
-        trackInitialScreen(paymentSettings.getPublicKey());
         getBankDeals();
-    }
-
-    protected void trackInitialScreen(final String publicKey) {
-        MPTrackingContext mpTrackingContext = new MPTrackingContext.Builder(this, publicKey)
-            .setVersion(BuildConfig.VERSION_NAME)
-            .build();
-        ScreenViewEvent event = new ScreenViewEvent.Builder()
-            .setFlowId(FlowHandler.getInstance().getFlowId())
-            .setScreenId(TrackingUtil.VIEW_PATH_PROMOTIONS)
-            .setScreenName(TrackingUtil.VIEW_PATH_PROMOTIONS)
-            .build();
-
-        mpTrackingContext.trackEvent(event);
     }
 
     @Override
@@ -111,7 +93,7 @@ public class BankDealsActivity extends MercadoPagoActivity implements OnSelected
         });
     }
 
-    private void getBankDeals() {
+    /* default */ void getBankDeals() {
         ViewUtils.showProgressLayout(this);
         mMercadoPago.getBankDeals(new TaggedCallback<List<BankDeal>>(ApiUtil.RequestOrigin.GET_BANK_DEALS) {
 
@@ -151,7 +133,7 @@ public class BankDealsActivity extends MercadoPagoActivity implements OnSelected
         }
     }
 
-    private void finishWithCancelResult() {
+    /* default */ void finishWithCancelResult() {
         setResult(RESULT_CANCELED);
         finish();
     }

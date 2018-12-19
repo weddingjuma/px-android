@@ -24,7 +24,6 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -110,10 +109,10 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     private void getActivityParameters() {
-        Intent intent = getIntent();
-        PaymentRecovery paymentRecovery =
+        final Intent intent = getIntent();
+        final PaymentRecovery paymentRecovery =
             JsonUtil.getInstance().fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
-        Boolean automaticSelection = intent.getBooleanExtra("automaticSelection", false);
+        final Boolean automaticSelection = intent.getBooleanExtra("automaticSelection", false);
         presenter.setPaymentRecovery(paymentRecovery);
         presenter.setAutomaticSelection(automaticSelection);
     }
@@ -129,21 +128,12 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
 
     @Override
     public void askForSecurityCodeFromTokenRecovery() {
-        PaymentRecovery paymentRecovery = presenter.getPaymentRecovery();
-        String reason = "";
-        if (paymentRecovery != null) {
-            if (paymentRecovery.isStatusDetailInvalidESC()) {
-                reason = TrackingUtil.SECURITY_CODE_REASON_ESC;
-            } else if (paymentRecovery.isStatusDetailCallForAuthorize()) {
-                reason = TrackingUtil.SECURITY_CODE_REASON_CALL;
-            }
-        }
-        startSecurityCodeActivity(reason);
+        startSecurityCodeActivity();
         animateTransitionSlideInSlideOut();
     }
 
     @Override
-    public void startSecurityCodeActivity(String reason) {
+    public void startSecurityCodeActivity() {
         new Constants.Activities.SecurityCodeActivityBuilder()
             .setActivity(this)
             .setPaymentMethod(presenter.getPaymentMethod())
@@ -151,7 +141,6 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
             .setToken(presenter.getToken())
             .setCard(presenter.getCard())
             .setPaymentRecovery(presenter.getPaymentRecovery())
-            .setTrackingReason(reason)
             .startActivity();
         animateTransitionSlideInSlideOut();
     }
@@ -166,7 +155,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
         if (requestCode == Constants.Activities.GUESSING_CARD_FOR_PAYMENT_REQUEST_CODE) {
             resolveGuessingCardRequest(resultCode, data);
         } else if (requestCode == Constants.Activities.ISSUERS_REQUEST_CODE) {
-            resolveIssuersRequest(resultCode, data);
+            resolveIssuersRequest(resultCode);
         } else if (requestCode == Constants.Activities.INSTALLMENTS_REQUEST_CODE) {
             resolveInstallmentsRequest(resultCode, data);
         } else if (requestCode == Constants.Activities.SECURITY_CODE_REQUEST_CODE) {
@@ -219,7 +208,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
         }
     }
 
-    protected void resolveIssuersRequest(int resultCode, Intent data) {
+    protected void resolveIssuersRequest(int resultCode) {
         if (resultCode == RESULT_OK) {
             presenter.resolveIssuersRequest();
         } else if (resultCode == RESULT_CANCELED) {

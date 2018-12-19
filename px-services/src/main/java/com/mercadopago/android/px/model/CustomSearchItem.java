@@ -8,6 +8,7 @@ import java.io.Serializable;
 public class CustomSearchItem implements Serializable, Parcelable {
     private String description;
     private String id;
+    private String comment;
 
     @SerializedName("payment_type_id")
     private String type;
@@ -20,6 +21,7 @@ public class CustomSearchItem implements Serializable, Parcelable {
         description = in.readString();
         id = in.readString();
         type = in.readString();
+        comment = in.readString();
         paymentMethodId = in.readString();
     }
 
@@ -67,6 +69,14 @@ public class CustomSearchItem implements Serializable, Parcelable {
         this.paymentMethodId = paymentMethodId;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(final String comment) {
+        this.comment = comment;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -78,5 +88,6 @@ public class CustomSearchItem implements Serializable, Parcelable {
         dest.writeString(id);
         dest.writeString(type);
         dest.writeString(paymentMethodId);
+        dest.writeString(comment);
     }
 }

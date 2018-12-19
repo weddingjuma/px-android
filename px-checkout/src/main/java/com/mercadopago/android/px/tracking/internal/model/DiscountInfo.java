@@ -1,37 +1,51 @@
 package com.mercadopago.android.px.tracking.internal.model;
 
-import android.support.annotation.NonNull;
-import java.io.Serializable;
+import android.support.annotation.Keep;
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.model.Campaign;
+import com.mercadopago.android.px.model.Discount;
 import java.math.BigDecimal;
 
-public class DiscountInfo implements Serializable {
+@SuppressWarnings("unused")
+@Keep
+public final class DiscountInfo extends TrackingMapModel {
 
-    public enum DiscountType {
-        PERCENTAGE("percentage"), FIXED_AMOUNT("fixed_amount");
+    private final BigDecimal couponAmount;
+    private final BigDecimal amountOff;
+    private final BigDecimal percentOff;
+    private final BigDecimal maxCouponAmount;
+    private final Integer maxRedeemPerUser;
+    private final String campaignId;
+    private final boolean isAvailable;
 
-        private final String description;
+    private DiscountInfo(@Nullable final Discount discount, @Nullable final Campaign campaign,
+        final boolean isAvailable) {
 
-        DiscountType(final String description) {
-            this.description = description;
-        }
-
-        @Override
-        public String toString() {
-            return description;
+        this.isAvailable = isAvailable;
+        if (campaign == null || discount == null) {
+            couponAmount = null;
+            amountOff = null;
+            maxCouponAmount = null;
+            maxRedeemPerUser = null;
+            campaignId = null;
+            percentOff = null;
+        } else {
+            couponAmount = discount.getCouponAmount();
+            amountOff = discount.getAmountOff();
+            percentOff = discount.getPercentOff();
+            maxCouponAmount = campaign.getMaxCouponAmount();
+            maxRedeemPerUser = campaign.getMaxRedeemPerUser();
+            campaignId = discount.getId();
         }
     }
 
-    private String type;
-    private BigDecimal amountToDiscount;
-    private BigDecimal maxAmountToDiscount;
-    private int maxRedeemPerUser;
-
-    public DiscountInfo(@NonNull final DiscountType discountType,
-        @NonNull final BigDecimal amountToDiscount, @NonNull final BigDecimal maxAmountToDiscount,
-        final int maxRedeemPerUser) {
-        type = discountType.toString();
-        this.amountToDiscount = amountToDiscount;
-        this.maxAmountToDiscount = maxAmountToDiscount;
-        this.maxRedeemPerUser = maxRedeemPerUser;
+    @Nullable
+    public static DiscountInfo with(@Nullable final Discount discount,
+        @Nullable final Campaign campaign,
+        final boolean isAvailable) {
+        if (isAvailable && (discount == null || campaign == null)) {
+            return null;
+        }
+        return new DiscountInfo(discount, campaign, isAvailable);
     }
 }

@@ -9,7 +9,6 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.NoConnectivityException;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
@@ -36,6 +35,13 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.events.AbortOneTapEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.InstallmentsEventTrack;
+import com.mercadopago.android.px.tracking.internal.events.SwipeOneTapEventTracker;
+import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
+import java.util.Collections;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorView.Model.SELECTED_PAYER_COST_NONE;
@@ -50,11 +56,11 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ElementDescriptorMapper elementDescriptorMapper;
 
-    private PayerCostSelection payerCostSelection;
+    /* default */ PayerCostSelection payerCostSelection;
 
     //TODO remove.
-    private List<ExpressMetadata> expressMetadataList;
-    private PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
+    /* default */ List<ExpressMetadata> expressMetadataList;
+    private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository configuration,
@@ -89,15 +95,17 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
     public void trackConfirmButton(final int paymentMethodSelectedIndex) {
         //Track event: confirm one tap
         final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodSelectedIndex);
-        Tracker.trackConfirmExpress(expressMetadata, payerCostSelection.get(paymentMethodSelectedIndex),
-            configuration.getCheckoutPreference().getSite().getCurrencyId());
+        final int index = payerCostSelection.get(paymentMethodSelectedIndex);
+        //TODO fill cards with esc
+        ConfirmEvent.from(Collections.<String>emptySet(), expressMetadata, index).track();
     }
 
     @Override
     public void trackExpressView() {
-        Tracker.trackExpressView(amountRepository.getAmountToPay(),
-            configuration.getCheckoutPreference().getSite().getCurrencyId(), discountRepository.getDiscount(),
-            discountRepository.getCampaign(), configuration.getCheckoutPreference().getItems(), expressMetadataList);
+        new OneTapViewTracker(expressMetadataList,
+            configuration.getCheckoutPreference(),
+            discountRepository)
+            .track();
     }
 
     @Override
@@ -120,6 +128,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
 
     @Override
     public void cancel() {
+        new AbortOneTapEventTracker().track();
         getView().cancel();
     }
 
@@ -160,6 +169,10 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         cancelLoading();
 
         if (error.isInternalServerError() || error.isNoConnectivityError()) {
+            FrictionEventTracker.with(OneTapViewTracker.PATH_REVIEW_ONE_TAP_VIEW,
+                FrictionEventTracker.Id.GENERIC, FrictionEventTracker.Style.CUSTOM_COMPONENT,
+                error)
+                .track();
             getView().showErrorSnackBar(error);
         } else {
             getView().showErrorScreen(error);
@@ -250,7 +263,8 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
 
     @Override
     public void onInstallmentsRowPressed(final int currentItem) {
-        final CardMetadata cardMetadata = expressMetadataList.get(currentItem).getCard();
+        final ExpressMetadata expressMetadata = expressMetadataList.get(currentItem);
+        final CardMetadata cardMetadata = expressMetadata.getCard();
         if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
             final List<PayerCost> payerCostList = cardMetadata.getPayerCosts();
             if (payerCostList != null && payerCostList.size() > 1) {
@@ -259,14 +273,9 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
                     selectedPayerCostIndex = cardMetadata.getDefaultPayerCostIndex();
                 }
                 getView().showInstallmentsList(payerCostList, selectedPayerCostIndex);
-                trackInstallments(expressMetadataList.get(currentItem));
+                new InstallmentsEventTrack(expressMetadata).track();
             }
         }
-    }
-
-    public void trackInstallments(@NonNull final ExpressMetadata expressMetadata) {
-        Tracker.trackExpressInstallmentsView(expressMetadata,
-            configuration.getCheckoutPreference().getSite().getCurrencyId(), amountRepository.getAmountToPay());
     }
 
     /**
@@ -287,6 +296,7 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
      */
     @Override
     public void onSliderOptionSelected(final int paymentMethodIndex) {
+        new SwipeOneTapEventTracker().track();
         updateElementPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex));
     }
 
@@ -339,6 +349,10 @@ import static com.mercadopago.android.px.internal.view.InstallmentsDescriptorVie
         final NoConnectivityException exception = new NoConnectivityException();
         final ApiException apiException = ApiUtil.getApiException(exception);
         final MercadoPagoError mercadoPagoError = new MercadoPagoError(apiException, null);
+        FrictionEventTracker.with(OneTapViewTracker.PATH_REVIEW_ONE_TAP_VIEW,
+            FrictionEventTracker.Id.GENERIC, FrictionEventTracker.Style.CUSTOM_COMPONENT,
+            mercadoPagoError)
+            .track();
         getView().showErrorSnackBar(mercadoPagoError);
     }
 }

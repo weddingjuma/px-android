@@ -47,7 +47,7 @@ class CodeDiscountPresenter extends MvpPresenter<CodeDiscountView, DiscountRepos
     }
 
     @Nullable
-    private Campaign getCampaign(final String discountId) {
+    /* default */ Campaign getCampaign(final String discountId) {
         return discountRepository.getCampaign(discountId);
     }
 }

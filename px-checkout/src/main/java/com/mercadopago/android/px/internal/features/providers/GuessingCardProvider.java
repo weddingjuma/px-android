@@ -3,20 +3,16 @@ package com.mercadopago.android.px.internal.features.providers;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
-import com.mercadopago.android.px.internal.tracker.MPTrackingContext;
 import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Issuer;
-import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
 import java.math.BigDecimal;
 import java.util.List;
 
 public interface GuessingCardProvider extends ResourcesProvider {
-
-    MPTrackingContext getTrackingContext();
 
     void createTokenAsync(CardToken cardToken, final TaggedCallback<Token> taggedCallback);
 

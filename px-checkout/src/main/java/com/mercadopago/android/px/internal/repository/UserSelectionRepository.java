@@ -22,8 +22,6 @@ public interface UserSelectionRepository {
 
     void removePaymentMethodSelection();
 
-    boolean hasSelectedPaymentMethod();
-
     boolean hasPayerCostSelected();
 
     boolean hasCardSelected();

@@ -17,7 +17,6 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Installment;
-import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -25,15 +24,14 @@ import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.util.List;
 
 public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultProvider> {
 
     @NonNull private final AmountRepository amountRepository;
-    @NonNull private final MercadoPagoESC mercadoPagoESC;
+    @NonNull /* default */ final MercadoPagoESC mercadoPagoESC;
     @NonNull private final UserSelectionRepository userSelectionRepository;
-    @NonNull private final PaymentSettingRepository paymentSettingRepository;
+    @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
 
     private FailureRecovery failureRecovery;
     private String bin;
@@ -43,7 +41,6 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     private boolean automaticSelection;
 
-    private String merchantBaseUrl;
     private boolean installmentsListShown;
     private boolean issuersListShown;
 
@@ -53,13 +50,13 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     //Card Info
     private CardInfo cardInfo;
-    private Token token;
-    private Card card;
+    /* default */ Token token;
+    /* default */ Card card;
 
     private List<PayerCost> payerCostsList;
 
     //Security Code
-    private String esc;
+    /* default */ String esc;
 
     public CardVaultPresenter(@NonNull final AmountRepository amountRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
@@ -86,7 +83,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
-    private boolean viewAttached() {
+    /* default */ boolean viewAttached() {
         return getView() != null;
     }
 
@@ -184,7 +181,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
-    private void finishWithResult() {
+    /* default */ void finishWithResult() {
         if (isSecurityCodeFlowNeeded()) {
             getView().animateTransitionSlideInSlideOut();
         } else {
@@ -222,7 +219,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         return payerCostsList;
     }
 
-    private void getInstallmentsForCardAsync(final Card card) {
+    /* default */ void getInstallmentsForCardAsync(final Card card) {
         final String bin = TextUtil.isEmpty(cardInfo.getFirstSixDigits()) ? "" : cardInfo.getFirstSixDigits();
         final Long issuerId = this.card.getIssuer() == null ? null : this.card.getIssuer().getId();
         String paymentMethodId = card.getPaymentMethod() == null ? "" : card.getPaymentMethod().getId();
@@ -255,7 +252,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
             });
     }
 
-    private void resolveInstallmentsList(final List<Installment> installments) {
+    /* default */ void resolveInstallmentsList(final List<Installment> installments) {
         String errorMessage = null;
         if (installments.size() == 0) {
             errorMessage = getResourcesProvider().getMissingInstallmentsForIssuerErrorMessage();
@@ -357,13 +354,15 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
     }
 
     private void startSavedCardFlow() {
-        setCardInfo(new CardInfo(getCard()));
-        setPaymentMethod(getCard().getPaymentMethod());
-        userSelectionRepository.select(getCard().getIssuer());
+        // here is a saved card selected
+        final Card card = getCard();
+        setCardInfo(new CardInfo(card));
+        setPaymentMethod(card.getPaymentMethod());
+        userSelectionRepository.select(card.getIssuer());
         if (userSelectionRepository.getPayerCost() != null) {
             askForSecurityCodeWithoutInstallments();
         } else {
-            getInstallmentsForCardAsync(getCard());
+            getInstallmentsForCardAsync(card);
         }
     }
 
@@ -385,7 +384,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     public void startSecurityCodeFlowIfNeeded() {
         if (isSecurityCodeFlowNeeded()) {
-            getView().startSecurityCodeActivity(TrackingUtil.SECURITY_CODE_REASON_SAVED_CARD);
+            getView().startSecurityCodeActivity();
         } else {
             createESCToken();
         }
@@ -408,7 +407,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         return esc == null || esc.isEmpty();
     }
 
-    private void createESCToken() {
+    /* default */ void createESCToken() {
         if (savedCardAvailable() && !isESCEmpty()) {
 
             final SavedESCCardToken escCardToken = SavedESCCardToken.createWithEsc(card.getId(), esc);
@@ -420,7 +419,9 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
                         CardVaultPresenter.this.token = token;
                         CardVaultPresenter.this.token.setLastFourDigits(card.getLastFourDigits());
                         paymentSettingRepository.configure(CardVaultPresenter.this.token);
-                        MPTracker.getInstance().trackToken(CardVaultPresenter.this.token.getId());
+                        MPTracker.getInstance().trackTokenId(CardVaultPresenter.this.token.getId(),
+                            paymentSettingRepository.getPublicKey(),
+                            paymentSettingRepository.getCheckoutPreference().getSite());
                         mercadoPagoESC.saveESC(token.getCardId(), token.getEsc());
 
                         finishWithResult();
@@ -433,10 +434,9 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
                             getResourcesProvider().deleteESC(escCardToken.getCardId());
                             esc = null;
-
                             //Start CVV screen if fail
                             if (viewAttached()) {
-                                getView().startSecurityCodeActivity(TrackingUtil.SECURITY_CODE_REASON_ESC);
+                                getView().startSecurityCodeActivity();
                             }
                         } else {
                             //Retry with error screen
@@ -447,7 +447,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
-    private void recoverCreateESCToken(final MercadoPagoError error) {
+    /* default */ void recoverCreateESCToken(final MercadoPagoError error) {
         if (viewAttached()) {
             getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
             setFailureRecovery(new FailureRecovery() {

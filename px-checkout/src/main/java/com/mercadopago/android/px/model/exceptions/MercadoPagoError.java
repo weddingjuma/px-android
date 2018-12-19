@@ -1,11 +1,7 @@
 package com.mercadopago.android.px.model.exceptions;
 
-import android.support.annotation.NonNull;
-import android.text.TextUtils;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.model.ScreenViewEvent;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.io.Serializable;
 
 public class MercadoPagoError implements Serializable {
@@ -90,27 +86,5 @@ public class MercadoPagoError implements Serializable {
             ", apiException=" + apiException +
             ", recoverable=" + recoverable +
             '}';
-    }
-
-    public ScreenViewEvent.Builder getErrorEvent(@NonNull final ScreenViewEvent.Builder builder) {
-
-        if (getApiException() != null) {
-
-            builder.addProperty(TrackingUtil.PROPERTY_ERROR_STATUS, String.valueOf(apiException.getStatus()));
-
-            if (apiException.getCause() != null && !apiException.getCause().isEmpty() &&
-                apiException.getCause().get(0).getCode() != null) {
-                builder.addProperty(TrackingUtil.PROPERTY_ERROR_CODE,
-                    String.valueOf(apiException.getCause().get(0).getCode()));
-            }
-            if (!TextUtils.isEmpty(apiException.getMessage())) {
-                builder.addProperty(TrackingUtil.PROPERTY_ERROR_MESSAGE, apiException.getMessage());
-            }
-        }
-
-        if (getRequestOrigin() != null && !getRequestOrigin().isEmpty()) {
-            builder.addProperty(TrackingUtil.PROPERTY_ERROR_REQUEST, getRequestOrigin());
-        }
-        return builder;
     }
 }

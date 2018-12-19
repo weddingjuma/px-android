@@ -17,5 +17,4 @@ public final class Settings {
     public static String getTrackingEnvironment() {
         return trackingEnvironment;
     }
-
 }

@@ -4,9 +4,9 @@ import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Issuer;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 
@@ -20,6 +20,7 @@ public class UserSelectionService implements UserSelectionRepository {
     @NonNull private final SharedPreferences sharedPreferences;
     @NonNull private final JsonUtil jsonUtil;
 
+    //TODO persist local storage.
     private Card card;
 
     public UserSelectionService(@NonNull final SharedPreferences sharedPreferences,
@@ -51,11 +52,6 @@ public class UserSelectionService implements UserSelectionRepository {
     }
 
     @Override
-    public boolean hasSelectedPaymentMethod() {
-        return getPaymentMethod() != null;
-    }
-
-    @Override
     public boolean hasPayerCostSelected() {
         return getPayerCost() != null;
     }
@@ -66,9 +62,8 @@ public class UserSelectionService implements UserSelectionRepository {
     }
 
     /**
-     * it's important to select and then add the installments
-     * there is a side effect after changing the payment method that
-     * deletes the old payer cost cache
+     * it's important to select and then add the installments there is a side effect after changing the payment method
+     * that deletes the old payer cost cache
      *
      * @param paymentMethod new payment method selected.
      */

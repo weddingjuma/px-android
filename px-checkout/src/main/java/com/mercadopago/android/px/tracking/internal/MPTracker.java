@@ -1,20 +1,18 @@
 package com.mercadopago.android.px.tracking.internal;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.model.AppInformation;
-import com.mercadopago.android.px.model.DeviceInfo;
+import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.PaymentIntent;
 import com.mercadopago.android.px.model.ScreenViewEvent;
+import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.TrackingIntent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.services.MPTrackingService;
 import com.mercadopago.android.px.tracking.internal.services.MPTrackingServiceImpl;
-import com.mercadopago.android.px.tracking.internal.utils.TrackingUtil;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,17 +20,23 @@ import static android.text.TextUtils.isEmpty;
 
 public final class MPTracker {
 
-    /**
-     * This singleton instance is safe because session will work with application context. Application context it's
-     * never leaking.
-     */
-    @SuppressLint("StaticFieldLeak") private static MPTracker mMPTrackerInstance;
+    private static final String ATTR_EXTRA_INFO = "extra_info";
+    private static final String ATTR_FLOW_DETAIL = "flow_detail";
+    private static final String ATTR_FLOW_NAME = "flow";
 
-    private PXEventListener mPXEventListener;
+    @Deprecated
+    private static final String SDK_PLATFORM = "Android";
+    @Deprecated
+    private static final String SDK_TYPE = "native";
+    @Deprecated
+    private static final String DEFAULT_FLAVOUR = "3";
 
-    private PXTrackingListener pxTrackingListener;
+    private static MPTracker mMPTrackerInstance;
 
-    private MPTrackingService mMPTrackingService;
+    @Deprecated
+    @Nullable private PXEventListener mPXEventListener;
+
+    @Nullable private PXTrackingListener pxTrackingListener;
 
     /**
      * Added in 4.3.0 version - temporal replacement for tracking additional params.
@@ -43,22 +47,13 @@ public final class MPTracker {
      */
     @Nullable private String flowName;
 
-    private String mPublicKey;
-    private String mSdkVersion;
-    private String mSiteId;
-    private Context mContext;
-
-    private static final String SDK_PLATFORM = "Android";
-    private static final String SDK_TYPE = "native";
-    private static final String DEFAULT_FLAVOUR = "3";
-
-    private static final String FLOW_DETAIL_KEY = "flow_detail";
-    private static final String FLOW_NAME_KEY = "flow";
-
-    private Boolean trackerInitialized = false;
+    /**
+     * Service to track Off payments + card tokens
+     */
+    @NonNull private final MPTrackingService mMPTrackingService;
 
     private MPTracker() {
-        //Do nothing
+        mMPTrackingService = new MPTrackingServiceImpl();
     }
 
     public static synchronized MPTracker getInstance() {
@@ -68,22 +63,16 @@ public final class MPTracker {
         return mMPTrackerInstance;
     }
 
-    private void initializeMPTrackingService() {
-        if (mMPTrackingService == null) {
-            mMPTrackingService = new MPTrackingServiceImpl();
-        }
-    }
-
     /**
      * Set listener to track library's screens and events in the app.
      *
-     * @param PXEventListener PXEventListener implementing the tracking methods
+     * @param pxEventListener implementing the tracking methods
      * @deprecated Deprecated due to new tracking implementation standards. Use {@link com.mercadopago.android.px.tracking.internal.MPTracker#setPXTrackingListener(PXTrackingListener)}
      * instead.
      */
     @Deprecated
-    public void setTracksListener(final PXEventListener PXEventListener) {
-        mPXEventListener = PXEventListener;
+    public void setTracksListener(@Nullable final PXEventListener pxEventListener) {
+        mPXEventListener = pxEventListener;
     }
 
     /**
@@ -91,7 +80,7 @@ public final class MPTracker {
      *
      * @param pxTrackingListener implementing the tracking methods
      */
-    public void setPXTrackingListener(final PXTrackingListener pxTrackingListener) {
+    public void setPXTrackingListener(@Nullable final PXTrackingListener pxTrackingListener) {
         this.pxTrackingListener = pxTrackingListener;
     }
 
@@ -100,7 +89,7 @@ public final class MPTracker {
      *
      * @param flowDetail A map with extra information about the flow in your app that uses the checkout.
      */
-    public void setFlowDetail(@NonNull final Map<String, ? extends Object> flowDetail) {
+    public void setFlowDetail(@NonNull final Map<String, ?> flowDetail) {
         this.flowDetail = flowDetail;
     }
 
@@ -115,74 +104,38 @@ public final class MPTracker {
 
     /**
      * @param paymentId The payment id of a payment method off. Cannot be {@code null}.
-     * @param typeId The payment type id. It has to be a card type.
+     * @param publicKey payment public key
+     * @param site site
      */
-    public PaymentIntent trackPayment(final Long paymentId, final String typeId) {
-
-        PaymentIntent paymentIntent = null;
-
-        if (trackerInitialized) {
-            paymentIntent = new PaymentIntent(mPublicKey, paymentId.toString(), DEFAULT_FLAVOUR, SDK_PLATFORM, SDK_TYPE,
-                mSdkVersion, mSiteId);
-            initializeMPTrackingService();
-            mMPTrackingService.trackPaymentId(paymentIntent);
-        }
-        return paymentIntent;
+    public void trackPayment(final Long paymentId, final String publicKey,
+        final Site site) {
+        final PaymentIntent paymentIntent =
+            new PaymentIntent(publicKey, paymentId.toString(), DEFAULT_FLAVOUR, SDK_PLATFORM, SDK_TYPE,
+                BuildConfig.VERSION_NAME, site.getId());
+        mMPTrackingService.trackPaymentId(paymentIntent);
     }
 
     /**
-     * @param token The card token id of a payment. Cannot be {@code null}.
+     * @param tokenId The card token id of a payment. Cannot be {@code null}.
      */
-    public TrackingIntent trackToken(final String token) {
-        TrackingIntent trackingIntent = null;
-        if (trackerInitialized && !isEmpty(token)) {
-            trackingIntent =
-                new TrackingIntent(mPublicKey, token, DEFAULT_FLAVOUR, SDK_PLATFORM, SDK_TYPE, mSdkVersion, mSiteId);
-            initializeMPTrackingService();
+    public void trackTokenId(@NonNull final String tokenId, @NonNull final String publicKey, @NonNull final Site site) {
+        if (!isEmpty(tokenId)) {
+            final TrackingIntent trackingIntent =
+                new TrackingIntent(publicKey, tokenId, DEFAULT_FLAVOUR, SDK_PLATFORM, SDK_TYPE,
+                    BuildConfig.VERSION_NAME,
+                    site.getId());
             mMPTrackingService.trackToken(trackingIntent);
         }
-        return trackingIntent;
     }
 
     /**
      * This method tracks a list of events in one request
      *
-     * @param appInformation Info about this application and SDK integration
-     * @param deviceInfo Info about the device that is using the app
      * @param event Event to track
-     * @param context Application context
      * @deprecated Old tracking listener.
      */
     @Deprecated
-    public void trackEvent(final String publicKey,
-        final AppInformation appInformation,
-        final DeviceInfo deviceInfo,
-        final Event event,
-        final Context context) {
-        trackEvent(publicKey, appInformation, deviceInfo, event, context, StrategyMode.NOOP_STRATEGY);
-    }
-
-    /**
-     * This method tracks a list of events in one request
-     *
-     * @param appInformation Info about this application and SDK integration
-     * @param deviceInfo Info about the device that is using the app
-     * @param event Event to track
-     * @param context Application context
-     * @deprecated Old tracking listener.
-     */
-    @Deprecated
-    public void trackEvent(final String publicKey,
-        final AppInformation appInformation,
-        final DeviceInfo deviceInfo,
-        final Event event,
-        final Context context,
-        final String trackingStrategy) {
-
-        initializeMPTrackingService();
-
-        mContext = context;
-
+    public void trackEvent(final Event event) {
         if (event.getType().equals(Event.TYPE_SCREEN_VIEW)) {
             final ScreenViewEvent screenViewEvent = (ScreenViewEvent) event;
             trackOldView(screenViewEvent.getScreenId());
@@ -193,7 +146,7 @@ public final class MPTracker {
 
     private void trackViewCompat(@NonNull final String path) {
         if (pxTrackingListener != null) {
-            final HashMap<String, Object> data = new HashMap<>();
+            final Map<String, Object> data = new HashMap<>();
             addAdditionalFlowInfo(data);
             pxTrackingListener.onView(path, data);
         }
@@ -218,61 +171,29 @@ public final class MPTracker {
 
         if (pxTrackingListener != null) {
             // Event friction case needs to add flow detail in a different way. We ignore this case for now.
-            if (!TrackingUtil.EVENT_PATH_FRICTION.equals(path)) {
+            if (!FrictionEventTracker.PATH.equals(path)) {
                 addAdditionalFlowInfo(data);
+            } else {
+                addAdditionalFlowIntoExtraInfo(data);
             }
             pxTrackingListener.onEvent(path, data);
         }
     }
 
-    private void addAdditionalFlowInfo(@NonNull final Map<String, Object> data) {
-        data.put(FLOW_DETAIL_KEY, flowDetail);
-        data.put(FLOW_NAME_KEY, flowName);
-    }
-
-    /**
-     * @param publicKey The public key of the merchant. Cannot be {@code null}.
-     * @param siteId The site that comes in the preference. Cannot be {@code null}.
-     * @param sdkVersion The Mercado Pago sdk version. Cannot be {@code null}.
-     * @param context Reference to Android Context. Cannot be {@code null}.
-     */
-    public void initTracker(final String publicKey,
-        final String siteId,
-        final String sdkVersion,
-        final Context context) {
-
-        if (!isTrackerInitialized()) {
-            if (areInitParametersValid(publicKey, siteId, sdkVersion, context)) {
-                trackerInitialized = true;
-                mPublicKey = publicKey;
-                mSiteId = siteId;
-                mSdkVersion = sdkVersion;
-                mContext = context.getApplicationContext();
+    private void addAdditionalFlowIntoExtraInfo(@NonNull final Map<String, Object> data) {
+        if (data.containsKey(ATTR_EXTRA_INFO)) {
+            final Object o = data.get(ATTR_EXTRA_INFO);
+            try {
+                final Map<String, Object> value = (Map<String, Object>) o;
+                value.put(ATTR_FLOW_NAME, flowName);
+            } catch (final ClassCastException e) {
+                // do nothing.
             }
         }
     }
 
-    /**
-     * @param publicKey The public key of the merchant. Cannot be {@code null}.
-     * @param siteId The site that comes in the preference. Cannot be {@code null}.
-     * @param sdkVersion The Mercado Pago sdk version. Cannot be {@code null}.
-     * @param context Reference to Android Context. Cannot be {@code null}.
-     * @return True if all parameters are valid. False if any parameter is invalid
-     */
-    private boolean areInitParametersValid(final String publicKey,
-        final String siteId,
-        final String sdkVersion,
-        final Context context) {
-
-        return !isEmpty(publicKey) && !isEmpty(sdkVersion) && !isEmpty(siteId) && context != null;
-    }
-
-    /**
-     * Check if MPTracker is initialized
-     *
-     * @return True if is initialized. False if is not initialized.
-     */
-    private boolean isTrackerInitialized() {
-        return mPublicKey != null && mSdkVersion != null && mSiteId != null && mContext != null;
+    private void addAdditionalFlowInfo(@NonNull final Map<String, Object> data) {
+        data.put(ATTR_FLOW_DETAIL, flowDetail);
+        data.put(ATTR_FLOW_NAME, flowName);
     }
 }

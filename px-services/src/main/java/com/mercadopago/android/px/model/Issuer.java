@@ -12,12 +12,12 @@ public class Issuer implements Serializable, Parcelable {
 
     private List<String> labels;
 
-    public Issuer(Long id, String name) {
+    public Issuer(final Long id, final String name) {
         this.id = id;
         this.name = name;
     }
 
-    protected Issuer(Parcel in) {
+    protected Issuer(final Parcel in) {
         if (in.readByte() == 0) {
             id = null;
         } else {
@@ -29,12 +29,12 @@ public class Issuer implements Serializable, Parcelable {
 
     public static final Creator<Issuer> CREATOR = new Creator<Issuer>() {
         @Override
-        public Issuer createFromParcel(Parcel in) {
+        public Issuer createFromParcel(final Parcel in) {
             return new Issuer(in);
         }
 
         @Override
-        public Issuer[] newArray(int size) {
+        public Issuer[] newArray(final int size) {
             return new Issuer[size];
         }
     };
@@ -43,22 +43,25 @@ public class Issuer implements Serializable, Parcelable {
         return labels;
     }
 
-    public void setLabels(final List<String> labels) {
-        this.labels = labels;
-    }
-
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
         return name;
     }
 
+    @Deprecated
+    public void setLabels(final List<String> labels) {
+        this.labels = labels;
+    }
+
+    @Deprecated
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @Deprecated
     public void setName(String name) {
         this.name = name;
     }

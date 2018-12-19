@@ -12,7 +12,6 @@
     <string name="px_payment_detail_title_modal">Detalhes</string>
     <string name="px_processing_payment_button">Processando o seu pagamento</string>
     <string name="px_summary_detail_item_description">Sua compra</string>
-    <string name="px_total_in_mercado_pago">Total no Mercado Pago: %1$s</string>
     <string name="px_pay">Pagar</string>
 
     <!-- Banks deals -->
@@ -271,9 +270,6 @@
     <!-- Boleto -->
     <string name="px_fill_your_data">Digite seus dados…</string>
     <string name="px_bolbradesco_rejection">Não foi possível processar o seu pagamento, desculpe-nos</string>
-
-    <!-- Invested Account Money -->
-    <string name="px_invested_account_money">Você está usando dinheiro investido</string>
 
     <string name="px_empty_string"></string>
 </resources>

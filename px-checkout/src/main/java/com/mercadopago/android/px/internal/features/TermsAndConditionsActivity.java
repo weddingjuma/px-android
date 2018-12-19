@@ -9,9 +9,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.tracker.Tracker;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.tracking.internal.views.TermsAndConditionsViewTracker;
 
 public class TermsAndConditionsActivity extends MercadoPagoActivity {
 
@@ -75,7 +75,7 @@ public class TermsAndConditionsActivity extends MercadoPagoActivity {
 
     @Override
     protected void onValidStart() {
-        Tracker.trackReviewAndConfirmTermsAndConditions(getApplicationContext());
+        new TermsAndConditionsViewTracker(url).track();
         showMPTermsAndConditions();
     }
 

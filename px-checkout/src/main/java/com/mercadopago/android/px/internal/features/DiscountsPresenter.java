@@ -10,13 +10,13 @@ import java.math.BigDecimal;
 
 public class DiscountsPresenter extends MvpPresenter<DiscountsActivityView, DiscountsProvider> {
 
-    private DiscountsActivityView mDiscountsView;
+    /* default */ DiscountsActivityView mDiscountsView;
 
     //Activity parameters
     private String mPublicKey;
     private String mPayerEmail;
     private BigDecimal mTransactionAmount;
-    private Discount mDiscount;
+    /* default */ Discount mDiscount;
 
     @Override
     public void attachView(DiscountsActivityView discountsView) {

@@ -54,7 +54,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
         getResourcesProvider().getIdentificationTypesAsync(
             new TaggedCallback<List<IdentificationType>>(ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES) {
                 @Override
-                public void onSuccess(List<IdentificationType> identificationTypes) {
+                public void onSuccess(final List<IdentificationType> identificationTypes) {
                     resolveIdentificationTypes(identificationTypes);
                     getView().hideProgressBar();
                     getView().showInputContainer();
@@ -88,9 +88,9 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
     }
 
     private List<IdentificationType> getCPFIdentificationTypes(List<IdentificationType> identificationTypes) {
-        List<IdentificationType> identificationTypesList = new ArrayList<>();
+        final List<IdentificationType> identificationTypesList = new ArrayList<>();
 
-        for (IdentificationType identificationType : identificationTypes) {
+        for (final IdentificationType identificationType : identificationTypes) {
             if (identificationType.getId().equals(IDENTIFICATION_TYPE_CPF)) {
                 identificationTypesList.add(identificationType);
             }
@@ -99,16 +99,16 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
         return identificationTypesList;
     }
 
-    public void saveIdentificationNumber(String identificationNumber) {
+    public void saveIdentificationNumber(final String identificationNumber) {
         mIdentificationNumber = identificationNumber;
         mIdentification.setNumber(identificationNumber);
     }
 
-    public void saveIdentificationName(String identificationName) {
+    public void saveIdentificationName(final String identificationName) {
         mIdentificationName = identificationName;
     }
 
-    public void saveIdentificationLastName(String identificationLastName) {
+    public void saveIdentificationLastName(final String identificationLastName) {
         mIdentificationLastName = identificationLastName;
     }
 
@@ -121,7 +121,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
         return maxLength;
     }
 
-    public void saveIdentificationType(IdentificationType identificationType) {
+    public void saveIdentificationType(final IdentificationType identificationType) {
         mIdentificationType = identificationType;
         if (identificationType != null) {
             mIdentification.setType(identificationType.getId());
@@ -145,7 +145,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
         return mFailureRecovery;
     }
 
-    public void setFailureRecovery(FailureRecovery failureRecovery) {
+    public void setFailureRecovery(final FailureRecovery failureRecovery) {
         mFailureRecovery = failureRecovery;
     }
 
@@ -156,7 +156,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
     }
 
     public boolean validateIdentificationNumber() {
-        boolean isIdentificationNumberValid = validateIdentificationNumberLength();
+        final boolean isIdentificationNumberValid = validateIdentificationNumberLength();
 
         if (isIdentificationNumberValid) {
             getView().clearErrorView();
@@ -173,9 +173,9 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
         if (mIdentificationType != null) {
             if ((mIdentification != null) &&
                 (mIdentification.getNumber() != null)) {
-                int len = mIdentification.getNumber().length();
-                Integer min = mIdentificationType.getMinLength();
-                Integer max = mIdentificationType.getMaxLength();
+                final int len = mIdentification.getNumber().length();
+                final Integer min = mIdentificationType.getMinLength();
+                final Integer max = mIdentificationType.getMaxLength();
                 if ((min != null) && (max != null)) {
                     return ((len <= max) && (len >= min));
                 } else {
@@ -190,7 +190,8 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
     }
 
     private boolean validateNumber() {
-        return mIdentification != null && validateIdentificationType() && !TextUtil.isEmpty(mIdentification.getNumber());
+        return mIdentification != null && validateIdentificationType() &&
+            !TextUtil.isEmpty(mIdentification.getNumber());
     }
 
     private boolean validateIdentificationType() {
@@ -206,7 +207,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
     }
 
     public boolean validateName() {
-        boolean isNameValid = validateString(mIdentificationName);
+        final boolean isNameValid = validateString(mIdentificationName);
 
         if (isNameValid) {
             getView().clearErrorView();
@@ -220,7 +221,7 @@ public class PayerInformationPresenter extends MvpPresenter<PayerInformationView
     }
 
     public boolean validateLastName() {
-        boolean isLastNameValid = validateString(mIdentificationLastName);
+        final boolean isLastNameValid = validateString(mIdentificationLastName);
 
         if (isLastNameValid) {
             getView().clearErrorView();

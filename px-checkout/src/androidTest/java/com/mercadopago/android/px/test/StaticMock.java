@@ -2,15 +2,11 @@ package com.mercadopago.android.px.test;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.Customer;
-import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.Installment;
 import com.mercadopago.android.px.model.Instructions;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
@@ -19,11 +15,7 @@ import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.SavedCardToken;
 import com.mercadopago.android.px.model.Token;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.preferences.PaymentPreference;
-import com.mercadopago.android.px.model.exceptions.ApiException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.List;
 
 public final class StaticMock {

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import com.mercadopago.android.px.BuildConfig;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
@@ -35,7 +34,7 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
+import com.mercadopago.android.px.tracking.internal.events.AbortOneTapEventTracker;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_PAYMENT_RESULT;
@@ -143,7 +142,7 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     @Override
     public void onBackPressed() {
         if (presenter != null && presenter.getState().isExpressCheckout) {
-            presenter.trackAbortExpress();
+            new AbortOneTapEventTracker().track();
         }
         super.onBackPressed();
     }
@@ -201,14 +200,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
     @Override
     public void hideProgress() {
         ViewUtils.showRegularLayout(this);
-    }
-
-    @Override
-    public void initializeMPTracker() {
-        //Initialize tracker before creating a token
-        MPTracker.getInstance()
-            .initTracker(merchantPublicKey, presenter.getCheckoutPreference().getSite().getId(),
-                BuildConfig.VERSION_NAME, getApplicationContext());
     }
 
     @Override

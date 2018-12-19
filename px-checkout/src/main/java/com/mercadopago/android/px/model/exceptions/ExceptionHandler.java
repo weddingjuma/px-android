@@ -5,7 +5,7 @@ import com.mercadopago.android.px.R;
 
 public class ExceptionHandler {
 
-    public static String getErrorMessage(Context context, CheckoutPreferenceException exception) {
+    public static String getErrorMessage(final Context context, final CheckoutPreferenceException exception) {
         String errorMessage;
 
         switch (exception.getErrorCode()) {

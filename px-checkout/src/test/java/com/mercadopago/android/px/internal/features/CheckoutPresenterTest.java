@@ -194,7 +194,6 @@ public class CheckoutPresenterTest {
 
         verify(groupsRepository).getGroups();
         verify(checkoutView).showProgress();
-        verify(checkoutView).initializeMPTracker();
         verify(checkoutView).trackScreen();
         verify(checkoutView).showPaymentMethodSelection();
         verifyNoMoreInteractions(checkoutView);
@@ -706,11 +705,6 @@ public class CheckoutPresenterTest {
             showingPaymentMethodSelection = false;
             showingReviewAndConfirm = false;
             showingPaymentResult = false;
-        }
-
-        @Override
-        public void initializeMPTracker() {
-
         }
 
         @Override

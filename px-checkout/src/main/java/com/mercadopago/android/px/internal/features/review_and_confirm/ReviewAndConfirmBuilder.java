@@ -86,7 +86,8 @@ public class ReviewAndConfirmBuilder {
                 resources.getString(R.string.px_discount_terms_and_conditions_linked_message),
                 LineSeparatorType.BOTTOM_LINE_SEPARATOR) : null;
 
-        final PaymentModel paymentModel = new PaymentModel(paymentMethod, token, issuer, hasExtraPaymentMethods);
+        final PaymentModel paymentModel =
+            new PaymentModel(paymentMethod, token, issuer, hasExtraPaymentMethods);
 
         final SummaryModel summaryModel =
             new SummaryModel(amountRepository.getAmountToPay(), paymentMethod, site,

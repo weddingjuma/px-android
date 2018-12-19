@@ -30,8 +30,6 @@ public interface SecurityCodeActivityView extends MvpView {
 
     void showTimer();
 
-    void trackScreen();
-
     void showBackSecurityCodeCardView();
 
     void showFrontSecurityCodeCardView();

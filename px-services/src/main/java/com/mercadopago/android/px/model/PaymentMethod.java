@@ -22,6 +22,7 @@ public class PaymentMethod implements Parcelable, Serializable {
     private List<Setting> settings;
     private List<String> additionalInfoNeeded;
     private List<FinancialInstitution> financialInstitutions;
+
     @Nullable
     private BigDecimal minAllowedAmount;
     @Nullable

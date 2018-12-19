@@ -40,6 +40,7 @@ import com.mercadopago.android.px.internal.di.CardAssociationSession;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.MercadoPagoBaseActivity;
+import com.mercadopago.android.px.internal.features.ReviewPaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.card.CardExpiryDateTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardIdentificationNumberTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardNumberTextWatcher;
@@ -76,6 +77,8 @@ import java.util.List;
 
 public class GuessingCardActivity extends MercadoPagoBaseActivity implements GuessingCardActivityView,
     CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener {
+
+    public static final int REVIEW_PAYMENT_METHODS_REQUEST_CODE = 21;
 
     public static final String PARAM_INCLUDES_PAYMENT = "includesPayment";
     public static final String PARAM_ACCESS_TOKEN = "accessToken";
@@ -143,8 +146,8 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
     private boolean mActivityActive;
 
     /**
-     * Starts the guessing card flow with the purpose of storing the card in the users card vault
-     * This flows does NOT includes a payment
+     * Starts the guessing card flow with the purpose of storing the card in the users card vault This flows does NOT
+     * includes a payment
      *
      * @param callerActivity: the activity that calls this one
      * @param accessToken: user accessToken
@@ -621,10 +624,7 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
     }
 
     private void startReviewPaymentMethodsActivity(final List<PaymentMethod> supportedPaymentMethods) {
-        new Constants.Activities.ReviewPaymentMethodsActivityBuilder()
-            .setActivity(mActivity)
-            .setPaymentMethods(supportedPaymentMethods)
-            .startActivity();
+        ReviewPaymentMethodsActivity.start(this, supportedPaymentMethods, REVIEW_PAYMENT_METHODS_REQUEST_CODE);
         overridePendingTransition(R.anim.px_slide_up_activity, R.anim.px_no_change_animation);
     }
 
@@ -1353,7 +1353,7 @@ public class GuessingCardActivity extends MercadoPagoBaseActivity implements Gue
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
-        } else if (requestCode == Constants.Activities.REVIEW_PAYMENT_METHODS_REQUEST_CODE) {
+        } else if (requestCode == REVIEW_PAYMENT_METHODS_REQUEST_CODE) {
             clearReviewPaymentMethodsMode();
         } else if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {

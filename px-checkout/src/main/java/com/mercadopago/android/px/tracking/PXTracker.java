@@ -16,11 +16,11 @@ public final class PXTracker {
      * Set your own tracker listener to be aware of PX - Checkout events.
      *
      * @param listener your listener.
-     * @deprecated Deprecated due to new tracking implementation standards.
-     * Use {@link com.mercadopago.android.px.tracking.PXTracker#setListener(PXTrackingListener)} instead.
+     * @deprecated Deprecated due to new tracking implementation standards. Use {@link com.mercadopago.android.px.tracking.PXTracker#setListener(PXTrackingListener)}
+     * instead.
      */
     @Deprecated
-    public static void setListener(@NonNull final PXEventListener listener) {
+    public static void setListener(@Nullable final PXEventListener listener) {
         MPTracker.getInstance().setTracksListener(listener);
     }
 
@@ -29,7 +29,7 @@ public final class PXTracker {
      *
      * @param listener your listener.
      */
-    public static void setListener(@NonNull final PXTrackingListener listener) {
+    public static void setListener(@Nullable final PXTrackingListener listener) {
         PXTracker.setListener(listener, new HashMap<String, Object>(), null);
     }
 
@@ -38,7 +38,7 @@ public final class PXTracker {
      *
      * @param listener your listener.
      */
-    public static void setListener(@NonNull final PXTrackingListener listener,
+    public static void setListener(@Nullable final PXTrackingListener listener,
         @NonNull final Map<String, ? extends Object> flowDetail, @Nullable final String flowName) {
         MPTracker.getInstance().setPXTrackingListener(listener);
         MPTracker.getInstance().setFlowDetail(flowDetail);

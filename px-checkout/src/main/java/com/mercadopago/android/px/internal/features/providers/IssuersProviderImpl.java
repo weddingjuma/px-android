@@ -3,8 +3,8 @@ package com.mercadopago.android.px.internal.features.providers;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
+import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -25,15 +25,15 @@ public class IssuersProviderImpl implements IssuersProvider {
     }
 
     @Override
-    public void getIssuers(String paymentMethodId, String bin, final TaggedCallback<List<Issuer>> taggedCallback) {
+    public void getIssuers(final String paymentMethodId, final String bin,
+        final TaggedCallback<List<Issuer>> taggedCallback) {
         mercadoPago.getIssuers(paymentMethodId, bin, taggedCallback);
     }
 
     @Override
     public MercadoPagoError getEmptyIssuersError() {
-        String message = context.getString(R.string.px_standard_error_message);
-        String detail = context.getString(R.string.px_error_message_detail_issuers);
-
+        final String message = context.getString(R.string.px_standard_error_message);
+        final String detail = context.getString(R.string.px_error_message_detail_issuers);
         return new MercadoPagoError(message, detail, false);
     }
 

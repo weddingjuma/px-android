@@ -143,7 +143,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
             payment.getPaymentStatusDetail());
     }
 
-    private void addAndProcess(@NonNull final Message message) {
+    /* default */ void addAndProcess(@NonNull final Message message) {
         messages.add(message);
         processMessages();
     }

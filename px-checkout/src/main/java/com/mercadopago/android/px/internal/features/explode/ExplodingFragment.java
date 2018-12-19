@@ -41,15 +41,15 @@ public class ExplodingFragment extends Fragment {
     private static final int MAX_LOADING_TIME = 20000; // the max loading time in milliseconds
     public static final float ICON_SCALE = 3.0f;
 
-    private ProgressBar progressBar;
-    private ObjectAnimator animator;
-    private ImageView icon;
-    private ImageView circle;
-    private View reveal;
+    /* default */ ProgressBar progressBar;
+    /* default */ ObjectAnimator animator;
+    /* default */ ImageView icon;
+    /* default */ ImageView circle;
+    /* default */ View reveal;
     private TextView text;
     private ViewGroup rootView;
 
-    private ExplodeDecorator explodeDecorator;
+    /* default */ ExplodeDecorator explodeDecorator;
     private int buttonHeight;
     private int buttonLeftRightMargin;
     private int yButtonPosition;
@@ -57,7 +57,7 @@ public class ExplodingFragment extends Fragment {
     //TODO add loading time payment processor
     private int maxLoadingTime;
 
-    private ExplodingAnimationListener listener;
+    /* default */ ExplodingAnimationListener listener;
 
     public boolean hasFinished() {
         return explodeDecorator == null;
@@ -262,7 +262,7 @@ public class ExplodingFragment extends Fragment {
      * Now that the icon background is visible, animate the icon.
      * The icon will start big and transparent and become small and opaque
      */
-    private void createResultIconAnim() {
+    /* default */ void createResultIconAnim() {
         progressBar.setVisibility(View.INVISIBLE);
         icon.setVisibility(View.VISIBLE);
         circle.setVisibility(View.VISIBLE);
@@ -287,7 +287,7 @@ public class ExplodingFragment extends Fragment {
     /**
      * Wait so that the icon is visible for a while.. then fill the whole screen with the appropriate color.
      */
-    private void createCircularReveal() {
+    /* default */ void createCircularReveal() {
         // when the icon anim has finished, paint the whole screen with the result color
         final float finalRadius = (float) Math.hypot(rootView.getWidth(), rootView.getHeight());
         final int startRadius = buttonHeight / 2;
@@ -314,7 +314,7 @@ public class ExplodingFragment extends Fragment {
                     final int startColor = ContextCompat.getColor(getContext(), explodeDecorator.getDarkPrimaryColor());
                     final int endColor = ContextCompat.getColor(getContext(), explodeDecorator.getPrimaryColor());
                     final Drawable[] switchColors =
-                        new Drawable[] { new ColorDrawable(startColor), new ColorDrawable(endColor) };
+                        { new ColorDrawable(startColor), new ColorDrawable(endColor) };
                     TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
                     reveal.setBackgroundDrawable(colorSwitch);
                     colorSwitch.startTransition((int) animation.getDuration());
@@ -335,7 +335,7 @@ public class ExplodingFragment extends Fragment {
         anim.start();
     }
 
-    private void tintStatusBar(final int color) {
+    /* default */ void tintStatusBar(final int color) {
         new StatusBarDecorator(getActivity().getWindow()).setupStatusBarColor(color);
     }
 

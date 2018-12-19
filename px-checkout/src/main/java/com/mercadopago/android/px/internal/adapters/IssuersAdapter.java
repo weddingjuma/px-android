@@ -16,7 +16,7 @@ import java.util.List;
 public class IssuersAdapter extends RecyclerView.Adapter<IssuersAdapter.ViewHolder> {
 
     private final List<Issuer> mIssuers;
-    private final OnSelectedCallback<Integer> mCallback;
+    /* default */ final OnSelectedCallback<Integer> mCallback;
 
     public IssuersAdapter(OnSelectedCallback<Integer> callback) {
         mIssuers = new ArrayList<>();

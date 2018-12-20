@@ -1,3 +1,9 @@
+## VERSION 4.4.1
+_18_12_2018_
+
+* FIX - Navigation on payment method changed
+* FIX - Crash on back from payment vault
+
 ## VERSION 4.4.0
 _13_12_2018_
 

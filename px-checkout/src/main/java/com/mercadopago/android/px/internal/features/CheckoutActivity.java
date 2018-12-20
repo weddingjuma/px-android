@@ -242,10 +242,10 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             resolveCardVaultRequest(resultCode, data);
             break;
         default:
+            resolveCodes(resultCode, data);
             break;
         }
 
-        resolveCodes(resultCode, data);
     }
 
     public void resolveCodes(final int resultCode, final Intent data) {
@@ -410,12 +410,6 @@ public class CheckoutActivity extends MercadoPagoBaseActivity implements Checkou
             .setHasExtraPaymentMethods(!isUniquePaymentMethod)
             .getIntent(this);
         startActivityForResult(intent, REQ_REVIEW_AND_CONFIRM);
-    }
-
-    @Override
-    public void backToReviewAndConfirm() {
-        showReviewAndConfirm(presenter.isUniquePaymentMethod());
-        overrideTransitionOut();
     }
 
     @Override

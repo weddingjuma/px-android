@@ -6,13 +6,10 @@ import android.support.annotation.NonNull;
 public final class CheckoutStateModel {
 
     private static final String EXTRA_PM_EDITED = "EXTRA_PM_EDITED";
-    private static final String EXTRA_EDITED_FROM_RYC = "EXTRA_EDITED_FROM_RYC";
     private static final String EXTRA_UNIQUE_PM = "EXTRA_UNIQUE_PM";
     private static final String EXTRA_IS_EXPRESS_CHECKOUT = "EXTRA_IS_EXPRESS_CHECKOUT";
 
     public boolean paymentMethodEdited;
-    public boolean editPaymentMethodFromReviewAndConfirm;
-
     public boolean isUniquePaymentMethod;
     public boolean isExpressCheckout;
 
@@ -21,7 +18,6 @@ public final class CheckoutStateModel {
 
     public void toBundle(@NonNull final Bundle bundle) {
         bundle.putBoolean(EXTRA_PM_EDITED, paymentMethodEdited);
-        bundle.putBoolean(EXTRA_EDITED_FROM_RYC, editPaymentMethodFromReviewAndConfirm);
         bundle.putBoolean(EXTRA_UNIQUE_PM, isUniquePaymentMethod);
         bundle.putBoolean(EXTRA_IS_EXPRESS_CHECKOUT, isExpressCheckout);
     }
@@ -29,7 +25,6 @@ public final class CheckoutStateModel {
     public static CheckoutStateModel fromBundle(@NonNull final Bundle bundle) {
         final CheckoutStateModel stateModel = new CheckoutStateModel();
         stateModel.paymentMethodEdited = bundle.getBoolean(EXTRA_PM_EDITED);
-        stateModel.editPaymentMethodFromReviewAndConfirm = bundle.getBoolean(EXTRA_EDITED_FROM_RYC);
         stateModel.isUniquePaymentMethod = bundle.getBoolean(EXTRA_UNIQUE_PM);
         stateModel.isExpressCheckout = bundle.getBoolean(EXTRA_IS_EXPRESS_CHECKOUT);
         return stateModel;

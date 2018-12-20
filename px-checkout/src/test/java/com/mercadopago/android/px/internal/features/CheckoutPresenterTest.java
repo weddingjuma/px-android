@@ -418,7 +418,7 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenPaymentMethodEditionIsRequestedAndUserPressesBackTwiceCancelCheckout() {
+    public void whenPaymentMethodEditionIsRequestedAndUserPressesBackCancelCheckout() {
         final CheckoutPresenter presenter = getPaymentPresenterWithDefaultAdvancedConfigurationMla();
         presenter.initialize();
         assertTrue(stubView.showingPaymentMethodSelection);
@@ -427,12 +427,6 @@ public class CheckoutPresenterTest {
         assertTrue(stubView.showingReviewAndConfirm);
 
         presenter.onChangePaymentMethodFromReviewAndConfirm();
-        assertTrue(stubView.showingPaymentMethodSelection);
-
-        presenter.onPaymentMethodSelectionCancel();
-        assertTrue(stubView.showingReviewAndConfirm);
-
-        presenter.onReviewAndConfirmCancel();
         assertTrue(stubView.showingPaymentMethodSelection);
 
         presenter.onPaymentMethodSelectionCancel();
@@ -450,7 +444,7 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenPaymentSelectionErrorAndPaymentMethodChangeRequestedFromReviewAndConfirmThenBackToReviewAndConfirm() {
+    public void whenPaymentSelectionErrorAndPaymentMethodChangeRequestedFromReviewAndConfirmOnBackExitCheckout() {
         final CheckoutPresenter presenter = getPresenter();
         final MercadoPagoError mercadoPagoError = mock(MercadoPagoError.class);
 
@@ -459,7 +453,7 @@ public class CheckoutPresenterTest {
 
         verify(checkoutView).transitionOut();
         verify(checkoutView).showPaymentMethodSelection();
-        verify(checkoutView).backToReviewAndConfirm();
+        verify(checkoutView).cancelCheckout(mercadoPagoError);
 
         verifyNoMoreInteractions(checkoutView);
     }
@@ -652,14 +646,6 @@ public class CheckoutPresenterTest {
             showingPaymentMethodSelection = false;
             showingReviewAndConfirm = false;
             showingPaymentResult = true;
-            showingPaymentRecoveryFlow = false;
-        }
-
-        @Override
-        public void backToReviewAndConfirm() {
-            showingPaymentMethodSelection = false;
-            showingReviewAndConfirm = true;
-            showingPaymentResult = false;
             showingPaymentRecoveryFlow = false;
         }
 

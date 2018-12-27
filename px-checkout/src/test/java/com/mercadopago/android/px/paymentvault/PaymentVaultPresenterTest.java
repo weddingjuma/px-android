@@ -31,7 +31,6 @@ import com.mercadopago.android.px.utils.Discounts;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.junit.Before;
@@ -105,7 +104,7 @@ public class PaymentVaultPresenterTest {
         presenter.attachView(mockView);
         presenter.attachResourcesProvider(mockProvider);
         presenter.setSelectedSearchItem(mockPaymentOptions);
-        presenter.trackChildrenScreen();
+        presenter.trackScreen();
         verifyNoMoreInteractions(mockProvider);
         verifyNoMoreInteractions(mockView);
     }

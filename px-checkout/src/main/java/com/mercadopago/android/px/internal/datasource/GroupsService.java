@@ -116,7 +116,7 @@ public class GroupsService implements GroupsRepository {
 
         return checkoutService
             .getPaymentMethodSearch(
-//                Settings.servicesVersion,
+                Settings.servicesVersion,
                 language, paymentSettingRepository.getPublicKey(),
                 amountRepository.getAmountToPay(),
                 excludedPaymentTypesAppended,

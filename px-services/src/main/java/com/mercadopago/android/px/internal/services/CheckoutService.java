@@ -7,7 +7,6 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
-import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
@@ -15,9 +14,9 @@ public interface CheckoutService {
 
     String GROUPS_VERSION = "1.8";
 
-    @GET("/beta/px_mobile_api/payment_methods?api_version=" + GROUPS_VERSION)
+    @GET("/{version}/px_mobile_api/payment_methods?api_version=" + GROUPS_VERSION)
     MPCall<PaymentMethodSearch> getPaymentMethodSearch(
-//        @Path(value = "version", encoded = true) String version,
+        @Path(value = "version", encoded = true) String version,
         @Header("Accept-Language") String locale,
         @Query("public_key") String publicKey,
         @Query("amount") BigDecimal amount,

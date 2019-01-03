@@ -25,7 +25,8 @@ then
 	. gradle.properties
 	TMP_BRANCH="deploy_branch_tag_$version_to_deploy"
 	## Tag and push
-	git checkout -b $TMP_BRANCH && git push origin $TMP_BRANCH && git tag -a $version_to_deploy -m "travis deployed version $version_to_deploy" && git push origin $TMP_BRANCH --follow-tags && ./gradlew -Pproduction publishAar -q
+	git add remote origin-travis https://${GITHUB_AUTH_TOKEN}@github.com/mercadopago/px-android.git
+	git checkout -b $TMP_BRANCH && git push origin-travis $TMP_BRANCH && git tag -a $version_to_deploy -m "travis deployed version $version_to_deploy" && git push origin-travis $TMP_BRANCH --follow-tags && ./gradlew -Pproduction publishAar -q
 fi
 
 if [[ "$LAST_GIT_COMMIT" !=  *"$DEPLOY_COMMAND"* ]]

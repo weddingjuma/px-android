@@ -1,5 +1,13 @@
 #!/bin/bash
 
+init_emulator () {
+    echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+    emulator -avd test -no-skin -no-audio -no-window &
+    android-wait-for-emulator
+    adb shell input keyevent 82 &
+    adb shell setprop dalvik.vm.dexopt-flags v=n,o=v
+}
+
 DEPLOY_COMMAND="[ci deploy]"
 
 # get current directory name
@@ -12,24 +20,27 @@ command pushd "$BASEDIR/.." > /dev/null
 echo "Evaluating if it was deploy command $DEPLOY_COMMAND"
 
 # Get last 2 commit messages (1 is the merge, second last real commit) in a variable
-LAST_GIT_COMMIT=$(git log -2 --pretty=%B)
-
-echo "last git commit has $LAST_GIT_COMMIT"
-
-
-if [[ "$LAST_GIT_COMMIT" == *"$DEPLOY_COMMAND"* ]]
+if [ $TRAVIS_PULL_REQUEST != "false" ]
 then
-	#git tag -a
-	#gradlew publishAar -q
-	# Load properties
-	. gradle.properties
-	TMP_BRANCH="deploy_branch_tag_$version_to_deploy"
-	## Tag and push
-	git add remote origin-travis https://${GITHUB_AUTH_TOKEN}@github.com/mercadopago/px-android.git
-	git checkout -b $TMP_BRANCH && git push origin-travis $TMP_BRANCH && git tag -a $version_to_deploy -m "travis deployed version $version_to_deploy" && git push origin-travis $TMP_BRANCH --follow-tags && ./gradlew -Pproduction publishAar -q
+	LAST_GIT_COMMIT=$(git log -2 --pretty=%B)
+	BRANCH_TO_TAG=$TRAVIS_PULL_REQUEST_BRANCH
+else
+	LAST_GIT_COMMIT=$(git log -1 --pretty=%B)
+	BRANCH_TO_TAG=$TRAVIS_BRANCH
 fi
 
-if [[ "$LAST_GIT_COMMIT" !=  *"$DEPLOY_COMMAND"* ]]
+echo "last git commit has $LAST_GIT_COMMIT"
+echo "branch to tag is $BRANCH_TO_TAG"
+echo "travis branch is $TRAVIS_PULL_REQUEST_BRANCH"
+
+if [[ $LAST_GIT_COMMIT == *$DEPLOY_COMMAND* ]] && [[ $BRANCH_TO_TAG == "release/"* ]]
 then
-	./gradlew publishAar -q
+	init_emulator
+    # Load properties
+    . gradle.properties
+    # Running task and tagging
+    #./gradlew -Pproduction publishAar -q
+    ./gradlew :px-checkout:jacocoTestReport && ./gradlew publishAar -q && git remote add origin-travis https://$GITHUB_AUTH_TOKEN@github.com/mercadopago/px-android.git && git fetch origin-travis && git checkout -b $BRANCH_TO_TAG origin-travis/$BRANCH_TO_TAG && git tag -a $version_to_deploy -m "travis deployed version $version_to_deploy" && git push --tags
+else
+	./gradlew :px-checkout:test && ./gradlew publishAar -q
 fi

@@ -1,5 +1,5 @@
 ## VERSION 4.5.1
-_02_01_2019_
+_10_01_2019_
 * FIX - Crash in groups disk cache.
 
 ## VERSION 4.5.0

@@ -407,10 +407,13 @@ public class PaymentVaultPresenter extends MvpPresenter<PaymentVaultView, Paymen
     }
 
     public void trackScreen() {
-        if (selectedSearchItem == null) {
-            trackInitialScreen();
-        } else {
-            trackChildScreen();
+        // Do not remove check paymentMethodSearch, sometimes in recovery status is null.
+        if(paymentMethodSearch != null) {
+            if (selectedSearchItem == null) {
+                trackInitialScreen();
+            } else {
+                trackChildScreen();
+            }
         }
     }
 

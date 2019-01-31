@@ -1,3 +1,7 @@
+## VERSION 4.5.2
+_31_01_2019_
+* FIX - NPE tracking events.
+
 ## VERSION 4.5.1
 _10_01_2019_
 * FIX - Crash in groups disk cache.

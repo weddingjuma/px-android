@@ -4,15 +4,6 @@
               android:layout_height="match_parent"
               android:orientation="vertical">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone"/>
-
     <ScrollView
         android:id="@+id/regularLayout"
         android:layout_width="match_parent"
@@ -60,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/px_button_height"
                 android:layout_marginTop="25dp"
-                android:text="@string/px_continue_label"/>
+                android:text="@string/continue_label"/>
 
             <com.mercadopago.android.px.internal.view.MPButton
                 android:id="@+id/select_checkout"

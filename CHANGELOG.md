@@ -2,6 +2,10 @@
 _31_01_2019_
 * FIX - NPE tracking events.
 
+## VERSION 4.6.0
+_24_01_2019_
+* FEATURE - Support to payment method discount.
+
 ## VERSION 4.5.1
 _10_01_2019_
 * FIX - Crash in groups disk cache.
@@ -72,7 +76,7 @@ _25_10_2018_
 * FEATURE - dynamic custom dialogs for certain locations.
 * FEATURE - dynamic custom views for review and confirm.
 * ENHANCEMENT - tracking screen's names and paths unified.
-* ENHANCEMENT/FIX - card addition flow now supports installments and ESC. 
+* ENHANCEMENT/FIX - card addition flow now supports installments and ESC.
 
 ## VERSION 4.1.3
 _01_11_2018_

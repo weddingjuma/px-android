@@ -1,15 +1,14 @@
 package com.mercadopago.android.px.internal.features.guessing_card;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Issuer;
-import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentType;
-import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -42,6 +41,10 @@ public interface GuessingCardActivityView extends MvpView {
     void setBackButtonListeners();
 
     void setErrorContainerListener();
+
+    void showMissingIdentificationTypesError(boolean recoverable, String requestOrigin);
+
+    void showSettingNotFoundForBinError();
 
     void setContainerAnimationListeners();
 
@@ -93,13 +96,9 @@ public interface GuessingCardActivityView extends MvpView {
 
     void setSoftInputMode();
 
-    void finishCardFlow(@Nullable PaymentMethod paymentMethod, Token token, List<Issuer> issuers);
+    void finishCardFlow(@NonNull final List<Issuer> issuers);
 
-    void finishCardFlow(@Nullable PaymentMethod paymentMethod, Token token, Issuer issuer,
-        List<PayerCost> payerCosts);
-
-    void finishCardFlow(@Nullable PaymentMethod paymentMethod, Token token, Issuer issuer,
-        PayerCost payerCost);
+    void finishCardFlow();
 
     void finishCardStorageFlowWithSuccess();
 
@@ -114,6 +113,14 @@ public interface GuessingCardActivityView extends MvpView {
     void hideExclusionWithOneElementInfoView();
 
     void setInvalidCardOnePaymentMethodErrorView();
+
+    void setInvalidIdentificationNumberErrorView();
+
+    void setInvalidEmptyNameErrorView();
+
+    void setInvalidExpiryDateErrorView();
+
+    void setInvalidFieldErrorView();
 
     void setInvalidCardMultipleErrorView();
 

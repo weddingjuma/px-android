@@ -270,7 +270,8 @@ public final class Session extends ApplicationModule
                 new EscManagerImp(getMercadoPagoESC()),
                 getTokenRepository(),
                 getInstructionsRepository(),
-                getGroupsRepository());
+                getGroupsRepository(),
+                getPayerCostRepository());
         }
 
         return paymentRepository;

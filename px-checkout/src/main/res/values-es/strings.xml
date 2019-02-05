@@ -134,8 +134,6 @@
     <string name="px_error_message_invalid_item">Item inválido</string>
     <string name="px_error_message_expired_preference">Preferencia expirada</string>
     <string name="px_error_message_inactive_preference">Preferencia inactiva</string>
-    <string name="px_error_message_invalid_default_installments">Número de cuotas por defecto inválido</string>
-    <string name="px_error_message_invalid_max_installments">Número máximo de cuotas inválido</string>
     <string name="px_error_message_excluded_all_payment_type">Todos los tipos de pagos excluídos</string>
     <string name="px_error_message_invalid_installments">Número de cuotas inválido</string>
     <string name="px_error_title">¡Uy! Algo salió mal</string>

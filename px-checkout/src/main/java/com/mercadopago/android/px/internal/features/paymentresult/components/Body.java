@@ -90,16 +90,24 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
     }
 
     private boolean isRejectedWithBody() {
-        return (props.status.equals(Payment.StatusCodes.STATUS_REJECTED) &&
-            (props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_OTHER_REASON) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_REJECTED_REJECTED_BY_BANK) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_REJECTED_REJECTED_INSUFFICIENT_DATA) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_DUPLICATED_PAYMENT) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_MAX_ATTEMPTS) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_REJECTED_HIGH_RISK) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CARD_DISABLED) ||
-                props.statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_INSUFFICIENT_AMOUNT)));
+        boolean rightStatus = false;
+        switch (props.statusDetail) {
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_INSUFFICIENT_AMOUNT:
+        case Payment.StatusDetail.STATUS_DETAIL_REJECTED_BY_REGULATIONS:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CARD_DISABLED:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE:
+        case Payment.StatusDetail.STATUS_DETAIL_REJECTED_HIGH_RISK:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_MAX_ATTEMPTS:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_DUPLICATED_PAYMENT:
+        case Payment.StatusDetail.STATUS_DETAIL_REJECTED_REJECTED_INSUFFICIENT_DATA:
+        case Payment.StatusDetail.STATUS_DETAIL_REJECTED_REJECTED_BY_BANK:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_OTHER_REASON:
+            rightStatus = true;
+            break;
+        default:
+            break;
+        }
+        return Payment.StatusCodes.STATUS_REJECTED.equals(props.status) && rightStatus;
     }
 
     private boolean isStatusApproved() {
@@ -112,7 +120,7 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
             .setStatusDetail(props.statusDetail)
             .setPaymentMethodName(props.paymentData.getPaymentMethod().getName())
             .build();
-        return new BodyError(bodyErrorProps, getDispatcher(), paymentResultProvider);
+        return new BodyError(bodyErrorProps, getDispatcher());
     }
 
     public boolean hasReceipt() {

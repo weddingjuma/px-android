@@ -106,7 +106,6 @@
 
     <!-- Rejection -->
     <string name="px_text_pay_with_other_method">Alterar o meio de pagamento</string>
-    <string name="px_text_enter_again">Digite novamente</string>
     <string name="px_title_other_reason_rejection">%1$s não processou o pagamento</string>
     <string name="px_title_bad_filled_other">Ops! Não foi possível processar o seu pagamento</string>
     <string name="px_text_some_card_data_is_incorrect">Qualquer dado de seu %1$s é incorreto</string>
@@ -128,6 +127,7 @@
     <string name="px_error_description_max_attempts">Como você chegou no limite de tentativas com este cartão, use outro meio de pagamento.</string>
     <string name="px_error_description_high_risk">Use um meio de pagamento diferente de cartão.</string>
     <string name="px_error_secondary_title_call">Não conseguiu autorizá-lo?</string>
+    <string name="px_error_description_rejected_by_regulations">Você possui dados pendentes para atualizar. Para pagar com dinheiro em conta, você deve preencher os dados faltantes.</string>
     <string name="px_text_card_enabled">Eu já habilitei meu cartão</string>
 
     <!-- Error messages -->

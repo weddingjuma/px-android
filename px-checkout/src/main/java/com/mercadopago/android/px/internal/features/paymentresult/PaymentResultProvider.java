@@ -1,8 +1,6 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
 import com.mercadopago.android.px.internal.base.ResourcesProvider;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
-import com.mercadopago.android.px.model.Instructions;
 
 public interface PaymentResultProvider extends ResourcesProvider {
 
@@ -44,43 +42,7 @@ public interface PaymentResultProvider extends ResourcesProvider {
 
     String getContinueShopping();
 
-    String getExitButtonDefaultText();
-
     String getChangePaymentMethodLabel();
 
-    String getRecoverPayment();
-
     String getCardEnabled();
-
-    String getErrorTitle();
-
-    String getPendingContingencyBodyErrorDescription();
-
-    String getPendingReviewManualBodyErrorDescription();
-
-    String getRejectedCallForAuthBodyErrorDescription();
-
-    String getRejectedCardDisabledBodyErrorDescription(String paymentMethodName);
-
-    String getRejectedInsufficientAmountBodyErrorDescription();
-
-    String getRejectedInsufficientAmountBodyErrorSecondDescription();
-
-    String getRejectedOtherReasonBodyErrorDescription();
-
-    String getRejectedByBankBodyErrorDescription();
-
-    String getRejectedInsufficientDataBodyErrorDescription();
-
-    String getRejectedDuplicatedPaymentBodyErrorDescription();
-
-    String getRejectedMaxAttemptsBodyErrorDescription();
-
-    String getRejectedHighRiskBodyErrorDescription();
-
-    String getRejectedCallForAuthBodyActionText(final String paymentMethodName);
-
-    String getRejectedCallForAuthBodySecondaryTitle();
-
-    String getReceiptDescription(final Long receiptId);
 }

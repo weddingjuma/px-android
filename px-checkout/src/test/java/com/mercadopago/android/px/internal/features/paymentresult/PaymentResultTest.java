@@ -416,26 +416,6 @@ public class PaymentResultTest {
         public String getRejectionLabel() {
             return null;
         }
-
-        @Override
-        public String getCancelPayment() {
-            return null;
-        }
-
-        @Override
-        public String getContinueShopping() {
-            return null;
-        }
-
-        @Override
-        public String getChangePaymentMethodLabel() {
-            return null;
-        }
-
-        @Override
-        public String getCardEnabled() {
-            return null;
-        }
     }
 
     private class MockedNavigator implements PaymentResultNavigator {

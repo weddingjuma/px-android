@@ -38,11 +38,4 @@ public interface PaymentResultProvider extends ResourcesProvider {
 
     String getRejectionLabel();
 
-    String getCancelPayment();
-
-    String getContinueShopping();
-
-    String getChangePaymentMethodLabel();
-
-    String getCardEnabled();
 }

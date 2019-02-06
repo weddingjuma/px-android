@@ -95,24 +95,4 @@ public class PaymentResultProviderImpl implements PaymentResultProvider {
     public String getRejectionLabel() {
         return context.getString(R.string.px_rejection_label);
     }
-
-    @Override
-    public String getCancelPayment() {
-        return context.getString(R.string.px_cancel_payment);
-    }
-
-    @Override
-    public String getContinueShopping() {
-        return context.getString(R.string.px_continue_shopping);
-    }
-
-    @Override
-    public String getChangePaymentMethodLabel() {
-        return context.getString(R.string.px_text_pay_with_other_method);
-    }
-
-    @Override
-    public String getCardEnabled() {
-        return context.getString(R.string.px_text_card_enabled);
-    }
 }

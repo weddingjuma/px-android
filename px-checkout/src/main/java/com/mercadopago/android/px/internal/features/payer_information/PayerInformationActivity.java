@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.payer_information;
 
 import android.app.Activity;
 import android.content.Context;
@@ -20,7 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.IdentificationTypesAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -29,46 +28,29 @@ import com.mercadopago.android.px.internal.callbacks.card.TicketIdentificationNu
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.card.TicketIdentificationNameTextWatcher;
 import com.mercadopago.android.px.internal.features.card.TicketIdentificationNumberTextWatcher;
-import com.mercadopago.android.px.internal.features.providers.PayerInformationProviderImpl;
 import com.mercadopago.android.px.internal.features.uicontrollers.identification.IdentificationTicketView;
+import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.mercadopago.android.px.internal.view.MPTextView;
-import com.mercadopago.android.px.model.Identification;
+import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.views.CPFViewTracker;
-import com.mercadopago.android.px.tracking.internal.views.LastNameViewTracker;
-import com.mercadopago.android.px.tracking.internal.views.NameViewTracker;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
-public class PayerInformationActivity extends PXActivity implements PayerInformationView {
-
-    public static final String IDENTIFICATION_NUMBER_BUNDLE = "mIdentificationNumber";
-    public static final String IDENTIFICATION_NAME_BUNDLE = "mIdentificationName";
-    public static final String IDENTIFICATION_LAST_NAME_BUNDLE = "mIdentificationLastName";
-    public static final String IDENTIFICATION_BUNDLE = "mIdentification";
-    public static final String IDENTIFICATION_TYPE_BUNDLE = "mIdentificationType";
-    public static final String IDENTIFICATION_TYPES_LIST_BUNDLE = "mIdentificationTypesList";
+public class PayerInformationActivity extends PXActivity<PayerInformationPresenter> implements PayerInformation.View {
 
     public static final String IDENTIFICATION_NUMBER_INPUT = "identificationNumber";
     public static final String IDENTIFICATION_NAME_INPUT = "identificationName";
     public static final String IDENTIFICATION_LAST_NAME_INPUT = "identificationLastName";
-    public static final String IDENTIFICATION_BUSINESS_NAME_INPUT = "identificationBusinessName";
-
-    public static final String IDENTIFICATION_TYPE_CNPJ = "CNPJ";
 
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
 
     // Local vars
-    protected PayerInformationPresenter mPresenter;
     private boolean mActivityActive;
 
     //View controls
@@ -76,7 +58,6 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     private ViewGroup mProgressLayout;
 
     //Input controls
-    /* default */ String mCurrentEditingEditText;
     private String mErrorState;
     private LinearLayout mInputContainer;
     private LinearLayout mIdentificationNumberInput;
@@ -110,58 +91,27 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivityActive = true;
-
-        createPresenter();
         analyzeLowRes();
-        configurePresenter();
         setContentView();
         initializeControls();
         initializeToolbar();
+        final Session session = Session.getSession(this);
+        presenter =
+            new PayerInformationPresenter(PayerInformationStateModel.fromBundle(savedInstanceState),
+                session.getConfigurationModule().getPaymentSettings(),
+                session.getIdentificationRepository());
+        presenter.attachView(this);
+        mErrorState = NORMAL_STATE;
         setListeners();
-        initialize();
     }
 
     @Override
     protected void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(IDENTIFICATION_NUMBER_BUNDLE, mPresenter.getIdentificationNumber());
-        outState.putString(IDENTIFICATION_NAME_BUNDLE, mPresenter.getIdentificationName());
-        outState.putString(IDENTIFICATION_LAST_NAME_BUNDLE, mPresenter.getIdentificationLastName());
-        outState.putString(IDENTIFICATION_BUNDLE, JsonUtil.getInstance().toJson(mPresenter.getIdentification()));
-        outState
-            .putString(IDENTIFICATION_TYPE_BUNDLE, JsonUtil.getInstance().toJson(mPresenter.getIdentificationType()));
-        outState.putString(IDENTIFICATION_TYPES_LIST_BUNDLE,
-            JsonUtil.getInstance().toJson(mPresenter.getIdentificationTypes()));
-    }
 
-    @Override
-    protected void onRestoreInstanceState(final Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            final String identificationNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
-            final String identificationName = savedInstanceState.getString(IDENTIFICATION_NAME_BUNDLE);
-            final String identificationLastName = savedInstanceState.getString(IDENTIFICATION_LAST_NAME_BUNDLE);
-            final Identification identification = JsonUtil.getInstance()
-                .fromJson(savedInstanceState.getString(IDENTIFICATION_BUNDLE), Identification.class);
-            final IdentificationType identificationType = JsonUtil.getInstance()
-                .fromJson(savedInstanceState.getString(IDENTIFICATION_TYPE_BUNDLE), IdentificationType.class);
-            List<IdentificationType> identificationTypesList;
-            try {
-                Type listType = new TypeToken<List<IdentificationType>>() {
-                }.getType();
-                identificationTypesList = JsonUtil.getInstance().getGson().fromJson(
-                    savedInstanceState.getString(IDENTIFICATION_TYPES_LIST_BUNDLE), listType);
-            } catch (Exception ex) {
-                identificationTypesList = new ArrayList<>();
-            }
-
-            mPresenter.setIdentificationNumber(identificationNumber);
-            mPresenter.setIdentificationName(identificationName);
-            mPresenter.setIdentificationLastName(identificationLastName);
-            mPresenter.setIdentification(identification);
-            mPresenter.setIdentificationType(identificationType);
-            mPresenter.setIdentificationTypesList(identificationTypesList);
+        if (presenter != null) {
+            final PayerInformationStateModel state = presenter.getState();
+            state.toBundle(outState);
         }
     }
 
@@ -184,8 +134,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    setResult(RESULT_CANCELED, new Intent());
-                    finish();
+                    onBackPressed();
                 }
             });
         }
@@ -193,18 +142,6 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
 
     private void analyzeLowRes() {
         mLowResActive = ScaleUtil.isLowRes(this);
-    }
-
-    private void createPresenter() {
-        final Session session = Session.getSession(this);
-        mPresenter =
-            new PayerInformationPresenter(session.getConfigurationModule().getPaymentSettings(),
-                session.getIdentificationRepository());
-    }
-
-    private void configurePresenter() {
-        mPresenter.attachView(this);
-        mPresenter.attachResourcesProvider(new PayerInformationProviderImpl(this));
     }
 
     private void setContentView() {
@@ -266,8 +203,9 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     }
 
     @Override
-    public void initializeIdentificationTypes(final List<IdentificationType> identificationTypes) {
-        mIdentificationTicketView.setIdentificationType(identificationTypes.get(0));
+    public void initializeIdentificationTypes(final List<IdentificationType> identificationTypes,
+        final IdentificationType current) {
+        mIdentificationTicketView.setIdentificationType(current);
         mIdentificationTicketView.drawIdentificationTypeName();
         mIdentificationTypeSpinner.setAdapter(new IdentificationTypesAdapter(identificationTypes));
         mIdentificationTypeContainer.setVisibility(View.VISIBLE);
@@ -287,6 +225,48 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
         mProgressLayout.setVisibility(View.GONE);
     }
 
+    @Override
+    public void showMissingIdentificationTypesError() {
+        showError(
+            MercadoPagoError.createNotRecoverable(getString(R.string.px_error_message_missing_identification_types)),
+            ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES);
+    }
+
+    @Override
+    public void setInvalidIdentificationNumberErrorView() {
+        setErrorView(getString(R.string.px_invalid_identification_number));
+    }
+
+    @Override
+    public void setInvalidIdentificationNameErrorView() {
+        setErrorView(getString(R.string.px_invalid_identification_name));
+    }
+
+    @Override
+    public void setInvalidIdentificationLastNameErrorView() {
+        setErrorView(getString(R.string.px_invalid_identification_last_name));
+    }
+
+    @Override
+    public void setName(final String identificationName) {
+        mIdentificationTicketView.setIdentificationName(identificationName);
+    }
+
+    @Override
+    public void setLastName(final String identificationLastName) {
+        mIdentificationTicketView.setIdentificationLastName(identificationLastName);
+    }
+
+    @Override
+    public void setNumber(final String identificationNumber) {
+        mIdentificationTicketView.setIdentificationNumber(identificationNumber);
+    }
+
+    @Override
+    public void identificationDraw() {
+        mIdentificationTicketView.draw();
+    }
+
     private void setListeners() {
         setIdentificationTypeListeners();
         setIdentificationNumberEditTextListeners();
@@ -297,6 +277,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     }
 
     private void setIdentificationNumberEditTextListeners() {
+
         mIdentificationNumberEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
@@ -323,7 +304,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
 
                 @Override
                 public void saveIdentificationNumber(final CharSequence string) {
-                    mPresenter.saveIdentificationNumber(string.toString());
+                    presenter.saveIdentificationNumber(string.toString());
 
                     mIdentificationTicketView.setIdentificationNumber(string.toString());
 
@@ -377,7 +358,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
 
                 @Override
                 public void saveIdentificationName(CharSequence string) {
-                    mPresenter.saveIdentificationName(string.toString());
+                    presenter.saveIdentificationName(string.toString());
 
                     mIdentificationTicketView.setIdentificationName(string.toString());
                     mIdentificationTicketView.draw();
@@ -422,7 +403,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
 
                 @Override
                 public void saveIdentificationName(CharSequence string) {
-                    mPresenter.saveIdentificationLastName(string.toString());
+                    presenter.saveIdentificationLastName(string.toString());
 
                     mIdentificationTicketView.setIdentificationLastName(string.toString());
                     mIdentificationTicketView.draw();
@@ -450,7 +431,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
                 mIdentificationTicketView.setIdentificationType(identificationType);
                 mIdentificationTicketView.drawIdentificationTypeName();
 
-                mPresenter.saveIdentificationType(identificationType);
+                presenter.saveIdentificationType(identificationType);
             }
 
             @Override
@@ -479,9 +460,11 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     public void setBackButtonListeners() {
         mBackButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                if (mCurrentEditingEditText.equals(IDENTIFICATION_NUMBER_INPUT)) {
-                    onBackPressed();
+            public void onClick(final View v) {
+                presenter.trackBack();
+                final String currentFocusType = presenter.getState().getCurrentFocusType();
+                if (IDENTIFICATION_NUMBER_INPUT.equals(currentFocusType)) {
+                    onBackButtonPressed();
                 } else {
                     checkIsEmptyOrValid();
                 }
@@ -489,42 +472,38 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
         });
     }
 
-    @Override
-    public void onBackPressed() {
+    private void onBackButtonPressed() {
         setResult(RESULT_CANCELED);
         finish();
     }
 
-    private void initialize() {
-        mErrorState = NORMAL_STATE;
-        mPresenter.initialize();
-    }
-
     @Override
-    public void showInputContainer() {
-        requestIdentificationNumberFocus();
+    public void onBackPressed() {
+        presenter.trackAbort();
+        setResult(RESULT_CANCELED, new Intent());
+        finish();
     }
 
     @Override
     public void setIdentificationNumberRestrictions(String type) {
-        setInputMaxLength(mIdentificationNumberEditText, mPresenter.getIdentificationNumberMaxLength());
+        setInputMaxLength(mIdentificationNumberEditText, presenter.getIdentificationNumberMaxLength());
         if ("number".equals(type)) {
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         } else {
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            mPresenter.validateIdentificationNumber();
+            presenter.validateIdentificationNumber();
         }
     }
 
-    private void setInputMaxLength(MPEditText text, int maxLength) {
-        InputFilter[] fArray = new InputFilter[1];
+    private void setInputMaxLength(final MPEditText text, final int maxLength) {
+        final InputFilter[] fArray = new InputFilter[1];
         fArray[0] = new InputFilter.LengthFilter(maxLength);
         text.setFilters(fArray);
     }
 
-    /* default */ boolean onNextKey(int actionId, KeyEvent event) {
+    /* default */ boolean onNextKey(final int actionId, final KeyEvent event) {
         if (isNextKey(actionId, event)) {
             validateCurrentEditText();
             return true;
@@ -532,14 +511,14 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
         return false;
     }
 
-    private boolean isNextKey(int actionId, KeyEvent event) {
+    private boolean isNextKey(final int actionId, final KeyEvent event) {
         return actionId == EditorInfo.IME_ACTION_NEXT ||
             (event != null && event.getAction() == KeyEvent.ACTION_DOWN &&
                 event.getKeyCode() == KeyEvent.KEYCODE_ENTER);
     }
 
-    private void onTouchEditText(MPEditText editText, MotionEvent event) {
-        int action = MotionEventCompat.getActionMasked(event);
+    private void onTouchEditText(final MPEditText editText, final MotionEvent event) {
+        final int action = MotionEventCompat.getActionMasked(event);
         if (action == MotionEvent.ACTION_DOWN) {
             openKeyboard(editText);
         }
@@ -553,7 +532,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     }
 
     private void fullScrollDown() {
-        Runnable r = new Runnable() {
+        final Runnable r = new Runnable() {
             @Override
             public void run() {
                 mScrollView.fullScroll(View.FOCUS_DOWN);
@@ -564,23 +543,17 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     }
 
     private boolean validateCurrentEditText() {
-        switch (mCurrentEditingEditText) {
+        switch (presenter.getState().getCurrentFocusType()) {
         case IDENTIFICATION_NUMBER_INPUT:
-            if (mPresenter.validateIdentificationNumber()) {
+            if (presenter.validateIdentificationNumber()) {
                 mIdentificationNumberInput.setVisibility(View.GONE);
-
                 mIdentificationTicketView.setNormalColorNameText();
-
-                if (mPresenter.getIdentificationType().getId().equals(IDENTIFICATION_TYPE_CNPJ)) {
-                    requestIdentificationBusinessNameFocus();
-                } else {
-                    requestIdentificationNameFocus();
-                }
+                requestIdentificationNameFocus();
                 return true;
             }
             return false;
         case IDENTIFICATION_NAME_INPUT:
-            if (mPresenter.validateName()) {
+            if (presenter.validateName()) {
                 mIdentificationNameInput.setVisibility(View.GONE);
                 mIdentificationTicketView.setNormalColorLastNameText();
                 requestIdentificationLastNameFocus();
@@ -588,15 +561,8 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
             }
             return false;
         case IDENTIFICATION_LAST_NAME_INPUT:
-            if (mPresenter.validateLastName()) {
+            if (presenter.validateLastName()) {
                 mIdentificationLastNameInput.setVisibility(View.GONE);
-                showFinishCardFlow();
-                return true;
-            }
-            return false;
-        case IDENTIFICATION_BUSINESS_NAME_INPUT:
-            if (mPresenter.validateBusinessName()) {
-                mIdentificationNameInput.setVisibility(View.GONE);
                 showFinishCardFlow();
                 return true;
             }
@@ -609,14 +575,14 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
     private void showFinishCardFlow() {
         ViewUtils.hideKeyboard(this);
         showProgressBar();
-        mPresenter.createPayer();
+        presenter.createPayer();
         finishWithPayer();
     }
 
     /* default */ boolean checkIsEmptyOrValid() {
-        switch (mCurrentEditingEditText) {
+        switch (presenter.getState().getCurrentFocusType()) {
         case IDENTIFICATION_NAME_INPUT:
-            if (mPresenter.checkIsEmptyOrValidName()) {
+            if (presenter.checkIsEmptyOrValidName()) {
                 mIdentificationNumberInput.setVisibility(View.VISIBLE);
                 mIdentificationTicketView.setAlphaColorNameText();
                 mIdentificationTicketView.setAlphaColorLastNameText();
@@ -625,7 +591,7 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
             }
             return false;
         case IDENTIFICATION_LAST_NAME_INPUT:
-            if (mPresenter.checkIsEmptyOrValidLastName()) {
+            if (presenter.checkIsEmptyOrValidLastName()) {
                 mIdentificationNameInput.setVisibility(View.VISIBLE);
                 requestIdentificationNameFocus();
                 return true;
@@ -636,27 +602,23 @@ public class PayerInformationActivity extends PXActivity implements PayerInforma
         }
     }
 
-    private void requestIdentificationNumberFocus() {
-        new CPFViewTracker().track();
-        mCurrentEditingEditText = IDENTIFICATION_NUMBER_INPUT;
+    @Override
+    public void requestIdentificationNumberFocus() {
+        presenter.trackIdentificationNumberView();
+        presenter.focus(IDENTIFICATION_NUMBER_INPUT);
         openKeyboard(mIdentificationNumberEditText);
     }
 
     private void requestIdentificationNameFocus() {
-        new NameViewTracker().track();
-        mCurrentEditingEditText = IDENTIFICATION_NAME_INPUT;
+        presenter.trackIdentificationNameView();
+        presenter.focus(IDENTIFICATION_NAME_INPUT);
         openKeyboard(mIdentificationNameEditText);
     }
 
     private void requestIdentificationLastNameFocus() {
-        new LastNameViewTracker().track();
-        mCurrentEditingEditText = IDENTIFICATION_LAST_NAME_INPUT;
+        presenter.trackIdentificationLastNameView();
+        presenter.focus(IDENTIFICATION_LAST_NAME_INPUT);
         openKeyboard(mIdentificationLastNameEditText);
-    }
-
-    private void requestIdentificationBusinessNameFocus() {
-        mCurrentEditingEditText = IDENTIFICATION_BUSINESS_NAME_INPUT;
-        openKeyboard(mIdentificationNameEditText);
     }
 
     @Override

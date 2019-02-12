@@ -1,5 +1,7 @@
 ## VERSION 4.6.2
-_11_02_2019_
+_12_02_2019_
+* FIX - Added credit card date validation.  
+* ENHANCEMENT - Added tracks. 
 * ENHANCEMENT - Added discount terms and conditions.
 * FIX - Rollback public method.
 * FIX - Connectivity manager.

@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.express;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -397,6 +398,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         }
     }
 
+    @SuppressLint("Range")
     @Override
     public void showErrorSnackBar(@NonNull final MercadoPagoError error) {
         if (getView() != null && getActivity() != null) {

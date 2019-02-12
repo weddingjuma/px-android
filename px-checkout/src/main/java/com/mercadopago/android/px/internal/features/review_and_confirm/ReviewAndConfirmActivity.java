@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.review_and_confirm;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
@@ -600,6 +601,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         confirmButton.setVisibility(View.VISIBLE);
     }
 
+    @SuppressLint("Range")
     @Override
     public void showErrorSnackBar(@NonNull final MercadoPagoError error) {
         MeliSnackbar.make(floatingConfirmLayout, error.getMessage(), Snackbar.LENGTH_LONG,

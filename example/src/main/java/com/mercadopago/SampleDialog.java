@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.plugins;
+package com.mercadopago;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

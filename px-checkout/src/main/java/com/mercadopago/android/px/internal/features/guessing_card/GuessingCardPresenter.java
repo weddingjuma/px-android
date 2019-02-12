@@ -353,8 +353,8 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardAc
     public boolean validateExpiryDate() {
         final String monthString = getExpiryMonth();
         final String yearString = getExpiryYear();
-        final Integer month = (monthString == null || monthString.isEmpty()) ? null : Integer.valueOf(monthString);
-        final Integer year = (yearString == null || yearString.isEmpty()) ? null : Integer.valueOf(yearString);
+        final Integer month = TextUtil.isDigitsOnly(monthString) ? Integer.valueOf(monthString) : null;
+        final Integer year = TextUtil.isDigitsOnly(yearString) ? Integer.valueOf(yearString) : null;
         cardToken.setExpirationMonth(month);
         cardToken.setExpirationYear(year);
         if (cardToken.validateExpiryDate()) {

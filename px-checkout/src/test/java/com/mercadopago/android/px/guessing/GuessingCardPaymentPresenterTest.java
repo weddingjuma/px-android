@@ -441,13 +441,33 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveCardNumber(card.getCardNumber());
         presenter.setPaymentMethod(mockedPaymentMethod);
         presenter.saveCardholderName(CardTestUtils.DUMMY_CARDHOLDER_NAME);
-        presenter.saveExpiryMonth(CardTestUtils.DUMMY_EXPIRY_MONTH);
-        presenter.saveExpiryYear(CardTestUtils.DUMMY_EXPIRY_YEAR_SHORT);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.VALID_EXPIRY_YEAR_SHORT);
 
         assertTrue(presenter.validateExpiryDate());
-        assertEquals(presenter.getCardToken().getExpirationMonth(), Integer.valueOf(CardTestUtils.DUMMY_EXPIRY_MONTH));
+        assertEquals(presenter.getCardToken().getExpirationMonth(), Integer.valueOf(CardTestUtils.VALID_EXPIRY_MONTH));
         assertEquals(presenter.getCardToken().getExpirationYear(),
-            Integer.valueOf(CardTestUtils.DUMMY_EXPIRY_YEAR_LONG));
+            Integer.valueOf(CardTestUtils.VALID_EXPIRY_YEAR_LONG));
+    }
+
+    @Test
+    public void whenInvalidCardExpiryDateSetThenValidate() {
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+        presenter.initialize();
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.INVALID_EXPIRY_YEAR_SHORT);
+        assertFalse(presenter.validateExpiryDate());
+    }
+
+    @Test
+    public void whenInvalidCharacterCardExpiryDateSetThenValidate() {
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+        presenter.initialize();
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.INVALID_CHARACTER_EXPIRY_YEAR);
+        assertFalse(presenter.validateExpiryDate());
     }
 
     @Test
@@ -464,8 +484,8 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveCardNumber(card.getCardNumber());
         presenter.setPaymentMethod(mockedPaymentMethod);
         presenter.saveCardholderName(CardTestUtils.DUMMY_CARDHOLDER_NAME);
-        presenter.saveExpiryMonth(CardTestUtils.DUMMY_EXPIRY_MONTH);
-        presenter.saveExpiryYear(CardTestUtils.DUMMY_EXPIRY_YEAR_SHORT);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.VALID_EXPIRY_YEAR_SHORT);
         presenter.saveSecurityCode(card.getSecurityCode());
         final boolean validCardNumber = presenter.validateCardNumber();
         final boolean validSecurityCode = presenter.validateSecurityCode();
@@ -489,8 +509,8 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveCardNumber(card.getCardNumber());
         presenter.setPaymentMethod(mockedPaymentMethod);
         presenter.saveCardholderName(CardTestUtils.DUMMY_CARDHOLDER_NAME);
-        presenter.saveExpiryMonth(CardTestUtils.DUMMY_EXPIRY_MONTH);
-        presenter.saveExpiryYear(CardTestUtils.DUMMY_EXPIRY_YEAR_SHORT);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.VALID_EXPIRY_YEAR_SHORT);
         presenter.saveSecurityCode(card.getSecurityCode());
         presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());
@@ -519,8 +539,8 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveCardNumber(card.getCardNumber());
         presenter.setPaymentMethod(mockedPaymentMethod);
         presenter.saveCardholderName(CardTestUtils.DUMMY_CARDHOLDER_NAME);
-        presenter.saveExpiryMonth(CardTestUtils.DUMMY_EXPIRY_MONTH);
-        presenter.saveExpiryYear(CardTestUtils.DUMMY_EXPIRY_YEAR_SHORT);
+        presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
+        presenter.saveExpiryYear(CardTestUtils.VALID_EXPIRY_YEAR_SHORT);
         presenter.saveSecurityCode(card.getSecurityCode());
         presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());

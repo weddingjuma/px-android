@@ -3,7 +3,7 @@ package com.mercadopago.android.px.utils;
 import android.support.v4.util.Pair;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
-import com.mercadopago.android.px.internal.features.plugins.SamplePaymentProcessor;
+import com.mercadopago.SamplePaymentProcessor;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.commission.ChargeRule;

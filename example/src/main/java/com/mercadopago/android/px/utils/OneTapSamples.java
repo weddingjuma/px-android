@@ -7,7 +7,7 @@ import com.mercadopago.android.px.configuration.DiscountConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.PaymentProcessor;
-import com.mercadopago.android.px.internal.features.plugins.SamplePaymentProcessorNoView;
+import com.mercadopago.SamplePaymentProcessorNoView;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.Payment;
@@ -107,7 +107,7 @@ public final class OneTapSamples {
         final CheckoutPreference checkoutPreferenceWithPayerEmail =
             getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, checkoutPreferenceWithPayerEmail,
-            PaymentConfigurationUtils.createWithPlugin(samplePaymentProcessor))
+            PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setEscEnabled(true).build())
             .setPrivateKey(ONE_TAP_PAYER_2_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -119,9 +119,9 @@ public final class OneTapSamples {
         final GenericPayment payment = getGenericPaymentApprovedAccountMoney();
 
         final CheckoutPreference preference =
-            getCheckoutPreferenceWithPayerEmail(new ArrayList<String>(), 120);
+            getCheckoutPreferenceWithPayerEmail(new ArrayList<>(), 120);
         final PaymentConfiguration paymentConfiguration =
-            PaymentConfigurationUtils.createWithPlugin(new SamplePaymentProcessorNoView(payment));
+            PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
 
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
             .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
@@ -136,7 +136,7 @@ public final class OneTapSamples {
         final CheckoutPreference preference = getCheckoutPreferenceWithPayerEmail(120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference,
             PaymentConfigurationUtils
-                .createWithPlugin(samplePaymentProcessor))
+                .create(samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_2_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }
@@ -151,7 +151,7 @@ public final class OneTapSamples {
         final CheckoutPreference checkoutPreferenceWithPayerEmail =
             getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, checkoutPreferenceWithPayerEmail,
-            PaymentConfigurationUtils.createWithPlugin(samplePaymentProcessor))
+            PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_2_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }
@@ -167,7 +167,7 @@ public final class OneTapSamples {
         final CheckoutPreference checkoutPreferenceWithPayerEmail =
             getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, checkoutPreferenceWithPayerEmail,
-            PaymentConfigurationUtils.createWithPlugin(samplePaymentProcessor))
+            PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setEscEnabled(true).build())
             .setPrivateKey(ONE_TAP_PAYER_2_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -178,7 +178,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_3_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -189,7 +189,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_4_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -200,7 +200,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_5_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -213,7 +213,7 @@ public final class OneTapSamples {
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY,
             getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_6_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -226,7 +226,7 @@ public final class OneTapSamples {
         excludedPaymentTypes.add("credit_card");
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY,
             getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120), PaymentConfigurationUtils
-            .createWithPlugin(
+            .create(
                 samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_6_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -237,7 +237,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_7_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -249,7 +249,7 @@ public final class OneTapSamples {
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY,
             getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_8_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -260,7 +260,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(800),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_8_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -273,7 +273,7 @@ public final class OneTapSamples {
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY,
             getCheckoutPreferenceWithPayerEmail(120),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_9_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -286,7 +286,7 @@ public final class OneTapSamples {
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY,
             getCheckoutPreferenceWithPayerEmail(500),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_9_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -297,7 +297,7 @@ public final class OneTapSamples {
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(701),
             PaymentConfigurationUtils
-                .createWithPlugin(
+                .create(
                     samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_9_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
@@ -367,7 +367,7 @@ public final class OneTapSamples {
         final CheckoutPreference checkoutPreferenceWithPayerEmail =
             getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120, 1);
         return new MercadoPagoCheckout.Builder(SAVED_CARD_MERCHANT_PUBLIC_KEY_1, checkoutPreferenceWithPayerEmail,
-            PaymentConfigurationUtils.createWithPlugin(samplePaymentProcessor))
+            PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setPrivateKey(SAVED_CARD_PAYER_PRIVATE_KEY_1)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }

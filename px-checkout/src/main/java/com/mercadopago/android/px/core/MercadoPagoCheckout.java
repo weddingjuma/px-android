@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.tracking.internal.events.InitEvent;
 
 /**
  * Main class of this project. It provides access to most of the checkout experience.
@@ -80,6 +81,8 @@ public class MercadoPagoCheckout {
         if (!prefetch) {
             Session.getSession(context).init(this);
         }
+
+        new InitEvent(Session.getSession(context).getConfigurationModule().getPaymentSettings()).track();
 
         if (context instanceof Activity) {
             ((Activity) context).startActivityForResult(checkoutIntent, requestCode);

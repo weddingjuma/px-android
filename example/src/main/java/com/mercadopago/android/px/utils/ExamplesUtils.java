@@ -19,7 +19,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.core.DynamicFragmentCreator;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.MercadoPagoCheckout.Builder;
-import com.mercadopago.android.px.internal.features.plugins.SampleDialog;
+import com.mercadopago.SampleDialog;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.Payment;

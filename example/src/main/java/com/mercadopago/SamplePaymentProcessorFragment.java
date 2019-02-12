@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.plugins;
+package com.mercadopago;
 
 import android.content.Context;
 import android.os.Bundle;

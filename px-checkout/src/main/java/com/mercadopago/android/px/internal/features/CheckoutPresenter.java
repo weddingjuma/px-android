@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
@@ -183,10 +184,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
-    private void showReviewAndConfirm() {
-        getView().showReviewAndConfirm(isUniquePaymentMethod());
-    }
-
     public boolean isESCEnabled() {
         return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
     }
@@ -239,13 +236,17 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         return identificationInvalid;
     }
 
-    public void onPaymentMethodSelectionResponse() {
-        onPaymentMethodSelected();
-    }
+    /* default */ void onPaymentMethodSelected() {
 
-    private void onPaymentMethodSelected() {
-        if (!showHook2(paymentRepository.getPaymentData())) {
-            hook2Continue();
+        final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
+        final PaymentProcessor.CheckoutData checkoutData =
+            new PaymentProcessor.CheckoutData(paymentRepository.getPaymentData(), checkoutPreference);
+
+        if (paymentSettingRepository.getPaymentConfiguration().getPaymentProcessor()
+            .shouldSkipUserConfirmation(checkoutData)) {
+            getView().showPaymentProcessor();
+        } else {
+            getView().showReviewAndConfirm(isUniquePaymentMethod());
         }
     }
 
@@ -414,10 +415,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
             return true;
         }
         return false;
-    }
-
-    public void hook2Continue() {
-        showReviewAndConfirm();
     }
 
     private void finishCheckout() {

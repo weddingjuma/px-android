@@ -6,6 +6,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import com.mercadolibre.android.ui.font.Font;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.PayerCost;
 
@@ -36,7 +37,9 @@ public class CFTFormatter extends ChainFormatter {
 
     @Override
     protected Spannable apply(@NonNull final CharSequence amount) {
-
+        if (TextUtil.isEmpty(amount)) {
+            return spannableStringBuilder;
+        }
         final int initialIndex = spannableStringBuilder.length();
         final String cftDescription = context.getString(R.string.px_installments_cft, amount);
         final String separator = " ";

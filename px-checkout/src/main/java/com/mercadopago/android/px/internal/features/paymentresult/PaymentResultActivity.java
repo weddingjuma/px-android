@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -285,6 +286,7 @@ public class PaymentResultActivity extends AppCompatActivity implements PaymentR
         finish();
     }
 
+    @SuppressLint("Range")
     @Override
     public void copyToClipboard(@NonNull final String content) {
         final ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);

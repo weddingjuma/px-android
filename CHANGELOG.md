@@ -1,3 +1,12 @@
+## VERSION 4.6.2
+_12_02_2019_
+* FIX - Added credit card date validation.  
+* ENHANCEMENT - Added tracks. 
+* ENHANCEMENT - Added discount terms and conditions.
+* FIX - Rollback public method.
+* FIX - Connectivity manager.
+* FIX - Activity new flag support - Android 9.
+
 ## VERSION 4.6.1
 _04_02_2019_
 * FIX - Added correct discount id in PaymentData.

@@ -13,7 +13,6 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.CountyInstallmentsUtils;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.model.AmountConfiguration;
@@ -67,8 +66,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     }
 
     private void showSiteRelatedInformation() {
-        if (CountyInstallmentsUtils
-            .shouldWarnAboutBankInterests(configuration.getCheckoutPreference().getSite().getId())) {
+        if (configuration.getCheckoutPreference().getSite().shouldWarnAboutBankInterests()) {
             getView().warnAboutBankInterests();
         }
     }
@@ -110,12 +108,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
                 if (isViewAttached()) {
                     getView().hideLoadingView();
                     getView().showApiErrorScreen(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
-                    setFailureRecovery(new FailureRecovery() {
-                        @Override
-                        public void recover() {
-                            resolvePayerCostsForGuessedCard();
-                        }
-                    });
+                    setFailureRecovery(() -> resolvePayerCostsForGuessedCard());
                 }
             }
         });

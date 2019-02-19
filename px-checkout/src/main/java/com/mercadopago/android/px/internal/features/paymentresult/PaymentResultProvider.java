@@ -4,8 +4,6 @@ import com.mercadopago.android.px.internal.base.ResourcesProvider;
 
 public interface PaymentResultProvider extends ResourcesProvider {
 
-    String getStandardErrorMessage();
-
     String getApprovedTitle();
 
     String getPendingTitle();

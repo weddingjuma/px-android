@@ -43,7 +43,8 @@ public class Footer extends CompactComponent<Footer.Props, ActionDispatcher> {
 
         if (props.buttonAction != null) {
             final ButtonPrimary buttonPrimary =
-                new ButtonPrimary(new Button.Props(props.buttonAction.label, props.buttonAction.action), this::dispatch);
+                new ButtonPrimary(new Button.Props(props.buttonAction.label, props.buttonAction.action),
+                    this::dispatch);
             final View buttonView = buttonPrimary.render(linearContainer);
             ViewUtils.setMarginInView(buttonView, padding, padding, padding, 0);
             linearContainer.addView(buttonView);

@@ -7,7 +7,6 @@ import com.mercadopago.android.px.model.Payment;
 public final class PaymentResultDecorator {
 
     private PaymentResultDecorator() {
-
     }
 
     public static boolean isSuccessBackground(@NonNull final IPayment payment) {

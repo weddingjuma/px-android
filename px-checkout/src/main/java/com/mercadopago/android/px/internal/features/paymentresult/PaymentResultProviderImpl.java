@@ -12,11 +12,6 @@ public class PaymentResultProviderImpl implements PaymentResultProvider {
     }
 
     @Override
-    public String getStandardErrorMessage() {
-        return context.getString(R.string.px_standard_error_message);
-    }
-
-    @Override
     public String getApprovedTitle() {
         return context.getString(R.string.px_title_approved_payment);
     }

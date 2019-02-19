@@ -85,8 +85,8 @@ public class InstructionsService implements InstructionsRepository {
     /* default */
     @NonNull
     List<Instruction> resolveInstruction(final Instructions instructions) {
-        return instructions == null ? new ArrayList<Instruction>()
-            : (instructions.getInstructions() == null ? new ArrayList<Instruction>()
+        return instructions == null ? new ArrayList<>()
+            : (instructions.getInstructions() == null ? new ArrayList<>()
                 : instructions.getInstructions());
     }
 

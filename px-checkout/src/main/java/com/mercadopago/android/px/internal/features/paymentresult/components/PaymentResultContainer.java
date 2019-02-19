@@ -45,7 +45,7 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
     public static final int ERROR_BADGE_IMAGE = R.drawable.px_badge_error;
     public static final int WARNING_BADGE_IMAGE = R.drawable.px_badge_warning;
 
-    public PaymentResultProvider paymentResultProvider;
+    private final PaymentResultProvider paymentResultProvider;
 
     public PaymentResultContainer(@NonNull final ActionDispatcher dispatcher,
         @NonNull final PaymentResultProps props,
@@ -54,11 +54,11 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
         this.paymentResultProvider = paymentResultProvider;
     }
 
-    public boolean isLoading() {
+    /* default */ boolean isLoading() {
         return props.loading;
     }
 
-    public LoadingComponent getLoadingComponent() {
+    /* default */ LoadingComponent getLoadingComponent() {
         return new LoadingComponent();
     }
 

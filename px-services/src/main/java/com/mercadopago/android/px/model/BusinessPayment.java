@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.internal.PrimaryExitAction;
+import com.mercadopago.android.px.model.internal.SecondaryExitAction;
 
 @SuppressWarnings("unused")
 public class BusinessPayment implements IPayment, Parcelable {
@@ -136,12 +138,12 @@ public class BusinessPayment implements IPayment, Parcelable {
 
     @Nullable
     public ExitAction getSecondaryAction() {
-        return exitActionSecondary;
+        return exitActionSecondary != null ? new SecondaryExitAction(exitActionSecondary) : null;
     }
 
     @Nullable
     public ExitAction getPrimaryAction() {
-        return exitActionPrimary;
+        return exitActionPrimary != null ? new PrimaryExitAction(exitActionPrimary) : null;
     }
 
     @Nullable
@@ -280,9 +282,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * if Exit action is set, then a big primary button
-         * will appear and the click action will trigger a resCode
-         * that will be the same of the Exit action added.
+         * if Exit action is set, then a big primary button will appear and the click action will trigger a resCode that
+         * will be the same of the Exit action added.
          *
          * @param exitAction a {@link ExitAction }
          * @return builder
@@ -293,8 +294,7 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * if Exit action is set, then a small secondary button
-         * will appear and the click action will trigger a resCode
+         * if Exit action is set, then a small secondary button will appear and the click action will trigger a resCode
          * that will be the same of the Exit action added.
          *
          * @param exitAction a {@link ExitAction }
@@ -317,9 +317,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * If value true is set, then payment method box
-         * will appear with the amount value and payment method
-         * options that were selected by the user.
+         * If value true is set, then payment method box will appear with the amount value and payment method options
+         * that were selected by the user.
          *
          * @param visible visibility mode
          * @return builder
@@ -330,9 +329,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * If value true is set on {@link #setPaymentMethodVisibility }
-         * and the payment method is credit card
-         * then the statementDescription will be shown on payment method view.
+         * If value true is set on {@link #setPaymentMethodVisibility } and the payment method is credit card then the
+         * statementDescription will be shown on payment method view.
          *
          * @param statementDescription disclaimer text
          * @return builder
@@ -354,8 +352,7 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * Custom fragment that will appear before payment method description
-         * inside Business result screen.
+         * Custom fragment that will appear before payment method description inside Business result screen.
          *
          * @param zClass fragment class
          * @return builder
@@ -366,8 +363,7 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * Custom fragment that will appear after payment method description
-         * inside Business result screen.
+         * Custom fragment that will appear after payment method description inside Business result screen.
          *
          * @param zClass fragment class
          * @return builder
@@ -378,8 +374,7 @@ public class BusinessPayment implements IPayment, Parcelable {
         }
 
         /**
-         * When subtitle is set, then default {@link Decorator} subtitle will be replaced
-         * on the screen with it.
+         * When subtitle is set, then default {@link Decorator} subtitle will be replaced on the screen with it.
          *
          * @param subtitle subtitle text
          * @return builder

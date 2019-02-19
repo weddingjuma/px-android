@@ -22,7 +22,7 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEvent;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
 import java.util.Set;
@@ -83,7 +83,7 @@ import java.util.Set;
 
     @Override
     public void changePaymentMethod() {
-        new ChangePaymentMethodEventTracker().track();
+        ChangePaymentMethodEvent.create().track();
         getView().finishAndChangePaymentMethod();
     }
 

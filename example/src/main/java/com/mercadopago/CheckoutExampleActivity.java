@@ -33,19 +33,22 @@ public class CheckoutExampleActivity extends AppCompatActivity {
         mRegularLayout = findViewById(R.id.regularLayout);
 
         final View lazy = findViewById(R.id.lazy_init);
+        final View progress = findViewById(R.id.progress_bar);
+        lazy.setOnClickListener(v ->  {
+            progress.setVisibility(View.VISIBLE);
+            new CheckoutLazyInit(ExamplesUtils.createBase()) {
+                @Override
+                public void fail(@NonNull final MercadoPagoCheckout mercadoPagoCheckout) {
+                    progress.setVisibility(View.GONE);
+                }
 
-        lazy.setOnClickListener(v -> new CheckoutLazyInit(ExamplesUtils.createBase()) {
-
-            @Override
-            public void fail(@NonNull final MercadoPagoCheckout mercadoPagoCheckout) {
-
-            }
-
-            @Override
-            public void success(@NonNull final MercadoPagoCheckout mercadoPagoCheckout) {
-                mercadoPagoCheckout.startPayment(v.getContext(), REQUEST_CODE);
-            }
-        }.fetch(v.getContext()));
+                @Override
+                public void success(@NonNull final MercadoPagoCheckout mercadoPagoCheckout) {
+                    progress.setVisibility(View.GONE);
+                    mercadoPagoCheckout.startPayment(v.getContext(), REQUEST_CODE);
+                }
+            }.fetch(v.getContext());
+        });
 
         continueSimpleCheckout = findViewById(R.id.continueButton);
 

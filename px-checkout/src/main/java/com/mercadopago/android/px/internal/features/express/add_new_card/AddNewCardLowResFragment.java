@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.express.slider;
+package com.mercadopago.android.px.internal.features.express.add_new_card;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

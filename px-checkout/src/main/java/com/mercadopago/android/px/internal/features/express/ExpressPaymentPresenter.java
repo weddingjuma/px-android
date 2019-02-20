@@ -21,6 +21,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMa
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;
+import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardMetadata;
@@ -29,7 +30,6 @@ import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;

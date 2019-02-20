@@ -57,7 +57,8 @@ public final class OneTapSamples {
         int i = 1;
         options.add(new Pair<>("Saved cards with default installments", startSavedCardsDefaultInstallments()));
         options.add(
-            new Pair<>(i++ + " - One tap - Should suggest account money (no cards)", startOneTapWithAccountMoneyNoCards()));
+            new Pair<>(i++ + " - One tap - Should suggest account money (no cards)",
+                startOneTapWithAccountMoneyNoCards()));
         options
             .add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards)",
                 startOneTapWithAccountMoneyAndCardsDebitCredit()));
@@ -83,14 +84,17 @@ public final class OneTapSamples {
             startOneTapWithAmountGreaterThanCap()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest account money (low account money)",
             startOneTapWithLowAccountMoneyWithLowerAmount()));
-        options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (low account money, amount lower than cap)",
-            startOneTapWithLowAccountMoneyWithLowerAmountAndLowerCap()));
-        options.add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (low account money, amount greater than cap)",
-            startOneTapWithLowAccountMoneyWithLowerAmountAndGreaterCap()));
+        options
+            .add(new Pair<>(i++ + " - One tap - Should suggest credit card (low account money, amount lower than cap)",
+                startOneTapWithLowAccountMoneyWithLowerAmountAndLowerCap()));
+        options
+            .add(new Pair<>(i++ + " - One tap - Shouldn't suggest one tap (low account money, amount greater than cap)",
+                startOneTapWithLowAccountMoneyWithLowerAmountAndGreaterCap()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with direct discount",
             startOneTapNoAccountMoneyWithCreditCardAndDirectDiscount()));
         options
-            .add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with not available discount",
+            .add(new Pair<>(
+                i++ + " - One tap - Should suggest credit card (no account money) with not available discount",
                 startOneTapNoAccountMoneyWithCreditCardAndNoAvailableDiscount()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card and get call for authorize result",
             startOneTapWithCreditCardAndShowCallForAuthorize()));
@@ -325,7 +329,7 @@ public final class OneTapSamples {
     }
 
     private static CheckoutPreference getCheckoutPreferenceWithPayerEmail(final int amount) {
-        return getCheckoutPreferenceWithPayerEmail(new ArrayList<String>(), amount);
+        return getCheckoutPreferenceWithPayerEmail(new ArrayList<>(), amount);
     }
 
     private static CheckoutPreference getCheckoutPreferenceWithPayerEmail(

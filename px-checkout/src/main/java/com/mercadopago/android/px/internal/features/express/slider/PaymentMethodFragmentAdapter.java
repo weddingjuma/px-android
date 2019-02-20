@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import com.mercadopago.android.px.internal.features.express.add_new_card.AddNewCardFragment;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AccountMoneyDrawableFragmentItem;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AddNewCardFragmentDrawableFragmentItem;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;

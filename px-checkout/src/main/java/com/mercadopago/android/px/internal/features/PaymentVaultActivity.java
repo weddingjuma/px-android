@@ -90,6 +90,12 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter>
 
     private AmountView amountView;
 
+    public static void start(@NonNull final AppCompatActivity from) {
+        final Intent intent = new Intent(from, PaymentVaultActivity.class);
+        from.startActivityForResult(intent, Constants.Activities.PAYMENT_VAULT_REQUEST_CODE);
+        from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+    }
+
     public static void startWithPaymentMethodSelected(@NonNull final AppCompatActivity from,
         @NonNull final PaymentMethodSearchItem item) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);

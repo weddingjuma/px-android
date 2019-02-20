@@ -1,5 +1,6 @@
-package com.mercadopago.android.px.internal.features.express.slider;
+package com.mercadopago.android.px.internal.features.express.add_new_card;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,15 +14,13 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AddNewCardFragmentDrawableFragmentItem;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
-import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.services.Callback;
 
-public class AddNewCardFragment extends Fragment implements View.OnClickListener {
+public class AddNewCardFragment extends Fragment implements AddNewCard.View, View.OnClickListener {
 
     private static final String ARG_MODEL = "ARG_MODEL";
-    private static final String TYPE_TO_DRIVE = "cards";
+
+    private AddNewCardPresenter presenter;
 
     @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
@@ -42,7 +41,6 @@ public class AddNewCardFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-
         final Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey(ARG_MODEL)) {
             // unused for now
@@ -53,6 +51,28 @@ public class AddNewCardFragment extends Fragment implements View.OnClickListener
         } else {
             throw new IllegalStateException("AddNewCardFragment does not contains model info");
         }
+        presenter = createPresenter(view.getContext());
+        presenter.attachView(this);
+    }
+
+    @Override
+    public void onDetach() {
+        presenter.detachView();
+        super.onDetach();
+    }
+
+    @Override
+    public void showPaymentMethods() {
+        PaymentVaultActivity.start((AppCompatActivity) getActivity());
+    }
+
+    @Override
+    public void showPaymentMethodsWithSelection(@NonNull final PaymentMethodSearchItem paymentMethodSearchItem) {
+        PaymentVaultActivity.startWithPaymentMethodSelected((AppCompatActivity) getActivity(), paymentMethodSearchItem);
+    }
+
+    private AddNewCardPresenter createPresenter(@NonNull final Context context) {
+        return new AddNewCardPresenter(Session.getSession(context).getGroupsRepository());
     }
 
     protected void configureClick(@NonNull final View view) {
@@ -65,25 +85,6 @@ public class AddNewCardFragment extends Fragment implements View.OnClickListener
 
     @Override
     public void onClick(final View v) {
-        Session.getSession(v.getContext()).getGroupsRepository().getGroups().execute(
-            new Callback<PaymentMethodSearch>() {
-                @Override
-                public void success(final PaymentMethodSearch paymentMethodSearch) {
-                    for (final PaymentMethodSearchItem paymentMethodSearchItem : paymentMethodSearch.getGroups()) {
-                        if (TYPE_TO_DRIVE.equalsIgnoreCase(paymentMethodSearchItem.getId())) {
-                            PaymentVaultActivity.startWithPaymentMethodSelected((AppCompatActivity) v.getContext(),
-                                paymentMethodSearchItem);
-                            return;
-                        }
-                    }
-                }
-
-                @Override
-                public void failure(final ApiException apiException) {
-                    throw new IllegalStateException("AddNewCardFragment could not retrevie PaymentMethodSearch");
-                }
-            }
-        );
-
+        presenter.onAddNewCardSelected();
     }
 }

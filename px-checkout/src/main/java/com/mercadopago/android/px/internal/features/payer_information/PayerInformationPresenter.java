@@ -7,11 +7,12 @@ import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
+import com.mercadopago.android.px.internal.util.IdentificationUtils;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
-import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Payer;
+import com.mercadopago.android.px.model.exceptions.InvalidFieldException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.views.CPFViewTracker;
@@ -151,88 +152,53 @@ import java.util.List;
         }
     }
 
-    public boolean validateIdentificationNumber() {
-        final boolean isIdentificationNumberValid = validateIdentificationNumberLength();
-        if (isIdentificationNumberValid) {
-            getView().clearErrorView();
-            getView().clearErrorIdentificationNumber();
-        } else {
-            getView().setInvalidIdentificationNumberErrorView();
-            getView().setErrorIdentificationNumber();
+    private void resolveInvalidFieldException(final InvalidFieldException e) {
+        switch (e.getErrorCode()) {
+        case InvalidFieldException.INVALID_CPF:
+            getView().showInvalidCpfNumberErrorView();
+            getView().showErrorIdentificationNumber();
+            break;
+        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+            getView().showInvalidIdentificationNumberErrorView();
+            getView().showErrorIdentificationNumber();
+            break;
         }
-
-        return isIdentificationNumberValid;
-    }
-
-    private boolean validateIdentificationNumberLength() {
-        final IdentificationType identificationType = state.getIdentificationType();
-        if (identificationType != null) {
-            final Identification identification = state.getIdentification();
-            if ((identification != null) &&
-                (identification.getNumber() != null)) {
-                final int len = identification.getNumber().length();
-                final Integer min = identificationType.getMinLength();
-                final Integer max = identificationType.getMaxLength();
-                if ((min != null) && (max != null)) {
-                    return ((len <= max) && (len >= min));
-                } else {
-                    return validateNumber();
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return validateNumber();
-        }
-    }
-
-    private boolean validateNumber() {
-        final Identification identification = state.getIdentification();
-        return identification != null && validateIdentificationType() &&
-            !TextUtil.isEmpty(identification.getNumber());
-    }
-
-    private boolean validateIdentificationType() {
-        final Identification identification = state.getIdentification();
-        return identification != null && !TextUtil.isEmpty(identification.getType());
-    }
-
-    public boolean checkIsEmptyOrValidName() {
-        return TextUtil.isEmpty(state.getIdentificationName()) || validateName();
-    }
-
-    public boolean checkIsEmptyOrValidLastName() {
-        return TextUtil.isEmpty(state.getIdentificationLastName()) || validateLastName();
     }
 
     @Override
-    public boolean validateName() {
-        final boolean isNameValid = TextUtil.isNotEmpty(state.getIdentificationName());
-
-        if (isNameValid) {
+    public void validateName() {
+        if (TextUtil.isNotEmpty(state.getIdentificationName())) {
             getView().clearErrorView();
             getView().clearErrorName();
+            getView().showIdentificationLastNameFocus();
         } else {
-            getView().setInvalidIdentificationNameErrorView();
-            getView().setErrorName();
+            getView().showInvalidIdentificationNameErrorView();
+            getView().showErrorName();
         }
-
-        return isNameValid;
     }
 
     @Override
-    public boolean validateLastName() {
-        final boolean isLastNameValid = TextUtil.isNotEmpty(state.getIdentificationLastName());
-
-        if (isLastNameValid) {
+    public void validateLastName() {
+        if (TextUtil.isNotEmpty(state.getIdentificationLastName())) {
             getView().clearErrorView();
             getView().clearErrorLastName();
+            getView().showCardFlowEnd();
         } else {
-            getView().setInvalidIdentificationLastNameErrorView();
-            getView().setErrorLastName();
+            getView().showInvalidIdentificationLastNameErrorView();
+            getView().showErrorLastName();
         }
+    }
 
-        return isLastNameValid;
+    @Override
+    public void validateIdentification() {
+        try {
+            IdentificationUtils.validateIdentification(state.getIdentification(), state.getIdentificationType());
+            getView().clearErrorView();
+            getView().clearErrorIdentificationNumber();
+            getView().showIdentificationNameFocus();
+        } catch (InvalidFieldException e) {
+            resolveInvalidFieldException(e);
+        }
     }
 
     @Override

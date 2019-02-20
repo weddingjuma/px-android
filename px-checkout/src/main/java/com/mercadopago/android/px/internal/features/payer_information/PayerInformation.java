@@ -18,16 +18,21 @@ public interface PayerInformation {
 
         void clearErrorLastName();
 
-        void setErrorIdentificationNumber();
+        void showErrorIdentificationNumber();
 
-        void setErrorName();
+        void showErrorName();
 
-        void setErrorLastName();
+        void showErrorLastName();
 
         void setErrorView(String message);
 
         void clearErrorView();
 
+        void showCardFlowEnd();
+
+        void showIdentificationLastNameFocus();
+
+        void showIdentificationNameFocus();
 
         void requestIdentificationNumberFocus();
 
@@ -42,11 +47,11 @@ public interface PayerInformation {
 
         void showMissingIdentificationTypesError();
 
-        void setInvalidIdentificationNumberErrorView();
+        void showInvalidIdentificationNumberErrorView();
 
-        void setInvalidIdentificationNameErrorView();
+        void showInvalidIdentificationNameErrorView();
 
-        void setInvalidIdentificationLastNameErrorView();
+        void showInvalidIdentificationLastNameErrorView();
 
         void setName(final String identificationName);
 
@@ -55,12 +60,17 @@ public interface PayerInformation {
         void setNumber(final String identificationNumber);
 
         void identificationDraw();
+
+        void showInvalidCpfNumberErrorView();
     }
 
     interface Actions {
-        boolean validateName();
 
-        boolean validateLastName();
+        void validateName();
+
+        void validateLastName();
+
+        void validateIdentification();
 
         void trackIdentificationNumberView();
 

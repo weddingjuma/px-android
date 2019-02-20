@@ -139,10 +139,13 @@ public class PayerInformationPresenterTest {
         presenter.attachView(view);
 
         when(stateModel.getIdentificationName()).thenReturn(DUMMY_NAME);
-        presenter.checkIsEmptyOrValidName();
+        presenter.validateName();
 
+        verify(view).hideProgressBar();
         verify(view).clearErrorView();
         verify(view).clearErrorName();
+        verify(view).showIdentificationLastNameFocus();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -153,8 +156,10 @@ public class PayerInformationPresenterTest {
 
         presenter.validateName();
 
-        verify(view).setInvalidIdentificationNameErrorView();
-        verify(view).setErrorName();
+        verify(view).hideProgressBar();
+        verify(view).showInvalidIdentificationNameErrorView();
+        verify(view).showErrorName();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -163,38 +168,99 @@ public class PayerInformationPresenterTest {
         when(stateModel.getIdentificationLastName()).thenReturn(DUMMY_NAME);
         presenter.attachView(view);
 
-        presenter.checkIsEmptyOrValidLastName();
+        presenter.validateLastName();
 
+        verify(view).hideProgressBar();
         verify(view).clearErrorView();
         verify(view).clearErrorLastName();
+        verify(view).showCardFlowEnd();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
     public void whenLastNameIsNotValidThenSetErrorView() {
-
         when(stateModel.hasIdentificationTypes()).thenReturn(true);
         when(stateModel.getIdentificationLastName()).thenReturn(null);
         presenter.attachView(view);
 
         presenter.validateLastName();
 
-        verify(view).setInvalidIdentificationLastNameErrorView();
-        verify(view).setErrorLastName();
+        verify(view).hideProgressBar();
+        verify(view).showInvalidIdentificationLastNameErrorView();
+        verify(view).showErrorLastName();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void whenNumberIsNotValidThenSetErrorView() {
+    public void whenNumberLengthIsNotValidThenSetInvalidIdentificationNumberErrorView() {
         final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
-        final Identification identification = IdentificationUtils.getIdentificationWithWrongNumberCPF();
+        final Identification identification = IdentificationUtils.getIdentificationWithWrongLengthNumber();
         when(stateModel.getIdentificationType()).thenReturn(identificationType);
         when(stateModel.hasIdentificationTypes()).thenReturn(true);
         when(stateModel.getIdentification()).thenReturn(identification);
         presenter.attachView(view);
 
-        presenter.validateIdentificationNumber();
+        presenter.validateIdentification();
 
-        verify(view).setInvalidIdentificationNumberErrorView();
-        verify(view).setErrorIdentificationNumber();
+        verify(view).hideProgressBar();
+        verify(view).showInvalidIdentificationNumberErrorView();
+        verify(view).showErrorIdentificationNumber();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenNumberIsCpfInvalidThenSetInvalidCpfNumberErrorView() {
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidCpfNumber();
+        when(stateModel.getIdentificationType()).thenReturn(identificationType);
+        when(stateModel.hasIdentificationTypes()).thenReturn(true);
+        when(stateModel.getIdentification()).thenReturn(identification);
+        presenter.attachView(view);
+
+        presenter.validateIdentification();
+
+        verify(view).hideProgressBar();
+        verify(view).showInvalidCpfNumberErrorView();
+        verify(view).showErrorIdentificationNumber();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenNumberIsCpfEqualNumbersThenSetInvalidCpfNumberErrorView() {
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidEqualNumbersCpf();
+        when(stateModel.getIdentificationType()).thenReturn(identificationType);
+        when(stateModel.hasIdentificationTypes()).thenReturn(true);
+        when(stateModel.getIdentification()).thenReturn(identification);
+        presenter.attachView(view);
+
+        presenter.validateIdentification();
+
+        verify(view).hideProgressBar();
+        verify(view).showInvalidCpfNumberErrorView();
+        verify(view).showErrorIdentificationNumber();
+        verifyNoMoreInteractions(view);
+    }
+
+    /**
+     * Defensive programming, our algorithm works if cpf's length is 11 characters.
+     */
+    @Test
+    public void whenNumberIsCpfInvalidLengthThenClearError() {
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeWithInvalidLengthCPF();
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidLengthCpfNumber();
+        when(stateModel.getIdentificationType()).thenReturn(identificationType);
+        when(stateModel.hasIdentificationTypes()).thenReturn(true);
+        when(stateModel.getIdentification()).thenReturn(identification);
+        presenter.attachView(view);
+
+        presenter.validateIdentification();
+
+        verify(view).hideProgressBar();
+        verify(view).clearErrorView();
+        verify(view).clearErrorIdentificationNumber();
+        verify(view).showIdentificationNameFocus();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -206,10 +272,13 @@ public class PayerInformationPresenterTest {
         when(stateModel.getIdentification()).thenReturn(identification);
         presenter.attachView(view);
 
-        presenter.validateIdentificationNumber();
+        presenter.validateIdentification();
 
+        verify(view).hideProgressBar();
         verify(view).clearErrorView();
         verify(view).clearErrorIdentificationNumber();
+        verify(view).showIdentificationNameFocus();
+        verifyNoMoreInteractions(view);
     }
 
     @Test

@@ -264,7 +264,7 @@ public class GuessingCardPaymentPresenterTest {
 
         presenter.resolvePaymentMethodListSet(mockedGuessedPaymentMethods, Cards.MOCKED_BIN_VISA);
 
-        verify(view).initializeIdentificationTypes(identificationTypes);
+        verify(view).initializeIdentificationTypes(identificationTypes, identificationTypes.get(0));
     }
 
     @Test

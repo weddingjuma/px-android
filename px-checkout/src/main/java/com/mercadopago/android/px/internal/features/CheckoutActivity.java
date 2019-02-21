@@ -422,7 +422,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     @Override
     public void showPaymentResult(final PaymentResult paymentResult) {
-        overrideTransitionFadeInFadeOut();
+        overrideTransitionIn();
         final Intent intent = PaymentResultActivity.getIntent(this, paymentResult,
             PostPaymentAction.OriginAction.ONE_TAP);
         startActivityForResult(intent, REQ_CONGRATS);

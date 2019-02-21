@@ -9,6 +9,7 @@ import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardAc
 /**
  * Provides access to card storage flow
  */
+@SuppressWarnings("unused")
 public final class MercadoPagoCardStorage {
 
     private MercadoPagoCardStorage() {

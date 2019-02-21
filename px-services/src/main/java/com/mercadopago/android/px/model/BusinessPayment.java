@@ -13,7 +13,7 @@ import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
 
 @SuppressWarnings("unused")
-public class BusinessPayment implements IPayment, Parcelable {
+public class BusinessPayment implements IPaymentDescriptor, Parcelable {
 
     @NonNull private final String title;
     @NonNull private final Decorator decorator;
@@ -34,6 +34,9 @@ public class BusinessPayment implements IPayment, Parcelable {
     @Nullable
     private final String subtitle;
 
+    @Nullable private final String paymentTypeId;
+    @Nullable private final String paymentMethodId;
+
     /* default */ BusinessPayment(final Builder builder) {
         help = builder.help;
         title = builder.title;
@@ -50,6 +53,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         paymentStatus = builder.paymentStatus;
         paymentStatusDetail = builder.paymentStatusDetail;
         subtitle = builder.subtitle;
+        paymentMethodId = builder.paymentMethodId;
+        paymentTypeId = builder.paymentTypeId;
     }
 
     protected BusinessPayment(final Parcel in) {
@@ -68,6 +73,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         paymentStatus = in.readString();
         paymentStatusDetail = in.readString();
         subtitle = ParcelableUtil.getOptionalString(in);
+        paymentMethodId = ParcelableUtil.getOptionalString(in);
+        paymentTypeId = ParcelableUtil.getOptionalString(in);
     }
 
     public static final Creator<BusinessPayment> CREATOR = new Creator<BusinessPayment>() {
@@ -104,6 +111,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         dest.writeString(paymentStatus);
         dest.writeString(paymentStatusDetail);
         ParcelableUtil.writeOptional(dest, subtitle);
+        ParcelableUtil.writeOptional(dest, paymentMethodId);
+        ParcelableUtil.writeOptional(dest, paymentTypeId);
     }
 
     public boolean hasReceipt() {
@@ -204,6 +213,23 @@ public class BusinessPayment implements IPayment, Parcelable {
         return subtitle;
     }
 
+    @Nullable
+    @Override
+    public String getPaymentTypeId() {
+        return paymentTypeId;
+    }
+
+    @Nullable
+    @Override
+    public String getPaymentMethodId() {
+        return paymentMethodId;
+    }
+
+    @Override
+    public void process(@NonNull final IPaymentDescriptorHandler handler) {
+        handler.visit(this);
+    }
+
     public enum Decorator {
         APPROVED("APPROVED"),
         REJECTED("REJECTED"),
@@ -233,6 +259,8 @@ public class BusinessPayment implements IPayment, Parcelable {
         /* default */ @NonNull final String title;
         /* default */ @NonNull final String paymentStatus;
         /* default */ @NonNull final String paymentStatusDetail;
+        /* default */ @Nullable final String paymentMethodId;
+        /* default */ @Nullable final String paymentTypeId;
 
         // Optional values
         /* default */ @Nullable String imageUrl;
@@ -247,30 +275,48 @@ public class BusinessPayment implements IPayment, Parcelable {
         ExternalFragment topFragment;
         ExternalFragment bottomFragment;
 
+        @Deprecated
         public Builder(@NonNull final Decorator decorator,
             @NonNull final String paymentStatus,
             @NonNull final String paymentStatusDetail,
             @DrawableRes final int iconId,
             @NonNull final String title) {
-            this.title = title;
+            this(decorator, paymentStatus, paymentStatusDetail, iconId, title, null, null);
+        }
+
+        @Deprecated
+        public Builder(@NonNull final Decorator decorator,
+            @NonNull final String paymentStatus,
+            @NonNull final String paymentStatusDetail,
+            @NonNull final String imageUrl,
+            @NonNull final String title) {
+            this(decorator, paymentStatus, paymentStatusDetail, imageUrl, title, null, null);
+        }
+
+        public Builder(@NonNull final Decorator decorator,
+            @NonNull final String paymentStatus,
+            @NonNull final String paymentStatusDetail,
+            @DrawableRes final int iconId,
+            @NonNull final String title,
+            @NonNull final String paymentMethodId,
+            @NonNull final String paymentTypeId) {
             this.decorator = decorator;
-            this.iconId = iconId;
             this.paymentStatus = paymentStatus;
             this.paymentStatusDetail = paymentStatusDetail;
-            shouldShowPaymentMethod = false;
-            buttonPrimary = null;
-            buttonSecondary = null;
-            help = null;
-            receiptId = null;
-            imageUrl = null;
+            this.iconId = iconId;
+            this.title = title;
+            this.paymentMethodId = paymentMethodId;
+            this.paymentTypeId = paymentTypeId;
         }
 
         public Builder(@NonNull final Decorator decorator,
             @NonNull final String paymentStatus,
             @NonNull final String paymentStatusDetail,
             @NonNull final String imageUrl,
-            @NonNull final String title) {
-            this(decorator, paymentStatus, paymentStatusDetail, 0, title);
+            @NonNull final String title,
+            @NonNull final String paymentMethodId,
+            @NonNull final String paymentTypeId) {
+            this(decorator, paymentStatus, paymentStatusDetail, 0, title, paymentMethodId, paymentTypeId);
             this.imageUrl = imageUrl;
         }
 

@@ -23,7 +23,7 @@ import com.mercadopago.android.px.tracking.internal.events.InitEvent;
  * Main class of this project. It provides access to most of the checkout experience.
  */
 @SuppressWarnings("unused")
-public class MercadoPagoCheckout {
+public final class MercadoPagoCheckout {
 
     public static final int PAYMENT_RESULT_CODE = 7;
     public static final String EXTRA_PAYMENT_RESULT = "EXTRA_PAYMENT_RESULT";
@@ -157,7 +157,7 @@ public class MercadoPagoCheckout {
         /* default */ @NonNull AdvancedConfiguration advancedConfiguration =
             new AdvancedConfiguration.Builder().build();
 
-        /* default */ @NonNull PaymentConfiguration paymentConfiguration = new MercadoPagoPaymentConfiguration();
+        /* default */ @NonNull PaymentConfiguration paymentConfiguration = MercadoPagoPaymentConfiguration.create();
 
         /* default */ @Nullable String privateKey;
 

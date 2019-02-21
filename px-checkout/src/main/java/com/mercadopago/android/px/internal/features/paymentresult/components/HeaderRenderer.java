@@ -14,6 +14,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
@@ -30,22 +31,11 @@ public class HeaderRenderer extends Renderer<Header> {
         final int background = ContextCompat.getColor(context, component.props.background);
         final int statusBarColor = ContextCompat.getColor(context, component.props.statusBarColor);
 
-        final Toolbar toolbar = headerView.findViewById(R.id.toolbar);
-        if (context instanceof AppCompatActivity) {
-            final AppCompatActivity appCompatActivity = (AppCompatActivity) context;
-            appCompatActivity.setSupportActionBar(toolbar);
-            final ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
-            supportActionBar.setHomeAsUpIndicator(R.drawable.ic_close);
-            supportActionBar.setDisplayHomeAsUpEnabled(true);
-            supportActionBar.setDisplayShowTitleEnabled(false);
-            toolbar.setNavigationOnClickListener(v -> appCompatActivity.onBackPressed());
-        }
-
         //Render height
         if (component.props.height.equals(HeaderProps.HEADER_MODE_WRAP)) {
             wrapHeight(headerContainer);
         } else if (component.props.height.equals(HeaderProps.HEADER_MODE_STRETCH)) {
-            stretchHeight(headerContainer);
+            ViewUtils.stretchHeight(headerContainer);
         }
 
         headerContainer.setBackgroundColor(background);

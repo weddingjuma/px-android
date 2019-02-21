@@ -3,11 +3,11 @@ package com.mercadopago.android.px.internal.features.paymentresult;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.internal.features.paymentresult.components.Body;
 import com.mercadopago.android.px.internal.features.paymentresult.components.Header;
 import com.mercadopago.android.px.internal.features.paymentresult.components.PaymentResultContainer;
 import com.mercadopago.android.px.internal.features.paymentresult.props.HeaderProps;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultProps;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.mocks.PaymentMethods;
 import com.mercadopago.android.px.mocks.PaymentResults;
@@ -50,7 +50,6 @@ public class PaymentResultContainerTest {
             .thenReturn(REJECTED_INSUFFICIENT_AMOUNT_TITLE);
         when(paymentResultProvider.getRejectedBadFilledCardTitle()).thenReturn(REJECTED_BAD_FILLED_TITLE);
         when(paymentResultProvider.getRejectedCallForAuthorizeTitle()).thenReturn(REJECTED_CALL_FOR_AUTH_TITLE);
-        when(paymentResultProvider.getEmptyText()).thenReturn(EMPTY_TITLE);
         when(paymentResultProvider.getPendingLabel()).thenReturn(PENDING_LABEL);
         when(paymentResultProvider.getRejectionLabel()).thenReturn(REJECTION_LABEL);
     }
@@ -475,7 +474,7 @@ public class PaymentResultContainerTest {
 
         final HeaderProps headerProps = getHeaderPropsFromContainerWith(paymentResult);
 
-        Assert.assertEquals(headerProps.title, paymentResultProvider.getEmptyText());
+        Assert.assertEquals(headerProps.title, TextUtil.EMPTY);
     }
 
 //    @Test
@@ -533,7 +532,7 @@ public class PaymentResultContainerTest {
         final PaymentResult paymentResult = PaymentResults.getStatusApprovedPaymentResult();
         final HeaderProps headerProps = getHeaderPropsFromContainerWith(paymentResult);
 
-        Assert.assertEquals(headerProps.label, paymentResultProvider.getEmptyText());
+        Assert.assertEquals(headerProps.label, TextUtil.EMPTY);
     }
 
     @NonNull
@@ -546,7 +545,7 @@ public class PaymentResultContainerTest {
         final PaymentResult paymentResult = PaymentResults.getStatusInProcessContingencyPaymentResult();
         final HeaderProps headerProps = getHeaderPropsFromContainerWith(paymentResult);
 
-        Assert.assertEquals(headerProps.label, paymentResultProvider.getEmptyText());
+        Assert.assertEquals(headerProps.label, TextUtil.EMPTY);
     }
 
     @Test
@@ -554,7 +553,7 @@ public class PaymentResultContainerTest {
         final PaymentResult paymentResult = PaymentResults.getPaymentMethodOffPaymentResult();
         final HeaderProps headerProps = getHeaderPropsFromContainerWith(paymentResult);
 
-        Assert.assertEquals(headerProps.label, paymentResultProvider.getEmptyText());
+        Assert.assertEquals(headerProps.label, TextUtil.EMPTY);
     }
 
     @Test
@@ -601,7 +600,7 @@ public class PaymentResultContainerTest {
             .build();
         final HeaderProps headerProps = getHeaderPropsFromContainerWith(paymentResult);
 
-        Assert.assertEquals(headerProps.label, paymentResultProvider.getEmptyText());
+        Assert.assertEquals(headerProps.label, TextUtil.EMPTY);
     }
 
 //    @Test
@@ -647,8 +646,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Assert.assertTrue(container.hasBodyComponent());
@@ -661,8 +660,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Assert.assertFalse(container.hasBodyComponent());
@@ -675,8 +674,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Assert.assertFalse(container.hasBodyComponent());
@@ -689,28 +688,11 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Assert.assertFalse(container.hasBodyComponent());
-    }
-
-    @Test
-    public void testBodyComponentHasValidProps() {
-        final PaymentResult paymentResult = PaymentResults.getStatusCallForAuthPaymentResult();
-        final PaymentResultContainer container = getContainer();
-
-        final PaymentResultProps paymentResultProps =
-            new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
-        container.setProps(paymentResultProps);
-
-        final Body body = container.getBodyComponent();
-        Assert.assertEquals(body.props.paymentData, paymentResult.getPaymentData());
-        Assert.assertEquals(body.props.status, paymentResult.getPaymentStatus());
-        Assert.assertEquals(body.props.statusDetail, paymentResult.getPaymentStatusDetail());
     }
 
     @Test
@@ -720,12 +702,12 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .setCurrencyId(CURRENCY_ID)
-            .build();
+                .setPaymentResult(paymentResult)
+                .setCurrencyId(CURRENCY_ID)
+                .build();
         container.setProps(paymentResultProps);
 
-        Header header = container.getHeaderComponent();
+        final Header header = container.getHeaderComponent();
         Assert.assertEquals(header.props.height, HeaderProps.HEADER_MODE_WRAP);
     }
 
@@ -736,8 +718,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Header header = container.getHeaderComponent();
@@ -751,8 +733,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
         container.setProps(paymentResultProps);
 
         Header header = container.getHeaderComponent();
@@ -766,8 +748,8 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .build();
+                .setPaymentResult(paymentResult)
+                .build();
 
         container.setProps(paymentResultProps);
 
@@ -793,9 +775,9 @@ public class PaymentResultContainerTest {
 
         final PaymentResultProps paymentResultProps =
             new PaymentResultProps.Builder(new PaymentResultScreenConfiguration.Builder().build())
-            .setPaymentResult(paymentResult)
-            .setInstruction(instruction)
-            .build();
+                .setPaymentResult(paymentResult)
+                .setInstruction(instruction)
+                .build();
 
         container.setProps(paymentResultProps);
         return container.getHeaderComponent().props;

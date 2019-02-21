@@ -77,11 +77,6 @@ public class PaymentResultProviderImpl implements PaymentResultProvider {
     }
 
     @Override
-    public String getEmptyText() {
-        return context.getString(R.string.px_empty_string);
-    }
-
-    @Override
     public String getPendingLabel() {
         return context.getString(R.string.px_pending_label);
     }

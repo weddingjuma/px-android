@@ -3,22 +3,26 @@ package com.mercadopago.android.px.internal.view;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 
-public class PaymentMethodHeaderView extends LinearLayout {
+public class PaymentMethodHeaderView extends FrameLayout {
 
-    /* default */ MPTextView titleView;
-    /* default */ ImageView arrow;
-    /* default */ Animation rotateUp;
-    /* default */ Animation rotateDown;
+    /* default */ final View titleView;
 
-    private TitlePager titlePager;
+    /* default */ final ImageView arrow;
+
+    /* default */ final Animation rotateUp;
+
+    /* default */ final Animation rotateDown;
+
+    private final TitlePager titlePager;
 
     public interface Listener {
 
@@ -35,12 +39,7 @@ public class PaymentMethodHeaderView extends LinearLayout {
     public PaymentMethodHeaderView(final Context context, @Nullable final AttributeSet attrs,
         final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init(context);
-    }
-
-    private void init(final Context context) {
-        inflate(context, R.layout.px_view_installments_header, this);
-
+        LayoutInflater.from(context).inflate(R.layout.px_view_installments_header, this, true);
         rotateUp = AnimationUtils.loadAnimation(context, R.anim.px_rotate_up);
         rotateDown = AnimationUtils.loadAnimation(context, R.anim.px_rotate_down);
         titleView = findViewById(R.id.installments_title);
@@ -68,7 +67,7 @@ public class PaymentMethodHeaderView extends LinearLayout {
         titlePager.setVisibility(GONE);
     }
 
-    public void showTitlePager(final boolean clickable) {
+    public void showTitlePager(final boolean isClickable) {
         if (titleView.getVisibility() == VISIBLE) {
             arrow.startAnimation(rotateDown);
         }
@@ -76,7 +75,7 @@ public class PaymentMethodHeaderView extends LinearLayout {
         titlePager.setVisibility(VISIBLE);
         titleView.setVisibility(GONE);
 
-        setClickable(clickable);
+        setClickable(isClickable);
     }
 
     public void updateArrowVisibility(float positionOffset, final Model model) {

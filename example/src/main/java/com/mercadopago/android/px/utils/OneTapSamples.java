@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 
 import static com.mercadopago.android.px.utils.PaymentUtils.getBusinessPaymentApproved;
-import static com.mercadopago.android.px.utils.PaymentUtils.getGenericPaymentApprovedAccountMoney;
+import static com.mercadopago.android.px.utils.PaymentUtils.getGenericPaymentApproved;
 
 public final class OneTapSamples {
 
@@ -56,12 +56,10 @@ public final class OneTapSamples {
     public static void addAll(final Collection<Pair<String, MercadoPagoCheckout.Builder>> options) {
         int i = 1;
         options.add(new Pair<>("Saved cards with default installments", startSavedCardsDefaultInstallments()));
-        options.add(
-            new Pair<>(i++ + " - One tap - Should suggest account money (no cards)",
-                startOneTapWithAccountMoneyNoCards()));
-        options
-            .add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards)",
-                startOneTapWithAccountMoneyAndCardsDebitCredit()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (no cards)",
+            startOneTapWithAccountMoneyNoCards()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards)",
+            startOneTapWithAccountMoneyAndCardsDebitCredit()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest debit card (excluded account money)",
             startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoney()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (excluded account money and debit)",
@@ -92,9 +90,8 @@ public final class OneTapSamples {
                 startOneTapWithLowAccountMoneyWithLowerAmountAndGreaterCap()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with direct discount",
             startOneTapNoAccountMoneyWithCreditCardAndDirectDiscount()));
-        options
-            .add(new Pair<>(
-                i++ + " - One tap - Should suggest credit card (no account money) with not available discount",
+        options.add(
+            new Pair<>(i++ + " - One tap - Should suggest credit card (no account money) with not available discount",
                 startOneTapNoAccountMoneyWithCreditCardAndNoAvailableDiscount()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card and get call for authorize result",
             startOneTapWithCreditCardAndShowCallForAuthorize()));
@@ -102,8 +99,9 @@ public final class OneTapSamples {
 
     // It should suggest one tap with credit card, call for authorize
     private static MercadoPagoCheckout.Builder startOneTapWithCreditCardAndShowCallForAuthorize() {
-        final GenericPayment payment = new GenericPayment(123L, Payment.StatusCodes.STATUS_REJECTED,
-            Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE);
+        final GenericPayment payment = new GenericPayment.Builder(Payment.StatusCodes.STATUS_REJECTED,
+            Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE).setPaymentId(123L)
+            .createGenericPayment();
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final Collection<String> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add("account_money");
@@ -120,7 +118,7 @@ public final class OneTapSamples {
     // It should suggest one tap with account money
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyNoCards() {
 
-        final GenericPayment payment = getGenericPaymentApprovedAccountMoney();
+        final GenericPayment payment = getGenericPaymentApproved();
 
         final CheckoutPreference preference =
             getCheckoutPreferenceWithPayerEmail(new ArrayList<>(), 120);
@@ -135,7 +133,7 @@ public final class OneTapSamples {
     // It should suggest one tap with account money
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyAndCardsDebitCredit() {
 
-        final GenericPayment payment = getGenericPaymentApprovedAccountMoney();
+        final GenericPayment payment = getGenericPaymentApproved();
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final CheckoutPreference preference = getCheckoutPreferenceWithPayerEmail(120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference,
@@ -147,8 +145,7 @@ public final class OneTapSamples {
 
     // It should suggest one tap with debit card
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoney() {
-        final GenericPayment payment = new GenericPayment(123L, Payment.StatusCodes.STATUS_APPROVED,
-            Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
+        final GenericPayment payment = getGenericPaymentApproved();
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final Collection<String> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add("account_money");
@@ -162,8 +159,7 @@ public final class OneTapSamples {
 
     // It should suggest one tap with credit card
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoneyAndDebit() {
-        final GenericPayment payment = new GenericPayment(123L, Payment.StatusCodes.STATUS_APPROVED,
-            Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
+        final GenericPayment payment = getGenericPaymentApproved();
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final Collection<String> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add("account_money");
@@ -363,8 +359,7 @@ public final class OneTapSamples {
 
     // It should suggest one tap with debit card
     private static MercadoPagoCheckout.Builder startSavedCardsDefaultInstallments() {
-        final GenericPayment payment = new GenericPayment(123L, Payment.StatusCodes.STATUS_APPROVED,
-            Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
+        final GenericPayment payment = getGenericPaymentApproved();
         final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final Collection<String> excludedPaymentTypes = new ArrayList<>();
         excludedPaymentTypes.add("account_money");

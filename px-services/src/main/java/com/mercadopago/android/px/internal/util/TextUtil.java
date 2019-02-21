@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 public final class TextUtil {
 
     public static final String EMPTY = "";
+    public static final CharSequence SPACE = " ";
 
     private static final Pattern DIGIT_PATTERN = Pattern.compile("\\d+");
 

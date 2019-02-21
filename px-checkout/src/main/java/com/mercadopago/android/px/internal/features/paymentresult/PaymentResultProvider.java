@@ -30,8 +30,6 @@ public interface PaymentResultProvider extends ResourcesProvider {
 
     String getRejectedCallForAuthorizeTitle();
 
-    String getEmptyText();
-
     String getPendingLabel();
 
     String getRejectionLabel();

@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 
@@ -21,9 +22,14 @@ public class PaymentResultRenderer extends Renderer<PaymentResultContainer> {
         } else {
 
             view = inflate(R.layout.px_payment_result_container, parent);
+
             final ViewGroup parentViewGroup = view.findViewById(R.id.mpsdkPaymentResultContainer);
 
-            RendererFactory.create(context, component.getHeaderComponent()).render(parentViewGroup);
+            final Header headerComponent = component.getHeaderComponent();
+
+            ViewUtils.addCancelToolbar(parentViewGroup, headerComponent.props.background);
+
+            RendererFactory.create(context, headerComponent).render(parentViewGroup);
 
             if (component.hasBodyComponent()) {
                 RendererFactory.create(context, component.getBodyComponent()).render(parentViewGroup);

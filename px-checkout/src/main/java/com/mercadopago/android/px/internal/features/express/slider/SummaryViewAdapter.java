@@ -33,6 +33,11 @@ public class SummaryViewAdapter extends ViewAdapter<List<SummaryView.Model>, Sum
         }
         final GoingToModel goingTo = position < currentIndex ? GoingToModel.BACKWARDS : GoingToModel.FORWARD;
         final int nextIndex = goingTo == GoingToModel.BACKWARDS ? currentIndex - 1 : currentIndex + 1;
+        //We need to check the index first because sometimes the pager says it's going beyond the available pages.
+        if (nextIndex < 0 || nextIndex >= data.size()) {
+            return;
+        }
+        //We only animate if the models are different
         if (!currentModel.equals(data.get(nextIndex))) {
             if (goingTo == GoingToModel.BACKWARDS) {
                 positionOffset = 1.0f - positionOffset;

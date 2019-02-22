@@ -7,6 +7,9 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.AlphaAnimation;
 import com.mercadopago.android.px.R;
 
+import static com.mercadopago.android.px.internal.util.ViewUtils.cancelAnimation;
+import static com.mercadopago.android.px.internal.util.ViewUtils.hasEndedAnim;
+
 public class FadeAnimator {
 
     private final int normalDuration;
@@ -26,59 +29,53 @@ public class FadeAnimator {
         return anim;
     }
 
-    private boolean shouldFadeIn(@NonNull final View viewToAnimate) {
-        return viewToAnimate.getVisibility() == View.GONE && hasEndedAnim(viewToAnimate);
-    }
-
-    private boolean shouldFadeOut(@NonNull final View viewToAnimate) {
-        return viewToAnimate.getVisibility() == View.VISIBLE && hasEndedAnim(viewToAnimate);
-    }
-
-    private boolean hasEndedAnim(@NonNull final View viewToAnimate) {
-        return viewToAnimate.getAnimation() != null && viewToAnimate.getAnimation().hasEnded()
-            || viewToAnimate.getAnimation() == null;
-    }
-
     public void fadeIn(@NonNull final View viewToAnimate) {
-        if (!shouldFadeIn(viewToAnimate)) {
-            return;
+        if (hasEndedAnim(viewToAnimate)) {
+            final AlphaAnimation fade = createFade(0, 1);
+            fade.setDuration(normalDuration);
+            viewToAnimate.startAnimation(fade);
+        } else {
+            cancelAnimation(viewToAnimate);
         }
-        final AlphaAnimation fade = createFade(0, 1);
         viewToAnimate.setVisibility(View.VISIBLE);
-        fade.setDuration(normalDuration);
-        viewToAnimate.startAnimation(fade);
     }
 
     public void fadeInFastest(@NonNull final View viewToAnimate) {
-        if (!shouldFadeIn(viewToAnimate)) {
-            return;
+        if (hasEndedAnim(viewToAnimate)) {
+            final AlphaAnimation fade = createFade(0, 1);
+            fade.setDuration(fastestDuration);
+            viewToAnimate.startAnimation(fade);
+        } else {
+            cancelAnimation(viewToAnimate);
         }
-        final AlphaAnimation fade = createFade(0, 1);
+
         viewToAnimate.setVisibility(View.VISIBLE);
-        fade.setDuration(fastestDuration);
-        viewToAnimate.startAnimation(fade);
     }
 
     public void fadeOut(@NonNull final View viewToAnimate) {
-        if (!shouldFadeOut(viewToAnimate)) {
-            return;
+        if (hasEndedAnim(viewToAnimate)) {
+            viewToAnimate.clearAnimation();
+            viewToAnimate.setVisibility(View.VISIBLE);
+            final AlphaAnimation fade = createFade(1, 0);
+            fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));
+            fade.setDuration(normalDuration);
+            viewToAnimate.startAnimation(fade);
+        } else {
+            cancelAnimation(viewToAnimate);
+            viewToAnimate.setVisibility(View.GONE);
         }
-        viewToAnimate.clearAnimation();
-        viewToAnimate.setVisibility(View.VISIBLE);
-        final AlphaAnimation fade = createFade(1, 0);
-        fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));
-        fade.setDuration(normalDuration);
-        viewToAnimate.startAnimation(fade);
     }
 
     public void fadeOutFast(@NonNull final View viewToAnimate) {
-        if (!shouldFadeOut(viewToAnimate)) {
-            return;
+        if (hasEndedAnim(viewToAnimate)) {
+            viewToAnimate.setVisibility(View.VISIBLE);
+            final AlphaAnimation fade = createFade(1, 0);
+            fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));
+            fade.setDuration(fastDuration);
+            viewToAnimate.startAnimation(fade);
+        } else {
+            cancelAnimation(viewToAnimate);
+            viewToAnimate.setVisibility(View.GONE);
         }
-        viewToAnimate.setVisibility(View.VISIBLE);
-        final AlphaAnimation fade = createFade(1, 0);
-        fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));
-        fade.setDuration(fastDuration);
-        viewToAnimate.startAnimation(fade);
     }
 }

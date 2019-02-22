@@ -339,13 +339,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void showInstallmentsList(final List<PayerCost> payerCostList, final int payerCostSelected) {
         animateViewPagerDown();
-        installmentsRecyclerView.setVisibility(VISIBLE);
         installmentsRecyclerView.scrollToPosition(payerCostSelected);
         installmentsAdapter.setPayerCosts(payerCostList);
         installmentsAdapter.setPayerCostSelected(payerCostSelected);
         installmentsAdapter.notifyDataSetChanged();
-        expandAndCollapseAnimation.expand();
         hubAdapter.showInstallmentsList();
+        expandAndCollapseAnimation.expand();
     }
 
     private void animateViewPagerDown() {
@@ -363,11 +362,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void collapseInstallmentsSelection() {
-        expandAndCollapseAnimation.collapse();
         paymentMethodSlideAnim.slideUp(pagerAndConfirmButtonContainer.getHeight(), 0);
         fadeAnimation.fadeInFastest(aspectRatioContainer);
         fadeAnimation.fadeIn(confirmButton);
         fadeAnimation.fadeIn(indicator);
+        expandAndCollapseAnimation.collapse();
     }
 
     @Override

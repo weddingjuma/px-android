@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 
+import static com.mercadopago.android.px.internal.util.ViewUtils.hasEndedAnim;
+
 public class PaymentMethodHeaderView extends FrameLayout {
 
     /* default */ final View titleView;
@@ -51,12 +53,14 @@ public class PaymentMethodHeaderView extends FrameLayout {
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(final View v) {
-                if (titleView.getVisibility() == VISIBLE) {
-                    arrow.startAnimation(rotateDown);
-                    listener.onInstallmentsSelectorCancelClicked();
-                } else {
-                    arrow.startAnimation(rotateUp);
-                    listener.onDescriptorViewClicked();
+                if (hasEndedAnim(arrow)) {
+                    if (titleView.getVisibility() == VISIBLE) {
+                        arrow.startAnimation(rotateDown);
+                        listener.onInstallmentsSelectorCancelClicked();
+                    } else {
+                        arrow.startAnimation(rotateUp);
+                        listener.onDescriptorViewClicked();
+                    }
                 }
             }
         });

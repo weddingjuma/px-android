@@ -18,6 +18,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,6 +37,11 @@ import static android.view.View.GONE;
 public final class ViewUtils {
 
     private ViewUtils() {
+    }
+
+    public static boolean hasEndedAnim(@NonNull final View viewToAnimate) {
+        return viewToAnimate.getAnimation() == null ||
+            (viewToAnimate.getAnimation() != null && viewToAnimate.getAnimation().hasEnded());
     }
 
     public static void addCancelToolbar(@NonNull final ViewGroup parentViewGroup, @ColorRes final int backgroundColor) {
@@ -231,5 +237,12 @@ public final class ViewUtils {
             .getResources()
             .getColor(R.color.px_white_background));
         return scrollView;
+    }
+
+    public static void cancelAnimation(@NonNull final View targetView) {
+        final Animation animation = targetView.getAnimation();
+        if (animation != null) {
+            animation.cancel();
+        }
     }
 }

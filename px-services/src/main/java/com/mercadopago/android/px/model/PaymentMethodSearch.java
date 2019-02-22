@@ -188,7 +188,7 @@ public class PaymentMethodSearch implements Serializable {
 
             //Case like "pagofacil", without the payment type in the item id.
             if (itemMatchesPaymentMethod(currentItem, paymentMethod) &&
-                currentItem.getId().equals(paymentMethod.getId())) {
+                    currentItem.getId().equals(paymentMethod.getId())) {
                 requiredItem = currentItem;
                 break;
             }
@@ -309,8 +309,11 @@ public class PaymentMethodSearch implements Serializable {
     public Set<String> getIdsWithSplitAllowed() {
         final Set<String> cardsWithSplit = new HashSet<>();
         for (final CustomSearchItem customSearchItem : getCustomSearchItems()) {
-            if (customSearchItem.getAmountConfiguration(customSearchItem.getDefaultAmountConfiguration())
-                .allowSplit()) {
+            // TODO remove validation when we add account money discount config.
+            AmountConfiguration amountConfiguration = customSearchItem
+                    .getAmountConfiguration(customSearchItem.getDefaultAmountConfiguration());
+
+            if (amountConfiguration != null && amountConfiguration.allowSplit()) {
                 cardsWithSplit.add(customSearchItem.getId());
             }
         }

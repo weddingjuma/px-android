@@ -1,3 +1,13 @@
+## VERSION 4.7.0
+_22_02_2019_
+* FEATURE - Split Payment.
+* FEATURE - CPF Validation.
+* ENHANCEMENT - Added abort and action events for congrats / business.
+* FIX - Terms and conditions event data.
+* FIX - Animations in PaymentVaultActivity.
+* FIX - Loading identification types NPE.
+* FIX - Add new method drives to groups if cards isn't present.
+
 ## VERSION 4.6.2
 _12_02_2019_
 * FIX - Added credit card date validation.  

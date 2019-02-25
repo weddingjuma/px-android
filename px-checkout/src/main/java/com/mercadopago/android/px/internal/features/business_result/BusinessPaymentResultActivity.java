@@ -71,8 +71,10 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             Session.getSession(this).getConfigurationModule()
                 .getUserSelectionRepository()
                 .getPaymentMethod();
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(paymentMethod);
+
+        final PaymentData paymentData = new PaymentData.Builder()
+            .setPaymentMethod(paymentMethod)
+            .createPaymentData();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
             .setPaymentData(paymentData)

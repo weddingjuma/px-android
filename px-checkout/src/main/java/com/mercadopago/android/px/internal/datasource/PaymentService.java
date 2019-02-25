@@ -33,12 +33,14 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
+import com.mercadopago.android.px.model.Split;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class PaymentService implements PaymentRepository {
@@ -277,46 +279,55 @@ public class PaymentService implements PaymentRepository {
     @NonNull
     @Override
     public List<PaymentData> getPaymentDataList() {
-        final List<PaymentData> paymentDataList = new ArrayList<>();
 
-        //TODO tokens
         final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
         final PaymentMethod secondaryPaymentMethod = userSelectionRepository.getSecondaryPaymentMethod();
 
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(userSelectionRepository.getPaymentMethod());
-        paymentData.setPayerCost(userSelectionRepository.getPayerCost());
-        paymentData.setToken(paymentSettingRepository.getToken());
-        paymentData.setIssuer(userSelectionRepository.getIssuer());
-        paymentData.setPayer(paymentSettingRepository.getCheckoutPreference().getPayer());
-        paymentData.setTransactionAmount(amountRepository.getAmountToPay());
-
-        paymentData.setCampaign(discountModel.getCampaign());
-
-        paymentDataList.add(paymentData);
-
-        if (secondaryPaymentMethod != null) {
-
+        if (secondaryPaymentMethod != null) { // is split payment
             final AmountConfiguration currentConfiguration = amountConfigurationRepository.getCurrentConfiguration();
+            final Split splitConfiguration = currentConfiguration.getSplitConfiguration();
 
-            final PaymentData secondaryPaymentData = new PaymentData();
-            secondaryPaymentData.setPaymentMethod(secondaryPaymentMethod);
-            secondaryPaymentData.setPayer(paymentSettingRepository.getCheckoutPreference().getPayer());
-            secondaryPaymentData
-                .setTransactionAmount(currentConfiguration.getSplitConfiguration().secondaryPaymentMethod.amount);
-            secondaryPaymentData.setCampaign(discountModel.getCampaign());
-            paymentData.setDiscount(currentConfiguration.getSplitConfiguration().primaryPaymentMethod.discount);
-            secondaryPaymentData
-                .setDiscount(currentConfiguration.getSplitConfiguration().secondaryPaymentMethod.discount);
-            paymentDataList.add(secondaryPaymentData);
-        } else {
+            final PaymentData paymentData = new PaymentData.Builder()
+                .setPaymentMethod(userSelectionRepository.getPaymentMethod())
+                .setPayerCost(userSelectionRepository.getPayerCost())
+                .setToken(paymentSettingRepository.getToken())
+                .setIssuer(userSelectionRepository.getIssuer())
+                .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
+                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setCampaign(discountModel.getCampaign())
+                .setDiscount(splitConfiguration.primaryPaymentMethod.discount)
+                .setRawAmount(splitConfiguration.primaryPaymentMethod.amount)
+                .createPaymentData();
+
+            final PaymentData secondaryPaymentData = new PaymentData.Builder()
+                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
+                .setPaymentMethod(secondaryPaymentMethod)
+                .setCampaign(discountModel.getCampaign())
+                .setDiscount(splitConfiguration.secondaryPaymentMethod.discount)
+                .setRawAmount(splitConfiguration.secondaryPaymentMethod.amount)
+                .createPaymentData();
+
+            return Arrays.asList(paymentData, secondaryPaymentData);
+        } else { // is regular 1 pm payment
             final Discount discount = userSelectionRepository.getCard() == null ? discountModel.getDiscount()
                 : Discount.replaceWith(discountModel.getDiscount(),
                     amountConfigurationRepository.getCurrentConfiguration().getDiscountToken());
-            paymentData.setDiscount(discount);
-        }
 
-        return paymentDataList;
+            final PaymentData paymentData = new PaymentData.Builder()
+                .setPaymentMethod(userSelectionRepository.getPaymentMethod())
+                .setPayerCost(userSelectionRepository.getPayerCost())
+                .setToken(paymentSettingRepository.getToken())
+                .setIssuer(userSelectionRepository.getIssuer())
+                .setDiscount(discount)
+                .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
+                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setCampaign(discountModel.getCampaign())
+                .setRawAmount(paymentSettingRepository.getCheckoutPreference().getTotalAmount())
+                .createPaymentData();
+
+            return Collections.singletonList(paymentData);
+        }
     }
 
     /**

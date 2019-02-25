@@ -137,8 +137,9 @@ public class PaymentResultContainerTest {
 
     @Test
     public void onInvalidPaymentResultStatusGetDefaultBackground() {
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(PaymentMethods.getPaymentMethodOff());
+        final PaymentData paymentData = new PaymentData.Builder()
+            .setPaymentMethod(PaymentMethods.getPaymentMethodOff())
+            .createPaymentData();
 
         final PaymentResult paymentResult = new PaymentResult.Builder()
             .setPaymentStatus("")
@@ -215,8 +216,9 @@ public class PaymentResultContainerTest {
 
     @Test
     public void onInvalidPaymentResultStatusGetDefaultIcon() {
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(PaymentMethods.getPaymentMethodOff());
+        final PaymentData paymentData = new PaymentData.Builder()
+            .setPaymentMethod(PaymentMethods.getPaymentMethodOff())
+            .createPaymentData();
 
         final PaymentResult paymentResult = new PaymentResult.Builder()
             .setPaymentStatus("")
@@ -354,8 +356,9 @@ public class PaymentResultContainerTest {
 
     @Test
     public void onInvalidPaymentResultStatusGetDefaultBadge() {
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(PaymentMethods.getPaymentMethodOff());
+        final PaymentData paymentData = new PaymentData.Builder()
+            .setPaymentMethod(PaymentMethods.getPaymentMethodOff())
+            .createPaymentData();
 
         final PaymentResult paymentResult = new PaymentResult.Builder()
             .setPaymentStatus("")
@@ -590,8 +593,9 @@ public class PaymentResultContainerTest {
 
     @Test
     public void onInvalidPaymentResultStatusGetEmptyLabel() {
-        final PaymentData paymentData = new PaymentData();
-        paymentData.setPaymentMethod(PaymentMethods.getPaymentMethodOff());
+        final PaymentData paymentData = new PaymentData.Builder()
+            .setPaymentMethod(PaymentMethods.getPaymentMethodOff())
+            .createPaymentData();
 
         final PaymentResult paymentResult = new PaymentResult.Builder()
             .setPaymentStatus("")

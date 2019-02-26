@@ -82,14 +82,16 @@ public final class PayerInformationStateModel implements Parcelable {
     }
 
     public void setIdentificationTypes(final List<IdentificationType> identificationTypes) {
+        //TODO do not filter identification types when CNPJ is resolved.
         identificationTypeList = new ArrayList<>();
         for (final IdentificationType identificationType : identificationTypes) {
             if (identificationType.getId().equals(IDENTIFICATION_TYPE_CPF)) {
                 identificationTypeList.add(identificationType);
             }
         }
-
-        setIdentificationType(identificationType = identificationTypes.get(0));
+        if (!identificationTypeList.isEmpty()) {
+            setIdentificationType(identificationTypeList.get(0));
+        }
     }
 
     public boolean hasFilledInfo() {

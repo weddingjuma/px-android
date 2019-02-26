@@ -61,6 +61,20 @@ public class IdentificationTypes {
         return identificationTypesList;
     }
 
+    public static List<IdentificationType> getEnabledMLBIdentificationTypes() {
+        List<IdentificationType> identificationTypesList;
+        String json = ResourcesUtil.getStringResource("identification_types_MLB.json");
+
+        try {
+            Type listType = new TypeToken<List<IdentificationType>>() {
+            }.getType();
+            identificationTypesList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+        } catch (Exception ex) {
+            identificationTypesList = null;
+        }
+        return identificationTypesList;
+    }
+
     public static IdentificationType getIdentificationTypeCPF() {
         IdentificationType identificationType = new IdentificationType();
         identificationType.setType(TYPE);

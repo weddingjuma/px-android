@@ -64,10 +64,11 @@ public class PayerInformationPresenterTest {
 
     @Test
     public void whenInitializePresenterThenInitializeIdentificationTypes() {
-        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getIdentificationTypes();
+        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getEnabledMLBIdentificationTypes();
         when(stateModel.hasIdentificationTypes()).thenReturn(false);
         when(identificationRepository.getIdentificationTypes())
             .thenReturn(new StubSuccessMpCall<>(stubIdentificationTypes));
+        when(stateModel.getIdentificationTypeList()).thenReturn(IdentificationTypes.getEnabledMLBIdentificationTypes());
 
         presenter.attachView(view);
 
@@ -112,7 +113,7 @@ public class PayerInformationPresenterTest {
     @Test
     public void whenGetIdentificationTypesFailAndRecoverThenShowThem() {
         final ApiException apiException = mock(ApiException.class);
-        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getIdentificationTypes();
+        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getEnabledMLBIdentificationTypes();
 
         when(stateModel.hasIdentificationTypes()).thenReturn(false);
         when(identificationRepository.getIdentificationTypes())
@@ -122,12 +123,13 @@ public class PayerInformationPresenterTest {
 
         when(identificationRepository.getIdentificationTypes())
             .thenReturn(new StubSuccessMpCall<>(stubIdentificationTypes));
-
+        when(stateModel.getIdentificationTypeList()).thenReturn(IdentificationTypes.getEnabledMLBIdentificationTypes());
         presenter.recoverFromFailure();
 
         verify(view, atLeast(2)).showProgressBar();
         verify(view).showError(any(MercadoPagoError.class), anyString());
-        verify(view).initializeIdentificationTypes(stubIdentificationTypes, stateModel.getIdentificationType());
+        verify(view)
+            .initializeIdentificationTypes(stateModel.getIdentificationTypeList(), stateModel.getIdentificationType());
         verify(view).hideProgressBar();
         verify(view).requestIdentificationNumberFocus();
         verifyNoMoreInteractions(view);
@@ -283,12 +285,13 @@ public class PayerInformationPresenterTest {
 
     @Test
     public void whenSavedIdentificationTypeIsNotNullThenSetIdentificationNumberRestrictions() {
-        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getIdentificationTypes();
+        final List<IdentificationType> stubIdentificationTypes = IdentificationTypes.getEnabledMLBIdentificationTypes();
         final IdentificationType identificationType = stubIdentificationTypes.get(0);
 
         when(identificationRepository.getIdentificationTypes())
             .thenReturn(new StubSuccessMpCall<>(stubIdentificationTypes));
         when(stateModel.getIdentification()).thenReturn(new Identification());
+        when(stateModel.getIdentificationTypeList()).thenReturn(IdentificationTypes.getEnabledMLBIdentificationTypes());
 
         presenter.attachView(view);
         presenter.saveIdentificationType(identificationType);

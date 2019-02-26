@@ -89,11 +89,14 @@ import java.util.List;
     }
 
     private void resolveIdentificationTypes(final List<IdentificationType> identificationTypes) {
-        if (identificationTypes.isEmpty()) {
+        //TODO do not filter identification types when CNPJ is resolved.
+        state.setIdentificationTypes(identificationTypes);
+        final List<IdentificationType> filteredIdentificationTypes = state.getIdentificationTypeList();
+
+        if (filteredIdentificationTypes.isEmpty()) {
             getView().showMissingIdentificationTypesError();
         } else {
-            state.setIdentificationTypes(identificationTypes);
-            getView().initializeIdentificationTypes(identificationTypes, state.getIdentificationType());
+            getView().initializeIdentificationTypes(filteredIdentificationTypes, state.getIdentificationType());
         }
     }
 

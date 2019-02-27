@@ -39,6 +39,14 @@ public final class ViewUtils {
     private ViewUtils() {
     }
 
+    public static boolean shouldVisibleAnim(@NonNull final View viewToAnimate) {
+        return hasEndedAnim(viewToAnimate) && viewToAnimate.getVisibility() != View.VISIBLE;
+    }
+
+    public static boolean shouldGoneAnim(@NonNull final View viewToAnimate) {
+        return hasEndedAnim(viewToAnimate) && viewToAnimate.getVisibility() != View.GONE;
+    }
+
     public static boolean hasEndedAnim(@NonNull final View viewToAnimate) {
         return viewToAnimate.getAnimation() == null ||
             (viewToAnimate.getAnimation() != null && viewToAnimate.getAnimation().hasEnded());

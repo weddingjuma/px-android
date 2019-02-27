@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.core.internal;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -50,8 +51,10 @@ public class PaymentProcessorMapper extends Mapper<PaymentProcessor, SplitPaymen
             public Fragment getFragment(@NonNull final CheckoutData data, @NonNull final Context context) {
                 final PaymentProcessor.CheckoutData mapped = checkoutDataMapper.map(data);
                 final Fragment fragment = val.getFragment(checkoutDataMapper.map(data), context);
-                if (fragment != null) {
-                    fragment.setArguments(val.getFragmentBundle(mapped, context));
+                final Bundle fragmentBundle = val.getFragmentBundle(mapped, context);
+                // Do not remove checks, vending imp returns null
+                if (fragment != null && fragmentBundle != null) {
+                    fragment.setArguments(fragmentBundle);
                 }
                 return fragment;
             }

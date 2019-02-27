@@ -1,3 +1,9 @@
+## VERSION 4.7.1
+_27_02_2019_
+* FIX - signature card storage
+* FIX - identification only cpf for brazil
+* FIX - event data review and confirm
+
 ## VERSION 4.7.0
 _22_02_2019_
 * FEATURE - Split Payment.

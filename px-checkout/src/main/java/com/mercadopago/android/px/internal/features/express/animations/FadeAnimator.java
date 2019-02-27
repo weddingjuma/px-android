@@ -29,8 +29,16 @@ public class FadeAnimator {
         return anim;
     }
 
+    private boolean shouldFadeIn(@NonNull final View viewToAnimate) {
+        return hasEndedAnim(viewToAnimate) && viewToAnimate.getVisibility() != View.VISIBLE;
+    }
+
+    private boolean shouldFadeOut(@NonNull final View viewToAnimate) {
+        return hasEndedAnim(viewToAnimate) && viewToAnimate.getVisibility() != View.GONE;
+    }
+
     public void fadeIn(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldFadeIn(viewToAnimate)) {
             final AlphaAnimation fade = createFade(0, 1);
             fade.setDuration(normalDuration);
             viewToAnimate.startAnimation(fade);
@@ -41,7 +49,7 @@ public class FadeAnimator {
     }
 
     public void fadeInFastest(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldFadeIn(viewToAnimate)) {
             final AlphaAnimation fade = createFade(0, 1);
             fade.setDuration(fastestDuration);
             viewToAnimate.startAnimation(fade);
@@ -53,7 +61,7 @@ public class FadeAnimator {
     }
 
     public void fadeOut(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldFadeOut(viewToAnimate)) {
             viewToAnimate.clearAnimation();
             viewToAnimate.setVisibility(View.VISIBLE);
             final AlphaAnimation fade = createFade(1, 0);
@@ -67,7 +75,7 @@ public class FadeAnimator {
     }
 
     public void fadeOutFast(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldFadeOut(viewToAnimate)) {
             viewToAnimate.setVisibility(View.VISIBLE);
             final AlphaAnimation fade = createFade(1, 0);
             fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));

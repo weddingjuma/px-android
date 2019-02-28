@@ -332,8 +332,8 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     }
 
     /* default */ void setAlphaColorText() {
-        mIdentificationTicketView.setAlphaColorNameText();
-        mIdentificationTicketView.setAlphaColorLastNameText();
+        mIdentificationTicketView.configureAlphaColorNameText();
+        mIdentificationTicketView.configureAlphaColorLastNameText();
     }
 
     private void setIdentificationNameEditTextListeners() {
@@ -570,14 +570,12 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     @Override
     public void showIdentificationLastNameFocus() {
         mIdentificationNameInput.setVisibility(View.GONE);
-        mIdentificationTicketView.setNormalColorLastNameText();
         requestIdentificationLastNameFocus();
     }
 
     @Override
     public void showIdentificationNameFocus() {
         mIdentificationNumberInput.setVisibility(View.GONE);
-        mIdentificationTicketView.setNormalColorNameText();
         requestIdentificationNameFocus();
     }
 
@@ -606,8 +604,6 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
 
     private void configureIdentificationNumberFocusFromName() {
         mIdentificationNumberInput.setVisibility(View.VISIBLE);
-        mIdentificationTicketView.setAlphaColorNameText();
-        mIdentificationTicketView.setAlphaColorLastNameText();
         requestIdentificationNumberFocus();
     }
 

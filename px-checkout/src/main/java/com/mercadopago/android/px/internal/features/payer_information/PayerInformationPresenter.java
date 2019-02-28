@@ -163,7 +163,6 @@ import java.util.List;
             break;
         case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
             getView().showInvalidIdentificationNumberErrorView();
-            getView().showErrorIdentificationNumber();
             break;
         }
     }
@@ -195,7 +194,7 @@ import java.util.List;
     @Override
     public void validateIdentification() {
         try {
-            IdentificationUtils.validateIdentification(state.getIdentification(), state.getIdentificationType());
+            IdentificationUtils.validateTicketIdentification(state.getIdentification(), state.getIdentificationType());
             getView().clearErrorView();
             getView().clearErrorIdentificationNumber();
             getView().showIdentificationNameFocus();

@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.exceptions.InvalidFieldException;
@@ -20,12 +21,28 @@ public final class IdentificationUtils {
     private IdentificationUtils() {
     }
 
-    public static void validateIdentification(final Identification identification,
+    public static void validateTicketIdentification(final Identification identification,
         final IdentificationType identificationType) throws InvalidFieldException {
         if (identificationType != null && identification != null) {
             validateIdentificationNumberLength(identification, identificationType);
         }
         validateNumber(identification);
+    }
+
+    public static void validateCardIdentification(final CardToken cardToken, final Identification identification,
+        final IdentificationType identificationType) throws InvalidFieldException {
+        if (identificationType != null && identification != null) {
+            validateCardTokenIdentificationNumber(cardToken, identification, identificationType);
+        }
+        validateNumber(identification);
+    }
+
+    private static void validateCardTokenIdentificationNumber(final CardToken cardToken,
+        final Identification identification, final IdentificationType identificationType) throws InvalidFieldException {
+        cardToken.getCardholder().setIdentification(identification);
+        if (!cardToken.validateIdentificationNumber(identificationType)) {
+            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+        }
     }
 
     private static void validateNumber(final Identification identification) throws InvalidFieldException {

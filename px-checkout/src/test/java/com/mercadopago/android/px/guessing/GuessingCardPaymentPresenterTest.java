@@ -3,7 +3,6 @@ package com.mercadopago.android.px.guessing;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
-import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivityView;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardPaymentPresenter;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -512,7 +511,7 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());
 
-        assertTrue(presenter.validateIdentificationNumber());
+        assertTrue(presenter.validateIdentificationNumberToFinishCardToken());
         assertEquals(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI,
             presenter.getCardToken().getCardholder().getIdentification().getNumber());
     }
@@ -544,7 +543,7 @@ public class GuessingCardPaymentPresenterTest {
 
         final boolean valid =
             presenter.validateCardNumber() && presenter.validateCardName() && presenter.validateExpiryDate()
-                && presenter.validateSecurityCode() && presenter.validateIdentificationNumber();
+                && presenter.validateSecurityCode() && presenter.validateIdentificationNumberToFinishCardToken();
 
         when(issuersRepository.getIssuers(mockedPaymentMethod.getId(), presenter.getSavedBin()))
             .thenReturn(new StubSuccessMpCall<>(Issuers.getIssuersListMLA()));

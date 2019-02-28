@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.datasource.CardAssociationGatewayService;
 import com.mercadopago.android.px.internal.datasource.CardAssociationService;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
-import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivityView;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardStoragePresenter;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.CardPaymentMethodRepository;

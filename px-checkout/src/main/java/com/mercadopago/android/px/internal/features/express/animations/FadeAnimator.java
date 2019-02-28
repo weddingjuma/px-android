@@ -8,7 +8,8 @@ import android.view.animation.AlphaAnimation;
 import com.mercadopago.android.px.R;
 
 import static com.mercadopago.android.px.internal.util.ViewUtils.cancelAnimation;
-import static com.mercadopago.android.px.internal.util.ViewUtils.hasEndedAnim;
+import static com.mercadopago.android.px.internal.util.ViewUtils.shouldGoneAnim;
+import static com.mercadopago.android.px.internal.util.ViewUtils.shouldVisibleAnim;
 
 public class FadeAnimator {
 
@@ -30,30 +31,32 @@ public class FadeAnimator {
     }
 
     public void fadeIn(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldVisibleAnim(viewToAnimate)) {
             final AlphaAnimation fade = createFade(0, 1);
             fade.setDuration(normalDuration);
             viewToAnimate.startAnimation(fade);
         } else {
             cancelAnimation(viewToAnimate);
+            viewToAnimate.clearAnimation();
         }
         viewToAnimate.setVisibility(View.VISIBLE);
     }
 
     public void fadeInFastest(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldVisibleAnim(viewToAnimate)) {
+
             final AlphaAnimation fade = createFade(0, 1);
             fade.setDuration(fastestDuration);
             viewToAnimate.startAnimation(fade);
         } else {
             cancelAnimation(viewToAnimate);
+            viewToAnimate.clearAnimation();
         }
-
         viewToAnimate.setVisibility(View.VISIBLE);
     }
 
     public void fadeOut(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldGoneAnim(viewToAnimate)) {
             viewToAnimate.clearAnimation();
             viewToAnimate.setVisibility(View.VISIBLE);
             final AlphaAnimation fade = createFade(1, 0);
@@ -62,12 +65,13 @@ public class FadeAnimator {
             viewToAnimate.startAnimation(fade);
         } else {
             cancelAnimation(viewToAnimate);
+            viewToAnimate.clearAnimation();
             viewToAnimate.setVisibility(View.GONE);
         }
     }
 
     public void fadeOutFast(@NonNull final View viewToAnimate) {
-        if (hasEndedAnim(viewToAnimate)) {
+        if (shouldGoneAnim(viewToAnimate)) {
             viewToAnimate.setVisibility(View.VISIBLE);
             final AlphaAnimation fade = createFade(1, 0);
             fade.setAnimationListener(new HideViewOnAnimationListener(viewToAnimate));
@@ -75,6 +79,7 @@ public class FadeAnimator {
             viewToAnimate.startAnimation(fade);
         } else {
             cancelAnimation(viewToAnimate);
+            viewToAnimate.clearAnimation();
             viewToAnimate.setVisibility(View.GONE);
         }
     }

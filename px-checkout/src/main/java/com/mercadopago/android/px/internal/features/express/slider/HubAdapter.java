@@ -25,7 +25,7 @@ public class HubAdapter extends ViewAdapter<List<ViewAdapter<?, ? extends View>>
     }
 
     public HubAdapter() {
-        super(new ArrayList<ViewAdapter<?, ? extends View>>());
+        super(new ArrayList<>());
     }
 
     @Override

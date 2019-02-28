@@ -1,3 +1,9 @@
+## VERSION 4.7.2
+_27_02_2019_
+* FIX - payment processor bundle mapping fix for vending
+* FIX - animations split payment
+* FIX - invalid state cardvault
+
 ## VERSION 4.7.1
 _27_02_2019_
 * FIX - signature card storage

@@ -8,7 +8,8 @@ import com.mercadopago.android.px.R;
 
 import static android.view.View.VISIBLE;
 import static com.mercadopago.android.px.internal.util.ViewUtils.cancelAnimation;
-import static com.mercadopago.android.px.internal.util.ViewUtils.hasEndedAnim;
+import static com.mercadopago.android.px.internal.util.ViewUtils.shouldGoneAnim;
+import static com.mercadopago.android.px.internal.util.ViewUtils.shouldVisibleAnim;
 
 public class ExpandAndCollapseAnimation {
 
@@ -27,25 +28,27 @@ public class ExpandAndCollapseAnimation {
      * Expand the view is not animating
      */
     public void expand() {
-        if (hasEndedAnim(targetView)) {
-            targetView.setAnimation(expandAnimation);
+        if (shouldVisibleAnim(targetView)) {
+            targetView.clearAnimation();
+            targetView.setVisibility(VISIBLE);
             targetView.startAnimation(expandAnimation);
         } else {
             cancelAnimation(targetView);
+            targetView.clearAnimation();
+            targetView.setVisibility(VISIBLE);
         }
-
-        targetView.setVisibility(VISIBLE);
     }
 
     /**
      * Collapse the view is not animating
      */
     public void collapse() {
-        if (hasEndedAnim(targetView)) {
-            targetView.setAnimation(collapseAnimation);
+        if (shouldGoneAnim(targetView)) {
+            targetView.clearAnimation();
             targetView.startAnimation(collapseAnimation);
         } else {
             cancelAnimation(targetView);
+            targetView.clearAnimation();
             targetView.setVisibility(View.GONE);
         }
     }

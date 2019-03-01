@@ -115,6 +115,8 @@ public interface GuessingCard {
 
         void setInvalidCardOnePaymentMethodErrorView();
 
+        void showInvalidIdentificationNumberLengthErrorView();
+
         void showInvalidIdentificationNumberErrorView();
 
         void setInvalidEmptyNameErrorView();

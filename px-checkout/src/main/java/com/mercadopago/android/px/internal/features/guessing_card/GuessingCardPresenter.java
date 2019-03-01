@@ -302,7 +302,18 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
             checkFinishWithCardToken();
         } catch (InvalidFieldException e) {
             trackInvalidDocument();
+            showErrorView(e);
+        }
+    }
+
+    private void showErrorView(final InvalidFieldException e) {
+        switch (e.getErrorCode()) {
+        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+            getView().showInvalidIdentificationNumberLengthErrorView();
+            break;
+        case InvalidFieldException.INVALID_CPF:
             getView().showInvalidIdentificationNumberErrorView();
+            break;
         }
     }
 
@@ -319,7 +330,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
             validateCardIdentification();
         } catch (InvalidFieldException e) {
             trackInvalidDocument();
-            getView().showInvalidIdentificationNumberErrorView();
+            showErrorView(e);
         }
     }
 
@@ -438,7 +449,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
                 getView().showIdentificationInputPreviousScreen();
             } catch (InvalidFieldException e) {
                 trackInvalidDocument();
-                getView().showInvalidIdentificationNumberErrorView();
+                showErrorView(e);
             }
         }
     }

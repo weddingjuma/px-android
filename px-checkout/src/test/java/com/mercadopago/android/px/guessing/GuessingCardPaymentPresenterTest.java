@@ -608,6 +608,23 @@ public class GuessingCardPaymentPresenterTest {
     }
 
     @Test
+    public void whenBackPressedAndHasInvalidLengthCPFIdentificationNumberThenShowInvalidIdentificationNumberLengthErrorView() {
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidLengthCpfNumber();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToPreviousScreen();
+
+        verify(view).setIdentificationNumberRestrictions(identificationType.getType());
+        verify(view).showInvalidIdentificationNumberLengthErrorView();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
     public void whenContinuePressedAndIsValidCPFIdentificationNumberThenShowFinishCardFlow() {
         final Identification identification = IdentificationUtils.getIdentificationCPF();
         final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();

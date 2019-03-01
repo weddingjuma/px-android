@@ -1094,8 +1094,14 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     @Override
-    public void showInvalidIdentificationNumberErrorView() {
+    public void showInvalidIdentificationNumberLengthErrorView() {
         setErrorView(getString(R.string.px_invalid_identification_number));
+        showErrorIdentificationNumber();
+    }
+
+    @Override
+    public void showInvalidIdentificationNumberErrorView() {
+        setErrorView(getString(R.string.px_invalid_field));
         showErrorIdentificationNumber();
     }
 

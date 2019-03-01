@@ -163,6 +163,7 @@ import java.util.List;
             break;
         case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
             getView().showInvalidIdentificationNumberErrorView();
+            getView().showErrorIdentificationNumber();
             break;
         }
     }

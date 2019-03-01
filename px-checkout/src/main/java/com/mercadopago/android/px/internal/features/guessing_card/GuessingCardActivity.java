@@ -884,7 +884,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            presenter.validateIdentificationNumberToFinishCardToken();
+            presenter.validateIdentificationNumberToFinishWithCardToken();
         }
     }
 
@@ -1259,7 +1259,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             }
             break;
         case CARD_IDENTIFICATION_INPUT:
-            presenter.validateIdentificationNumberToFinishCardToken();
+            presenter.validateIdentificationNumberToFinishWithCardToken();
             break;
         default:
             break;

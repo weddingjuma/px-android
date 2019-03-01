@@ -34,17 +34,8 @@ public class IdentificationTypes {
     }
 
     public static IdentificationType getIdentificationType() {
-        List<IdentificationType> identificationTypesList;
-        String json = ResourcesUtil.getStringResource("identification_types.json");
-
-        try {
-            Type listType = new TypeToken<List<IdentificationType>>() {
-            }.getType();
-            identificationTypesList = JsonUtil.getInstance().getGson().fromJson(json, listType);
-        } catch (Exception ex) {
-            identificationTypesList = null;
-        }
-        return identificationTypesList.get(0);
+        List<IdentificationType> identificationTypesList = getIdentificationTypes();
+        return identificationTypesList == null ? null : identificationTypesList.get(0);
     }
 
     public static List<IdentificationType> getIdentificationTypes() {

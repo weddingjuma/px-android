@@ -296,7 +296,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
     }
 
     @Override
-    public void validateIdentificationNumberToFinishCardToken() {
+    public void validateIdentificationNumberToFinishWithCardToken() {
         try {
             validateCardIdentification();
             checkFinishWithCardToken();
@@ -430,7 +430,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
 
     @Override
     public void validateIdentificationNumberToPreviousScreen() {
-        if (TextUtils.isEmpty(identificationNumber)) {
+        if (TextUtil.isEmpty(identificationNumber)) {
             getView().showIdentificationInputPreviousScreen();
         } else {
             try {

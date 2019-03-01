@@ -154,7 +154,7 @@ public interface GuessingCard {
     }
 
     interface Actions {
-        void validateIdentificationNumberToFinishCardToken();
+        void validateIdentificationNumberToFinishWithCardToken();
 
         void validateIdentificationNumber();
 

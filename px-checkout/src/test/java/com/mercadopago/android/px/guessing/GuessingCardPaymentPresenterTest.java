@@ -17,6 +17,7 @@ import com.mercadopago.android.px.mocks.BankDealsUtils;
 import com.mercadopago.android.px.mocks.Cards;
 import com.mercadopago.android.px.mocks.DummyCard;
 import com.mercadopago.android.px.mocks.IdentificationTypes;
+import com.mercadopago.android.px.mocks.IdentificationUtils;
 import com.mercadopago.android.px.mocks.Issuers;
 import com.mercadopago.android.px.mocks.PaymentMethods;
 import com.mercadopago.android.px.mocks.Tokens;
@@ -57,8 +58,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 @SuppressWarnings("PMD.ExcessiveClassLength")
@@ -512,7 +515,10 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());
 
-        //fixme assertTrue(presenter.validateIdentificationNumberToFinishCardToken());
+        presenter.validateIdentificationNumberToFinishWithCardToken();
+
+        verify(view).clearErrorView();
+        verify(view).clearErrorIdentificationNumber();
         assertEquals(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI,
             presenter.getCardToken().getCardholder().getIdentification().getNumber());
     }
@@ -542,18 +548,118 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());
 
-        //fixme
-        /*final boolean valid =
+        final boolean valid =
             presenter.validateCardNumber() && presenter.validateCardName() && presenter.validateExpiryDate()
-                && presenter.validateSecurityCode() && presenter.validateIdentificationNumberToFinishCardToken();
+                && presenter.validateSecurityCode();
+
+        presenter.validateIdentificationNumberToFinishWithCardToken();
 
         when(issuersRepository.getIssuers(mockedPaymentMethod.getId(), presenter.getSavedBin()))
             .thenReturn(new StubSuccessMpCall<>(Issuers.getIssuersListMLA()));
 
-        assertTrue(valid);*/
+        assertTrue(valid);
+        verify(view, atLeastOnce()).clearErrorView();
+        verify(view).clearErrorIdentificationNumber();
+        verify(view).showFinishCardFlow();
         presenter.checkFinishWithCardToken();
         presenter.resolveTokenRequest(mockedToken);
         assertEquals(presenter.getToken(), mockedToken);
+    }
+
+    @Test
+    public void whenBackPressedAndIsValidCPFIdentificationNumberThenShowPreviousScreen() {
+        final Identification identification = IdentificationUtils.getIdentificationCPF();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToPreviousScreen();
+
+        verify(view).showIdentificationInputPreviousScreen();
+        verifyClearErrorIdentificationNumberView(identificationType);
+    }
+
+    @Test
+    public void whenBackPressedAndIdentificationNumberIsEmptyThenShowPreviousScreen() {
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+
+        presenter.saveIdentificationNumber(null);
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToPreviousScreen();
+
+        verify(view).setIdentificationNumberRestrictions(identificationType.getType());
+        verify(view).showIdentificationInputPreviousScreen();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenBackPressedAndIsInvalidCPFIdentificationNumberThenShowInvalidIdentificationNumberErrorView() {
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidCpfNumber();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToPreviousScreen();
+
+        verifyInvalidIdentificationNumberErrorView(identificationType);
+    }
+
+    @Test
+    public void whenContinuePressedAndIsValidCPFIdentificationNumberThenShowFinishCardFlow() {
+        final Identification identification = IdentificationUtils.getIdentificationCPF();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToFinishWithCardToken();
+
+        verify(view).showFinishCardFlow();
+        verifyClearErrorIdentificationNumberView(identificationType);
+    }
+
+    @Test
+    public void whenContinuePressedAndIsInvalidCPFIdentificationNumberThenShowFinishCardFlow() {
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidCpfNumber();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumberToFinishWithCardToken();
+
+        verifyInvalidIdentificationNumberErrorView(identificationType);
+    }
+
+    @Test
+    public void whenSaveValidCPFIdentificationNumberWithoutPressingContinueThenClearErrorView() {
+        final Identification identification = IdentificationUtils.getIdentificationCPF();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumber();
+
+        verifyClearErrorIdentificationNumberView(identificationType);
+    }
+
+    @Test
+    public void whenSaveInvalidCPFIdentificationNumberWithoutPressingContinueThenShowInvalidIdentificationNumberErrorView() {
+        final Identification identification = IdentificationUtils.getIdentificationWithInvalidCpfNumber();
+        final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+
+        presenter.saveIdentificationNumber(identification.getNumber());
+        presenter.saveIdentificationType(identificationType);
+        presenter.validateIdentificationNumber();
+
+        verifyInvalidIdentificationNumberErrorView(identificationType);
     }
 
     @Test
@@ -646,5 +752,18 @@ public class GuessingCardPaymentPresenterTest {
         when(identificationRepository.getIdentificationTypes()).thenReturn(new StubSuccessMpCall<>
             (identificationTypes));
         return identificationTypes;
+    }
+
+    private void verifyClearErrorIdentificationNumberView(final IdentificationType identificationType) {
+        verify(view).setIdentificationNumberRestrictions(identificationType.getType());
+        verify(view).clearErrorView();
+        verify(view).clearErrorIdentificationNumber();
+        verifyNoMoreInteractions(view);
+    }
+
+    private void verifyInvalidIdentificationNumberErrorView(final IdentificationType identificationType) {
+        verify(view).setIdentificationNumberRestrictions(identificationType.getType());
+        verify(view).showInvalidIdentificationNumberErrorView();
+        verifyNoMoreInteractions(view);
     }
 }

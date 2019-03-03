@@ -1,6 +1,9 @@
 package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
+
+import com.mercadopago.android.px.configuration.PaymentConfiguration;
+import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.features.hooks.Hook;
@@ -50,8 +53,10 @@ import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubP
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItemAndPayer;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -190,10 +195,33 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenAPaymentMethodIsSelectedThenShowReviewAndConfirm() {
+    public void whenAPaymentMethodIsSelectedThenShowReviewAndConfirmIfPaymentProcessorShouldNotSkipUserConfirmation() {
         final CheckoutPresenter presenter = getPresenter();
-        presenter.onPaymentMethodSelectionResponse();
+        final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
+        final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
+
+        when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
+        when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
+        when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(false);
+
+        presenter.onPaymentMethodSelected();
         verify(checkoutView).showReviewAndConfirm(false);
+        verifyNoMoreInteractions(checkoutView);
+    }
+
+    @Test
+    public void whenAPaymentMethodIsSelectedThenShowVisualPaymentProcessorIfItShouldSkipShowUserConfirmation() {
+        final CheckoutPresenter presenter = getPresenter();
+        final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
+        final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
+
+        when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
+        when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
+        when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(true);
+
+        presenter.onPaymentMethodSelected();
+        verify(checkoutView).showPaymentProcessor();
+        verify(checkoutView, never()).showReviewAndConfirm(anyBoolean());
         verifyNoMoreInteractions(checkoutView);
     }
 
@@ -380,15 +408,42 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenCardFlowResponseHasNotRecoverableTokenProcessAndThereIsNoAvailableHooksThenShowReviewAndConfirm() {
+    public void whenCardFlowResponseHasNotRecoverableTokenProcessAndThereIsNoAvailableHooksThenShowReviewAndConfirmIfPaymentProcessorShouldNotSkipUserConfirmation() {
         final CheckoutPresenter presenter = getPresenter();
+        final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
+        final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
 
         when(paymentRepository.hasPayment()).thenReturn(false);
+
+        when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
+        when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
+        when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(false);
 
         presenter.onCardFlowResponse();
 
         verify(paymentRepository).hasPayment();
         verify(checkoutView).showReviewAndConfirm(false);
+        verifyNoMoreInteractions(checkoutView);
+        verifyNoMoreInteractions(paymentRepository);
+    }
+
+    @Test
+    public void whenCardFlowResponseHasNotRecoverableTokenProcessAndThereIsNoAvailableHooksThenShowVisualPaymentProcessorIfItShouldSkipUserConfirmation() {
+        final CheckoutPresenter presenter = getPresenter();
+        final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
+        final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
+
+        when(paymentRepository.hasPayment()).thenReturn(false);
+
+        when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
+        when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
+        when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(true);
+
+        presenter.onCardFlowResponse();
+
+        verify(paymentRepository).hasPayment();
+        verify(checkoutView).showPaymentProcessor();
+        verify(checkoutView, never()).showReviewAndConfirm(anyBoolean());
         verifyNoMoreInteractions(checkoutView);
         verifyNoMoreInteractions(paymentRepository);
     }
@@ -406,10 +461,17 @@ public class CheckoutPresenterTest {
     @Test
     public void whenPaymentMethodEditionIsRequestedAndUserPressesBackCancelCheckout() {
         final CheckoutPresenter presenter = getPaymentPresenterWithDefaultAdvancedConfigurationMla();
+        final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
+        final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
+
+        when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
+        when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
+        when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(false);
+
         presenter.initialize();
         assertTrue(stubView.showingPaymentMethodSelection);
 
-        presenter.onPaymentMethodSelectionResponse();
+        presenter.onPaymentMethodSelected();
         assertTrue(stubView.showingReviewAndConfirm);
 
         presenter.onChangePaymentMethodFromReviewAndConfirm();

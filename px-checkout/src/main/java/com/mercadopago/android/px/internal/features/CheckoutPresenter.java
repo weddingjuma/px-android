@@ -233,13 +233,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     /* default */ void onPaymentMethodSelected() {
-
-        final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
-        final PaymentProcessor.CheckoutData checkoutData =
-            new PaymentProcessor.CheckoutData(paymentRepository.getPaymentData(), checkoutPreference);
-
-        if (paymentSettingRepository.getPaymentConfiguration().getPaymentProcessor()
-            .shouldSkipUserConfirmation(checkoutData)) {
+        if (paymentSettingRepository.getPaymentConfiguration().getPaymentProcessor().shouldSkipUserConfirmation()) {
             getView().showPaymentProcessor();
         } else {
             getView().showReviewAndConfirm(isUniquePaymentMethod());

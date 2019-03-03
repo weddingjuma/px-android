@@ -96,8 +96,4 @@ public interface PaymentProcessor extends Serializable {
      */
     @Nullable
     Fragment getFragment(@NonNull final PaymentProcessor.CheckoutData data, @NonNull final Context context);
-
-    default boolean shouldSkipUserConfirmation(@NonNull final PaymentProcessor.CheckoutData data) {
-        return false;
-    }
 }

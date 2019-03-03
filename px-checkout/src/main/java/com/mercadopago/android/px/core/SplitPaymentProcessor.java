@@ -81,4 +81,8 @@ public interface SplitPaymentProcessor extends Parcelable {
 
         void onPaymentError(@NonNull final MercadoPagoError error);
     }
+
+    default boolean shouldSkipUserConfirmation() {
+        return false;
+    }
 }

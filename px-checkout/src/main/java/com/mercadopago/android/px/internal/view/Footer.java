@@ -33,7 +33,7 @@ public class Footer extends CompactComponent<Footer.Props, ActionDispatcher> {
     @Override
     public View render(@Nonnull final ViewGroup parent) {
         final Context context = parent.getContext();
-        final LinearLayout linearContainer = CompactComponent.createLinearContainer(context);
+        final LinearLayout linearContainer = ViewUtils.createLinearContainer(context);
         linearContainer.setBackgroundColor(context.getResources().getColor(R.color.px_white_background));
         final int padding = context.getResources().getDimensionPixelSize(R.dimen.px_s_margin);
         linearContainer.setPadding(0, 0, 0, padding);
@@ -43,7 +43,8 @@ public class Footer extends CompactComponent<Footer.Props, ActionDispatcher> {
 
         if (props.buttonAction != null) {
             final ButtonPrimary buttonPrimary =
-                new ButtonPrimary(new Button.Props(props.buttonAction.label, props.buttonAction.action), this::dispatch);
+                new ButtonPrimary(new Button.Props(props.buttonAction.label, props.buttonAction.action),
+                    this::dispatch);
             final View buttonView = buttonPrimary.render(linearContainer);
             ViewUtils.setMarginInView(buttonView, padding, padding, padding, 0);
             linearContainer.addView(buttonView);

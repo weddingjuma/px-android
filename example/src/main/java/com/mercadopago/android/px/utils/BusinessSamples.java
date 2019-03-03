@@ -71,6 +71,7 @@ final class BusinessSamples {
             .setTopFragment(SampleTopFragment.class, args)
             .setStatementDescription("PEDRO")
             .setPaymentMethodVisibility(true)
+            .setPrimaryButton(new ExitAction(BUTTON_PRIMARY_NAME, 35))
             .setSecondaryButton(new ExitAction(BUTTON_SECONDARY_NAME, 34))
             .build();
 

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.view.Renderer;
 
@@ -55,7 +56,8 @@ public class BodyErrorRenderer extends Renderer<BodyError> {
             bottomDivider.setVisibility(View.GONE);
         }
 
-        stretchHeight(bodyViewGroup);
+        ViewUtils.stretchHeight(bodyViewGroup);
+
         return bodyErrorView;
     }
 }

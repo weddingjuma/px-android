@@ -233,18 +233,23 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     }
 
     @Override
-    public void setInvalidIdentificationNumberErrorView() {
+    public void showInvalidIdentificationNumberErrorView() {
         setErrorView(getString(R.string.px_invalid_identification_number));
     }
 
     @Override
-    public void setInvalidIdentificationNameErrorView() {
+    public void showInvalidIdentificationNameErrorView() {
         setErrorView(getString(R.string.px_invalid_identification_name));
     }
 
     @Override
-    public void setInvalidIdentificationLastNameErrorView() {
+    public void showInvalidIdentificationLastNameErrorView() {
         setErrorView(getString(R.string.px_invalid_identification_last_name));
+    }
+
+    @Override
+    public void showInvalidCpfNumberErrorView() {
+        setErrorView(getString(R.string.px_invalid_field));
     }
 
     @Override
@@ -327,8 +332,8 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     }
 
     /* default */ void setAlphaColorText() {
-        mIdentificationTicketView.setAlphaColorNameText();
-        mIdentificationTicketView.setAlphaColorLastNameText();
+        mIdentificationTicketView.configureAlphaColorNameText();
+        mIdentificationTicketView.configureAlphaColorLastNameText();
     }
 
     private void setIdentificationNameEditTextListeners() {
@@ -493,7 +498,7 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            presenter.validateIdentificationNumber();
+            presenter.validateIdentification();
         }
     }
 
@@ -542,34 +547,36 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
         r.run();
     }
 
-    private boolean validateCurrentEditText() {
+    private void validateCurrentEditText() {
         switch (presenter.getState().getCurrentFocusType()) {
         case IDENTIFICATION_NUMBER_INPUT:
-            if (presenter.validateIdentificationNumber()) {
-                mIdentificationNumberInput.setVisibility(View.GONE);
-                mIdentificationTicketView.setNormalColorNameText();
-                requestIdentificationNameFocus();
-                return true;
-            }
-            return false;
+            presenter.validateIdentification();
+            break;
         case IDENTIFICATION_NAME_INPUT:
-            if (presenter.validateName()) {
-                mIdentificationNameInput.setVisibility(View.GONE);
-                mIdentificationTicketView.setNormalColorLastNameText();
-                requestIdentificationLastNameFocus();
-                return true;
-            }
-            return false;
+            presenter.validateName();
+            break;
         case IDENTIFICATION_LAST_NAME_INPUT:
-            if (presenter.validateLastName()) {
-                mIdentificationLastNameInput.setVisibility(View.GONE);
-                showFinishCardFlow();
-                return true;
-            }
-            return false;
-        default:
-            return false;
+            presenter.validateLastName();
+            break;
         }
+    }
+
+    @Override
+    public void showCardFlowEnd() {
+        mIdentificationLastNameInput.setVisibility(View.GONE);
+        showFinishCardFlow();
+    }
+
+    @Override
+    public void showIdentificationLastNameFocus() {
+        mIdentificationNameInput.setVisibility(View.GONE);
+        requestIdentificationLastNameFocus();
+    }
+
+    @Override
+    public void showIdentificationNameFocus() {
+        mIdentificationNumberInput.setVisibility(View.GONE);
+        requestIdentificationNameFocus();
     }
 
     private void showFinishCardFlow() {
@@ -579,27 +586,25 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
         finishWithPayer();
     }
 
-    /* default */ boolean checkIsEmptyOrValid() {
+    /* default */ void checkIsEmptyOrValid() {
         switch (presenter.getState().getCurrentFocusType()) {
         case IDENTIFICATION_NAME_INPUT:
-            if (presenter.checkIsEmptyOrValidName()) {
-                mIdentificationNumberInput.setVisibility(View.VISIBLE);
-                mIdentificationTicketView.setAlphaColorNameText();
-                mIdentificationTicketView.setAlphaColorLastNameText();
-                requestIdentificationNumberFocus();
-                return true;
-            }
-            return false;
+            configureIdentificationNumberFocusFromName();
+            break;
         case IDENTIFICATION_LAST_NAME_INPUT:
-            if (presenter.checkIsEmptyOrValidLastName()) {
-                mIdentificationNameInput.setVisibility(View.VISIBLE);
-                requestIdentificationNameFocus();
-                return true;
-            }
-            return false;
-        default:
-            return false;
+            configureIdentificationNameFocusFromLastName();
+            break;
         }
+    }
+
+    private void configureIdentificationNameFocusFromLastName() {
+        mIdentificationNameInput.setVisibility(View.VISIBLE);
+        requestIdentificationNameFocus();
+    }
+
+    private void configureIdentificationNumberFocusFromName() {
+        mIdentificationNumberInput.setVisibility(View.VISIBLE);
+        requestIdentificationNumberFocus();
     }
 
     @Override
@@ -678,21 +683,21 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     }
 
     @Override
-    public void setErrorIdentificationNumber() {
+    public void showErrorIdentificationNumber() {
         ViewUtils.openKeyboard(mIdentificationNumberEditText);
         mIdentificationNumberEditText.toggleLineColorOnError(true);
         mIdentificationNumberEditText.requestFocus();
     }
 
     @Override
-    public void setErrorName() {
+    public void showErrorName() {
         ViewUtils.openKeyboard(mIdentificationNameEditText);
         mIdentificationNameEditText.toggleLineColorOnError(true);
         mIdentificationNameEditText.requestFocus();
     }
 
     @Override
-    public void setErrorLastName() {
+    public void showErrorLastName() {
         ViewUtils.openKeyboard(mIdentificationLastNameEditText);
         mIdentificationLastNameEditText.toggleLineColorOnError(true);
         mIdentificationLastNameEditText.requestFocus();

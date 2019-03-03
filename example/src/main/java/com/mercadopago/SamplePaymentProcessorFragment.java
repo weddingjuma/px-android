@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.model.BusinessPayment;
+import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.example.R;
 
 public class SamplePaymentProcessorFragment extends Fragment {
@@ -54,7 +55,7 @@ public class SamplePaymentProcessorFragment extends Fragment {
                             .onPaymentFinished((BusinessPayment) getArguments().getSerializable(ARG_BUSINESS));
                     } else if (getArguments().containsKey(ARG_GENERIC)) {
                         paymentListener
-                            .onPaymentFinished((BusinessPayment) getArguments().getSerializable(ARG_GENERIC));
+                            .onPaymentFinished((GenericPayment) getArguments().getSerializable(ARG_GENERIC));
                     }
                 }
             }

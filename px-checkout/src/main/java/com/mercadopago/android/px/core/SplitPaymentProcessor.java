@@ -84,7 +84,7 @@ public interface SplitPaymentProcessor extends Parcelable {
 
     /**
      * If the boolean is true payment processor's fragment will be showed instead review and confirm screen
-     * 
+     *
      * @return if fragment should be showed
      */
     default boolean shouldSkipUserConfirmation() {

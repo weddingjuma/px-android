@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
@@ -233,11 +232,15 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     /* default */ void onPaymentMethodSelected() {
-        if (paymentSettingRepository.getPaymentConfiguration().getPaymentProcessor().shouldSkipUserConfirmation()) {
+        if (shouldSkipUserConfirmation()) {
             getView().showPaymentProcessor();
         } else {
             getView().showReviewAndConfirm(isUniquePaymentMethod());
         }
+    }
+
+    /* default */ boolean shouldSkipUserConfirmation(){
+        return paymentSettingRepository.getPaymentConfiguration().getPaymentProcessor().shouldSkipUserConfirmation();
     }
 
     private void resolvePaymentFailure(final MercadoPagoError mercadoPagoError) {

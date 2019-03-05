@@ -478,13 +478,14 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     @Override
     public void showPaymentProcessor() {
-        if(presenter.shouldSkipUserConfirmation()) {
-            overrideTransitionOut();
-            overrideTransitionIn();
-        } else {
-            overrideTransitionWithNoAnimation();
-        }
+        overrideTransitionWithNoAnimation();
+        startActivityForResult(PaymentProcessorActivity.getIntent(this), REQ_PAYMENT_PROCESSOR);
+    }
 
+    @Override
+    public void showPaymentProcessorWithAnimation() {
+        overrideTransitionOut();
+        overrideTransitionIn();
         startActivityForResult(PaymentProcessorActivity.getIntent(this), REQ_PAYMENT_PROCESSOR);
     }
 

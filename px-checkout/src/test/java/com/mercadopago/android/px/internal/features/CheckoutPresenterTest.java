@@ -220,7 +220,7 @@ public class CheckoutPresenterTest {
         when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(true);
 
         presenter.onPaymentMethodSelected();
-        verify(checkoutView).showPaymentProcessor();
+        verify(checkoutView).showPaymentProcessorWithAnimation();
         verify(checkoutView, never()).showReviewAndConfirm(anyBoolean());
         verifyNoMoreInteractions(checkoutView);
     }
@@ -442,7 +442,7 @@ public class CheckoutPresenterTest {
         presenter.onCardFlowResponse();
 
         verify(paymentRepository).hasPayment();
-        verify(checkoutView).showPaymentProcessor();
+        verify(checkoutView).showPaymentProcessorWithAnimation();
         verify(checkoutView, never()).showReviewAndConfirm(anyBoolean());
         verifyNoMoreInteractions(checkoutView);
         verifyNoMoreInteractions(paymentRepository);
@@ -753,6 +753,11 @@ public class CheckoutPresenterTest {
 
         @Override
         public void showPaymentProcessor() {
+
+        }
+
+        @Override
+        public void showPaymentProcessorWithAnimation() {
 
         }
 

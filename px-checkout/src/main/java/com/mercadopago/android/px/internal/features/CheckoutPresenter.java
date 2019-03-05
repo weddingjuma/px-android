@@ -233,7 +233,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     /* default */ void onPaymentMethodSelected() {
         if (shouldSkipUserConfirmation()) {
-            getView().showPaymentProcessor();
+            getView().showPaymentProcessorWithAnimation();
         } else {
             getView().showReviewAndConfirm(isUniquePaymentMethod());
         }

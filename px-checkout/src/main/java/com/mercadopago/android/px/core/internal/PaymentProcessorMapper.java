@@ -67,11 +67,6 @@ public class PaymentProcessorMapper extends Mapper<PaymentProcessor, SplitPaymen
             @Override
             public void writeToParcel(final Parcel dest, final int flags) {
             }
-
-            @Override
-            public boolean shouldSkipUserConfirmation() {
-                return false;
-            }
         };
     }
 }

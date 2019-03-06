@@ -851,10 +851,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
                 @Override
                 public void saveIdentificationNumber(final CharSequence string) {
                     presenter.saveIdentificationNumber(string.toString());
-                    if (presenter.getIdentificationNumberMaxLength() == string.length()) {
-                        presenter.saveIdentificationNumber(string.toString());
-                        presenter.validateIdentificationNumber();
-                    }
                     if (cardViewsActive()) {
                         mIdentificationCardView.setIdentificationNumber(string.toString());
                         if (showingIdentification()) {
@@ -865,7 +861,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
                 @Override
                 public void changeErrorView() {
-                    checkChangeErrorView();
+                    //Nothing to do here
                 }
 
                 @Override

@@ -276,6 +276,12 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
 
     public void saveIdentificationNumber(final String identificationNumber) {
         this.identificationNumber = identificationNumber;
+        if (TextUtil.isEmpty(identificationNumber)) {
+            getView().clearErrorView();
+            getView().clearErrorIdentificationNumber();
+        } else {
+            validateIdentificationNumber();
+        }
     }
 
     public int getIdentificationNumberMaxLength() {
@@ -311,7 +317,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
         case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
             getView().showInvalidIdentificationNumberLengthErrorView();
             break;
-        case InvalidFieldException.INVALID_CPF:
+        default:
             getView().showInvalidIdentificationNumberErrorView();
             break;
         }

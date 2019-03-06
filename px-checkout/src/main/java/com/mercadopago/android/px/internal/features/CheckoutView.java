@@ -42,6 +42,8 @@ public interface CheckoutView extends MvpView {
 
     void showPaymentProcessor();
 
+    void showPaymentProcessorWithAnimation();
+
     boolean isActive();
 
     void showBusinessResult(BusinessPaymentModel model);
@@ -62,4 +64,5 @@ public interface CheckoutView extends MvpView {
         @NonNull final PostPaymentAction postPaymentAction);
 
     void startPayment();
+
 }

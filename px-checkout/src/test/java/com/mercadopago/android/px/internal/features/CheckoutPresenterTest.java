@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.features;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
-import com.mercadopago.android.px.internal.features.hooks.Hook;
 import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -667,7 +666,7 @@ public class CheckoutPresenterTest {
 
         @Override
         public void cancelCheckout(final Integer customResultCode, final Boolean paymentMethodEdited) {
-
+            // do nothing
         }
 
         @Override
@@ -685,13 +684,8 @@ public class CheckoutPresenterTest {
         }
 
         @Override
-        public void showHook(Hook hook, int requestCode) {
-
-        }
-
-        @Override
         public void showPaymentProcessor() {
-
+            // do nothing
         }
 
         @Override

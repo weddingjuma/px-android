@@ -13,8 +13,6 @@ import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
-import com.mercadopago.android.px.internal.features.hooks.Hook;
-import com.mercadopago.android.px.internal.features.hooks.HookActivity;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
@@ -467,12 +465,6 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     public void showProgress() {
         ViewUtils.showProgressLayout(this);
-    }
-
-    @Override
-    public void showHook(@NonNull final Hook hook, final int requestCode) {
-        startActivityForResult(HookActivity.getIntent(this, hook), requestCode);
-        overrideTransitionIn();
     }
 
     @Override

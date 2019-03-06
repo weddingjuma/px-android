@@ -16,8 +16,6 @@ import java.util.List;
 public interface GuessingCard {
 
     interface View extends MvpView {
-        void setupPresenter();
-
         void onValidStart();
 
         void showError(MercadoPagoError error, String requestOrigin);
@@ -156,11 +154,9 @@ public interface GuessingCard {
     }
 
     interface Actions {
-        void validateIdentificationNumberToFinishWithCardToken();
+        void validateIdentificationNumberAndContinue();
 
         void validateIdentificationNumber();
-
-        void validateIdentificationNumberToPreviousScreen();
 
         void trackAbort();
 

@@ -220,8 +220,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         super.onStop();
     }
 
-    @Override
-    public void setupPresenter() {
+    private void setupPresenter() {
         final Intent intent = getIntent();
 
         final boolean includesPayment = intent.getBooleanExtra(PARAM_INCLUDES_PAYMENT, true);
@@ -880,7 +879,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            presenter.validateIdentificationNumberToFinishWithCardToken();
+            presenter.validateIdentificationNumberAndContinue();
         }
     }
 
@@ -1261,7 +1260,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             }
             break;
         case CARD_IDENTIFICATION_INPUT:
-            presenter.validateIdentificationNumberToFinishWithCardToken();
+            presenter.validateIdentificationNumberAndContinue();
             break;
         default:
             break;
@@ -1289,7 +1288,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             }
             break;
         case CARD_IDENTIFICATION_INPUT:
-            presenter.validateIdentificationNumberToPreviousScreen();
+            showIdentificationInputPreviousScreen();
             break;
         default:
         }

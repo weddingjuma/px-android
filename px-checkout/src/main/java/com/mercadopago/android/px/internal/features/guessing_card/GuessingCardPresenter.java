@@ -302,7 +302,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
     }
 
     @Override
-    public void validateIdentificationNumberToFinishWithCardToken() {
+    public void validateIdentificationNumberAndContinue() {
         try {
             validateCardIdentification();
             checkFinishWithCardToken();
@@ -443,21 +443,6 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
 
     public boolean checkIsEmptyOrValidSecurityCode() {
         return TextUtils.isEmpty(securityCode) || validateSecurityCode();
-    }
-
-    @Override
-    public void validateIdentificationNumberToPreviousScreen() {
-        if (TextUtil.isEmpty(identificationNumber)) {
-            getView().showIdentificationInputPreviousScreen();
-        } else {
-            try {
-                validateCardIdentification();
-                getView().showIdentificationInputPreviousScreen();
-            } catch (InvalidFieldException e) {
-                trackInvalidDocument();
-                showErrorView(e);
-            }
-        }
     }
 
     private void validateCardIdentification() throws InvalidFieldException {

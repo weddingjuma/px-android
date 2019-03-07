@@ -476,5 +476,28 @@ public final class Payment implements IPayment, IPaymentDescriptor {
                 || STATUS_DETAIL_CC_REJECTED_BAD_FILLED_OTHER.equals(statusDetail)
                 || STATUS_DETAIL_CC_REJECTED_BAD_FILLED_CARD_NUMBER.equals(statusDetail);
         }
+
+        public static boolean isPendingWithDetail(@Nullable final String statusDetail) {
+            return STATUS_DETAIL_PENDING_CONTINGENCY.equals(statusDetail)
+                || STATUS_DETAIL_PENDING_REVIEW_MANUAL.equals(statusDetail);
+        }
+
+        public static boolean isRejectedWithDetail(@NonNull final String statusDetail) {
+            switch (statusDetail) {
+            case STATUS_DETAIL_CC_REJECTED_INSUFFICIENT_AMOUNT:
+            case STATUS_DETAIL_REJECTED_BY_REGULATIONS:
+            case STATUS_DETAIL_CC_REJECTED_CARD_DISABLED:
+            case STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE:
+            case STATUS_DETAIL_REJECTED_HIGH_RISK:
+            case STATUS_DETAIL_CC_REJECTED_MAX_ATTEMPTS:
+            case STATUS_DETAIL_CC_REJECTED_DUPLICATED_PAYMENT:
+            case STATUS_DETAIL_REJECTED_REJECTED_INSUFFICIENT_DATA:
+            case STATUS_DETAIL_REJECTED_REJECTED_BY_BANK:
+            case STATUS_DETAIL_CC_REJECTED_OTHER_REASON:
+                return true;
+            default:
+                return false;
+            }
+        }
     }
 }

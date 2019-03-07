@@ -85,14 +85,8 @@ public class PaymentResultContainer extends Component<PaymentResultProps, Void> 
             final String status = props.paymentResult.getPaymentStatus();
             final String statusDetail = props.paymentResult.getPaymentStatusDetail();
 
-            if (Payment.StatusCodes.STATUS_REJECTED.equals(status)
-                && Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_PLUGIN_PM.equals(statusDetail)) {
-                hasBody = false;
-            } else if (status != null && statusDetail != null && status.equals(Payment.StatusCodes.STATUS_REJECTED) &&
-                (statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_CARD_NUMBER) ||
-                    statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_DATE) ||
-                    statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_SECURITY_CODE) ||
-                    statusDetail.equals(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_OTHER))) {
+            if (Payment.StatusCodes.STATUS_REJECTED.equals(status) &&
+                !Payment.StatusDetail.isRejectedWithDetail(statusDetail)) {
                 hasBody = false;
             }
         }

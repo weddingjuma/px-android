@@ -512,13 +512,13 @@ public class GuessingCardPaymentPresenterTest {
         presenter.saveExpiryMonth(CardTestUtils.VALID_EXPIRY_MONTH);
         presenter.saveExpiryYear(CardTestUtils.VALID_EXPIRY_YEAR_SHORT);
         presenter.saveSecurityCode(card.getSecurityCode());
-        presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
         presenter.saveIdentificationType(IdentificationTypes.getIdentificationType());
+        presenter.saveIdentificationNumber(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI);
 
         presenter.validateIdentificationNumberAndContinue();
 
-        verify(view).clearErrorView();
-        verify(view).clearErrorIdentificationNumber();
+        verify(view, atLeastOnce()).clearErrorView();
+        verify(view, atLeastOnce()).clearErrorIdentificationNumber();
         assertEquals(CardTestUtils.DUMMY_IDENTIFICATION_NUMBER_DNI,
             presenter.getCardToken().getCardholder().getIdentification().getNumber());
     }
@@ -571,8 +571,8 @@ public class GuessingCardPaymentPresenterTest {
         final Identification identification = IdentificationUtils.getIdentificationCPF();
         final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
 
-        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.saveIdentificationType(identificationType);
+        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.validateIdentificationNumberAndContinue();
 
         verify(view).showFinishCardFlow();
@@ -587,8 +587,8 @@ public class GuessingCardPaymentPresenterTest {
 
         when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
 
-        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.saveIdentificationType(identificationType);
+        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.validateIdentificationNumberAndContinue();
 
         verifyInvalidIdentificationNumberErrorView(identificationType);
@@ -599,8 +599,8 @@ public class GuessingCardPaymentPresenterTest {
         final Identification identification = IdentificationUtils.getIdentificationCPF();
         final IdentificationType identificationType = IdentificationTypes.getIdentificationTypeCPF();
 
-        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.saveIdentificationType(identificationType);
+        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.validateIdentificationNumber();
 
         verifyClearErrorIdentificationNumberView(identificationType);
@@ -614,8 +614,8 @@ public class GuessingCardPaymentPresenterTest {
 
         when(userSelectionRepository.getPaymentMethod()).thenReturn(mockedPaymentMethod);
 
-        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.saveIdentificationType(identificationType);
+        presenter.saveIdentificationNumber(identification.getNumber());
         presenter.validateIdentificationNumber();
 
         verifyInvalidIdentificationNumberErrorView(identificationType);
@@ -715,14 +715,14 @@ public class GuessingCardPaymentPresenterTest {
 
     private void verifyClearErrorIdentificationNumberView(final IdentificationType identificationType) {
         verify(view).setIdentificationNumberRestrictions(identificationType.getType());
-        verify(view).clearErrorView();
-        verify(view).clearErrorIdentificationNumber();
+        verify(view, atLeastOnce()).clearErrorView();
+        verify(view, atLeastOnce()).clearErrorIdentificationNumber();
         verifyNoMoreInteractions(view);
     }
 
     private void verifyInvalidIdentificationNumberErrorView(final IdentificationType identificationType) {
         verify(view).setIdentificationNumberRestrictions(identificationType.getType());
-        verify(view).showInvalidIdentificationNumberErrorView();
+        verify(view, atLeastOnce()).showInvalidIdentificationNumberErrorView();
         verifyNoMoreInteractions(view);
     }
 }

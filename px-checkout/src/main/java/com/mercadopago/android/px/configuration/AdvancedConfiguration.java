@@ -19,6 +19,7 @@ public final class AdvancedConfiguration implements Serializable {
     private final boolean bankDealsEnabled;
     private final boolean escEnabled;
     private final boolean expressEnabled;
+    private final boolean amountRowEnabled;
     @NonNull private final PaymentResultScreenConfiguration paymentResultScreenConfiguration;
     @NonNull private final ReviewAndConfirmConfiguration reviewAndConfirmConfiguration;
     @NonNull private final DynamicFragmentConfiguration dynamicFragmentConfiguration;
@@ -30,6 +31,7 @@ public final class AdvancedConfiguration implements Serializable {
         bankDealsEnabled = builder.bankDealsEnabled;
         escEnabled = builder.escEnabled;
         expressEnabled = builder.expressEnabled;
+        amountRowEnabled = builder.amountRowEnabled;
         paymentResultScreenConfiguration = builder.paymentResultScreenConfiguration;
         reviewAndConfirmConfiguration = builder.reviewAndConfirmConfiguration;
         dynamicFragmentConfiguration = builder.dynamicFragmentConfiguration;
@@ -44,6 +46,10 @@ public final class AdvancedConfiguration implements Serializable {
 
     public boolean isEscEnabled() {
         return escEnabled;
+    }
+
+    public boolean isAmountRowEnabled() {
+        return amountRowEnabled;
     }
 
     @NonNull
@@ -85,6 +91,7 @@ public final class AdvancedConfiguration implements Serializable {
         /* default */ boolean bankDealsEnabled = true;
         /* default */ boolean escEnabled = false;
         /* default */ boolean expressEnabled = false;
+        /* default */ boolean amountRowEnabled = true;
         /* default */ @NonNull PaymentResultScreenConfiguration paymentResultScreenConfiguration =
             new PaymentResultScreenConfiguration.Builder().build();
         /* default */ @NonNull ReviewAndConfirmConfiguration reviewAndConfirmConfiguration =
@@ -97,6 +104,7 @@ public final class AdvancedConfiguration implements Serializable {
             new CustomStringConfiguration.Builder().build();
         /* default */ @NonNull DiscountParamsConfiguration discountParamsConfiguration =
             new DiscountParamsConfiguration.Builder().build();
+
 
         /**
          * Add the possibility to configure Bank's deals behaviour. If set as true, then the checkout will try to
@@ -119,6 +127,17 @@ public final class AdvancedConfiguration implements Serializable {
          */
         public Builder setEscEnabled(final boolean escEnabled) {
             this.escEnabled = escEnabled;
+            return this;
+        }
+
+        /**
+         * Add the possibility to hide (false) or show (true - default) amount row
+         *
+         * @param amountRowEnabled show or hide amount row
+         * @return builder to keep operating
+         */
+        public Builder setAmountRowEnabled(final boolean amountRowEnabled) {
+            this.amountRowEnabled = amountRowEnabled;
             return this;
         }
 
@@ -215,4 +234,5 @@ public final class AdvancedConfiguration implements Serializable {
             return new AdvancedConfiguration(this);
         }
     }
+
 }

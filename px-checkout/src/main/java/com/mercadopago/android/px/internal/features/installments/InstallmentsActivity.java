@@ -321,8 +321,14 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     @Override
     public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal itemsPlusCharges, @NonNull final Site site) {
+        amountView.setVisibility(View.VISIBLE);
         amountView.setOnClickListener(presenter);
         amountView.show(discountModel, itemsPlusCharges, site);
+    }
+
+    @Override
+    public void hideAmountRow() {
+        amountView.setVisibility(View.GONE);
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.internal.features.installments;
 
 import android.support.annotation.NonNull;
+
+import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
@@ -17,6 +19,8 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
+
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -44,6 +48,7 @@ public class InstallmentsPresenterTest {
     @Mock private SummaryAmountRepository summaryAmountRepository;
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
     @Mock private PayerCostSolver payerCostSolver;
+    @Mock private AdvancedConfiguration advancedConfiguration;
 
     @Mock private InstallmentsView view;
 
@@ -51,6 +56,8 @@ public class InstallmentsPresenterTest {
     public void setUp() {
         when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
         when(configuration.getCheckoutPreference()).thenReturn(checkoutPreference);
+        when(configuration.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
+        when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
         presenter = new InstallmentsPresenter(amountRepository, configuration, userSelectionRepository,
             discountRepository, summaryAmountRepository, amountConfigurationRepository, payerCostSolver);
         presenter.attachView(view);
@@ -166,6 +173,66 @@ public class InstallmentsPresenterTest {
 
         verify(view).showInstallments(payerCosts);
         verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenAmountRowIsNotEnabledItShouldBeHidden(){
+        when(userSelectionRepository.hasCardSelected()).thenReturn(true);
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
+
+        when(advancedConfiguration.isAmountRowEnabled()).thenReturn(false);
+
+        presenter.initialize();
+
+        verify(view).hideAmountRow();
+    }
+
+    @Test
+    public void whenAmountRowIsEnabledItShouldBeSetted(){
+        when(userSelectionRepository.hasCardSelected()).thenReturn(true);
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
+        when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
+
+        BigDecimal itemPlusCharges = new BigDecimal(100);
+        when(amountRepository.getItemsPlusCharges()).thenReturn(itemPlusCharges);
+
+        presenter.initialize();
+
+        verify(view).showAmount(discountRepository.getCurrentConfiguration(),
+                itemPlusCharges, checkoutPreference.getSite());
+    }
+
+    @Test
+    public void whenAmountRowIsNotEnabledItShouldBeHiddenWithGuessedCards(){
+        when(userSelectionRepository.hasCardSelected()).thenReturn(false);
+
+        final SummaryAmount response = StubSummaryAmount.getSummaryAmountTwoPayerCosts();
+        when(summaryAmountRepository.getSummaryAmount(anyString())).thenReturn(new StubSuccessMpCall<>(response));
+
+        when(advancedConfiguration.isAmountRowEnabled()).thenReturn(false);
+
+        presenter.initialize();
+
+        verify(view).hideAmountRow();
+    }
+
+    @Test
+    public void whenAmountRowIsEnabledItShouldBeSettedWithGuessedCards(){
+        when(userSelectionRepository.hasCardSelected()).thenReturn(false);
+
+        final SummaryAmount response = StubSummaryAmount.getSummaryAmountTwoPayerCosts();
+        when(summaryAmountRepository.getSummaryAmount(anyString())).thenReturn(new StubSuccessMpCall<>(response));
+
+        when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
+
+        BigDecimal itemPlusCharges = new BigDecimal(100);
+        when(amountRepository.getItemsPlusCharges()).thenReturn(itemPlusCharges);
+
+        presenter.initialize();
+
+        verify(view).showAmount(discountRepository.getCurrentConfiguration(),
+                itemPlusCharges, checkoutPreference.getSite());
+        verify(view).hideLoadingView();
     }
 
     @NonNull

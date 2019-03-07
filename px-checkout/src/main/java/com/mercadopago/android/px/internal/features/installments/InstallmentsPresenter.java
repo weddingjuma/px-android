@@ -2,9 +2,11 @@ package com.mercadopago.android.px.internal.features.installments;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
+import com.mercadopago.android.px.internal.features.uicontrollers.AmountRowController;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
@@ -27,7 +29,7 @@ import com.mercadopago.android.px.tracking.internal.views.InstallmentsViewTrack;
 import java.util.List;
 
 public class InstallmentsPresenter extends BasePresenter<InstallmentsView> implements
-    AmountView.OnClick, InstallmentsAdapter.ItemListener, PayerCostListener {
+    AmountView.OnClick, InstallmentsAdapter.ItemListener, PayerCostListener, AmountRowController.AmountRowVisibilityBehaviour {
 
     @NonNull private final SummaryAmountRepository summaryAmountRepository;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
@@ -38,6 +40,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     @NonNull /* default */ final DiscountRepository discountRepository;
 
     private FailureRecovery failureRecovery;
+    private AmountRowController amountRowController;
 
     //Card Info
     private String bin = TextUtil.EMPTY;
@@ -74,8 +77,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     private void resolvePayerCosts() {
         if (userSelectionRepository.hasCardSelected()) {
             resolvePayerCostsForSavedCard();
-            getView().showAmount(discountRepository.getCurrentConfiguration(),
-                amountRepository.getItemsPlusCharges(), configuration.getCheckoutPreference().getSite());
+            initializeAmountRow();
         } else {
             resolvePayerCostsForGuessedCard();
         }
@@ -97,8 +99,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
                 payerCostSolver.solve(InstallmentsPresenter.this, amountConfiguration.getPayerCosts());
 
                 if (isViewAttached()) {
-                    getView().showAmount(discountRepository.getCurrentConfiguration(),
-                        amountRepository.getItemsPlusCharges(), configuration.getCheckoutPreference().getSite());
+                    initializeAmountRow();
                     getView().hideLoadingView();
                 }
             }
@@ -112,6 +113,22 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
                 }
             }
         });
+    }
+
+    private void initializeAmountRow() {
+        amountRowController = new AmountRowController(this, configuration.getAdvancedConfiguration());
+        amountRowController.configure();
+    }
+
+    @Override
+    public void showAmountRow() {
+        getView().showAmount(discountRepository.getCurrentConfiguration(),
+                amountRepository.getItemsPlusCharges(), configuration.getCheckoutPreference().getSite());
+    }
+
+    @Override
+    public void hideAmountRow() {
+        getView().hideAmountRow();
     }
 
     public void setCardInfo(@Nullable final CardInfo cardInfo) {

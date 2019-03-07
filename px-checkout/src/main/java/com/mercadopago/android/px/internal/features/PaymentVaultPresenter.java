@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
+
 import com.mercadopago.android.px.core.PaymentMethodPlugin;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolver;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
@@ -8,6 +9,7 @@ import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
+import com.mercadopago.android.px.internal.features.uicontrollers.AmountRowController;
 import com.mercadopago.android.px.internal.navigation.DefaultPayerInformationDriver;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
@@ -33,7 +35,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> implements AmountView.OnClick,
-    PaymentVault.Actions {
+    PaymentVault.Actions, AmountRowController.AmountRowVisibilityBehaviour {
 
     @NonNull
     private final PaymentSettingRepository paymentSettingRepository;
@@ -54,6 +56,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     /* default */ PaymentMethodSearch paymentMethodSearch;
     private FailureRecovery failureRecovery;
+    private AmountRowController amountRowController;
 
     public PaymentVaultPresenter(@NonNull final PaymentSettingRepository paymentSettingRepository,
                                  @NonNull final UserSelectionRepository userSelectionRepository,
@@ -120,10 +123,21 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     public void initializeAmountRow() {
         if (isViewAttached()) {
-            getView().showAmount(discountRepository.getCurrentConfiguration(),
+            amountRowController = new AmountRowController(this, paymentSettingRepository.getAdvancedConfiguration());
+            amountRowController.configure();
+        }
+    }
+
+    @Override
+    public void showAmountRow() {
+        getView().showAmount(discountRepository.getCurrentConfiguration(),
                 paymentSettingRepository.getCheckoutPreference().getTotalAmount(),
                 paymentSettingRepository.getCheckoutPreference().getSite());
-        }
+    }
+
+    @Override
+    public void hideAmountRow() {
+        getView().hideAmountRow();
     }
 
     public void onPayerInformationReceived() {

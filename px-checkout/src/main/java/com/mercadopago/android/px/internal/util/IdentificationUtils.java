@@ -41,14 +41,14 @@ public final class IdentificationUtils {
         final Identification identification, final IdentificationType identificationType) throws InvalidFieldException {
         cardToken.getCardholder().setIdentification(identification);
         if (!cardToken.validateIdentificationNumber(identificationType)) {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+            throw InvalidFieldException.createInvalidLengthException();
         }
     }
 
     private static void validateNumber(final Identification identification) throws InvalidFieldException {
         if (identification == null || TextUtil.isEmpty(identification.getNumber()) ||
             TextUtil.isEmpty(identification.getType())) {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+            throw InvalidFieldException.createInvalidLengthException();
         } else if (identification.getType().equals(CPF)) {
             validateCpf(identification.getNumber());
         }
@@ -61,10 +61,10 @@ public final class IdentificationUtils {
             final Integer min = identificationType.getMinLength();
             final Integer max = identificationType.getMaxLength();
             if ((min != null) && (max != null) && !((len <= max) && (len >= min))) {
-                throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+                throw InvalidFieldException.createInvalidLengthException();
             }
         } else {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+            throw InvalidFieldException.createInvalidLengthException();
         }
     }
 
@@ -97,11 +97,11 @@ public final class IdentificationUtils {
                 leftover = sum % CPF_ALGORITHM_EXPECTED_LENGTH;
                 leftover = leftover == CPF_ALGORITHM_LAST_INDEX ? 0 : leftover;
                 if (leftover != numbers[CPF_ALGORITHM_LAST_INDEX]) {
-                    throw new InvalidFieldException(InvalidFieldException.INVALID_CPF);
+                    throw InvalidFieldException.createInvalidCpfException();
                 }
             }
         } else {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_CPF);
+            throw InvalidFieldException.createInvalidCpfException();
         }
     }
 }

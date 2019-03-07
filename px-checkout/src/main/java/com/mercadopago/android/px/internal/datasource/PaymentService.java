@@ -164,10 +164,8 @@ public class PaymentService implements PaymentRepository {
                             .getPluginAsPaymentMethod(expressMetadata.getPaymentMethodId(), paymentTypeId),
                         null);
                 } else if (PaymentTypes.isAccountMoney(paymentTypeId)) {
-                    final PaymentMethod paymentMethod =
-                        new AccountMoneyMapper(paymentMethodSearch).map(expressMetadata);
-
-                    userSelectionRepository.select(paymentMethod, null);
+                    userSelectionRepository
+                        .select(new AccountMoneyMapper(paymentMethodSearch).map(expressMetadata), null);
                 } else {
                     throw new IllegalStateException("payment method selected can not be used for express payment");
                 }
@@ -282,13 +280,14 @@ public class PaymentService implements PaymentRepository {
 
         final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
         final PaymentMethod secondaryPaymentMethod = userSelectionRepository.getSecondaryPaymentMethod();
+        final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
 
         if (secondaryPaymentMethod != null) { // is split payment
             final AmountConfiguration currentConfiguration = amountConfigurationRepository.getCurrentConfiguration();
             final Split splitConfiguration = currentConfiguration.getSplitConfiguration();
 
             final PaymentData paymentData = new PaymentData.Builder()
-                .setPaymentMethod(userSelectionRepository.getPaymentMethod())
+                .setPaymentMethod(paymentMethod)
                 .setPayerCost(userSelectionRepository.getPayerCost())
                 .setToken(paymentSettingRepository.getToken())
                 .setIssuer(userSelectionRepository.getIssuer())
@@ -310,12 +309,17 @@ public class PaymentService implements PaymentRepository {
 
             return Arrays.asList(paymentData, secondaryPaymentData);
         } else { // is regular 1 pm payment
-            final Discount discount = userSelectionRepository.getCard() == null ? discountModel.getDiscount()
-                : Discount.replaceWith(discountModel.getDiscount(),
+            Discount discount;
+
+            try {
+                discount = Discount.replaceWith(discountModel.getDiscount(),
                     amountConfigurationRepository.getCurrentConfiguration().getDiscountToken());
+            } catch (final IllegalStateException e) {
+                discount = discountModel.getDiscount();
+            }
 
             final PaymentData paymentData = new PaymentData.Builder()
-                .setPaymentMethod(userSelectionRepository.getPaymentMethod())
+                .setPaymentMethod(paymentMethod)
                 .setPayerCost(userSelectionRepository.getPayerCost())
                 .setToken(paymentSettingRepository.getToken())
                 .setIssuer(userSelectionRepository.getIssuer())

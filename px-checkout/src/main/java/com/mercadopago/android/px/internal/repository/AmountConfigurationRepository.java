@@ -14,14 +14,14 @@ public interface AmountConfigurationRepository {
      * @return The current dominant configuration.
      */
     @NonNull
-    AmountConfiguration getCurrentConfiguration();
+    AmountConfiguration getCurrentConfiguration() throws IllegalStateException;
 
     /**
      * Obtains the complete payer cost configuration for a specif custom option.
      *
-     * @param cardId The {@link com.mercadopago.android.px.model.CustomSearchItem} ID.
+     * @param customOptionId The {@link com.mercadopago.android.px.model.CustomSearchItem} ID.
      * @return The payer cost configuration, returns null if don't have a configuration or ID is invalid.
      */
     @NonNull
-    AmountConfiguration getConfigurationFor(@Nonnull final String cardId);
+    AmountConfiguration getConfigurationFor(@Nonnull final String customOptionId);
 }

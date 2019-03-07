@@ -27,6 +27,10 @@ public class ExpressMetadata implements Parcelable, Serializable {
         return accountMoney;
     }
 
+    public boolean isAccountMoney() {
+        return accountMoney != null;
+    }
+
     public boolean isCard() {
         return card != null;
     }

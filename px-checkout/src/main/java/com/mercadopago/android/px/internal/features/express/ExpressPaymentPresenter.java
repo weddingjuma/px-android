@@ -188,6 +188,10 @@ import java.util.Set;
             splitPayment = isSplitUserPreference && amountConfiguration.allowSplit();
             payerCost = amountConfiguration
                 .getCurrentPayerCost(isSplitUserPreference, payerCostSelection.get(paymentMethodSelectedIndex));
+        } else if (expressMetadata.isAccountMoney()) {
+            final AmountConfiguration amountConfiguration =
+                amountConfigurationRepository.getConfigurationFor(expressMetadata.getPaymentMethodId());
+            splitPayment = isSplitUserPreference && amountConfiguration.allowSplit();
         }
 
         //TODO fill cards with esc

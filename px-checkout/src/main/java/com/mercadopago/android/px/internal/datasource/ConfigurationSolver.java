@@ -31,7 +31,7 @@ public interface ConfigurationSolver {
      * @return The payer cost model associated to the custom option ID.
      */
     @Nullable
-    AmountConfiguration getPayerCostConfigurationFor(@NonNull final String customOptionId);
+    AmountConfiguration getAmountConfigurationFor(@NonNull final String customOptionId);
 
     /**
      * Retrieves the dominant payer cost model for a custom option and a particular configuration hash.
@@ -41,6 +41,6 @@ public interface ConfigurationSolver {
      * @return The payer cost model associated to the custom option ID and configuration hash.
      */
     @Nullable
-    AmountConfiguration getPayerCostConfigurationFor(@NonNull final String customOptionId,
+    AmountConfiguration getAmountConfigurationFor(@NonNull final String customOptionId,
         @NonNull final String configurationHash);
 }

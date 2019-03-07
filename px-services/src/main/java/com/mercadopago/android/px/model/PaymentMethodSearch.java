@@ -309,11 +309,8 @@ public class PaymentMethodSearch implements Serializable {
     public Set<String> getIdsWithSplitAllowed() {
         final Set<String> cardsWithSplit = new HashSet<>();
         for (final CustomSearchItem customSearchItem : getCustomSearchItems()) {
-            // TODO remove validation when we add account money discount config.
-            AmountConfiguration amountConfiguration = customSearchItem
-                    .getAmountConfiguration(customSearchItem.getDefaultAmountConfiguration());
-
-            if (amountConfiguration != null && amountConfiguration.allowSplit()) {
+            if (customSearchItem
+                .getAmountConfiguration(customSearchItem.getDefaultAmountConfiguration()).allowSplit()) {
                 cardsWithSplit.add(customSearchItem.getId());
             }
         }

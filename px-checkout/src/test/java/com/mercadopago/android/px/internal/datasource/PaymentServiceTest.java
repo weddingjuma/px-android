@@ -90,6 +90,7 @@ public class PaymentServiceTest {
     @Test
     public void whenOneTapPaymentIsCardSelectCard() {
         final Card card = creditCardPresetMock();
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenThrow(IllegalStateException.class);
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
 
@@ -99,6 +100,7 @@ public class PaymentServiceTest {
     @Test
     public void whenOneTapPaymentIsCardSelectPayerCost() {
         creditCardPresetMock();
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenThrow(IllegalStateException.class);
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
 
@@ -108,6 +110,7 @@ public class PaymentServiceTest {
     @Test
     public void whenOneTapPaymentIsCardPayerCostAndCardSet() {
         final Card card = creditCardPresetMock();
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenThrow(IllegalStateException.class);
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
 

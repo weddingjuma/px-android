@@ -36,27 +36,30 @@ public class DiscountServiceImp implements DiscountRepository {
         // TODO: remove
         init();
 
-        final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
         final Card card = userSelectionRepository.getCard();
         // Remember to prioritize the selected discount over the rest when the selector feature is added.
-        // TODO: refactor with solver.
-        if (card == null) {
+        if (card != null) {
+            return getConfiguration(configurationSolver.getConfigurationHashFor(card.getId()));
+        } else {
+            final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
             if (paymentMethod == null) {
                 // The user did not select any payment method, thus the dominant discount is the general config
                 return getConfiguration(configurationSolver.getDefaultSelectedAmountConfiguration());
             } else {
+                // Guessing card
                 if (PaymentTypes.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
                     // Guessing card config
                     return getConfiguration(defaultSelectedGuessingConfiguration);
-                } else {
-                    // The user select account money or an off payment method / everything else.
+                } else if (PaymentTypes.isAccountMoney(paymentMethod.getPaymentTypeId())) {
+                    // Account money has it's own configuration as saved cards
                     return getConfiguration(configurationSolver.getConfigurationHashFor(paymentMethod.getId()));
+                } else {
+                    // Off payment not custom options
+                    // The user select account money or an off payment method / everything else.
+                    return getConfiguration(configurationSolver.getConfigurationHashFor(
+                        paymentMethod.getId()));
                 }
             }
-        } else {
-            // The user has already selected a payment method, thus the dominant discount is the best between the
-            // general discount and the discount associated to the payment method
-            return getConfiguration(configurationSolver.getConfigurationHashFor(card.getId()));
         }
     }
 

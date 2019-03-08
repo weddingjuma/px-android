@@ -13,6 +13,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
 import com.mercadopago.android.px.internal.util.ApiUtil;
+import com.mercadopago.android.px.internal.util.IdentificationUtils;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -32,6 +33,7 @@ import com.mercadopago.android.px.model.Setting;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
+import com.mercadopago.android.px.model.exceptions.InvalidFieldException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.CardHolderNameViewTracker;
@@ -46,7 +48,7 @@ import java.util.List;
 
 import static com.mercadopago.android.px.model.Card.CARD_DEFAULT_SECURITY_CODE_LENGTH;
 
-public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardActivityView>
+public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.View>
     implements GuessingCard.Actions {
 
     protected static final String CARD_SIDE_STATE_BUNDLE = "cardSideState";
@@ -274,6 +276,12 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardAc
 
     public void saveIdentificationNumber(final String identificationNumber) {
         this.identificationNumber = identificationNumber;
+        if (TextUtil.isEmpty(identificationNumber)) {
+            getView().clearErrorView();
+            getView().clearErrorIdentificationNumber();
+        } else {
+            validateIdentificationNumber();
+        }
     }
 
     public int getIdentificationNumberMaxLength() {
@@ -293,24 +301,43 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardAc
         identification.setNumber(number);
     }
 
-    public boolean validateIdentificationNumber() {
-        identification.setNumber(getIdentificationNumber());
-        cardToken.getCardholder().setIdentification(identification);
-        final boolean validated = cardToken.validateIdentificationNumber(identificationType);
-        if (validated) {
-            getView().clearErrorView();
-            getView().clearErrorIdentificationNumber();
-        } else {
-
-            FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_DOCUMENT,
-                new IdentificationViewTracker(getPaymentMethod().getPaymentTypeId(),
-                    getPaymentMethod().getId()), FrictionEventTracker.Style.CUSTOM_COMPONENT,
-                getPaymentMethod()).track();
-
-            getView().setInvalidIdentificationNumberErrorView();
-            getView().setErrorIdentificationNumber();
+    @Override
+    public void validateIdentificationNumberAndContinue() {
+        try {
+            validateCardIdentification();
+            checkFinishWithCardToken();
+        } catch (InvalidFieldException e) {
+            trackInvalidDocument();
+            showErrorView(e);
         }
-        return validated;
+    }
+
+    private void showErrorView(final InvalidFieldException e) {
+        switch (e.getErrorCode()) {
+        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+            getView().showInvalidIdentificationNumberLengthErrorView();
+            break;
+        default:
+            getView().showInvalidIdentificationNumberErrorView();
+            break;
+        }
+    }
+
+    private void trackInvalidDocument() {
+        FrictionEventTracker.with(FrictionEventTracker.Id.INVALID_DOCUMENT,
+            new IdentificationViewTracker(getPaymentMethod().getPaymentTypeId(),
+                getPaymentMethod().getId()), FrictionEventTracker.Style.CUSTOM_COMPONENT,
+            getPaymentMethod()).track();
+    }
+
+    @Override
+    public void validateIdentificationNumber() {
+        try {
+            validateCardIdentification();
+        } catch (InvalidFieldException e) {
+            trackInvalidDocument();
+            showErrorView(e);
+        }
     }
 
     public String getCardNumber() {
@@ -418,8 +445,11 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardAc
         return TextUtils.isEmpty(securityCode) || validateSecurityCode();
     }
 
-    public boolean checkIsEmptyOrValidIdentificationNumber() {
-        return TextUtils.isEmpty(identificationNumber) || validateIdentificationNumber();
+    private void validateCardIdentification() throws InvalidFieldException {
+        identification.setNumber(getIdentificationNumber());
+        IdentificationUtils.validateCardIdentification(cardToken, identification, identificationType);
+        getView().clearErrorView();
+        getView().clearErrorIdentificationNumber();
     }
 
     public String getSecurityCode() {
@@ -462,7 +492,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCardAc
     protected void showIdentificationNumberError() {
         getView().hideProgress();
         getView().setInvalidFieldErrorView();
-        getView().setErrorIdentificationNumber();
+        getView().showErrorIdentificationNumber();
     }
 
     public void setSelectedPaymentType(final PaymentType paymentType) {

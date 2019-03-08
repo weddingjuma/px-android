@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.exceptions.InvalidFieldException;
@@ -20,7 +21,7 @@ public final class IdentificationUtils {
     private IdentificationUtils() {
     }
 
-    public static void validateIdentification(final Identification identification,
+    public static void validateTicketIdentification(final Identification identification,
         final IdentificationType identificationType) throws InvalidFieldException {
         if (identificationType != null && identification != null) {
             validateIdentificationNumberLength(identification, identificationType);
@@ -28,10 +29,26 @@ public final class IdentificationUtils {
         validateNumber(identification);
     }
 
+    public static void validateCardIdentification(final CardToken cardToken, final Identification identification,
+        final IdentificationType identificationType) throws InvalidFieldException {
+        if (identificationType != null && identification != null) {
+            validateCardTokenIdentificationNumber(cardToken, identification, identificationType);
+        }
+        validateNumber(identification);
+    }
+
+    private static void validateCardTokenIdentificationNumber(final CardToken cardToken,
+        final Identification identification, final IdentificationType identificationType) throws InvalidFieldException {
+        cardToken.getCardholder().setIdentification(identification);
+        if (!cardToken.validateIdentificationNumber(identificationType)) {
+            throw InvalidFieldException.createInvalidLengthException();
+        }
+    }
+
     private static void validateNumber(final Identification identification) throws InvalidFieldException {
         if (identification == null || TextUtil.isEmpty(identification.getNumber()) ||
             TextUtil.isEmpty(identification.getType())) {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+            throw InvalidFieldException.createInvalidLengthException();
         } else if (identification.getType().equals(CPF)) {
             validateCpf(identification.getNumber());
         }
@@ -44,10 +61,10 @@ public final class IdentificationUtils {
             final Integer min = identificationType.getMinLength();
             final Integer max = identificationType.getMaxLength();
             if ((min != null) && (max != null) && !((len <= max) && (len >= min))) {
-                throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+                throw InvalidFieldException.createInvalidLengthException();
             }
         } else {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_IDENTIFICATION_LENGHT);
+            throw InvalidFieldException.createInvalidLengthException();
         }
     }
 
@@ -80,11 +97,11 @@ public final class IdentificationUtils {
                 leftover = sum % CPF_ALGORITHM_EXPECTED_LENGTH;
                 leftover = leftover == CPF_ALGORITHM_LAST_INDEX ? 0 : leftover;
                 if (leftover != numbers[CPF_ALGORITHM_LAST_INDEX]) {
-                    throw new InvalidFieldException(InvalidFieldException.INVALID_CPF);
+                    throw InvalidFieldException.createInvalidCpfException();
                 }
             }
         } else {
-            throw new InvalidFieldException(InvalidFieldException.INVALID_CPF);
+            throw InvalidFieldException.createInvalidCpfException();
         }
     }
 }

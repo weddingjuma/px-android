@@ -78,8 +78,8 @@ import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 
-public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> implements GuessingCardActivityView,
-    CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener {
+public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> implements
+    CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener, GuessingCard.View {
 
     public static final int REVIEW_PAYMENT_METHODS_REQUEST_CODE = 21;
 
@@ -220,8 +220,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         super.onStop();
     }
 
-    @Override
-    public void setupPresenter() {
+    private void setupPresenter() {
         final Intent intent = getIntent();
 
         final boolean includesPayment = intent.getBooleanExtra(PARAM_INCLUDES_PAYMENT, true);
@@ -851,10 +850,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
                 @Override
                 public void saveIdentificationNumber(final CharSequence string) {
                     presenter.saveIdentificationNumber(string.toString());
-                    if (presenter.getIdentificationNumberMaxLength() == string.length()) {
-                        presenter.saveIdentificationNumber(string.toString());
-                        presenter.validateIdentificationNumber();
-                    }
                     if (cardViewsActive()) {
                         mIdentificationCardView.setIdentificationNumber(string.toString());
                         if (showingIdentification()) {
@@ -865,7 +860,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
                 @Override
                 public void changeErrorView() {
-                    checkChangeErrorView();
+                    //Nothing to do here
                 }
 
                 @Override
@@ -884,7 +879,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
         }
         if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            presenter.validateIdentificationNumber();
+            presenter.validateIdentificationNumberAndContinue();
         }
     }
 
@@ -1094,8 +1089,15 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     @Override
-    public void setInvalidIdentificationNumberErrorView() {
+    public void showInvalidIdentificationNumberLengthErrorView() {
         setErrorView(getString(R.string.px_invalid_identification_number));
+        showErrorIdentificationNumber();
+    }
+
+    @Override
+    public void showInvalidIdentificationNumberErrorView() {
+        setErrorView(getString(R.string.px_invalid_field));
+        showErrorIdentificationNumber();
     }
 
     @Override
@@ -1200,7 +1202,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     @Override
-    public void setErrorIdentificationNumber() {
+    public void showErrorIdentificationNumber() {
         ViewUtils.openKeyboard(mIdentificationNumberEditText);
         mIdentificationNumberEditText.toggleLineColorOnError(true);
         mIdentificationNumberEditText.requestFocus();
@@ -1258,9 +1260,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             }
             break;
         case CARD_IDENTIFICATION_INPUT:
-            if (presenter.validateIdentificationNumber()) {
-                presenter.checkFinishWithCardToken();
-            }
+            presenter.validateIdentificationNumberAndContinue();
             break;
         default:
             break;
@@ -1288,17 +1288,20 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             }
             break;
         case CARD_IDENTIFICATION_INPUT:
-            if (presenter.checkIsEmptyOrValidIdentificationNumber()) {
-                if (presenter.isSecurityCodeRequired()) {
-                    mCardSecurityCodeInput.setVisibility(View.VISIBLE);
-                    requestSecurityCodeFocus();
-                } else {
-                    mCardExpiryDateInput.setVisibility(View.VISIBLE);
-                    requestExpiryDateFocus();
-                }
-            }
+            showIdentificationInputPreviousScreen();
             break;
         default:
+        }
+    }
+
+    @Override
+    public void showIdentificationInputPreviousScreen() {
+        if (presenter.isSecurityCodeRequired()) {
+            mCardSecurityCodeInput.setVisibility(View.VISIBLE);
+            requestSecurityCodeFocus();
+        } else {
+            mCardExpiryDateInput.setVisibility(View.VISIBLE);
+            requestExpiryDateFocus();
         }
     }
 

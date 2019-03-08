@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.datasource.CardAssociationGatewayService;
 import com.mercadopago.android.px.internal.datasource.CardAssociationService;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
-import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivityView;
+import com.mercadopago.android.px.internal.features.guessing_card.GuessingCard;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardStoragePresenter;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.CardPaymentMethodRepository;
@@ -63,7 +63,7 @@ public class GuessingCardStoragePresenterTest {
     @Mock private IdentificationRepository identificationRepository;
     @Mock private MercadoPagoESC mercadoPagoESC;
     @Mock private CardAssociationGatewayService cardAssociationGatewayService;
-    @Mock private GuessingCardActivityView view;
+    @Mock private GuessingCard.View view;
     @Mock private CardService cardService;
     @Mock private final CardAssociationService cardAssociationService = new CardAssociationService(cardService);
 
@@ -75,7 +75,7 @@ public class GuessingCardStoragePresenterTest {
 
     @NonNull
     private GuessingCardStoragePresenter getBasePresenter(
-        final GuessingCardActivityView view) {
+        final GuessingCard.View view) {
         final GuessingCardStoragePresenter presenter =
             new GuessingCardStoragePresenter(DUMMY_ACCESS_TOKEN, cardPaymentMethodRepository, identificationRepository,
                 cardAssociationService,

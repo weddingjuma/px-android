@@ -6,16 +6,18 @@ import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.viewmodel.EmptyLocalized;
 import com.mercadopago.android.px.internal.viewmodel.IDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.IDetailDrawable;
 import com.mercadopago.android.px.internal.viewmodel.ILocalizedCharSequence;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+
+import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public class AmountDescriptorView extends LinearLayout {
 
@@ -74,10 +76,16 @@ public class AmountDescriptorView extends LinearLayout {
         final boolean isSemiBold) {
         final SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
         spannableStringBuilder.append(charSequence);
+
         if (isSemiBold) {
             ViewUtils
                 .setSemiBoldFontInSpannable(0, spannableStringBuilder.length(), spannableStringBuilder, getContext());
         }
+
+        if (isEmpty(charSequence)) {
+            textView.setVisibility(GONE);
+        }
+
         textView.setText(spannableStringBuilder);
     }
 
@@ -114,12 +122,9 @@ public class AmountDescriptorView extends LinearLayout {
     }
 
     public void setOnDescriptorClickListener(final OnClickListener listener) {
-        setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (listenerEnabled) {
-                    listener.onAmountDescriptorClicked();
-                }
+        setOnClickListener(v -> {
+            if (listenerEnabled) {
+                listener.onAmountDescriptorClicked();
             }
         });
     }
@@ -136,6 +141,12 @@ public class AmountDescriptorView extends LinearLayout {
             this.left = left;
             this.right = right;
             this.detailColor = detailColor;
+        }
+
+        public Model(@NonNull final ILocalizedCharSequence left, @NonNull final IDetailColor detailColor) {
+            this.left = left;
+            this.detailColor = detailColor;
+            right = new EmptyLocalized();
         }
 
         public AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable) {

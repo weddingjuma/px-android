@@ -1,3 +1,7 @@
+## VERSION 4.7.3
+_11_03_2019_
+* FIX - disable back button on exploding animation
+
 ## VERSION 4.7.2
 _27_02_2019_
 * FIX - payment processor bundle mapping fix for vending

@@ -435,9 +435,21 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
      */
     @Override
     public void onBackPressed() {
+        if (isExploading()) {
+            return;
+        }
+
         presenter.removeUserSelection();
         setResult(RESULT_CANCELED_RYC);
         super.onBackPressed();
+    }
+
+    private boolean isExploading() {
+        final ExplodingFragment explodingFragment =
+            (ExplodingFragment) getSupportFragmentManager().findFragmentByTag(TAG_EXPLODING_FRAGMENT);
+        return explodingFragment != null
+            && explodingFragment.isAdded()
+            && explodingFragment.isVisible();
     }
 
     /**

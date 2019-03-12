@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.viewmodel.DiscountDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.DiscountDetailDrawable;
 import com.mercadopago.android.px.internal.viewmodel.ItemDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.ItemLocalized;
-import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountDetailDrawable;
 import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountLocalized;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -40,8 +39,12 @@ public class SummaryDetailDescriptorFactory {
         }
 
         if (!discountModel.isAvailable()) {
-            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new DiscountDetailColor())
-                .setDetailDrawable(new SoldOutDiscountDetailDrawable()).enableListener());
+            list.add(new AmountDescriptorView.Model(new ItemLocalized(),
+                new AmountLocalized(checkoutPreference.getTotalAmount(),
+                    checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
+            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new ItemDetailColor())
+                .setDetailDrawable(new DiscountDetailDrawable())
+                .enableListener());
         }
 
         return list;

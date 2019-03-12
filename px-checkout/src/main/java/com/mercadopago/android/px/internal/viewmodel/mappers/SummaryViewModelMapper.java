@@ -75,12 +75,7 @@ public class SummaryViewModelMapper extends Mapper<List<ExpressMetadata>, List<S
                 new TotalDetailColor());
 
             final SummaryView.Model model = new SummaryView.Model(elementDescriptorModel, summaryDetailList, totalRow,
-                new AmountDescriptorView.OnClickListener() {
-                    @Override
-                    public void onAmountDescriptorClicked() {
-                        listener.onAmountDescriptorClicked(discountModel);
-                    }
-                });
+                () -> listener.onAmountDescriptorClicked(discountModel));
 
             modelCache.put(discountModel, model);
             return model;

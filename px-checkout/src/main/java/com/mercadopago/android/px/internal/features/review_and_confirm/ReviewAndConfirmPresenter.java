@@ -83,6 +83,7 @@ import java.util.Set;
     @Override
     public void changePaymentMethod() {
         ChangePaymentMethodEvent.create().track();
+        removeUserSelection();
         getView().finishAndChangePaymentMethod();
     }
 

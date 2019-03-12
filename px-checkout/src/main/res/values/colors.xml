@@ -167,10 +167,10 @@
     <color name="px_expressCheckoutTextColor">@color/px_white</color>
     <color name="px_expressCheckoutTextColorDiscount">@color/px_white</color>
     <color name="px_expressCheckoutImageDiscount">@color/px_white</color>
+    <color name="px_expressCheckoutSoldOutDiscount">@color/px_white</color>
     <color name="px_expressCheckoutTextColorDetail">#B3FFFFFF</color>
     <color name="px_expressCheckoutSeparatorLine">#19000000</color>
     <color name="px_expressCheckoutScrollIndicatorColor">@color/px_expressCheckoutSeparatorLine</color>
     <color name="px_expressCheckoutChangePaymentMethodColor">#ffeae8e8</color>
     <color name="px_expressCheckoutInstallmentTitle">#73000000</color>
-
 </resources>

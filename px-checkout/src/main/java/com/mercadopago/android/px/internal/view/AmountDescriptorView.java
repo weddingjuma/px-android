@@ -59,7 +59,7 @@ public class AmountDescriptorView extends LinearLayout {
     public void update(@NonNull final AmountDescriptorView.Model model) {
         updateLeftLabel(model);
         updateRightLabel(model);
-        updateDrawable(model.detailDrawable);
+        updateDrawable(model.detailDrawable, model.detailDrawableColor);
         updateTextColor(model.detailColor);
         listenerEnabled = model.listenerEnabled;
     }
@@ -113,11 +113,16 @@ public class AmountDescriptorView extends LinearLayout {
         rightLabel.setTextColor(detailColor.getColor(getContext()));
     }
 
-    private void updateDrawable(@Nullable final IDetailDrawable detailDrawable) {
+    private void updateDrawable(@Nullable final IDetailDrawable detailDrawable,
+        @Nullable final IDetailColor detailColor) {
         if (detailDrawable != null) {
             imageView.setImageDrawable(detailDrawable.getDrawable(getContext()));
         } else {
             imageView.setVisibility(INVISIBLE);
+        }
+
+        if (detailColor != null) {
+            imageView.setColorFilter(detailColor.getColor(getContext()));
         }
     }
 
@@ -134,6 +139,7 @@ public class AmountDescriptorView extends LinearLayout {
         /* default */ @NonNull final ILocalizedCharSequence right;
         /* default */ @NonNull final IDetailColor detailColor;
         /* default */ @Nullable IDetailDrawable detailDrawable;
+        /* default */ @Nullable IDetailColor detailDrawableColor;
         /* default */ boolean listenerEnabled = false;
 
         public Model(@NonNull final ILocalizedCharSequence left, @NonNull final ILocalizedCharSequence right,
@@ -151,6 +157,14 @@ public class AmountDescriptorView extends LinearLayout {
 
         public AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable) {
             this.detailDrawable = detailDrawable;
+            detailDrawableColor = null;
+            return this;
+        }
+
+        public AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable,
+            @Nullable final IDetailColor detailDrawableColor) {
+            this.detailDrawable = detailDrawable;
+            this.detailDrawableColor = detailDrawableColor;
             return this;
         }
 

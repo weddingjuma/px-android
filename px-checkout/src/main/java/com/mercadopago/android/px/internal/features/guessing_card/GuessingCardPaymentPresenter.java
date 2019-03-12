@@ -291,14 +291,16 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     /* default */ void resolveIssuersList(final List<Issuer> issuers) {
-        if (issuers.size() == 1) {
-            issuer = issuers.get(0);
-            userSelectionRepository.select(issuer);
-            // All set -  card info - user must select installments
-            getView().finishCardFlow();
-        } else {
-            // User must select issuer and installments.
-            getView().finishCardFlow(issuers);
+        if(isViewAttached()) {
+            if (issuers.size() == 1) {
+                issuer = issuers.get(0);
+                userSelectionRepository.select(issuer);
+                // All set -  card info - user must select installments
+                getView().finishCardFlow();
+            } else {
+                // User must select issuer and installments.
+                getView().finishCardFlow(issuers);
+            }
         }
     }
 

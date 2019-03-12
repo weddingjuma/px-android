@@ -42,7 +42,7 @@ public class SummaryDetailDescriptorFactory {
             list.add(new AmountDescriptorView.Model(new ItemLocalized(),
                 new AmountLocalized(checkoutPreference.getTotalAmount(),
                     checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
-            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new ItemDetailColor())
+            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new DiscountDetailColor())
                 .setDetailDrawable(new DiscountDetailDrawable())
                 .enableListener());
         }

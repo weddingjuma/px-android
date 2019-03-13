@@ -1,3 +1,12 @@
+## VERSION 4.8.0
+_12_03_2019_
+* FEATURE - Account money discounts
+* FEATURE - CPF validation in card guessing
+* ENHANCEMENT - Soldout discount communication
+* ENHANCEMENT - Changes in Loyalty flow
+* ENHANCEMENT - Much lower assets weight
+* FIX - Money In UI fixes
+
 ## VERSION 4.7.3
 _11_03_2019_
 * FIX - disable back button on exploding animation

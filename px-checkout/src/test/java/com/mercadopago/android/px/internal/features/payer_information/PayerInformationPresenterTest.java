@@ -7,6 +7,7 @@ import com.mercadopago.android.px.mocks.IdentificationTypes;
 import com.mercadopago.android.px.mocks.IdentificationUtils;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.utils.StubFailMpCall;
@@ -37,12 +38,13 @@ public class PayerInformationPresenterTest {
 
     @Mock private PayerInformation.View view;
     @Mock private PayerInformationStateModel stateModel;
+    @Mock private PaymentMethod paymentMethod;
 
     private PayerInformationPresenter presenter;
 
     @Before
     public void setUp() {
-        presenter = new PayerInformationPresenter(stateModel, paymentSettingRepository, identificationRepository);
+        presenter = new PayerInformationPresenter(stateModel, paymentSettingRepository, identificationRepository, paymentMethod);
     }
 
     @Test

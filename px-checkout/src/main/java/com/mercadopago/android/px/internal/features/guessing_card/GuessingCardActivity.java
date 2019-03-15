@@ -819,6 +819,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         mIdentificationTypeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(final AdapterView<?> adapterView, final View view, final int i, final long l) {
+                clearErrorView();
+                clearErrorIdentificationNumber();
                 presenter.saveIdentificationType((IdentificationType) mIdentificationTypeSpinner.getSelectedItem());
             }
 
@@ -877,9 +879,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_NUMBER);
         } else {
             mIdentificationNumberEditText.setInputType(InputType.TYPE_CLASS_TEXT);
-        }
-        if (!mIdentificationNumberEditText.getText().toString().isEmpty()) {
-            presenter.validateIdentificationNumberAndContinue();
         }
     }
 

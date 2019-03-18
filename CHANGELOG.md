@@ -1,3 +1,7 @@
+## VERSION 4.8.1
+_18_03_2019_
+* FIX - Crash on guessing when retrying payment
+
 ## VERSION 4.8.0
 _12_03_2019_
 * FEATURE - Account money discounts

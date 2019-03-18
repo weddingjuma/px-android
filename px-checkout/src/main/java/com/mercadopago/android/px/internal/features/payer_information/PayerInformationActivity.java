@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
@@ -20,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.IdentificationTypesAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -37,8 +40,10 @@ import com.mercadopago.android.px.internal.view.MPEditText;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 import com.mercadopago.android.px.model.IdentificationType;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+
 import java.util.List;
 
 public class PayerInformationActivity extends PXActivity<PayerInformationPresenter> implements PayerInformation.View {
@@ -46,6 +51,8 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
     public static final String IDENTIFICATION_NUMBER_INPUT = "identificationNumber";
     public static final String IDENTIFICATION_NAME_INPUT = "identificationName";
     public static final String IDENTIFICATION_LAST_NAME_INPUT = "identificationLastName";
+
+    private static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
 
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
@@ -99,7 +106,8 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
         presenter =
             new PayerInformationPresenter(PayerInformationStateModel.fromBundle(savedInstanceState),
                 session.getConfigurationModule().getPaymentSettings(),
-                session.getIdentificationRepository());
+                session.getIdentificationRepository(),
+                session.getConfigurationModule().getUserSelectionRepository().getPaymentMethod());
         presenter.attachView(this);
         mErrorState = NORMAL_STATE;
         setListeners();

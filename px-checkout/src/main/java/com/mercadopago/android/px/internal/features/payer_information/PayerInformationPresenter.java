@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.internal.features.payer_information;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
@@ -12,6 +14,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Payer;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.InvalidFieldException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -30,16 +33,21 @@ import java.util.List;
     @NonNull
     private final IdentificationRepository identificationRepository;
 
+    @Nullable
+    private final PaymentMethod paymentMethodInformation;
+
     private FailureRecovery mFailureRecovery;
 
     private static final int DEFAULT_IDENTIFICATION_NUMBER_LENGTH = 12;
 
     /* default */ PayerInformationPresenter(@NonNull final PayerInformationStateModel state,
         @NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final IdentificationRepository identificationRepository) {
+        @NonNull final IdentificationRepository identificationRepository,
+        @Nullable final PaymentMethod paymentMethod) {
         this.state = state;
         this.paymentSettings = paymentSettings;
         this.identificationRepository = identificationRepository;
+        this.paymentMethodInformation = paymentMethod;
     }
 
     @Override
@@ -206,19 +214,19 @@ import java.util.List;
 
     @Override
     public void trackIdentificationNumberView() {
-        final CPFViewTracker cpfViewTracker = new CPFViewTracker();
+        final CPFViewTracker cpfViewTracker = new CPFViewTracker(paymentMethodInformation);
         setCurrentViewTracker(cpfViewTracker);
     }
 
     @Override
     public void trackIdentificationNameView() {
-        final NameViewTracker nameViewTracker = new NameViewTracker();
+        final NameViewTracker nameViewTracker = new NameViewTracker(paymentMethodInformation);
         setCurrentViewTracker(nameViewTracker);
     }
 
     @Override
     public void trackIdentificationLastNameView() {
-        final LastNameViewTracker lastNameViewTracker = new LastNameViewTracker();
+        final LastNameViewTracker lastNameViewTracker = new LastNameViewTracker(paymentMethodInformation);
         setCurrentViewTracker(lastNameViewTracker);
     }
 

@@ -480,7 +480,9 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
                     createToken();
                 }
             });
-            getView().showError(error, requestOrigin);
+            if(isViewAttached()) {
+                getView().showError(error, requestOrigin);
+            }
         }
     }
 

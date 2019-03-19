@@ -13,13 +13,14 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.PaymentMethodPlugin;
-import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
 import com.mercadopago.android.px.internal.adapters.PaymentMethodSearchItemAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.callbacks.OnSelectedCallback;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
+import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
@@ -52,6 +53,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -112,7 +114,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
             session.getDiscountRepository(),
             session.getGroupsRepository(),
             session.getMercadoPagoESC(),
-            new PaymentVaultTitleSolverImpl(getApplicationContext(), configuration.getAdvancedConfiguration().getCustomStringConfiguration()));
+            new PaymentVaultTitleSolverImpl(getApplicationContext(),
+                configuration.getAdvancedConfiguration().getCustomStringConfiguration()));
 
         getActivityParameters();
         configurePresenter();

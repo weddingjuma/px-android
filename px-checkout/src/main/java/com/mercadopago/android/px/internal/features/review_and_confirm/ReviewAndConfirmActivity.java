@@ -43,6 +43,7 @@ import com.mercadopago.android.px.internal.features.review_and_confirm.models.Su
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.TermsAndConditionsModel;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.ComponentManager;
@@ -435,7 +436,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
      */
     @Override
     public void onBackPressed() {
-        if (isExploading()) {
+        if (isExploding()) {
             return;
         }
 
@@ -444,12 +445,8 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         super.onBackPressed();
     }
 
-    private boolean isExploading() {
-        final ExplodingFragment explodingFragment =
-            (ExplodingFragment) getSupportFragmentManager().findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-        return explodingFragment != null
-            && explodingFragment.isAdded()
-            && explodingFragment.isVisible();
+    private boolean isExploding() {
+        return FragmentUtil.isFragmentVisible(getSupportFragmentManager(), TAG_EXPLODING_FRAGMENT);
     }
 
     /**

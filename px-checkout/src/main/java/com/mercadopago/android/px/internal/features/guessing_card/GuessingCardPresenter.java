@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import com.google.gson.reflect.TypeToken;
+import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
@@ -119,9 +120,8 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
     }
 
     public static GuessingCardPresenter buildGuessingCardStoragePresenter(final Session session,
-        final CardAssociationSession cardAssociationSession,
-        final String accessToken) {
-        return new GuessingCardStoragePresenter(accessToken, cardAssociationSession.getCardPaymentMethodRepository(),
+        final CardAssociationSession cardAssociationSession, @NonNull final MercadoPagoCardStorage mercadoPagoCardStorage) {
+        return new GuessingCardStoragePresenter(mercadoPagoCardStorage, cardAssociationSession.getCardPaymentMethodRepository(),
             session.getIdentificationRepository(), cardAssociationSession.getCardAssociationService(),
             cardAssociationSession.getMercadoPagoESC(),
             cardAssociationSession.getGatewayService());

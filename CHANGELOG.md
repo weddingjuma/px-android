@@ -1,3 +1,6 @@
+# new
+- FEATURE - skip congrats in storage card flow
+
 ## VERSION 4.8.1
 _18_03_2019_
 * FIX - Crash on guessing when retrying payment

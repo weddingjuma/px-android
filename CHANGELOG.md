@@ -1,5 +1,8 @@
-# new
-- FEATURE - skip congrats in storage card flow
+## VERSION 4.9.0
+_21_03_2019_
+* FEATURE - Issuer images in Cards
+* FEATURE - CNPJ payment with Boleto
+* FEATURE - Skip congrats in storage card flow
 
 ## VERSION 4.8.1
 _18_03_2019_

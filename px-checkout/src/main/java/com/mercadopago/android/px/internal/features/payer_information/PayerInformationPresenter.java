@@ -97,14 +97,11 @@ import java.util.List;
     }
 
     private void resolveIdentificationTypes(final List<IdentificationType> identificationTypes) {
-        //TODO do not filter identification types when CNPJ is resolved.
         state.setIdentificationTypes(identificationTypes);
-        final List<IdentificationType> filteredIdentificationTypes = state.getIdentificationTypeList();
-
-        if (filteredIdentificationTypes.isEmpty()) {
+        if (identificationTypes.isEmpty()) {
             getView().showMissingIdentificationTypesError();
         } else {
-            getView().initializeIdentificationTypes(filteredIdentificationTypes, state.getIdentificationType());
+            getView().initializeIdentificationTypes(identificationTypes, state.getIdentificationType());
         }
     }
 
@@ -118,6 +115,10 @@ import java.util.List;
 
     public void saveIdentificationLastName(final String identificationLastName) {
         state.setIdentificationLastName(identificationLastName);
+    }
+
+    public void saveIdentificationBusinessName(final String identificationBusinessName) {
+        state.saveIdentificationBusinessName(identificationBusinessName);
     }
 
     public int getIdentificationNumberMaxLength() {
@@ -142,8 +143,15 @@ import java.util.List;
         final CheckoutPreference checkoutPreference = paymentSettings.getCheckoutPreference();
         final Payer payer = checkoutPreference.getPayer();
         // add collected information.
-        payer.setFirstName(state.getIdentificationName());
-        payer.setLastName(state.getIdentificationLastName());
+
+        //Business name is first name in v1/payments
+        if (IdentificationUtils.isCnpj(state.getIdentificationType())) {
+            payer.setFirstName(state.getIdentificationBusinessName());
+            payer.setLastName(TextUtil.EMPTY);
+        } else {
+            payer.setFirstName(state.getIdentificationName());
+            payer.setLastName(state.getIdentificationLastName());
+        }
         payer.setIdentification(state.getIdentification());
         // reconfigure
         paymentSettings.configure(checkoutPreference);
@@ -165,11 +173,11 @@ import java.util.List;
 
     private void resolveInvalidFieldException(final InvalidFieldException e) {
         switch (e.getErrorCode()) {
-        case InvalidFieldException.INVALID_CPF:
-            getView().showInvalidCpfNumberErrorView();
+        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+            getView().showInvalidLengthIdentificationNumberErrorView();
             getView().showErrorIdentificationNumber();
             break;
-        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+        default:
             getView().showInvalidIdentificationNumberErrorView();
             getView().showErrorIdentificationNumber();
             break;
@@ -201,14 +209,34 @@ import java.util.List;
     }
 
     @Override
+    public void validateBusinessName() {
+        if (TextUtil.isNotEmpty(state.getIdentificationBusinessName())) {
+            getView().clearErrorView();
+            getView().clearErrorBusinessName();
+            getView().showCardFlowEnd();
+        } else {
+            getView().showInvalidIdentificationBusinessNameErrorView();
+            getView().showErrorBusinessName();
+        }
+    }
+
+    @Override
     public void validateIdentification() {
         try {
             IdentificationUtils.validateTicketIdentification(state.getIdentification(), state.getIdentificationType());
             getView().clearErrorView();
             getView().clearErrorIdentificationNumber();
-            getView().showIdentificationNameFocus();
+            showIdentificationNumberNextScreen();
         } catch (InvalidFieldException e) {
             resolveInvalidFieldException(e);
+        }
+    }
+
+    private void showIdentificationNumberNextScreen() {
+        if (IdentificationUtils.isCnpj(state.getIdentificationType())) {
+            getView().showIdentificationBusinessNameFocus();
+        } else {
+            getView().showIdentificationNameFocus();
         }
     }
 
@@ -249,5 +277,14 @@ import java.util.List;
     @Override
     public void focus(final String currentFocusType) {
         state.setFocus(currentFocusType);
+    }
+
+    @Override
+    public void configureIdentificationTypeFlow(@NonNull final IdentificationType identificationType) {
+        if (IdentificationUtils.isCnpj(identificationType)) {
+            getView().configureCnpjFlow();
+        } else {
+            getView().configureCpfFlow();
+        }
     }
 }

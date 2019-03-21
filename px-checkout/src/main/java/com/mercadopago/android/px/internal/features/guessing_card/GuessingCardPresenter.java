@@ -532,13 +532,31 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
         }
     }
 
-    protected void resolveIdentificationTypes(final List<IdentificationType> identificationTypes) {
-        if (identificationTypes.isEmpty()) {
+    protected void resolveIdentificationTypes(final List<IdentificationType> identificationTypeList) {
+        saveIdentificationTypes(identificationTypeList);
+        //TODO identificationTypes are filtered until new card flow + cnpj is analized.
+        if (identificationTypes == null || identificationTypes.isEmpty()) {
             getView().showMissingIdentificationTypesError(false, ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES);
         } else {
-            identificationType = identificationTypes.get(0);
             getView().initializeIdentificationTypes(identificationTypes, identificationType);
-            this.identificationTypes = identificationTypes;
+        }
+    }
+
+    private void saveIdentificationTypes(final List<IdentificationType> identificationTypeList) {
+        identificationTypes = new ArrayList<>();
+
+        if (identificationTypeList == null) {
+            return;
+        }
+
+        for (final IdentificationType identificationType : identificationTypeList) {
+            //TODO Do not filter CNPJ when new card flow + cnpj is analized.
+            if (!IdentificationUtils.isCnpj(identificationType)) {
+                identificationTypes.add(identificationType);
+            }
+        }
+        if (!identificationTypes.isEmpty()) {
+            identificationType = identificationTypeList.get(0);
         }
     }
 

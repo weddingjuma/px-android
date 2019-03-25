@@ -1,3 +1,7 @@
+## VERSION 4.9.1
+_25_03_2019_
+* FIX - Retry card storage
+
 ## VERSION 4.9.0
 _21_03_2019_
 * FEATURE - Issuer images in Cards

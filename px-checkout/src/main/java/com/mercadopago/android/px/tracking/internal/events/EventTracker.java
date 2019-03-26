@@ -11,7 +11,7 @@ public abstract class EventTracker {
     /* default */ static final String BASE_PATH = "/px_checkout";
     private static final String TAG = EventTracker.class.getSimpleName().toUpperCase();
 
-    public void track() {
+    public final void track() {
         final String eventPath = getEventPath();
         final Map<String, Object> eventData = getEventData();
         Logger.debug(TAG, eventPath);

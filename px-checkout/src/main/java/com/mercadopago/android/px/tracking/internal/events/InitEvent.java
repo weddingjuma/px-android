@@ -10,11 +10,10 @@ import java.util.UUID;
 public final class InitEvent extends EventTracker {
 
     @NonNull private final InitData initData;
-    @NonNull private final String sessionId;
 
     public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository) {
         initData = InitData.from(paymentSettingRepository);
-        sessionId = UUID.randomUUID().toString();
+        MPTracker.getInstance().setSessionId(UUID.randomUUID().toString());
     }
 
     @NonNull
@@ -27,11 +26,5 @@ public final class InitEvent extends EventTracker {
     @Override
     public Map<String, Object> getEventData() {
         return initData.toMap();
-    }
-
-    @Override
-    public final void track() {
-        MPTracker.getInstance().setSessionId(sessionId);
-        super.track();
     }
 }

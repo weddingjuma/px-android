@@ -86,7 +86,7 @@ public final class MPTracker {
     }
 
     /**
-     * Set a session id to identify differents session's user.
+     * Set a session id to identify differents user's session.
      *
      * @param sessionId The id that identifies a session
      */

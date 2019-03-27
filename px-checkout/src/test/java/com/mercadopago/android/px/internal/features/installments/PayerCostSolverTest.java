@@ -79,4 +79,14 @@ public class PayerCostSolverTest {
         verify(listener).displayInstallments(filteredPayerCostsMock);
         verifyNoMoreInteractions(userSelectionRepository);
     }
+
+
+    @Test
+    public void whenDefaultPayerCostThenAutoSelectIt() {
+        final PayerCost payerCostMock = mock(PayerCost.class);
+        when(paymentPreference.getDefaultInstallments(payerCosts)).thenReturn(payerCostMock);
+
+        solver.solveDefaultInstallment(payerCosts);
+        verify(userSelectionRepository).select(payerCostMock);
+    }
 }

@@ -47,4 +47,16 @@ public class PayerCostSolver {
             listener.onSelectedPayerCost();
         }
     }
+
+    /**
+     * Solve whether there is a default installment selected or not
+     */
+    public void solveDefaultInstallment(@NonNull final List<PayerCost> payerCosts) {
+        final PayerCost payerCost = paymentPreference.getDefaultInstallments(payerCosts);
+
+        if (payerCost != null) {
+            // Mark as selected a default payer cost
+            userSelectionRepository.select(payerCost);
+        }
+    }
 }

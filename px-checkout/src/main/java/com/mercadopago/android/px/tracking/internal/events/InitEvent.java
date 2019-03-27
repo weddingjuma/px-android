@@ -5,15 +5,14 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.model.InitData;
 import java.util.Map;
-import java.util.UUID;
 
 public final class InitEvent extends EventTracker {
 
     @NonNull private final InitData initData;
 
-    public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository) {
+    public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository, @NonNull final String id) {
         initData = InitData.from(paymentSettingRepository);
-        MPTracker.getInstance().setSessionId(UUID.randomUUID().toString());
+        MPTracker.getInstance().setSessionId(id);
     }
 
     @NonNull

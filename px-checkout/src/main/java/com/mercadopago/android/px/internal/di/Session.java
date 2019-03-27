@@ -56,6 +56,7 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
+import java.util.UUID;
 
 public final class Session extends ApplicationModule
     implements AmountComponent {
@@ -67,6 +68,7 @@ public final class Session extends ApplicationModule
     @SuppressLint("StaticFieldLeak") private static Session instance;
 
     // mem cache - lazy init.
+    private String id;
     private ConfigurationModule configurationModule;
     private DiscountRepository discountRepository;
     private AmountRepository amountRepository;
@@ -114,6 +116,7 @@ public final class Session extends ApplicationModule
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
+        id = UUID.randomUUID().toString();
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,
@@ -131,6 +134,7 @@ public final class Session extends ApplicationModule
     private void clear() {
         getConfigurationModule().reset();
         getGroupsCache().evict();
+        id = null;
         configurationModule = null;
         discountRepository = null;
         amountRepository = null;
@@ -144,6 +148,11 @@ public final class Session extends ApplicationModule
         amountConfigurationRepository = null;
         issuersRepository = null;
         cardTokenRepository = null;
+    }
+
+    @NonNull
+    public String getId() {
+        return id;
     }
 
     public GroupsRepository getGroupsRepository() {

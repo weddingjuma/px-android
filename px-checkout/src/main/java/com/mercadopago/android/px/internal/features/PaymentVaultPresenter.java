@@ -206,11 +206,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     private void selectItem(final PaymentMethodSearchItem item, final Boolean automaticSelection) {
         userSelectionRepository.select((Card) null, null);
-
+        getView().saveAutomaticSelection(automaticSelection);
         if (item.hasChildren()) {
             getView().showSelectedItem(item);
         } else if (item.isPaymentType()) {
-            startNextStepForPaymentType(item, automaticSelection);
+            startNextStepForPaymentType(item);
         } else if (item.isPaymentMethod()) {
             resolvePaymentMethodSelection(item);
         }
@@ -291,13 +291,13 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
         return foundCard;
     }
 
-    private void startNextStepForPaymentType(final PaymentMethodSearchItem item, final boolean automaticSelection) {
+    private void startNextStepForPaymentType(final PaymentMethodSearchItem item) {
 
         final String itemId = item.getId();
 
         if (PaymentTypes.isCardPaymentType(itemId)) {
                 userSelectionRepository.select(itemId);
-                getView().startCardFlow(automaticSelection);
+                getView().startCardFlow();
         } else {
             getView().startPaymentMethodsSelection(
                 paymentSettingRepository.getCheckoutPreference().getPaymentPreference());

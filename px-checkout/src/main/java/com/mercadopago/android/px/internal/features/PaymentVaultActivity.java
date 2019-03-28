@@ -141,6 +141,11 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         outState.putBoolean(EXTRA_AUTOMATIC_SELECTION, automaticSelection);
     }
 
+    @Override
+    public void saveAutomaticSelection(final boolean automaticSelection) {
+        this.automaticSelection = automaticSelection;
+    }
+
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
         final Session session = Session.getSession(this);
@@ -460,8 +465,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     }
 
     @Override
-    public void startCardFlow(final Boolean automaticSelection) {
-        this.automaticSelection = automaticSelection;
+    public void startCardFlow() {
         new Constants.Activities.CardVaultActivityBuilder()
             .startActivity(this, REQ_CARD_VAULT);
         overrideTransitionIn();

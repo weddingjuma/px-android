@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.di;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
@@ -150,7 +151,7 @@ public final class Session extends ApplicationModule
         cardTokenRepository = null;
     }
 
-    @NonNull
+    @Nullable
     public String getId() {
         return id;
     }

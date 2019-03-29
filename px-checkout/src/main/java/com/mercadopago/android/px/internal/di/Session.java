@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.di;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -62,6 +63,8 @@ import java.util.UUID;
 public final class Session extends ApplicationModule
     implements AmountComponent {
 
+    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
+
     /**
      * This singleton instance is safe because session will work with application context. Application context it's
      * never leaking.
@@ -117,7 +120,7 @@ public final class Session extends ApplicationModule
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
-        id = UUID.randomUUID().toString();
+        createSessionId();
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,
@@ -153,7 +156,16 @@ public final class Session extends ApplicationModule
 
     @Nullable
     public String getId() {
-        return id;
+        if (id == null) {
+            return getConfigurationModule().getSharedPreferences().getString(PREF_SESSION_ID, null);
+        } else {
+            return id;
+        }
+    }
+
+    private void createSessionId() {
+        id = UUID.randomUUID().toString();
+        getConfigurationModule().getSharedPreferences().edit().putString(PREF_SESSION_ID, id).apply();
     }
 
     public GroupsRepository getGroupsRepository() {

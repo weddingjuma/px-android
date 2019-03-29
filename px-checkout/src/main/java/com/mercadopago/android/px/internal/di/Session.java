@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.di;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
@@ -138,7 +137,6 @@ public final class Session extends ApplicationModule
     private void clear() {
         getConfigurationModule().reset();
         getGroupsCache().evict();
-        id = null;
         configurationModule = null;
         discountRepository = null;
         amountRepository = null;
@@ -154,18 +152,18 @@ public final class Session extends ApplicationModule
         cardTokenRepository = null;
     }
 
+    private void createSessionId() {
+        id = UUID.randomUUID().toString();
+        getSharedPreferences().edit().putString(PREF_SESSION_ID, id).apply();
+    }
+
     @Nullable
     public String getId() {
         if (id == null) {
-            return getConfigurationModule().getSharedPreferences().getString(PREF_SESSION_ID, null);
+            return getSharedPreferences().getString(PREF_SESSION_ID, null);
         } else {
             return id;
         }
-    }
-
-    private void createSessionId() {
-        id = UUID.randomUUID().toString();
-        getConfigurationModule().getSharedPreferences().edit().putString(PREF_SESSION_ID, id).apply();
     }
 
     public GroupsRepository getGroupsRepository() {

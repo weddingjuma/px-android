@@ -57,6 +57,7 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.UUID;
 
 public final class Session extends ApplicationModule
@@ -154,6 +155,7 @@ public final class Session extends ApplicationModule
 
     private void createSessionId() {
         id = UUID.randomUUID().toString();
+        MPTracker.getInstance().setSessionId(id);
         getSharedPreferences().edit().putString(PREF_SESSION_ID, id).apply();
     }
 

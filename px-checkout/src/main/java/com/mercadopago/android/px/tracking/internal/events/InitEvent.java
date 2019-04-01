@@ -9,7 +9,7 @@ public final class InitEvent extends EventTracker {
 
     @NonNull private final InitData initData;
 
-    public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository, @NonNull final String id) {
+    public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository) {
         initData = InitData.from(paymentSettingRepository);
     }
 

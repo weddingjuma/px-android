@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,16 +14,19 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.mercadopago.android.px.services.BuildConfig.HTTP_CLIENT_LOG;
 
 public final class HttpClientUtil {
 
+    private static String sessionId;
     private static OkHttpClient client;
     private static OkHttpClient customClient;
     private static final int CACHE_SIZE = 10 * 1024 * 1024; // 10 MB
     private static final String CACHE_DIR_NAME = "PX_OKHTTP_CACHE_SERVICES";
+    private static final String SESSION_ID_HEADER = "X-Session-Id";
     private static final HttpLoggingInterceptor.Level LOGGING_INTERCEPTOR =
         HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE;
 
@@ -58,7 +60,8 @@ public final class HttpClientUtil {
     @NonNull
     public static OkHttpClient createClient(final int connectTimeout,
         final int readTimeout,
-        final int writeTimeout) {
+        final int writeTimeout,
+        final String sessionId) {
         return createClient(null, connectTimeout, readTimeout, writeTimeout);
     }
 
@@ -76,7 +79,6 @@ public final class HttpClientUtil {
         final int readTimeout,
         final int writeTimeout) {
         // Set log info
-
         final OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
             .connectTimeout(connectTimeout, TimeUnit.SECONDS)
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
@@ -87,6 +89,15 @@ public final class HttpClientUtil {
         final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(LOGGING_INTERCEPTOR);
         okHttpClientBuilder.addInterceptor(interceptor);
+
+        // add session id interceptor
+        okHttpClientBuilder.addInterceptor(chain -> {
+            final Request original = chain.request();
+            final Request request = original.newBuilder()
+                .addHeader(SESSION_ID_HEADER, sessionId)
+                .build();
+            return chain.proceed(request);
+        });
 
         // Set cache size
         if (context != null) {
@@ -140,5 +151,9 @@ public final class HttpClientUtil {
 
     private static boolean customClientSet() {
         return customClient != null;
+    }
+
+    public static void setSessionId(final String sessionId) {
+        HttpClientUtil.sessionId = sessionId;
     }
 }

@@ -60,8 +60,7 @@ public final class HttpClientUtil {
     @NonNull
     public static OkHttpClient createClient(final int connectTimeout,
         final int readTimeout,
-        final int writeTimeout,
-        final String sessionId) {
+        final int writeTimeout) {
         return createClient(null, connectTimeout, readTimeout, writeTimeout);
     }
 

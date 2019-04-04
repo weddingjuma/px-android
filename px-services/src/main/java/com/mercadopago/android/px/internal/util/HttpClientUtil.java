@@ -21,14 +21,14 @@ import static com.mercadopago.android.px.services.BuildConfig.HTTP_CLIENT_LOG;
 
 public final class HttpClientUtil {
 
-    private static String sessionId;
     private static OkHttpClient client;
     private static OkHttpClient customClient;
     private static final int CACHE_SIZE = 10 * 1024 * 1024; // 10 MB
     private static final String CACHE_DIR_NAME = "PX_OKHTTP_CACHE_SERVICES";
     private static final String SESSION_ID_HEADER = "X-Session-Id";
+    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
     private static final HttpLoggingInterceptor.Level LOGGING_INTERCEPTOR =
-        HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.BODY : HttpLoggingInterceptor.Level.NONE;
+        HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.HEADERS : HttpLoggingInterceptor.Level.NONE;
 
     private HttpClientUtil() {
     }
@@ -93,7 +93,7 @@ public final class HttpClientUtil {
         okHttpClientBuilder.addInterceptor(chain -> {
             final Request original = chain.request();
             final Request request = original.newBuilder()
-                .addHeader(SESSION_ID_HEADER, sessionId)
+                .addHeader(SESSION_ID_HEADER, getSessionId(context))
                 .build();
             return chain.proceed(request);
         });
@@ -125,6 +125,11 @@ public final class HttpClientUtil {
         return client;
     }
 
+    private static String getSessionId(final Context context) {
+        return context.getSharedPreferences("com.mercadopago.checkout.store", Context.MODE_PRIVATE)
+            .getString(PREF_SESSION_ID, null);
+    }
+
     @NonNull
     private static Interceptor getConnectionInterceptor(@NonNull final Context context) {
         return new ConnectivityStateInterceptor(context);
@@ -150,9 +155,5 @@ public final class HttpClientUtil {
 
     private static boolean customClientSet() {
         return customClient != null;
-    }
-
-    public static void setSessionId(final String sessionId) {
-        HttpClientUtil.sessionId = sessionId;
     }
 }

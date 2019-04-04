@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.di;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
@@ -31,6 +30,7 @@ import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinat
 import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
 import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
+import com.mercadopago.android.px.internal.providers.SessionIdProvider;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -52,19 +52,15 @@ import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
-import com.mercadopago.android.px.internal.util.HttpClientUtil;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
-import java.util.UUID;
 
 public final class Session extends ApplicationModule
     implements AmountComponent {
-
-    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
 
     /**
      * This singleton instance is safe because session will work with application context. Application context it's
@@ -73,7 +69,6 @@ public final class Session extends ApplicationModule
     @SuppressLint("StaticFieldLeak") private static Session instance;
 
     // mem cache - lazy init.
-    private String id;
     private ConfigurationModule configurationModule;
     private DiscountRepository discountRepository;
     private AmountRepository amountRepository;
@@ -155,19 +150,9 @@ public final class Session extends ApplicationModule
     }
 
     private void createSessionId() {
-        id = UUID.randomUUID().toString();
-        MPTracker.getInstance().setSessionId(id);
-        HttpClientUtil.setSessionId(id);
-        getSharedPreferences().edit().putString(PREF_SESSION_ID, id).apply();
-    }
-
-    @Nullable
-    public String getId() {
-        if (id == null) {
-            return getSharedPreferences().getString(PREF_SESSION_ID, null);
-        } else {
-            return id;
-        }
+        final SessionIdProvider sessionIdProvider = new SessionIdProvider(getContext());
+        sessionIdProvider.create();
+        MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
     }
 
     public GroupsRepository getGroupsRepository() {

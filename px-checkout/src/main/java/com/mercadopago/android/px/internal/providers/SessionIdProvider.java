@@ -8,10 +8,9 @@ import java.util.UUID;
 
 public final class SessionIdProvider {
 
-    private static String id;
-    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
-
+    @Nullable private String id;
     private final Context context;
+    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
 
     public SessionIdProvider(@NonNull final Context context) {
         this.context = context;
@@ -25,10 +24,9 @@ public final class SessionIdProvider {
     @Nullable
     public String getSessionId() {
         if (id == null) {
-            return getSharedPreference().getString(PREF_SESSION_ID, null);
-        } else {
-            return id;
+            id = getSharedPreference().getString(PREF_SESSION_ID, null);
         }
+        return id;
     }
 
     private SharedPreferences getSharedPreference() {

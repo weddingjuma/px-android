@@ -53,7 +53,7 @@ import com.mercadopago.android.px.internal.features.guessing_card.card_associati
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.IdentificationCardView;
-import com.mercadopago.android.px.internal.providers.SessionIdProvider;
+import com.mercadopago.android.px.internal.core.SessionIdProvider;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPAnimationUtils;
@@ -162,10 +162,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         final Intent intent = new Intent(context, GuessingCardActivity.class);
         intent.putExtra(PARAM_MERCADO_PAGO_CARD_STORAGE, mercadoPagoCardStorage);
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, false);
-
-        final SessionIdProvider sessionIdProvider = new SessionIdProvider(context);
-        sessionIdProvider.create();
-        MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
 
         if (context instanceof Activity) {
             ((Activity) context).startActivityForResult(intent, mercadoPagoCardStorage.getRequestCode());

@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.datasource.cache;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.core.FileManager;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.internal.callbacks.MPCall;

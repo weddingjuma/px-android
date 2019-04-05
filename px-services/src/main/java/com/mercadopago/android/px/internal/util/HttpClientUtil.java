@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.core.ConnectivityStateInterceptor;
+import com.mercadopago.android.px.internal.core.SessionInterceptor;
 import com.mercadopago.android.px.internal.core.TLSSocketFactory;
 import com.mercadopago.android.px.internal.core.UserAgentInterceptor;
 import com.mercadopago.android.px.services.BuildConfig;
@@ -14,7 +15,6 @@ import java.util.concurrent.TimeUnit;
 import okhttp3.Cache;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
 
 import static com.mercadopago.android.px.services.BuildConfig.HTTP_CLIENT_LOG;
@@ -25,8 +25,6 @@ public final class HttpClientUtil {
     private static OkHttpClient customClient;
     private static final int CACHE_SIZE = 10 * 1024 * 1024; // 10 MB
     private static final String CACHE_DIR_NAME = "PX_OKHTTP_CACHE_SERVICES";
-    private static final String SESSION_ID_HEADER = "X-Session-Id";
-    private static final String PREF_SESSION_ID = "PREF_SESSION_ID";
     private static final HttpLoggingInterceptor.Level LOGGING_INTERCEPTOR =
         HTTP_CLIENT_LOG ? HttpLoggingInterceptor.Level.HEADERS : HttpLoggingInterceptor.Level.NONE;
 
@@ -88,19 +86,12 @@ public final class HttpClientUtil {
         final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(LOGGING_INTERCEPTOR);
         okHttpClientBuilder.addInterceptor(interceptor);
-
-        // add session id interceptor
-        okHttpClientBuilder.addInterceptor(chain -> {
-            final Request original = chain.request();
-            final Request request = original.newBuilder()
-                .addHeader(SESSION_ID_HEADER, getSessionId(context))
-                .build();
-            return chain.proceed(request);
-        });
-
         // Set cache size
         if (context != null) {
+
             okHttpClientBuilder.addInterceptor(getConnectionInterceptor(context));
+            okHttpClientBuilder.addInterceptor(new SessionInterceptor(context));
+
             try {
                 final Cache cache =
                     new Cache(new File(String.format("%s%s", context.getCacheDir().getPath(), CACHE_DIR_NAME)),
@@ -123,11 +114,6 @@ public final class HttpClientUtil {
         }
 
         return client;
-    }
-
-    private static String getSessionId(final Context context) {
-        return context.getSharedPreferences("com.mercadopago.checkout.store", Context.MODE_PRIVATE)
-            .getString(PREF_SESSION_ID, null);
     }
 
     @NonNull

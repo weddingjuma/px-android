@@ -17,12 +17,9 @@ public final class SessionIdProvider {
     }
 
     private SessionIdProvider(@NonNull final SharedPreferences sharedPreferences) {
-        this.sharedPreferences = sharedPreferences;
-    }
-
-    public void create() {
         id = UUID.randomUUID().toString();
         sharedPreferences.edit().putString(PREF_SESSION_ID, id).apply();
+        this.sharedPreferences = sharedPreferences;
     }
 
     @NonNull

@@ -9,6 +9,7 @@ import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
+import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.datasource.AmountConfigurationRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.AmountService;
 import com.mercadopago.android.px.internal.datasource.BankDealsService;
@@ -16,6 +17,7 @@ import com.mercadopago.android.px.internal.datasource.CardTokenService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.EscManagerImp;
 import com.mercadopago.android.px.internal.datasource.GroupsService;
+import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
@@ -48,7 +50,6 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.services.BankDealService;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.GatewayService;
-import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
@@ -56,6 +57,7 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 
 public final class Session extends ApplicationModule
     implements AmountComponent {
@@ -103,6 +105,10 @@ public final class Session extends ApplicationModule
         //TODO add session mapping object.
         // delete old data.
         clear();
+
+        //start new session id
+        MPTracker.getInstance().setSessionId(getSessionIdProvider().getSessionId());
+
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();
 
@@ -114,6 +120,7 @@ public final class Session extends ApplicationModule
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
+
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,

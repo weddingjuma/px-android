@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.cardvault;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpPresenter;
@@ -7,6 +8,8 @@ import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
+import com.mercadopago.android.px.internal.features.IssuersActivity;
+import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.features.installments.PayerCostListener;
 import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.features.providers.CardVaultProvider;
@@ -18,6 +21,7 @@ import com.mercadopago.android.px.internal.util.EscUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
+import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -162,10 +166,10 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
-    private void checkStartIssuersActivity() {
+    private void checkStartIssuersActivity(final Intent data) {
         if (userSelectionRepository.getIssuer() == null) {
             issuersListShown = true;
-            getView().startIssuersActivity();
+            getView().startIssuersActivity(GuessingCardActivity.extractIssuersFromIntent(data));
         } else {
             checkStartInstallmentsActivity();
         }
@@ -201,9 +205,9 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         //}
     }
 
-    public void resolveNewCardRequest() {
+    public void resolveNewCardRequest(final Intent data) {
         setCardInfo(new CardInfo(paymentSettingRepository.getToken()));
-        checkStartIssuersActivity();
+        checkStartIssuersActivity(data);
     }
 
     public void onResultCancel() {

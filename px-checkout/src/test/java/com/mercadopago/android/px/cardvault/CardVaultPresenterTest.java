@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.cardvault;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultPresenter;
@@ -10,10 +11,10 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.preferences.PaymentPreference;
@@ -25,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -127,7 +129,7 @@ public class CardVaultPresenterTest {
         when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
         when(paymentSettingRepository.getToken()).thenReturn(mock(Token.class));
 
-        presenter.resolveNewCardRequest();
+        presenter.resolveNewCardRequest(mock(Intent.class));
 
         verify(view).finishWithResult();
     }
@@ -137,7 +139,7 @@ public class CardVaultPresenterTest {
         when(userSelectionRepository.getIssuer()).thenReturn(mock(Issuer.class));
         when(paymentSettingRepository.getToken()).thenReturn(mock(Token.class));
 
-        presenter.resolveNewCardRequest();
+        presenter.resolveNewCardRequest(mock(Intent.class));
 
         verify(view).askForInstallments();
     }
@@ -146,9 +148,9 @@ public class CardVaultPresenterTest {
     public void whenGuessingCardHasNoIssuerThenStartIssuerFlow() {
         when(paymentSettingRepository.getToken()).thenReturn(mock(Token.class));
 
-        presenter.resolveNewCardRequest();
+        presenter.resolveNewCardRequest(mock(Intent.class));
 
-        verify(view).startIssuersActivity();
+        verify(view).startIssuersActivity(argThat(List::isEmpty));
     }
 
     /**

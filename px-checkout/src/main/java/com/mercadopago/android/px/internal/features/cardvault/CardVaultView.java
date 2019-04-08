@@ -1,8 +1,11 @@
 package com.mercadopago.android.px.internal.features.cardvault;
 
+import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import java.util.List;
 
 public interface CardVaultView extends MvpView {
 
@@ -16,7 +19,7 @@ public interface CardVaultView extends MvpView {
 
     void askForInstallments();
 
-    void startIssuersActivity();
+    void startIssuersActivity(@NonNull final List<Issuer> issuers);
 
     void startSecurityCodeActivity();
 

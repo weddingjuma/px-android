@@ -4,11 +4,13 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
+import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.features.providers.CardVaultProviderImpl;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -18,12 +20,14 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
+import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 
@@ -149,7 +153,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == Constants.Activities.GUESSING_CARD_FOR_PAYMENT_REQUEST_CODE) {
-            resolveGuessingCardRequest(resultCode);
+            resolveGuessingCardRequest(resultCode, data);
         } else if (requestCode == Constants.Activities.ISSUERS_REQUEST_CODE) {
             resolveIssuersRequest(resultCode);
         } else if (requestCode == Constants.Activities.INSTALLMENTS_REQUEST_CODE) {
@@ -211,9 +215,9 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
         }
     }
 
-    protected void resolveGuessingCardRequest(final int resultCode) {
+    protected void resolveGuessingCardRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
-            presenter.resolveNewCardRequest();
+            presenter.resolveNewCardRequest(data);
         } else if (resultCode == RESULT_CANCELED) {
             presenter.onResultCancel();
         } else if (resultCode == RESULT_SILENT_ERROR) {
@@ -242,12 +246,8 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     @Override
-    public void startIssuersActivity() {
-        new Constants.Activities.IssuersActivityBuilder()
-            .setActivity(this)
-            .setCardInfo(presenter.getCardInfo())
-            .startActivity();
-        animateTransitionSlideInSlideOut();
+    public void startIssuersActivity(@NonNull final List<Issuer> issuers) {
+        IssuersActivity.start(this, Constants.Activities.ISSUERS_REQUEST_CODE, issuers, presenter.getCardInfo());
     }
 
     @Override

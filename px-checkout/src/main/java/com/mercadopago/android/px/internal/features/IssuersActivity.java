@@ -2,15 +2,17 @@ package com.mercadopago.android.px.internal.features;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.IssuersAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -22,7 +24,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
@@ -30,10 +31,40 @@ import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import java.lang.reflect.Type;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class IssuersActivity extends PXActivity<IssuersPresenter> implements IssuersActivityView {
+
+    private static final String EXTRA_ISSUERS = "issuers";
+    private static final String EXTRA_ISSUER_ID = "issuerId";
+    private static final String EXTRA_CARD_INFO = "cardInfo";
+    private static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
+
+    public static void start(@NonNull final AppCompatActivity from, final int requestCode,
+        @NonNull final List<Issuer> issuers, @NonNull final Serializable cardInformation) {
+        final Intent intent = new Intent(from, IssuersActivity.class);
+        intent.putParcelableArrayListExtra(EXTRA_ISSUERS, new ArrayList<>(issuers));
+        intent.putExtra(EXTRA_CARD_INFO, cardInformation);
+        from.startActivityForResult(intent, requestCode);
+        from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+    }
+
+    public static void startWithPaymentMethod(@NonNull final AppCompatActivity from, final int requestCode,
+        @NonNull final List<Issuer> issuers, @NonNull final Serializable cardInformation,
+        @NonNull final PaymentMethod paymentMethod) {
+        final Intent intent = new Intent(from, IssuersActivity.class);
+        intent.putParcelableArrayListExtra(EXTRA_ISSUERS, new ArrayList<>(issuers));
+        intent.putExtra(EXTRA_CARD_INFO, cardInformation);
+        intent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod);
+        from.startActivityForResult(intent, requestCode);
+        from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+    }
+
+    public static long extractIssuerIdFromIntent(@NonNull final Intent intent) {
+        return intent.getExtras().getLong(EXTRA_ISSUER_ID);
+    }
 
     // Local vars
     protected boolean mActivityActive;
@@ -76,17 +107,9 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
 
     private void getActivityParameters() {
         final Session session = Session.getSession(this);
-        List<Issuer> issuers;
-        try {
-            final Type listType = new TypeToken<List<Issuer>>() {
-            }.getType();
-            issuers = JsonUtil.getInstance().getGson().fromJson(getIntent().getStringExtra("issuers"), listType);
-        } catch (final Exception ex) {
-            issuers = null;
-        }
+        final List<Issuer> issuers = getIntent().getParcelableArrayListExtra(EXTRA_ISSUERS);
 
-        final PaymentMethod paymentMethod =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra("paymentMethod"), PaymentMethod.class);
+        final PaymentMethod paymentMethod = getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD);
 
         if (paymentMethod != null) {
             // Comes from card storage flow
@@ -100,7 +123,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
                     false);
         }
 
-        presenter.setCardInfo(JsonUtil.getInstance().fromJson(getIntent().getStringExtra("cardInfo"), CardInfo.class));
+        presenter.setCardInfo((CardInfo) getIntent().getSerializableExtra(EXTRA_CARD_INFO));
         presenter.setIssuers(issuers);
     }
 
@@ -145,7 +168,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
         mLowResTitleToolbar = findViewById(R.id.mpsdkTitle);
 
         if (CheckoutTimer.getInstance().isTimerEnabled()) {
-            Toolbar.LayoutParams marginParams =
+            final Toolbar.LayoutParams marginParams =
                 new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             marginParams.setMargins(0, 0, 0, 0);
             mLowResTitleToolbar.setLayoutParams(marginParams);
@@ -187,7 +210,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
         }
     }
 
-    private void loadToolbarArrow(Toolbar toolbar) {
+    private void loadToolbarArrow(final Toolbar toolbar) {
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
@@ -195,12 +218,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    onBackPressed();
-                }
-            });
+            toolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
     }
 
@@ -244,21 +262,16 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
         }
     }
 
-    private void initializeAdapter(OnSelectedCallback<Integer> onSelectedCallback) {
+    private void initializeAdapter(final OnSelectedCallback<Integer> onSelectedCallback) {
         mIssuersAdapter = new IssuersAdapter(onSelectedCallback);
         initializeAdapterListener(mIssuersAdapter, mIssuersRecyclerView);
     }
 
-    private void initializeAdapterListener(RecyclerView.Adapter adapter, RecyclerView view) {
+    private void initializeAdapterListener(final RecyclerView.Adapter adapter, final RecyclerView view) {
         view.setAdapter(adapter);
         view.setLayoutManager(new LinearLayoutManager(this));
         view.addOnItemTouchListener(new RecyclerItemClickListener(this,
-            new RecyclerItemClickListener.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    presenter.onItemSelected(position);
-                }
-            }));
+            (view1, position) -> presenter.onItemSelected(position)));
     }
 
     @Override
@@ -272,7 +285,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
     }
 
     @Override
-    public void showError(MercadoPagoError error, String requestOrigin) {
+    public void showError(final MercadoPagoError error, final String requestOrigin) {
         if (error.isApiException()) {
             showApiException(error.getApiException(), requestOrigin);
         } else {
@@ -288,14 +301,14 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
         showError(error, requestOrigin);
     }
 
-    public void showApiException(ApiException apiException, String requestOrigin) {
+    public void showApiException(final ApiException apiException, final String requestOrigin) {
         if (mActivityActive) {
             ErrorUtil.showApiExceptionError(this, apiException, requestOrigin);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -308,7 +321,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
     }
 
     @Override
-    public void showIssuers(List<Issuer> issuersList, OnSelectedCallback<Integer> onSelectedCallback) {
+    public void showIssuers(final List<Issuer> issuersList, final OnSelectedCallback<Integer> onSelectedCallback) {
         initializeAdapter(onSelectedCallback);
         mIssuersAdapter.addResults(issuersList);
         stopLoadingView();
@@ -337,7 +350,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
     @Override
     public void finishWithResultForCardStorage(final Long issuerId) {
         final Intent intent = new Intent();
-        intent.putExtra("issuerId", issuerId);
+        intent.putExtra(EXTRA_ISSUER_ID, issuerId);
         setResult(RESULT_OK, intent);
         finish();
         animateTransitionSlideInSlideOut();

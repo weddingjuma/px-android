@@ -14,7 +14,6 @@ import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
-import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentType;
@@ -139,48 +138,6 @@ public final class Constants {
                 paymentMethodsIntent.putExtra("paymentPreference", JsonUtil.getInstance().toJson(paymentPreference));
 
                 activity.startActivityForResult(paymentMethodsIntent, PAYMENT_METHODS_REQUEST_CODE);
-            }
-        }
-
-        public static class IssuersActivityBuilder {
-            private Activity activity;
-            private CardInfo cardInformation;
-            private PaymentMethod paymentMethod;
-            private List<Issuer> issuers;
-
-            public IssuersActivityBuilder setActivity(final Activity activity) {
-                this.activity = activity;
-                return this;
-            }
-
-            public IssuersActivityBuilder setCardInfo(final CardInfo cardInformation) {
-                this.cardInformation = cardInformation;
-                return this;
-            }
-
-            public IssuersActivityBuilder setIssuers(final List<Issuer> issuers) {
-                this.issuers = issuers;
-                return this;
-            }
-
-            public IssuersActivityBuilder setPaymentMethod(final PaymentMethod paymentMethod) {
-                this.paymentMethod = paymentMethod;
-                return this;
-            }
-
-            public void startActivity() {
-                if (activity == null) {
-                    throw new IllegalStateException("activity is null");
-                }
-                startIssuersActivity();
-            }
-
-            private void startIssuersActivity() {
-                final Intent intent = new Intent(activity, IssuersActivity.class);
-                intent.putExtra("issuers", JsonUtil.getInstance().toJson(issuers));
-                intent.putExtra("cardInfo", JsonUtil.getInstance().toJson(cardInformation));
-                intent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
-                activity.startActivityForResult(intent, ISSUERS_REQUEST_CODE);
             }
         }
 

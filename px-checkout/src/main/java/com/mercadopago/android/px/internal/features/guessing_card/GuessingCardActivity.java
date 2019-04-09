@@ -42,6 +42,7 @@ import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingCont
 import com.mercadopago.android.px.internal.di.CardAssociationSession;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
+import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.ReviewPaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.card.CardExpiryDateTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardIdentificationNumberTextWatcher;
@@ -53,7 +54,6 @@ import com.mercadopago.android.px.internal.features.guessing_card.card_associati
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.IdentificationCardView;
-import com.mercadopago.android.px.internal.core.SessionIdProvider;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPAnimationUtils;
@@ -74,9 +74,9 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.GuessingRootViewTracker;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
@@ -99,7 +99,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
-    protected static final String EXTRA_ISSUERS = "issuers";
+
+    private static final String EXTRA_ISSUERS = "issuers";
 
     protected MPEditText mCardNumberEditText;
     protected CardView mCardView;
@@ -184,6 +185,10 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, true);
         callerActivity.startActivityForResult(intent, Constants.Activities.GUESSING_CARD_FOR_PAYMENT_REQUEST_CODE);
+    }
+
+    public static List<Issuer> extractIssuersFromIntent(@NonNull final Intent intent) {
+        return intent.getParcelableArrayListExtra(EXTRA_ISSUERS);
     }
 
     @Override
@@ -1434,7 +1439,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             setSoftInputMode();
         } else if (requestCode == Constants.Activities.ISSUERS_REQUEST_CODE) {
             if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
-                final Long issuerId = data.getExtras().getLong("issuerId");
+                final Long issuerId = IssuersActivity.extractIssuerIdFromIntent(data);
                 ViewUtils.hideKeyboard(this);
                 showProgress();
                 presenter.onIssuerSelected(issuerId);
@@ -1460,7 +1465,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     public void finishCardFlow(@NonNull final List<Issuer> issuers) {
         overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra(EXTRA_ISSUERS, JsonUtil.getInstance().toJson(issuers));
+        returnIntent.putParcelableArrayListExtra(EXTRA_ISSUERS, new ArrayList<>(issuers));
         setResult(RESULT_OK, returnIntent);
         finish();
     }
@@ -1474,13 +1479,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     @Override
     public void askForIssuer(final CardInfo cardInfo, final List<Issuer> issuers, final PaymentMethod paymentMethod) {
-        new Constants.Activities.IssuersActivityBuilder()
-            .setActivity(this)
-            .setIssuers(issuers)
-            .setCardInfo(cardInfo)
-            .setPaymentMethod(paymentMethod)
-            .startActivity();
-        overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+        IssuersActivity.startWithPaymentMethod(this, Constants.Activities.ISSUERS_REQUEST_CODE, issuers,
+            cardInfo, paymentMethod);
     }
 
     @Override

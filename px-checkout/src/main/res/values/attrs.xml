@@ -20,11 +20,16 @@
     </declare-styleable>
 
     <declare-styleable name="PXElementDescriptorView">
-        <attr name="px_element_icon_height" format="dimension" />
-        <attr name="px_element_icon_width" format="dimension" />
-        <attr name="px_element_label_size" format="dimension" />
-        <attr name="px_element_label_text_color" format="color"/>
-        <attr name="px_element_label_max_lines" format="integer"/>
+        <attr name="px_element_icon_height" format="dimension"/>
+        <attr name="px_element_icon_width" format="dimension"/>
+        <attr name="px_element_title_size" format="dimension"/>
+        <attr name="px_element_title_text_color" format="color"/>
+        <attr name="px_element_title_max_lines" format="integer"/>
+        <attr name="px_element_subtitle_size" format="dimension"/>
+        <attr name="px_element_subtitle_text_color" format="color"/>
+        <attr name="px_element_subtitle_max_lines" format="integer"/>
+        <attr name="android:gravity"/>
+
     </declare-styleable>
 
     <declare-styleable name="PXFixedAspectRatioFrameLayout">

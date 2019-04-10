@@ -23,6 +23,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMa
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SplitHeaderMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryInfoMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
@@ -35,6 +36,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
@@ -105,12 +107,14 @@ import java.util.Set;
     public void attachView(final ExpressPayment.View view) {
         super.attachView(view);
 
+        final SummaryInfo summaryInfo = new SummaryInfoMapper().map(paymentConfiguration.getCheckoutPreference());
+
         final ElementDescriptorView.Model elementDescriptorModel =
-            new ElementDescriptorMapper().map(paymentConfiguration.getCheckoutPreference());
+            new ElementDescriptorMapper().map(summaryInfo);
 
         final List<SummaryView.Model> summaryModels =
             new SummaryViewModelMapper(paymentConfiguration.getCheckoutPreference(), discountRepository,
-                amountRepository, elementDescriptorModel, this).map(expressMetadataList);
+                amountRepository, elementDescriptorModel, this, summaryInfo).map(expressMetadataList);
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
             new PaymentMethodDescriptorMapper(paymentConfiguration, amountConfigurationRepository)

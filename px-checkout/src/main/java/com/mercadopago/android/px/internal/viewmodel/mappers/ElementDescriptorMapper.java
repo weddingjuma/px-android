@@ -2,18 +2,14 @@ package com.mercadopago.android.px.internal.viewmodel.mappers;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
-import com.mercadopago.android.px.model.Item;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.model.internal.SummaryInfo;
 
-public class ElementDescriptorMapper extends Mapper<CheckoutPreference, ElementDescriptorView.Model> {
+public class ElementDescriptorMapper extends Mapper<SummaryInfo, ElementDescriptorView.Model> {
 
     @Override
-    public ElementDescriptorView.Model map(@NonNull final CheckoutPreference checkoutPreference) {
-        final Item firstItem = checkoutPreference.getItems().get(0);
-        final String title =
-            TextUtil.isEmpty(firstItem.getDescription()) ? firstItem.getTitle() : firstItem.getDescription();
-        return new ElementDescriptorView.Model(title, firstItem.getPictureUrl(), R.drawable.px_review_item_default);
+    public ElementDescriptorView.Model map(@NonNull final SummaryInfo summaryInfo) {
+        return new ElementDescriptorView.Model(summaryInfo.getTitle(), summaryInfo.getSubtitle(),
+            summaryInfo.getImageUrl(), R.drawable.px_review_item_default);
     }
 }

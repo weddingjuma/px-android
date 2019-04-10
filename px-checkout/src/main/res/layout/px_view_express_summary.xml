@@ -24,8 +24,10 @@
             android:orientation="vertical"
             app:px_element_icon_height="@dimen/px_m_height"
             app:px_element_icon_width="@dimen/px_m_height"
-            app:px_element_label_size="@dimen/px_l_text"
-            app:px_element_label_text_color="@color/px_expressCheckoutTextColor"/>
+            app:px_element_title_size="@dimen/px_l_text"
+            app:px_element_title_text_color="@color/px_expressCheckoutTextColor"
+            app:px_element_subtitle_size="@dimen/px_xs_text"
+            app:px_element_subtitle_text_color="@color/px_expressCheckoutTextColor"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler"

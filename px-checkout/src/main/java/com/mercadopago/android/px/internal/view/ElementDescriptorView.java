@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -21,7 +22,8 @@ public class ElementDescriptorView extends LinearLayout {
 
     private static final int DEFAULT_MAX_LINES = -1;
 
-    private TextView label;
+    private TextView title;
+    private TextView subtitle;
     private ImageView icon;
 
     public ElementDescriptorView(final Context context) {
@@ -41,31 +43,44 @@ public class ElementDescriptorView extends LinearLayout {
             0, 0);
         float iconHeight;
         float iconWidth;
-        float labelSize;
-        int textColor;
-        int textMaxLines;
+        float titleSize;
+        int titleTextColor;
+        int titleTextMaxLines;
+        float subtitleSize;
+        int subtitleTextColor;
+        int subtitleTextMaxLines;
+        int gravity;
         try {
             iconHeight =
                 a.getDimension(R.styleable.PXElementDescriptorView_px_element_icon_height, LayoutParams.WRAP_CONTENT);
             iconWidth =
                 a.getDimension(R.styleable.PXElementDescriptorView_px_element_icon_width, LayoutParams.WRAP_CONTENT);
-            labelSize = a.getDimensionPixelSize(R.styleable.PXElementDescriptorView_px_element_label_size,
+            titleSize = a.getDimensionPixelSize(R.styleable.PXElementDescriptorView_px_element_title_size,
                 (int) context.getResources().getDimension(R.dimen.px_l_text));
-            textColor = a.getColor(R.styleable.PXElementDescriptorView_px_element_label_text_color, Color.BLACK);
-            textMaxLines = a.getInt(R.styleable.PXElementDescriptorView_px_element_label_max_lines, DEFAULT_MAX_LINES);
+            titleTextColor = a.getColor(R.styleable.PXElementDescriptorView_px_element_title_text_color, Color.BLACK);
+            titleTextMaxLines =
+                a.getInt(R.styleable.PXElementDescriptorView_px_element_title_max_lines, DEFAULT_MAX_LINES);
+            subtitleSize = a.getDimensionPixelSize(R.styleable.PXElementDescriptorView_px_element_subtitle_size,
+                (int) context.getResources().getDimension(R.dimen.px_l_text));
+            subtitleTextColor =
+                a.getColor(R.styleable.PXElementDescriptorView_px_element_subtitle_text_color, Color.BLACK);
+            subtitleTextMaxLines =
+                a.getInt(R.styleable.PXElementDescriptorView_px_element_subtitle_max_lines, DEFAULT_MAX_LINES);
+            gravity = a.getInteger(R.styleable.PXElementDescriptorView_android_gravity, Gravity.CENTER);
         } finally {
             a.recycle();
         }
 
-        init(iconWidth, iconHeight, labelSize, textColor, textMaxLines);
+        init(iconWidth, iconHeight, titleSize, titleTextColor, titleTextMaxLines, subtitleSize, subtitleTextColor,
+            subtitleTextMaxLines, gravity);
     }
 
-    public void setTextSize(final float textSize) {
-        label.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+    public void setTitleTextSize(final float textSize) {
+        title.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
     }
 
-    public void setTextColor(final int textColor) {
-        label.setTextColor(textColor);
+    public void setTitleTextColor(final int textColor) {
+        title.setTextColor(textColor);
     }
 
     public void setIconSize(final int width, final int height) {
@@ -75,21 +90,39 @@ public class ElementDescriptorView extends LinearLayout {
         icon.setLayoutParams(layoutParams);
     }
 
-    private void init(final float iconWidth, final float iconHeight, final float labelSize, final int textColor,
-        final int textMaxLines) {
+    private void init(final float iconWidth, final float iconHeight, final float titleSize, final int titleTextColor,
+        final int titleTextMaxLines, final float subtitleSize, final int subtitletextColor,
+        final int subtitleTextMaxLines, final int gravity) {
         inflate(getContext(), R.layout.px_view_element_descriptor, this);
-        label = findViewById(R.id.label);
+        title = findViewById(R.id.title);
+        subtitle = findViewById(R.id.subtitle);
         icon = findViewById(R.id.icon);
         setIconSize((int) iconWidth, (int) iconHeight);
-        label.setTextSize(TypedValue.COMPLEX_UNIT_PX, labelSize);
-        label.setTextColor(textColor);
+        configureTextView(title, titleSize, titleTextColor, titleTextMaxLines, gravity);
+        configureTextView(subtitle, subtitleSize, subtitleTextMaxLines, subtitleTextMaxLines, gravity);
+    }
+
+    private void configureTextView(final TextView text, final float textSize, final int textColor,
+        final int textMaxLines,
+        final int gravity) {
+        text.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+        text.setTextColor(textColor);
         if (textMaxLines != DEFAULT_MAX_LINES) {
-            label.setMaxLines(textMaxLines);
+            text.setMaxLines(textMaxLines);
         }
+        LayoutParams titleParams = (LayoutParams) text.getLayoutParams();
+        titleParams.gravity = gravity;
+        text.setLayoutParams(titleParams);
     }
 
     public void update(@NonNull final ElementDescriptorView.Model model) {
-        label.setText(model.getLabel());
+        title.setText(model.getTitle());
+        if (model.hasSubtitle()) {
+            subtitle.setVisibility(VISIBLE);
+            subtitle.setText(model.getSubtitle());
+        } else {
+            subtitle.setVisibility(GONE);
+        }
         final Picasso picasso = Picasso.with(getContext());
         final RequestCreator requestCreator;
 
@@ -108,26 +141,27 @@ public class ElementDescriptorView extends LinearLayout {
 
     public static class Model {
 
-        @NonNull private final String label;
+        @NonNull private final String title;
+        @Nullable private final String subtitle;
         @NonNull private final String urlIcon;
         @DrawableRes private final int resourceIdIcon;
 
-        public Model(@NonNull final String label, @DrawableRes final int resource) {
-            this.label = label;
-            resourceIdIcon = resource;
-            urlIcon = "";
-        }
-
-        public Model(@NonNull final String label, @Nullable final String urlIcon,
+        public Model(@NonNull final String title, @Nullable final String subtitle, @Nullable final String urlIcon,
             @DrawableRes final int defaultResource) {
-            this.label = label;
+            this.title = title;
+            this.subtitle = subtitle;
             this.urlIcon = urlIcon == null ? "" : urlIcon;
             resourceIdIcon = defaultResource;
         }
 
         @NonNull
-            /* default */ String getLabel() {
-            return label;
+            /* default */ String getTitle() {
+            return title;
+        }
+
+        @Nullable
+            /* default */ String getSubtitle() {
+            return subtitle;
         }
 
         @NonNull
@@ -138,6 +172,10 @@ public class ElementDescriptorView extends LinearLayout {
         @DrawableRes
             /* default */ int getIconResourceId() {
             return resourceIdIcon;
+        }
+
+        /* default */ boolean hasSubtitle() {
+            return TextUtil.isNotEmpty(subtitle);
         }
     }
 }

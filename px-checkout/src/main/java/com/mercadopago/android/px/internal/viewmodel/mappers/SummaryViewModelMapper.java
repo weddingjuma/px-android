@@ -13,6 +13,7 @@ import com.mercadopago.android.px.internal.viewmodel.TotalDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.TotalLocalized;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
+import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,18 +27,21 @@ public class SummaryViewModelMapper extends Mapper<List<ExpressMetadata>, List<S
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final ElementDescriptorView.Model elementDescriptorModel;
     @NonNull private final AmountDescriptorView.OnClickListenerWithDiscount listener;
+    @NonNull private final SummaryInfo summaryInfo;
 
     private Map<DiscountConfigurationModel, SummaryView.Model> modelCache;
 
     public SummaryViewModelMapper(@NonNull final CheckoutPreference checkoutPreference,
         @NonNull final DiscountRepository discountRepository, @NonNull final AmountRepository amountRepository,
         @NonNull final ElementDescriptorView.Model elementDescriptorModel,
-        @NonNull final AmountDescriptorView.OnClickListenerWithDiscount listener) {
+        @NonNull final AmountDescriptorView.OnClickListenerWithDiscount listener,
+        @NonNull final SummaryInfo summaryInfo) {
         this.checkoutPreference = checkoutPreference;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
         this.elementDescriptorModel = elementDescriptorModel;
         this.listener = listener;
+        this.summaryInfo = summaryInfo;
     }
 
     @Override
@@ -66,7 +70,7 @@ public class SummaryViewModelMapper extends Mapper<List<ExpressMetadata>, List<S
             return modelCache.get(discountModel);
         } else {
             final List<AmountDescriptorView.Model> summaryDetailList =
-                new SummaryDetailDescriptorFactory(discountModel, checkoutPreference).create();
+                new SummaryDetailDescriptorFactory(discountModel, checkoutPreference, summaryInfo).create();
 
             final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
                 new TotalLocalized(),

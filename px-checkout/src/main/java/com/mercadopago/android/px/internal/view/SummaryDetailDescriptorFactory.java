@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.viewmodel.ItemLocalized;
 import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountLocalized;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,18 +20,20 @@ public class SummaryDetailDescriptorFactory {
 
     @NonNull private final DiscountConfigurationModel discountModel;
     @NonNull private final CheckoutPreference checkoutPreference;
+    @NonNull private final SummaryInfo summaryInfo;
 
     public SummaryDetailDescriptorFactory(@NonNull final DiscountConfigurationModel discountModel,
-        @NonNull final CheckoutPreference checkoutPreference) {
+        @NonNull final CheckoutPreference checkoutPreference, @NonNull final SummaryInfo summaryInfo) {
         this.discountModel = discountModel;
         this.checkoutPreference = checkoutPreference;
+        this.summaryInfo = summaryInfo;
     }
 
     public List<AmountDescriptorView.Model> create() {
         final List<AmountDescriptorView.Model> list = new ArrayList<>();
 
         if (discountModel.getDiscount() != null) {
-            list.add(new AmountDescriptorView.Model(new ItemLocalized(),
+            list.add(new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
                 new AmountLocalized(checkoutPreference.getTotalAmount(),
                     checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
             list.add(new AmountDescriptorView.Model(new DiscountDescriptionLocalized(discountModel.getDiscount()),
@@ -40,7 +43,7 @@ public class SummaryDetailDescriptorFactory {
         }
 
         if (!discountModel.isAvailable()) {
-            list.add(new AmountDescriptorView.Model(new ItemLocalized(),
+            list.add(new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
                 new AmountLocalized(checkoutPreference.getTotalAmount(),
                     checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
             list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new SoldOutDiscountDetailColor())

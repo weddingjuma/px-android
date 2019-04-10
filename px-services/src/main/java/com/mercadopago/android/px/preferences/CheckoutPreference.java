@@ -65,6 +65,8 @@ public class CheckoutPreference implements Serializable {
 
     @Nullable private final String conceptId;
 
+    @Nullable private final String additionalInfo;
+
     @SerializedName("binary_mode")
     private boolean isBinaryMode = false;
     //endregion support external integrations
@@ -83,6 +85,7 @@ public class CheckoutPreference implements Serializable {
         conceptId = builder.conceptId;
         payer = builder.payer;
         isBinaryMode = builder.isBinaryMode;
+        additionalInfo = builder.additionalInfo;
 
         paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(builder.excludedPaymentTypes);
@@ -236,6 +239,11 @@ public class CheckoutPreference implements Serializable {
         return id;
     }
 
+    @Nullable
+    public String getAdditionalInfo() {
+        return additionalInfo;
+    }
+
     public boolean isBinaryMode() {
         return isBinaryMode;
     }
@@ -285,6 +293,7 @@ public class CheckoutPreference implements Serializable {
         /* default */ String conceptId;
         /* default */ boolean isBinaryMode = false;
         /* default */ final Payer payer;
+        /* default */ String additionalInfo;
 
         /**
          * Builder for custom CheckoutPreference construction. It should be only used if you are processing the payment
@@ -512,6 +521,17 @@ public class CheckoutPreference implements Serializable {
          */
         public Builder setConceptId(final String conceptId) {
             this.conceptId = conceptId;
+            return this;
+        }
+
+        /**
+         * internal usage
+         *
+         * @param additionalInfo identifier
+         * @return builder
+         */
+        public Builder setAdditionalInfo(@NonNull final String additionalInfo) {
+            this.additionalInfo = additionalInfo;
             return this;
         }
 

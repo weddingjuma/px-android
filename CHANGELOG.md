@@ -1,7 +1,9 @@
 ## VERSION 4.10.0
-* FEATURE - Disable last selected payment method after reject and recover.
-* ENHANCEMENT - Updated Citibanamex logo.
-* FIX - Blank screen in installments.
+_11_04_2019_
+* FEATURE - Disable last selected payment method after reject and recover
+* FEATURE - Express Payment's support for Single Player
+* ENHANCEMENT - Updated Citibanamex logo
+* FIX - Blank screen in installments
 
 ## VERSION 4.9.3
 _29_03_2019_

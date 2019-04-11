@@ -5,6 +5,8 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCard;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardPaymentPresenter;
+import com.mercadopago.android.px.internal.features.guessing_card.IssuersSolver;
+import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
@@ -12,6 +14,7 @@ import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.mocks.BankDealsUtils;
 import com.mercadopago.android.px.mocks.Cards;
@@ -26,12 +29,12 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cardholder;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
+import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -77,6 +80,7 @@ public class GuessingCardPaymentPresenterTest {
     @Mock private CardTokenRepository cardTokenRepository;
     @Mock private BankDealsRepository bankDealsRepository;
     @Mock private IdentificationRepository identificationRepository;
+    @Mock private SummaryAmountRepository summaryAmountRepository;
 
     @Mock private CheckoutPreference checkoutPreference;
     @Mock private PaymentPreference paymentPreference;
@@ -84,6 +88,8 @@ public class GuessingCardPaymentPresenterTest {
     @Mock private PaymentMethodSearch paymentMethodSearch;
     @Mock private AdvancedConfiguration advancedConfiguration;
     @Mock private List<IdentificationType> identificationTypes;
+    @Mock private IssuersSolver issuersSolver;
+    @Mock private PayerCostSolver payerCostSolver;
 
     @Mock private GuessingCard.View view;
 
@@ -108,7 +114,10 @@ public class GuessingCardPaymentPresenterTest {
             new GuessingCardPaymentPresenter(userSelectionRepository, paymentSettingRepository,
                 groupsRepository, issuersRepository, cardTokenRepository, bankDealsRepository,
                 identificationRepository, advancedConfiguration,
-                new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE)
+                new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE),
+                summaryAmountRepository,
+                issuersSolver,
+                payerCostSolver
             );
         presenter.attachView(view);
         return presenter;
@@ -562,6 +571,19 @@ public class GuessingCardPaymentPresenterTest {
         presenter.checkFinishWithCardToken();
         presenter.resolveTokenRequest(mockedToken);
         assertEquals(presenter.getToken(), mockedToken);
+    }
+
+    @Test
+    public void verifyGetIssuersAndSolverIsCalled() {
+        final Token mockedToken = Tokens.getToken();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnMaster();
+        final List<Issuer> mockedIssuersList = Issuers.getIssuersListMLA();
+        when(presenter.getPaymentMethod()).thenReturn(mockedPaymentMethod);
+        when(issuersRepository.getIssuers(mockedPaymentMethod.getId(), presenter.getSavedBin()))
+            .thenReturn(new StubSuccessMpCall<>(mockedIssuersList));
+
+        presenter.resolveTokenRequest(mockedToken);
+        verify(issuersSolver).solve(presenter, mockedIssuersList);
     }
 
     @Test

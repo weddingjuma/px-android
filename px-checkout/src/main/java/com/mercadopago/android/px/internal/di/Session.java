@@ -31,6 +31,7 @@ import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
+import com.mercadopago.android.px.internal.features.guessing_card.IssuersSolver;
 import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
@@ -340,6 +341,14 @@ public final class Session extends ApplicationModule
             issuersRepository = new IssuersServiceImp(issuersService, getConfigurationModule().getPaymentSettings());
         }
         return issuersRepository;
+    }
+
+    @NonNull
+    public IssuersSolver provideIssuersSolver() {
+        final ConfigurationModule configurationModule = getConfigurationModule();
+        return new IssuersSolver(
+            configurationModule.getUserSelectionRepository(),
+            configurationModule.getPaymentSettings());
     }
 
     public CardTokenRepository getCardTokenRepository() {

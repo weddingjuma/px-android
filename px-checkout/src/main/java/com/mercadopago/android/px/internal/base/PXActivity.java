@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 
 public abstract class PXActivity<P extends BasePresenter> extends AppCompatActivity implements MvpView {
 

@@ -416,9 +416,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     public void onBackPressed() {
         setResult(RESULT_CANCELED);
-        overrideTransitionOut();
         presenter.trackOnBackPressed();
         finish();
+        overrideTransitionOut();
     }
 
     @Override

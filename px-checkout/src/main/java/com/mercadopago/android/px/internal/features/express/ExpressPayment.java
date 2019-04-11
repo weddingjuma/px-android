@@ -76,6 +76,8 @@ public interface ExpressPayment {
 
         void onTokenResolved(final int paymentMethodSelectedIndex);
 
+        void loadViewModel();
+
         void onViewResumed();
 
         void updateElementPosition(int paymentMethodIndex);

@@ -8,6 +8,7 @@ import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -18,7 +19,9 @@ import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
+import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
+import com.mercadopago.android.px.internal.viewmodel.mappers.ConfirmButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
@@ -59,11 +62,16 @@ import java.util.Set;
         "com.mercadopago.android.px.internal.features.express.SPLIT_PREF";
     /* default */ boolean isSplitUserPreference = false;
 
+    private static final String BUNDLE_STATE_AVAILABLE_PM_COUNT =
+        "com.mercadopago.android.px.internal.features.express.AVAILABLE_PM_COUNT";
+    private int availablePaymentMethodsCount = -1;
+
     @NonNull private final PaymentRepository paymentRepository;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final DiscountRepository discountRepository;
     @NonNull private final PaymentSettingRepository paymentConfiguration;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
+    @NonNull private final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
 
     //TODO remove.
@@ -74,6 +82,7 @@ import java.util.Set;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentConfiguration,
+        @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final DiscountRepository discountRepository,
         @NonNull final AmountRepository amountRepository,
         @NonNull final GroupsRepository groupsRepository,
@@ -84,6 +93,7 @@ import java.util.Set;
         this.amountRepository = amountRepository;
         this.discountRepository = discountRepository;
         this.amountConfigurationRepository = amountConfigurationRepository;
+        this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
         paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
 
@@ -104,8 +114,8 @@ import java.util.Set;
     }
 
     @Override
-    public void attachView(final ExpressPayment.View view) {
-        super.attachView(view);
+    public void loadViewModel() {
+        availablePaymentMethodsCount = countAvailablePaymentMethods();
 
         final SummaryInfo summaryInfo = new SummaryInfoMapper().map(paymentConfiguration.getCheckoutPreference());
 
@@ -117,15 +127,19 @@ import java.util.Set;
                 amountRepository, elementDescriptorModel, this, summaryInfo).map(expressMetadataList);
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
-            new PaymentMethodDescriptorMapper(paymentConfiguration, amountConfigurationRepository)
-                .map(expressMetadataList);
+            new PaymentMethodDescriptorMapper(paymentConfiguration, amountConfigurationRepository,
+                disabledPaymentMethodRepository).map(expressMetadataList);
 
         final List<SplitPaymentHeaderAdapter.Model> splitHeaderModels =
             new SplitHeaderMapper(paymentConfiguration.getCheckoutPreference().getSite().getCurrencyId(),
                 amountConfigurationRepository)
                 .map(expressMetadataList);
 
-        final HubAdapter.Model model = new HubAdapter.Model(paymentModels, summaryModels, splitHeaderModels);
+        final List<ConfirmButtonViewModel> confirmButtonViewModels =
+            new ConfirmButtonViewModelMapper(disabledPaymentMethodRepository).map(expressMetadataList);
+
+        final HubAdapter.Model model =
+            new HubAdapter.Model(paymentModels, summaryModels, splitHeaderModels, confirmButtonViewModels);
 
         getView().showToolbarElementDescriptor(elementDescriptorModel);
 
@@ -142,6 +156,26 @@ import java.util.Set;
             cancelLoading();
         }
         paymentRepository.attach(this);
+        if (shouldReloadModel()) {
+            loadViewModel();
+        }
+    }
+
+    private boolean shouldReloadModel() {
+        final int currentAvailablePaymentMethodsCount = countAvailablePaymentMethods();
+        return availablePaymentMethodsCount != currentAvailablePaymentMethodsCount;
+    }
+
+    private int countAvailablePaymentMethods() {
+        int currentAvailablePaymentMethodsCount = expressMetadataList.size();
+        for (final ExpressMetadata expressMetadata : expressMetadataList) {
+            if ((expressMetadata.isCard() &&
+                disabledPaymentMethodRepository.hasPaymentMethodId(expressMetadata.getCard().getId())) ||
+                disabledPaymentMethodRepository.hasPaymentMethodId(expressMetadata.getPaymentMethodId())) {
+                currentAvailablePaymentMethodsCount--;
+            }
+        }
+        return currentAvailablePaymentMethodsCount;
     }
 
     @Override
@@ -154,6 +188,7 @@ import java.util.Set;
     public void recoverFromBundle(@NonNull final Bundle bundle) {
         payerCostSelection = bundle.getParcelable(BUNDLE_STATE_PAYER_COST);
         isSplitUserPreference = bundle.getBoolean(BUNDLE_STATE_SPLIT_PREF, false);
+        availablePaymentMethodsCount = bundle.getInt(BUNDLE_STATE_AVAILABLE_PM_COUNT);
     }
 
     @NonNull
@@ -161,6 +196,7 @@ import java.util.Set;
     public Bundle storeInBundle(@NonNull final Bundle bundle) {
         bundle.putParcelable(BUNDLE_STATE_PAYER_COST, payerCostSelection);
         bundle.putBoolean(BUNDLE_STATE_SPLIT_PREF, isSplitUserPreference);
+        bundle.putInt(BUNDLE_STATE_AVAILABLE_PM_COUNT, availablePaymentMethodsCount);
         return bundle;
     }
 

@@ -4,7 +4,17 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import java.io.Serializable;
 
-public interface DrawableFragmentItem extends Serializable {
+public abstract class DrawableFragmentItem implements Serializable {
 
-    Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer);
+    protected String id;
+
+    public abstract Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer);
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 }

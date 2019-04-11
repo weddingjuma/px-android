@@ -151,7 +151,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             presenter.attachView(this);
             if (savedInstanceState == null) {
                 presenter.trackExpressView();
+            } else {
+                presenter.recoverFromBundle(savedInstanceState);
             }
+            presenter.loadViewModel();
         } catch (final Exception e) {
             //Nothing to do here
         }
@@ -208,7 +211,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 public void onGlobalLayout() {
                     if (pagerAndConfirmButtonContainer.getHeight() > 0) {
                         final ViewGroup.LayoutParams params = installmentsRecyclerView.getLayoutParams();
-                        params.height = pagerAndConfirmButtonContainer.getHeight();
+                        params.height = pagerAndConfirmButtonContainer.getHeight() - (int)
+                            getContext().getResources().getDimension(R.dimen.px_badge_offset);
                         installmentsRecyclerView.setLayoutParams(params);
                         pagerAndConfirmButtonContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
@@ -243,18 +247,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         final Session session = Session.getSession(context);
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
             session.getConfigurationModule().getPaymentSettings(),
+            session.getConfigurationModule().getDisabledPaymentMethodRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getGroupsRepository(),
             session.getAmountConfigurationRepository());
-    }
-
-    @Override
-    public void onViewStateRestored(@Nullable final Bundle savedInstanceState) {
-        if (savedInstanceState != null && presenter != null) {
-            presenter.recoverFromBundle(savedInstanceState);
-        }
-        super.onViewStateRestored(savedInstanceState);
     }
 
     @Override
@@ -326,7 +323,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             new SummaryViewAdapter(model.summaryViewModels, summaryView),
             new SplitPaymentHeaderAdapter(model.splitModels, splitPaymentView, this),
             new PaymentMethodHeaderAdapter(model.paymentMethodDescriptorModels, paymentMethodHeaderView),
-            new ConfirmButtonAdapter(model.paymentMethodDescriptorModels.size(), confirmButton)
+            new ConfirmButtonAdapter(model.confirmButtonViewModels, confirmButton)
         ));
     }
 

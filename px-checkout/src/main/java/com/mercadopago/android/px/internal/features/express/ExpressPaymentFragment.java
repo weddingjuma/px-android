@@ -304,8 +304,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         @NonNull final Site site,
         @NonNull final HubAdapter.Model model) {
 
-        paymentMethodPager
-            .setAdapter(PaymentMethodFragmentAdapter.with(getContext(), getChildFragmentManager(), items));
+        if (paymentMethodPager.getAdapter() == null) {
+            paymentMethodPager
+                .setAdapter(PaymentMethodFragmentAdapter.with(getContext(), getChildFragmentManager(), items));
+        }
 
         installmentsAdapter = new InstallmentsAdapter(site, new ArrayList<PayerCost>(), PayerCost.NO_SELECTED, this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);

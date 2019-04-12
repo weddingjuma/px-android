@@ -515,7 +515,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
                 @Override
                 public void driveToShowOneTap() {
-                    getView().showOneTap();
+                    //donothing
                 }
 
                 @Override

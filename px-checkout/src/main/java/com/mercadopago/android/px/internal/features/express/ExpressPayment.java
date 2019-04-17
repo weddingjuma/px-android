@@ -6,6 +6,7 @@ import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
+import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -53,7 +54,7 @@ public interface ExpressPayment {
 
         void updateViewForPosition(final int paymentMethodIndex,
             final int payerCostSelected,
-            final boolean isSplitUserPreference);
+            @NonNull final SplitSelectionState splitSelectionState);
 
         void showInstallmentsList(List<PayerCost> payerCostList, final int payerCostSelected);
 

@@ -21,6 +21,7 @@ import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
+import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ConfirmButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
@@ -52,7 +53,7 @@ import java.util.List;
 import java.util.Set;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>
-    implements ExpressPayment.Actions,
+    implements PostPaymentAction.ActionController, ExpressPayment.Actions,
     AmountDescriptorView.OnClickListenerWithDiscount {
 
     private static final String BUNDLE_STATE_PAYER_COST =
@@ -422,5 +423,10 @@ import java.util.Set;
     @NonNull
     private PayerCostSelection createNewPayerCostSelected() {
         return new PayerCostSelection(expressMetadataList.size() + 1);
+    }
+
+    @Override
+    public void onChangePaymentMethod() {
+        getView().resetPagerIndex();
     }
 }

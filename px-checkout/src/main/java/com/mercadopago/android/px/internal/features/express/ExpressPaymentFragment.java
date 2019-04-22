@@ -59,6 +59,7 @@ import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
+import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -383,8 +384,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 }
             });
             super.onActivityResult(requestCode, resultCode, data);
+        } else if (resultCode == Constants.RESULT_ACTION) {
+            handleAction(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void handleAction(final Intent data) {
+        if (data != null && data.getExtras() != null) {
+            PostPaymentAction.fromBundle(data.getExtras()).execute(presenter);
         }
     }
 
@@ -590,5 +599,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public boolean isExploding() {
         return FragmentUtil.isFragmentVisible(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT);
+    }
+
+    @Override
+    public void resetPagerIndex() {
+        paymentMethodPager.setCurrentItem(0);
     }
 }

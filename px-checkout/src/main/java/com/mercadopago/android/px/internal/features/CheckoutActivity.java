@@ -181,7 +181,9 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     public void showBusinessResult(final BusinessPaymentModel model) {
         overrideTransitionIn();
         final Intent intent = BusinessPaymentResultActivity.getIntent(this, model);
-        startActivityForResult(intent, REQ_CONGRATS_BUSINESS);
+        //TODO handle this directly in fragment.
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ONETAP_FRAGMENT);
+        fragment.startActivityForResult(intent, REQ_CONGRATS_BUSINESS);
     }
 
     @Override
@@ -430,7 +432,9 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
         overrideTransitionIn();
         final Intent intent = PaymentResultActivity.getIntent(this, paymentResult,
             PostPaymentAction.OriginAction.ONE_TAP);
-        startActivityForResult(intent, REQ_CONGRATS);
+        //TODO handle this directly in fragment.
+        final Fragment fragment = getSupportFragmentManager().findFragmentByTag(TAG_ONETAP_FRAGMENT);
+        fragment.startActivityForResult(intent, REQ_CONGRATS);
     }
 
     @Override

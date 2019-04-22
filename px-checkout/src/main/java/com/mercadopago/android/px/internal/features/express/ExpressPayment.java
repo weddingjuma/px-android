@@ -65,6 +65,8 @@ public interface ExpressPayment {
         void showDiscountDetailDialog(@NonNull final DiscountConfigurationModel discountModel);
 
         boolean isExploding();
+
+        void resetPagerIndex();
     }
 
     interface Actions extends PaymentServiceHandler {

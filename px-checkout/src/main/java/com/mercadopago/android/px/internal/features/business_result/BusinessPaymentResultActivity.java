@@ -33,6 +33,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
 
     private ViewTracker viewTracker;
+    private String currencyId;
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final BusinessPaymentModel model) {
         final Intent intent = new Intent(context, BusinessPaymentResultActivity.class);
@@ -44,6 +45,8 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final BusinessPaymentModel model = parseBusinessPaymentModel();
+
+        currencyId = Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
 
         if (model != null) {
             viewTracker = createTracker(model);
@@ -81,7 +84,8 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
-            .build());
+            .build(),
+            currencyId);
     }
 
     @Nullable

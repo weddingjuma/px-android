@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
 import java.util.Locale;
@@ -19,8 +21,14 @@ public class ResultViewTrack extends ViewTracker {
     private static final String ATTR_PAYMENT_STATUS = "payment_status";
     private static final String ATTR_PAYMENT_STATUS_DETAIL = "payment_status_detail";
 
+    private static final String ATTR_RAW_AMOUNT = "amount";
+    private static final String ATTR_DISCOUNT_ID = "discount_id";
+    private static final String ATTR_DISCOUNT_COUPON_AMOUNT = "discount_coupon_amount";
+    private static final String ATTR_CURRENCY_ID = "currency_id";
+
     @NonNull private final Style style;
     @NonNull private final PaymentResult payment;
+    @NonNull private final String currencyId;
 
     public enum Style {
         GENERIC("generic"),
@@ -33,9 +41,10 @@ public class ResultViewTrack extends ViewTracker {
         }
     }
 
-    public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment) {
+    public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment, @NonNull final String currencyId) {
         this.style = style;
         this.payment = payment;
+        this.currencyId = currencyId;
     }
 
     private String getMappedResult(@NonNull final PaymentResult payment) {
@@ -58,11 +67,22 @@ public class ResultViewTrack extends ViewTracker {
         data.put(ATTR_PAYMENT_ID, payment.getPaymentId());
         data.put(ATTR_PAYMENT_STATUS, payment.getPaymentStatus());
         data.put(ATTR_PAYMENT_STATUS_DETAIL, payment.getPaymentStatusDetail());
+        data.put(ATTR_CURRENCY_ID, currencyId);
+
         if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
-            data.putAll(new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData()
-                .getPaymentMethod())
-                .toMap());
+            data.putAll(new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod()).toMap());
+
+            data.put(ATTR_RAW_AMOUNT, payment.getPaymentData().getRawAmount());
+
+            if (payment.getPaymentData().getDiscount() != null) {
+                data.put(ATTR_DISCOUNT_ID, payment.getPaymentData().getDiscount().getId());
+                data.put(ATTR_DISCOUNT_COUPON_AMOUNT, payment.getPaymentData().getDiscount().getCouponAmount());
+            }
         }
+
+        //TODO remove
+        Log.d("mromar", data.toString());
+
         return data;
     }
 

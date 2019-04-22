@@ -47,7 +47,8 @@ import java.util.List;
         this.instructionsRepository = instructionsRepository;
         this.paymentResult = paymentResult;
         this.originAction = originAction;
-        resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult);
+        resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult,
+            paymentSettings.getCheckoutPreference().getSite().getCurrencyId());
     }
 
     @Override

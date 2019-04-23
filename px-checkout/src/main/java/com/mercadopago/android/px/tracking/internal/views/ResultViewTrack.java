@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
 import java.util.Locale;

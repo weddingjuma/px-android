@@ -24,7 +24,7 @@ public class ResultViewTrack extends ViewTracker {
     private static final String ATTR_CURRENCY_ID = "currency_id";
     private static final String ATTR_DISCOUNT_ID = "discount_id";
     private static final String ATTR_DISCOUNT_COUPON_AMOUNT = "discount_coupon_amount";
-    private static final String ATTR_HAS_SPLIT = "has_split";
+    private static final String ATTR_HAS_SPLIT = "has_split_payment";
 
     @NonNull private final Style style;
     @NonNull private final PaymentResult payment;

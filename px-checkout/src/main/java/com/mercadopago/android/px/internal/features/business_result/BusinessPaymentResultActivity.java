@@ -33,7 +33,6 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
 
     private ViewTracker viewTracker;
-    private String currencyId;
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final BusinessPaymentModel model) {
         final Intent intent = new Intent(context, BusinessPaymentResultActivity.class);
@@ -45,10 +44,6 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final BusinessPaymentModel model = parseBusinessPaymentModel();
-
-        currencyId =
-            Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite()
-                .getCurrencyId();
 
         if (model != null) {
             viewTracker = createTracker(model);
@@ -71,7 +66,10 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     }
 
     private ViewTracker createTracker(final BusinessPaymentModel model) {
-        final List<PaymentData> paymentDataList = Session.getSession(this).getPaymentRepository().getPaymentDataList();
+        final Session session = Session.getSession(this);
+        final List<PaymentData> paymentDataList = session.getPaymentRepository().getPaymentDataList();
+        final String currencyId =
+            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
         final boolean hasSplitPayment = paymentDataList.size() == 2;
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()

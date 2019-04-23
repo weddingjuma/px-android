@@ -47,8 +47,10 @@ import java.util.List;
         this.instructionsRepository = instructionsRepository;
         this.paymentResult = paymentResult;
         this.originAction = originAction;
+
+        final boolean hasSplitPayment = paymentResult.getPaymentDataList().size() == 2;
         resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult,
-            paymentSettings.getCheckoutPreference().getSite().getCurrencyId());
+            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(), hasSplitPayment);
     }
 
     @Override

@@ -16,7 +16,6 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.PaymentData;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
@@ -25,6 +24,7 @@ import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
+import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 
@@ -46,7 +46,9 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
         super.onCreate(savedInstanceState);
         final BusinessPaymentModel model = parseBusinessPaymentModel();
 
-        currencyId = Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
+        currencyId =
+            Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite()
+                .getCurrencyId();
 
         if (model != null) {
             viewTracker = createTracker(model);
@@ -69,23 +71,17 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     }
 
     private ViewTracker createTracker(final BusinessPaymentModel model) {
-        //TODO refactor - added because tracking needed.
-        final PaymentMethod paymentMethod =
-            Session.getSession(this).getConfigurationModule()
-                .getUserSelectionRepository()
-                .getPaymentMethod();
-
-        final PaymentData paymentData = new PaymentData.Builder()
-            .setPaymentMethod(paymentMethod)
-            .createPaymentData();
+        final List<PaymentData> paymentDataList = Session.getSession(this).getPaymentRepository().getPaymentDataList();
+        final boolean hasSplitPayment = paymentDataList.size() == 2;
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(paymentData)
+            .setPaymentData(paymentDataList.get(0))
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
             .build(),
-            currencyId);
+            currencyId,
+            hasSplitPayment);
     }
 
     @Nullable

@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.core;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import java.io.File;

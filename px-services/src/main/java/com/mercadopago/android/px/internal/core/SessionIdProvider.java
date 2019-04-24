@@ -13,12 +13,19 @@ public final class SessionIdProvider {
     @Nullable private String id;
 
     public static SessionIdProvider create(@NonNull final SharedPreferences sharedPreferences) {
-        return new SessionIdProvider(sharedPreferences);
+        final SessionIdProvider instance = new SessionIdProvider(sharedPreferences);
+        instance.id = UUID.randomUUID().toString();
+        sharedPreferences.edit().putString(PREF_SESSION_ID, instance.id).apply();
+        return instance;
+    }
+
+    public static SessionIdProvider createFromStorage(@NonNull final SharedPreferences sharedPreferences) {
+        final SessionIdProvider instance = new SessionIdProvider(sharedPreferences);
+        instance.id = sharedPreferences.getString(PREF_SESSION_ID, "no-value");
+        return instance;
     }
 
     private SessionIdProvider(@NonNull final SharedPreferences sharedPreferences) {
-        id = UUID.randomUUID().toString();
-        sharedPreferences.edit().putString(PREF_SESSION_ID, id).apply();
         this.sharedPreferences = sharedPreferences;
     }
 

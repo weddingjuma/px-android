@@ -2,6 +2,7 @@ package com.mercadopago.android.px.tracking.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;

@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.core;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import java.io.File;
@@ -12,6 +13,7 @@ public class ApplicationModule implements PreferenceComponent {
 
     @NonNull
     private final Context context;
+    private SessionIdProvider sessionIdProvider;
 
     public ApplicationModule(@NonNull final Context context) {
         this.context = context.getApplicationContext();
@@ -24,7 +26,16 @@ public class ApplicationModule implements PreferenceComponent {
 
     @NonNull
     public SessionIdProvider getSessionIdProvider() {
-        return SessionIdProvider.create(getSharedPreferences());
+        if (sessionIdProvider == null) {
+            sessionIdProvider = SessionIdProvider.createFromStorage(getSharedPreferences());
+        }
+        return sessionIdProvider;
+    }
+
+    @NonNull
+    public SessionIdProvider newSessionIdProvider() {
+        sessionIdProvider = SessionIdProvider.create(getSharedPreferences());
+        return sessionIdProvider;
     }
 
     @Override

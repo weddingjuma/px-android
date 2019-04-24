@@ -20,7 +20,6 @@ public class ResultViewTrack extends ViewTracker {
     private static final String ATTR_PAYMENT_STATUS_DETAIL = "payment_status_detail";
 
     private static final String ATTR_RAW_AMOUNT = "preference_amount";
-    private static final String ATTR_PAYER_COST_TOTAL_AMOUNT = "payer_cost_total_amount";
     private static final String ATTR_CURRENCY_ID = "currency_id";
     private static final String ATTR_DISCOUNT_ID = "discount_id";
     private static final String ATTR_DISCOUNT_COUPON_AMOUNT = "discount_coupon_amount";
@@ -76,10 +75,6 @@ public class ResultViewTrack extends ViewTracker {
         if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
             data.putAll(
                 new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod()).toMap());
-
-            if (payment.getPaymentData().getPayerCost() != null) {
-                data.put(ATTR_PAYER_COST_TOTAL_AMOUNT, payment.getPaymentData().getPayerCost().getTotalAmount());
-            }
 
             data.put(ATTR_RAW_AMOUNT, payment.getPaymentData().getRawAmount());
 

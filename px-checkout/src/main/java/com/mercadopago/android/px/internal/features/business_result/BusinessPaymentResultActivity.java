@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.PaymentData;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
@@ -73,7 +74,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             session.getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(paymentDataList.get(0))
+            .setPaymentData(paymentDataList)
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())

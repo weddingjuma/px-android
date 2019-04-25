@@ -108,7 +108,7 @@ public final class Session extends ApplicationModule
         clear();
 
         //start new session id
-        MPTracker.getInstance().setSessionId(getSessionIdProvider().getSessionId());
+        MPTracker.getInstance().setSessionId(newSessionIdProvider().getSessionId());
 
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();

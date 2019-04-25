@@ -1,3 +1,7 @@
+## VERSION 4.10.3
+_25_04_2019_
+* FIX - Recover removed method avoiding breaking changes.
+
 ## VERSION 4.10.2
 _25_04_2019_
 * FIX - Creation of session id for tracking purpose

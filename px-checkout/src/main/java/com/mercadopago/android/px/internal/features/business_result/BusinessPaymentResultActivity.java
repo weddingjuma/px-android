@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
@@ -70,7 +71,6 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
         final List<PaymentData> paymentDataList = session.getPaymentRepository().getPaymentDataList();
         final String currencyId =
             session.getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
-        final boolean hasSplitPayment = paymentDataList.size() == 2;
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
             .setPaymentData(paymentDataList.get(0))
@@ -79,7 +79,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             .setPaymentId(model.payment.getId())
             .build(),
             currencyId,
-            hasSplitPayment);
+            PaymentDataHelper.isSplitPayment(paymentDataList));
     }
 
     @Nullable

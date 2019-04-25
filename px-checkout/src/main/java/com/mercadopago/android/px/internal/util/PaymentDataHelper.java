@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.util;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.PaymentData;
 import java.math.BigDecimal;
+import java.util.Collection;
 
 public final class PaymentDataHelper {
 
@@ -14,5 +15,9 @@ public final class PaymentDataHelper {
             return paymentData.getRawAmount().subtract(paymentData.getDiscount().getCouponAmount());
         }
         return paymentData.getRawAmount();
+    }
+
+    public static boolean isSplitPayment(@NonNull final Collection<PaymentData> paymentDataList) {
+        return paymentDataList.size() > 1;
     }
 }

@@ -1,3 +1,7 @@
+## VERSION 4.10.2
+_25_04_2019_
+* FIX - Creation of session id for tracking purpose
+
 ## VERSION 4.10.1
 _22_04_2019_
 * ENHANCEMENT - Added amount on call for auth rejection message

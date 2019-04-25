@@ -21,7 +21,6 @@ public class ResultViewTrack extends ViewTracker {
 
     private static final String ATTR_RAW_AMOUNT = "preference_amount";
     private static final String ATTR_CURRENCY_ID = "currency_id";
-    private static final String ATTR_DISCOUNT_ID = "discount_id";
     private static final String ATTR_DISCOUNT_COUPON_AMOUNT = "discount_coupon_amount";
     private static final String ATTR_HAS_SPLIT = "has_split_payment";
 
@@ -78,8 +77,8 @@ public class ResultViewTrack extends ViewTracker {
 
             data.put(ATTR_RAW_AMOUNT, payment.getPaymentData().getRawAmount());
 
+            // TODO sumar los dos couponData
             if (payment.getPaymentData().getDiscount() != null) {
-                data.put(ATTR_DISCOUNT_ID, payment.getPaymentData().getDiscount().getId());
                 data.put(ATTR_DISCOUNT_COUPON_AMOUNT, payment.getPaymentData().getDiscount().getCouponAmount());
             }
         }

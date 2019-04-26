@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.features.review_and_confirm.component
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.view.ActionsListener;
 import com.mercadopago.android.px.internal.view.CopyAction;
 import com.mercadopago.android.px.internal.view.LinkAction;
@@ -50,8 +49,7 @@ import java.util.List;
         this.originAction = originAction;
 
         resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult,
-            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(),
-            PaymentDataHelper.isSplitPayment(paymentResult.getPaymentDataList()));
+            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(), paymentResult.getPaymentDataList());
     }
 
     @Override

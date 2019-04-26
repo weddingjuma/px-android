@@ -10,14 +10,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.PaymentData;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
@@ -78,9 +76,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
-            .build(),
-            currencyId,
-            PaymentDataHelper.isSplitPayment(paymentDataList));
+            .build(), currencyId, paymentDataList);
     }
 
     @Nullable

@@ -1,33 +1,29 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.util.PaymentDataHelper;
+import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
+import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
+import com.mercadopago.android.px.tracking.internal.model.TrackingMapModel;
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class ResultViewTrack extends ViewTracker {
 
     private static final String PATH = BASE_VIEW_PATH + "/result/%s";
+
     private static final String SUCCESS = "success";
     private static final String PENDING = "further_action_needed";
     private static final String ERROR = "error";
     private static final String UNKNOWN = "unknown";
 
-    private static final String ATTR_STYLE = "style";
-    private static final String ATTR_PAYMENT_ID = "payment_id";
-    private static final String ATTR_PAYMENT_STATUS = "payment_status";
-    private static final String ATTR_PAYMENT_STATUS_DETAIL = "payment_status_detail";
-
-    private static final String ATTR_RAW_AMOUNT = "preference_amount";
-    private static final String ATTR_CURRENCY_ID = "currency_id";
-    private static final String ATTR_DISCOUNT_COUPON_AMOUNT = "discount_coupon_amount";
-    private static final String ATTR_HAS_SPLIT = "has_split_payment";
-
-    @NonNull private final Style style;
-    @NonNull private final PaymentResult payment;
-    @NonNull private final String currencyId;
-    private final boolean hasSplitPayment;
+    private final ResultViewTrackModel resultViewTrackModel;
+    private final PaymentResult payment;
 
     public enum Style {
         GENERIC("generic"),
@@ -41,11 +37,9 @@ public class ResultViewTrack extends ViewTracker {
     }
 
     public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
-        @NonNull final String currencyId, final boolean hasSplitPayment) {
-        this.style = style;
+        @NonNull final String currencyId, @NonNull final List<PaymentData> paymentDataList) {
+        resultViewTrackModel = new ResultViewTrackModel(style, payment, currencyId, paymentDataList);
         this.payment = payment;
-        this.currencyId = currencyId;
-        this.hasSplitPayment = hasSplitPayment;
     }
 
     private String getMappedResult(@NonNull final PaymentResult payment) {
@@ -63,32 +57,44 @@ public class ResultViewTrack extends ViewTracker {
     @NonNull
     @Override
     public Map<String, Object> getData() {
-        final Map<String, Object> data = super.getData();
-        data.put(ATTR_STYLE, style.value);
-        data.put(ATTR_PAYMENT_ID, payment.getPaymentId());
-        data.put(ATTR_PAYMENT_STATUS, payment.getPaymentStatus());
-        data.put(ATTR_PAYMENT_STATUS_DETAIL, payment.getPaymentStatusDetail());
-        data.put(ATTR_CURRENCY_ID, currencyId);
-        data.put(ATTR_HAS_SPLIT, hasSplitPayment);
-
-        if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
-            data.putAll(
-                new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod()).toMap());
-
-            data.put(ATTR_RAW_AMOUNT, payment.getPaymentData().getRawAmount());
-
-            // TODO sumar los dos couponData
-            if (payment.getPaymentData().getDiscount() != null) {
-                data.put(ATTR_DISCOUNT_COUPON_AMOUNT, payment.getPaymentData().getDiscount().getCouponAmount());
-            }
-        }
-
-        return data;
+        return resultViewTrackModel.toMap();
     }
 
     @NonNull
     @Override
     public String getViewPath() {
         return String.format(Locale.US, PATH, getMappedResult(payment));
+    }
+
+    private static final class ResultViewTrackModel extends TrackingMapModel {
+
+        final String style;
+        final Long paymentId;
+        final String paymentStatus;
+        final String paymentStatusDetail;
+        final String currencyId;
+        final boolean hasSplitPayment;
+        BigDecimal rawAmount;
+        BigDecimal discountCouponAmount;
+        AvailableMethod availableMethod;
+
+        ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentResult payment,
+            @NonNull final String currencyId, @NonNull final Collection<PaymentData> paymentDataList) {
+            this.style = style.value;
+            paymentId = payment.getPaymentId();
+            paymentStatus = payment.getPaymentStatus();
+            paymentStatusDetail = payment.getPaymentStatusDetail();
+            this.currencyId = currencyId;
+            hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentDataList);
+
+            if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
+                availableMethod =
+                    new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod());
+                rawAmount = payment.getPaymentData().getRawAmount();
+                if (payment.getPaymentData().getDiscount() != null) {
+                    discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentDataList);
+                }
+            }
+        }
     }
 }

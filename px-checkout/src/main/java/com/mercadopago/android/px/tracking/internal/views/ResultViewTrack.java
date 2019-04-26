@@ -4,12 +4,12 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
 import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.TrackingMapModel;
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -37,8 +37,9 @@ public class ResultViewTrack extends ViewTracker {
     }
 
     public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
-        @NonNull final String currencyId) {
-        resultViewTrackModel = new ResultViewTrackModel(style, payment, currencyId, payment.getPaymentDataList());
+        @NonNull final CheckoutPreference checkoutPreference) {
+        resultViewTrackModel =
+            new ResultViewTrackModel(style, payment, checkoutPreference, payment.getPaymentDataList());
         this.payment = payment;
     }
 
@@ -68,29 +69,30 @@ public class ResultViewTrack extends ViewTracker {
 
     private static final class ResultViewTrackModel extends TrackingMapModel {
 
-        final String style;
-        final Long paymentId;
-        final String paymentStatus;
-        final String paymentStatusDetail;
-        final String currencyId;
-        final boolean hasSplitPayment;
-        BigDecimal rawAmount;
-        BigDecimal discountCouponAmount;
-        AvailableMethod availableMethod;
+        private final String style;
+        private final Long paymentId;
+        private final String paymentStatus;
+        private final String paymentStatusDetail;
+        private final String currencyId;
+        private final boolean hasSplitPayment;
+        private BigDecimal preferenceAmount;
+        private BigDecimal discountCouponAmount;
+        private AvailableMethod availableMethod;
 
         ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentResult payment,
-            @NonNull final String currencyId, @NonNull final Collection<PaymentData> paymentDataList) {
+            @NonNull final CheckoutPreference checkoutPreference,
+            @NonNull final Collection<PaymentData> paymentDataList) {
             this.style = style.value;
             paymentId = payment.getPaymentId();
             paymentStatus = payment.getPaymentStatus();
             paymentStatusDetail = payment.getPaymentStatusDetail();
-            this.currencyId = currencyId;
+            currencyId = checkoutPreference.getSite().getCurrencyId();
             hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentDataList);
+            preferenceAmount = checkoutPreference.getTotalAmount();
 
             if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
                 availableMethod =
                     new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod());
-                rawAmount = payment.getPaymentData().getRawAmount();
                 if (payment.getPaymentData().getDiscount() != null) {
                     discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentDataList);
                 }

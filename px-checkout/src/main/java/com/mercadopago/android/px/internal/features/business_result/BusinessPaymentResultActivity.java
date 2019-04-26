@@ -19,6 +19,7 @@ import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
+import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
 import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
@@ -68,15 +69,15 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     private ViewTracker createTracker(final BusinessPaymentModel model) {
         final Session session = Session.getSession(this);
         final List<PaymentData> paymentDataList = session.getPaymentRepository().getPaymentDataList();
-        final String currencyId =
-            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference().getSite().getCurrencyId();
+        final CheckoutPreference checkoutPreference =
+            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
             .setPaymentData(paymentDataList)
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
-            .build(), currencyId);
+            .build(), checkoutPreference);
     }
 
     @Nullable

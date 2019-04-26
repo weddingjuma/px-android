@@ -16,15 +16,16 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.PaymentData;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
+import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
 import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
+import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 
@@ -66,22 +67,17 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     }
 
     private ViewTracker createTracker(final BusinessPaymentModel model) {
-        //TODO refactor - added because tracking needed.
-        final PaymentMethod paymentMethod =
-            Session.getSession(this).getConfigurationModule()
-                .getUserSelectionRepository()
-                .getPaymentMethod();
-
-        final PaymentData paymentData = new PaymentData.Builder()
-            .setPaymentMethod(paymentMethod)
-            .createPaymentData();
+        final Session session = Session.getSession(this);
+        final List<PaymentData> paymentDataList = session.getPaymentRepository().getPaymentDataList();
+        final CheckoutPreference checkoutPreference =
+            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(paymentData)
+            .setPaymentData(paymentDataList)
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
-            .build());
+            .build(), checkoutPreference);
     }
 
     @Nullable

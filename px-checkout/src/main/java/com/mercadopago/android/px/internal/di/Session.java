@@ -60,8 +60,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
-public final class Session extends ApplicationModule
-    implements AmountComponent {
+public final class Session extends ApplicationModule implements AmountComponent {
 
     /**
      * This singleton instance is safe because session will work with application context. Application context it's

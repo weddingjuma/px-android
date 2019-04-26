@@ -39,7 +39,7 @@ public class ResultViewTrack extends ViewTracker {
     public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
         @NonNull final CheckoutPreference checkoutPreference) {
         resultViewTrackModel =
-            new ResultViewTrackModel(style, payment, checkoutPreference, payment.getPaymentDataList());
+            new ResultViewTrackModel(style, payment, checkoutPreference);
         this.payment = payment;
     }
 
@@ -80,22 +80,19 @@ public class ResultViewTrack extends ViewTracker {
         private AvailableMethod availableMethod;
 
         ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentResult payment,
-            @NonNull final CheckoutPreference checkoutPreference,
-            @NonNull final Collection<PaymentData> paymentDataList) {
+            @NonNull final CheckoutPreference checkoutPreference) {
             this.style = style.value;
             paymentId = payment.getPaymentId();
             paymentStatus = payment.getPaymentStatus();
             paymentStatusDetail = payment.getPaymentStatusDetail();
             currencyId = checkoutPreference.getSite().getCurrencyId();
-            hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentDataList);
+            hasSplitPayment = PaymentDataHelper.isSplitPayment(payment.getPaymentDataList());
             preferenceAmount = checkoutPreference.getTotalAmount();
+            discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(payment.getPaymentDataList());
 
             if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
                 availableMethod =
                     new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod());
-                if (payment.getPaymentData().getDiscount() != null) {
-                    discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentDataList);
-                }
             }
         }
     }

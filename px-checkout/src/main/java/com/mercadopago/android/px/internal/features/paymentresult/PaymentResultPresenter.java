@@ -48,8 +48,7 @@ import java.util.List;
         this.paymentResult = paymentResult;
         this.originAction = originAction;
 
-        resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult,
-            paymentSettings.getCheckoutPreference());
+        resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult, paymentSettings.getCheckoutPreference());
     }
 
     @Override

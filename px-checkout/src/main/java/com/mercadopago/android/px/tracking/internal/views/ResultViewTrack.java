@@ -2,14 +2,12 @@ package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
-import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
 import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.TrackingMapModel;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 

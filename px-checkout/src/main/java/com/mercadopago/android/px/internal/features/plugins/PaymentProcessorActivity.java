@@ -87,12 +87,16 @@ public final class PaymentProcessorActivity extends AppCompatActivity
 
         final Session session = Session.getSession(getApplicationContext());
 
-        paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
-            session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-            new EscManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository());
+        try {
+            paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
+                session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+                new EscManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository());
 
-        if (fragmentByTag == null) { // if fragment is not added, then create it.
-            addPaymentProcessorFragment(supportFragmentManager, session);
+            if (fragmentByTag == null) { // if fragment is not added, then create it.
+                addPaymentProcessorFragment(supportFragmentManager, session);
+            }
+        } catch (final Exception e) {
+            onBackPressed();
         }
     }
 

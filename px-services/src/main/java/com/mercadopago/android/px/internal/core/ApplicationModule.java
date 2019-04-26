@@ -12,6 +12,7 @@ public class ApplicationModule implements PreferenceComponent {
 
     @NonNull
     private final Context context;
+    private SessionIdProvider sessionIdProvider;
 
     public ApplicationModule(@NonNull final Context context) {
         this.context = context.getApplicationContext();
@@ -24,7 +25,16 @@ public class ApplicationModule implements PreferenceComponent {
 
     @NonNull
     public SessionIdProvider getSessionIdProvider() {
-        return SessionIdProvider.create(getSharedPreferences());
+        if (sessionIdProvider == null) {
+            sessionIdProvider = SessionIdProvider.createFromStorage(getSharedPreferences());
+        }
+        return sessionIdProvider;
+    }
+
+    @NonNull
+    public SessionIdProvider newSessionIdProvider() {
+        sessionIdProvider = SessionIdProvider.create(getSharedPreferences());
+        return sessionIdProvider;
     }
 
     @Override

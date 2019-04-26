@@ -54,6 +54,7 @@ public final class MercadoPagoCardStorage implements Parcelable {
 
     /**
      * Lets us know if we have to skip result screen or not
+     *
      * @return true/false to skip Result screen
      */
     public boolean shouldSkipResultScreen() {
@@ -75,7 +76,7 @@ public final class MercadoPagoCardStorage implements Parcelable {
      */
     public void start(@NonNull final Context context) {
         //start new session id
-        MPTracker.getInstance().setSessionId(new ApplicationModule(context).getSessionIdProvider().getSessionId());
+        MPTracker.getInstance().setSessionId(new ApplicationModule(context).newSessionIdProvider().getSessionId());
 
         GuessingCardActivity.startGuessingCardActivityForStorage(context, this);
     }
@@ -95,7 +96,6 @@ public final class MercadoPagoCardStorage implements Parcelable {
      * @param accessToken logged in user access token
      * @param requestCode it's the number that identifies the checkout flow request for
      * {@link Activity#onActivityResult(int, int, Intent)}
-     *
      * @deprecated use {@link #MercadoPagoCardStorage(Builder)}
      */
     @Deprecated
@@ -121,7 +121,6 @@ public final class MercadoPagoCardStorage implements Parcelable {
      * @param accessToken logged in user access token
      * @param requestCode it's the number that identifies the checkout flow request for {@link
      * Activity#onActivityResult(int, int, Intent)}
-     *
      * @deprecated use {@link #MercadoPagoCardStorage(Builder)}
      */
     @Deprecated

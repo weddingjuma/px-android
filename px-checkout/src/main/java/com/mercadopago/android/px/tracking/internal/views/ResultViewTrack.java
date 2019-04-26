@@ -73,8 +73,8 @@ public class ResultViewTrack extends ViewTracker {
         private final String paymentStatusDetail;
         private final String currencyId;
         private final boolean hasSplitPayment;
-        private BigDecimal preferenceAmount;
-        private BigDecimal discountCouponAmount;
+        private final BigDecimal preferenceAmount;
+        private final BigDecimal discountCouponAmount;
         private AvailableMethod availableMethod;
 
         ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentResult payment,

@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
+import android.util.Log;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -56,7 +57,10 @@ public class ResultViewTrack extends ViewTracker {
     @NonNull
     @Override
     public Map<String, Object> getData() {
-        return resultViewTrackModel.toMap();
+        final Map<String, Object> data = resultViewTrackModel.toMap();
+        data.put("payment_id", resultViewTrackModel.getPaymentId());
+
+        return data;
     }
 
     @NonNull
@@ -92,6 +96,10 @@ public class ResultViewTrack extends ViewTracker {
                 availableMethod =
                     new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod());
             }
+        }
+
+        public Long getPaymentId() {
+            return paymentId;
         }
     }
 }

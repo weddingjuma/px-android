@@ -29,7 +29,8 @@ public final class PaymentDataHelper {
         return paymentDataList.size() > 1;
     }
 
-    public static BigDecimal getTotalDiscountAmount(final Iterable<PaymentData> paymentDataList) {
+    @NonNull
+    public static BigDecimal getTotalDiscountAmount(@NonNull final Iterable<PaymentData> paymentDataList) {
         BigDecimal totalDiscountAmount = BigDecimal.ZERO;
 
         for (final PaymentData paymentData : paymentDataList) {

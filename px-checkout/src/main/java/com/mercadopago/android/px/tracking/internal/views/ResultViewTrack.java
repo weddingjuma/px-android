@@ -37,8 +37,8 @@ public class ResultViewTrack extends ViewTracker {
     }
 
     public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
-        @NonNull final String currencyId, @NonNull final List<PaymentData> paymentDataList) {
-        resultViewTrackModel = new ResultViewTrackModel(style, payment, currencyId, paymentDataList);
+        @NonNull final String currencyId) {
+        resultViewTrackModel = new ResultViewTrackModel(style, payment, currencyId, payment.getPaymentDataList());
         this.payment = payment;
     }
 

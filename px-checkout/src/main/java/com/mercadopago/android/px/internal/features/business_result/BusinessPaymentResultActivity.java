@@ -76,7 +76,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
-            .build(), currencyId, paymentDataList);
+            .build(), currencyId);
     }
 
     @Nullable

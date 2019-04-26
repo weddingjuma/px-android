@@ -49,7 +49,7 @@ import java.util.List;
         this.originAction = originAction;
 
         resultViewTrack = new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult,
-            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(), paymentResult.getPaymentDataList());
+            paymentSettings.getCheckoutPreference().getSite().getCurrencyId());
     }
 
     @Override

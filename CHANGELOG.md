@@ -1,3 +1,8 @@
+## VERSION 4.11.0
+_26_04_2019_
+* FEATURE - Congrats tracking new attributes
+* FIX - Crash payment processor activity
+
 ## VERSION 4.10.3
 _25_04_2019_
 * FIX - Recover removed method avoiding breaking changes.

@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features;
 
 import android.support.annotation.NonNull;
-
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
@@ -127,6 +126,25 @@ public class CheckoutPresenterTest {
             );
         presenter.attachResourcesProvider(provider);
         presenter.attachView(view);
+        return presenter;
+    }
+
+    @NonNull
+    private CheckoutPresenter getOneTapPresenter() {
+
+        CheckoutStateModel stateModel = new CheckoutStateModel();
+        stateModel.isExpressCheckout = true;
+        final CheckoutPresenter presenter =
+            new CheckoutPresenter(stateModel, paymentSettingRepository,
+                userSelectionRepository,
+                groupsRepository,
+                pluginRepository,
+                paymentRepository,
+                internalConfiguration,
+                businessModelMapper
+            );
+        presenter.attachResourcesProvider(checkoutProvider);
+        presenter.attachView(checkoutView);
         return presenter;
     }
 
@@ -355,27 +373,45 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenPaymentNeedsRecoveryFromReviewAndConfirmThenStartPaymentRecoveryFlow() {
+    public void whenPaymentNeedsRecoveryFromReviewAndConfirmThenShowReviewAndConfirmAndRecoverPayment() {
         final CheckoutPresenter presenter = getPresenter();
 
         final RecoverPaymentPostPaymentAction action =
-            new RecoverPaymentPostPaymentAction(PostPaymentAction.OriginAction.REVIEW_AND_CONFIRM);
+            new RecoverPaymentPostPaymentAction();
         action.execute(presenter);
 
         verify(checkoutView).showReviewAndConfirmAndRecoverPayment(false, action);
     }
 
     @Test
-    public void whenPaymentNeedsRecoveryFromOneTapThenStartPaymentRecoveryFlow() {
-        final CheckoutPresenter presenter = getPresenter();
-        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
-        when(paymentRepository.createPaymentRecovery()).thenReturn(paymentRecovery);
+    public void whenPaymentNeedsRecoveryFromOneTapThenDoNothing() {
+        final CheckoutPresenter presenter = getOneTapPresenter();
 
         final RecoverPaymentPostPaymentAction action =
-            new RecoverPaymentPostPaymentAction(PostPaymentAction.OriginAction.ONE_TAP);
+            new RecoverPaymentPostPaymentAction();
         action.execute(presenter);
 
+        verifyNoMoreInteractions(checkoutView);
+    }
+
+    @Test
+    public void whenPaymentHasInvalidEscThenStartPaymentRecoveryFlow() {
+        final CheckoutPresenter presenter = getPresenter();
+        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
+
+        presenter.onRecoverPaymentEscInvalid(paymentRecovery);
+
         verify(checkoutView).startPaymentRecoveryFlow(paymentRecovery);
+    }
+
+    @Test
+    public void whenOneTapPaymentHasInvalidEscThenStartPaymentRecoveryFlow() {
+        final CheckoutPresenter presenter = getOneTapPresenter();
+        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
+
+        presenter.onRecoverPaymentEscInvalid(paymentRecovery);
+
+        verify(checkoutView).startExpressPaymentRecoveryFlow(paymentRecovery);
     }
 
     //TODO verify, should not happen
@@ -386,7 +422,7 @@ public class CheckoutPresenterTest {
         when(paymentRepository.createPaymentRecovery()).thenReturn(null);
 
         final RecoverPaymentPostPaymentAction action =
-            new RecoverPaymentPostPaymentAction(PostPaymentAction.OriginAction.REVIEW_AND_CONFIRM);
+            new RecoverPaymentPostPaymentAction();
         action.execute(presenter);
 
         verify(checkoutView).showError(any(MercadoPagoError.class));
@@ -659,6 +695,10 @@ public class CheckoutPresenterTest {
         @Override
         public void startPayment() {
 
+        }
+
+        @Override
+        public void startExpressPaymentRecoveryFlow(@NonNull final PaymentRecovery paymentRecovery) {
         }
 
         @Override

@@ -206,8 +206,13 @@ import java.util.Set;
     public void executePostPaymentAction(@NonNull final PostPaymentAction postPaymentAction) {
         postPaymentAction.execute(new PostPaymentAction.ActionController() {
             @Override
-            public void recoverFromReviewAndConfirm(@NonNull final PostPaymentAction postPaymentAction) {
+            public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
                 getView().startPaymentRecoveryFlow(paymentRepository.createPaymentRecovery());
+            }
+
+            @Override
+            public void onChangePaymentMethod() {
+                // Do nothing, It is handled before.
             }
         });
     }

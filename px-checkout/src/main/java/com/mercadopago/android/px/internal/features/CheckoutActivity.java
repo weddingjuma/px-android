@@ -147,8 +147,8 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     @Override
     public void onBackPressed() {
-        final ExpressPayment.View fragment =
-            (ExpressPayment.View) FragmentUtil.getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
+        final ExpressPaymentFragment fragment = FragmentUtil
+            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
         if (fragment == null || !fragment.isExploding()) {
             super.onBackPressed();
         }
@@ -186,7 +186,8 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     private void showResult(@NonNull final Intent intent, final int requestCode) {
         //TODO handle this directly in fragment.
-        final Fragment fragment = FragmentUtil.getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
+        final ExpressPaymentFragment fragment = FragmentUtil
+            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
         if (fragment != null) {
             fragment.startActivityForResult(intent, requestCode);
         } else {
@@ -438,8 +439,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     public void showPaymentResult(final PaymentResult paymentResult) {
         overrideTransitionIn();
-        final Intent intent = PaymentResultActivity.getIntent(this, paymentResult,
-            PostPaymentAction.OriginAction.ONE_TAP);
+        final Intent intent = PaymentResultActivity.getIntent(this, paymentResult);
         showResult(intent, REQ_CONGRATS);
     }
 
@@ -459,9 +459,16 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     public void startPaymentRecoveryFlow(final PaymentRecovery paymentRecovery) {
         new Constants.Activities.CardVaultActivityBuilder()
-            .setPaymentRecovery(paymentRecovery)
-            .startActivity(this, REQ_CARD_VAULT);
+            .setPaymentRecovery(paymentRecovery).startActivity(this, REQ_CARD_VAULT);
         overrideTransitionIn();
+    }
+
+    @Override
+    public void startExpressPaymentRecoveryFlow(@NonNull final PaymentRecovery paymentRecovery) {
+        final ExpressPaymentFragment fragment = FragmentUtil
+            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
+        //noinspection ConstantConditions
+        fragment.showCardFlow(paymentRecovery);
     }
 
     private void resolveErrorRequest(final int resultCode, final Intent data) {

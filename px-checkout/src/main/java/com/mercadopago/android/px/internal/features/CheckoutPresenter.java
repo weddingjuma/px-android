@@ -400,15 +400,6 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
-    private void recoverPayment() {
-        try {
-            getView().startPaymentRecoveryFlow(paymentRepository.createPaymentRecovery());
-        } catch (final Exception e) {
-            final String message = getResourcesProvider().getCheckoutExceptionMessage(e);
-            getView().showError(new MercadoPagoError(message, e.getMessage(), false));
-        }
-    }
-
     /**
      * Send intention to close checkout if the checkout has oneTap data then it should not close.
      */
@@ -470,28 +461,24 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     private void recoverCreatePayment(final MercadoPagoError error) {
-        setFailureRecovery(new FailureRecovery() {
-            @Override
-            public void recover() {
-                getView().startPayment();
-            }
-        });
+        setFailureRecovery(() -> getView().startPayment());
         resolvePaymentFailure(error);
     }
 
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
-        getView().startPaymentRecoveryFlow(recovery);
+        if (state.isExpressCheckout) {
+            getView().startExpressPaymentRecoveryFlow(recovery);
+        } else {
+            getView().startPaymentRecoveryFlow(recovery);
+        }
     }
 
     @Override
-    public void recoverFromReviewAndConfirm(@NonNull final PostPaymentAction postPaymentAction) {
-        getView().showReviewAndConfirmAndRecoverPayment(isUniquePaymentMethod(), postPaymentAction);
-    }
-
-    @Override
-    public void recoverFromOneTap() {
-        recoverPayment();
+    public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
+        if (!state.isExpressCheckout) {
+            getView().showReviewAndConfirmAndRecoverPayment(isUniquePaymentMethod(), postPaymentAction);
+        }
     }
 
     @Override

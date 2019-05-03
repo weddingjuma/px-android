@@ -10,7 +10,7 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.EscManager;
+import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -19,7 +19,6 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.mappers.AccountMoneyMapper;
-import com.mercadopago.android.px.internal.viewmodel.mappers.CardMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Discount;
@@ -53,7 +52,7 @@ public class PaymentService implements PaymentRepository {
     @NonNull private final Context context;
     @NonNull private final TokenRepository tokenRepository;
     @NonNull private final GroupsRepository groupsRepository;
-    @NonNull private final EscManager escManager;
+    @NonNull private final EscPaymentManager escPaymentManager;
 
     @NonNull /* default */ final PaymentServiceHandlerWrapper handlerWrapper;
     @NonNull /* default */ final AmountConfigurationRepository amountConfigurationRepository;
@@ -70,13 +69,13 @@ public class PaymentService implements PaymentRepository {
         @NonNull final AmountRepository amountRepository,
         @NonNull final SplitPaymentProcessor paymentProcessor,
         @NonNull final Context context,
-        @NonNull final EscManager escManager,
+        @NonNull final EscPaymentManager escPaymentManager,
         @NonNull final TokenRepository tokenRepository,
         @NonNull final InstructionsRepository instructionsRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository) {
         this.amountConfigurationRepository = amountConfigurationRepository;
-        this.escManager = escManager;
+        this.escPaymentManager = escPaymentManager;
         this.userSelectionRepository = userSelectionRepository;
         this.pluginRepository = pluginRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -88,7 +87,8 @@ public class PaymentService implements PaymentRepository {
         this.groupsRepository = groupsRepository;
 
         handlerWrapper =
-            new PaymentServiceHandlerWrapper(this, disabledPaymentMethodRepository, escManager, instructionsRepository);
+            new PaymentServiceHandlerWrapper(this, disabledPaymentMethodRepository, escPaymentManager,
+                instructionsRepository);
     }
 
     @Override
@@ -148,7 +148,7 @@ public class PaymentService implements PaymentRepository {
 
                 if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
                     // Saved card.
-                    final Card card = new CardMapper(paymentMethodSearch).map(expressMetadata);
+                    final Card card = paymentMethodSearch.getCardById(expressMetadata.getCard().getId());
                     if (splitPayment) {
                         //TODO refactor
                         final String secondaryPaymentMethodId =
@@ -224,7 +224,7 @@ public class PaymentService implements PaymentRepository {
         //Paying with saved card without token
         final Card card = userSelectionRepository.getCard();
 
-        if (escManager.hasEsc(card)) {
+        if (escPaymentManager.hasEsc(card)) {
             //Saved card has ESC - Try to tokenize
             tokenRepository.createToken(card).enqueue(new Callback<Token>() {
                 @Override

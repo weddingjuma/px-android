@@ -2,7 +2,7 @@ package com.mercadopago.android.px.paymentvault;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoESC;
+import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolver;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultPresenter;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultView;
@@ -88,7 +88,7 @@ public class PaymentVaultPresenterTest {
 
         final PaymentVaultPresenter presenter =
             new PaymentVaultPresenter(paymentSettingRepository, userSelectionRepository,
-                disabledPaymentMethodRepository, discountRepository, groupsRepository, mock(MercadoPagoESC.class),
+                disabledPaymentMethodRepository, discountRepository, groupsRepository, mock(IESCManager.class),
                 paymentVaultTitleSolver);
         presenter.attachView(view);
 
@@ -257,7 +257,7 @@ public class PaymentVaultPresenterTest {
         presenter.selectItem(paymentMethodSearch.getCustomSearchItems().get(1));
 
         Assert.assertTrue(stubView.savedCardFlowStarted);
-        assertEquals(stubView.savedCardSelected, paymentMethodSearch.getCards().get(0));
+        assertEquals(stubView.savedCardSelected.getId(), paymentMethodSearch.getCustomSearchItems().get(1).getId());
     }
 
     @Test

@@ -7,12 +7,14 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl;
+import com.mercadopago.android.px.internal.datasource.ReflectiveESCManager;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
+import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
@@ -89,11 +91,9 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     private void configurePresenter() {
-        final CheckoutProvider provider = new CheckoutProviderImpl(this,
-            merchantPublicKey,
-            privateKey,
-            new MercadoPagoESCImpl(this, presenter.isESCEnabled()));
-
+        final Session session = Session.getSession(this);
+        final CheckoutProvider provider = new CheckoutProviderImpl(this, merchantPublicKey, privateKey,
+            new ReflectiveESCManager(this, session.getSessionIdProvider().getSessionId(), presenter.isESCEnabled()));
         presenter.attachResourcesProvider(provider);
         presenter.attachView(this);
     }
@@ -447,21 +447,17 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     @Override
     public void showSavedCardFlow(final Card card) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setCard(card)
-            .startActivity(this, REQ_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CARD_VAULT);
     }
 
     @Override
     public void showNewCardFlow() {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .startActivity(this, REQ_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CARD_VAULT);
     }
 
     @Override
     public void startPaymentRecoveryFlow(final PaymentRecovery paymentRecovery) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setPaymentRecovery(paymentRecovery).startActivity(this, REQ_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CARD_VAULT, paymentRecovery);
         overrideTransitionIn();
     }
 

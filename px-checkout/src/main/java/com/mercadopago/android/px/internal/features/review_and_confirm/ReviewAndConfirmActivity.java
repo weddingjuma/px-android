@@ -24,8 +24,8 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
+import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
@@ -462,17 +462,13 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     // Opens CVV screen
     @Override
     public void showCardCVVRequired(@NonNull final Card card) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setCard(card)
-            .startActivity(this, REQ_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CARD_VAULT);
     }
 
     // Opens Card vault with recovery info.
     @Override
     public void startPaymentRecoveryFlow(final PaymentRecovery recovery) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setPaymentRecovery(recovery)
-            .startActivity(this, REQ_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CARD_VAULT, recovery);
     }
 
     @Override

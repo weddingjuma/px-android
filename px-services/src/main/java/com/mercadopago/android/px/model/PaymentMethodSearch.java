@@ -222,16 +222,18 @@ public class PaymentMethodSearch implements Serializable {
 
     @Nullable
     public Card getCardById(@NonNull final String cardId) {
-        Card foundCard = null;
-        if (cards != null) {
-            for (final Card card : cards) {
-                if (card.getId().equals(cardId)) {
-                    foundCard = card;
-                    break;
-                }
+        for (final CustomSearchItem customSearchItem : getCustomSearchItems()) {
+            if (customSearchItem.getId().equals(cardId)) {
+                final PaymentMethod paymentMethod = getPaymentMethodById(customSearchItem.getPaymentMethodId());
+                final Card card = new Card();
+                card.setId(cardId);
+                card.setSecurityCode(paymentMethod != null ? paymentMethod.getSecurityCode() : null);
+                card.setPaymentMethod(paymentMethod);
+                card.setLastFourDigits(customSearchItem.getLastFourDigits());
+                return card;
             }
         }
-        return foundCard;
+        return null;
     }
 
     @NonNull
@@ -249,9 +251,15 @@ public class PaymentMethodSearch implements Serializable {
         return null;
     }
 
+    /**
+     *
+     * @return cards or empty arraylist.
+     * @deprecated the card info has been moved to custom option items.
+     */
+    @Deprecated
     @NonNull
     public List<Card> getCards() {
-        return cards == null ? new ArrayList<Card>() : cards;
+        return cards == null ? new ArrayList<>() : cards;
     }
 
     /**

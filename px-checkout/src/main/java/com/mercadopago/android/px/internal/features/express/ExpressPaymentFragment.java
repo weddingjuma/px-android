@@ -31,6 +31,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.Constants;
+import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
@@ -541,16 +542,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showCardFlow(@NonNull final Card card) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setCard(card)
-            .startActivity(this, REQ_CODE_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CODE_CARD_VAULT);
     }
 
     @Override
     public void showCardFlow(@NonNull final PaymentRecovery paymentRecovery) {
-        new Constants.Activities.CardVaultActivityBuilder()
-            .setPaymentRecovery(paymentRecovery)
-            .startActivity(this, REQ_CODE_CARD_VAULT);
+        CardVaultActivity.startActivity(this, REQ_CODE_CARD_VAULT, paymentRecovery);
     }
 
     @Override

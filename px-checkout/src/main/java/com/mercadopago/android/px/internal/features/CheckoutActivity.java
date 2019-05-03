@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -12,7 +13,6 @@ import com.mercadopago.android.px.internal.datasource.MercadoPagoESCImpl;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
-import com.mercadopago.android.px.internal.features.express.ExpressPayment;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
@@ -197,6 +197,8 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
 
     @Override
     public void showOneTap() {
+        //One tap only supports portrait
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
 

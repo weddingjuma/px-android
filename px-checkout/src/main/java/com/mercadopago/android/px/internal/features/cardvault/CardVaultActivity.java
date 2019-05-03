@@ -1,8 +1,6 @@
 package com.mercadopago.android.px.internal.features.cardvault;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,11 +41,9 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
 
     private CardVaultPresenter presenter;
 
-    private PaymentSettingRepository paymentSettingRepository;
-
     private void configure() {
         final Session session = Session.getSession(this);
-        paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
+        final PaymentSettingRepository paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
         presenter = new CardVaultPresenter(session.getConfigurationModule().getUserSelectionRepository(),
             paymentSettingRepository,
             session.getMercadoPagoESC(), session.getAmountConfigurationRepository(), session.providePayerCostSolver());
@@ -60,7 +56,6 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setScreenOrientation();
         setContentView(R.layout.px_activity_card_vault);
         configure();
 
@@ -85,15 +80,6 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
         presenter.detachView();
         presenter.detachResourceProvider();
         super.onDestroy();
-    }
-
-    private void setScreenOrientation() {
-        final int currentOrientation = getResources().getConfiguration().orientation;
-        if (currentOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
-        } else {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
-        }
     }
 
     public void restoreInstanceState(final Bundle savedInstanceState) {

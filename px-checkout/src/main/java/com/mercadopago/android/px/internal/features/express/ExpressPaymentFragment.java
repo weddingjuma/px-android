@@ -283,12 +283,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (context instanceof CallBack) {
             callback = (CallBack) context;
         }
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
     public void onDetach() {
-        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
         callback = null;
         //TODO remove null check after session is persisted
         if (presenter != null) {

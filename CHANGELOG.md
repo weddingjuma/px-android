@@ -1,3 +1,12 @@
+## VERSION 4.12.0
+_03_05_2019_
+* FEATURE - Esc for guessing card
+* FEATURE - Using discount name for his description
+* ENHANCEMENT - Track friction event when invalid esc
+* ENHANCEMENT - Add reason to cvv tracker
+* FIX - Returning to one tap after esc recover
+* FIX - Orientation issues
+
 ## VERSION 4.11.0
 _26_04_2019_
 * FEATURE - Congrats tracking new attributes

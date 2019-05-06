@@ -56,7 +56,7 @@ public class ExplodingFragment extends Fragment {
     private String buttonText;
     //TODO add loading time payment processor
     private int maxLoadingTime;
-    private boolean lockedOrientation = false;
+    private int previousOrientation;
 
     /* default */ ExplodingAnimationListener listener;
 
@@ -345,14 +345,10 @@ public class ExplodingFragment extends Fragment {
         super.onAttach(context);
         configureListener(context);
 
-        // lock the orientation during the loading if isn't already locked by one tap
-        if (getActivity().getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT) {
-            lockedOrientation = true;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-            } else {
-                getActivity().setRequestedOrientation(getResources().getConfiguration().orientation);
-            }
+        // lock the orientation during the loading
+        previousOrientation = getResources().getConfiguration().orientation;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
         }
     }
 
@@ -368,10 +364,7 @@ public class ExplodingFragment extends Fragment {
     @Override
     public void onDetach() {
         listener = null;
-        if (lockedOrientation) {
-            lockedOrientation = false;
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_USER);
-        }
+        getActivity().setRequestedOrientation(previousOrientation);
         super.onDetach();
     }
 }

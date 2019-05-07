@@ -229,7 +229,9 @@ public class PaymentMethodSearch implements Serializable {
                 card.setId(cardId);
                 card.setSecurityCode(paymentMethod != null ? paymentMethod.getSecurityCode() : null);
                 card.setPaymentMethod(paymentMethod);
+                card.setFirstSixDigits(customSearchItem.getFirstSixDigits());
                 card.setLastFourDigits(customSearchItem.getLastFourDigits());
+                card.setIssuer(customSearchItem.getIssuer());
                 return card;
             }
         }

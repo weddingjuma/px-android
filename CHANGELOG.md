@@ -1,3 +1,8 @@
+## VERSION 4.12.2
+_08_05_2019_
+* FIX - Removed empty box in rejected views
+* FIX - Catch NPE in network status check
+
 ## VERSION 4.12.1
 _07_05_2019_
 * FIX - Populate card properties with custom options in one tap

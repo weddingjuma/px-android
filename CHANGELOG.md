@@ -1,6 +1,6 @@
 ## VERSION 4.12.2
 _08_05_2019_
-* FIX - Removed empty box in rejected views
+* FIX - Removed empty box and divider in rejected views
 * FIX - Catch NPE in network status check
 
 ## VERSION 4.12.1

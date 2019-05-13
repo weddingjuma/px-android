@@ -1,3 +1,7 @@
+## VERSION 4.12.3
+_13_05_2019_
+* FIX - Business result crash when session isn't initialized correctly
+
 ## VERSION 4.12.2
 _08_05_2019_
 * FIX - Removed empty box and divider in rejected views

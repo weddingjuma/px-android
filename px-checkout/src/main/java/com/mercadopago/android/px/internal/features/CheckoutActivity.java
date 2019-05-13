@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.datasource.ReflectiveESCManager;
@@ -178,7 +177,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     @Override
-    public void showBusinessResult(final BusinessPaymentModel model) {
+    public void showBusinessResult(@NonNull final BusinessPaymentModel model) {
         overrideTransitionIn();
         final Intent intent = BusinessPaymentResultActivity.getIntent(this, model);
         showResult(intent, REQ_CONGRATS_BUSINESS);

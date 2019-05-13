@@ -28,6 +28,7 @@
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.CheckoutActivity"
+            android:launchMode="singleTask"
             android:screenOrientation="locked"
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity

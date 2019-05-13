@@ -45,7 +45,6 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         final BusinessPaymentModel model = parseBusinessPaymentModel();
-
         if (model != null) {
             viewTracker = createTracker(model);
 
@@ -66,9 +65,17 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
         }
     }
 
+    @Nullable
     private ViewTracker createTracker(final BusinessPaymentModel model) {
         final Session session = Session.getSession(this);
-        final List<PaymentData> paymentDataList = session.getPaymentRepository().getPaymentDataList();
+        //Session not correctly persisted workaround
+        final List<PaymentData> paymentDataList;
+        try {
+            paymentDataList = session.getPaymentRepository().getPaymentDataList();
+        } catch (final Exception e) {
+            exit();
+            return null;
+        }
         final CheckoutPreference checkoutPreference =
             session.getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
@@ -107,6 +114,10 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     @Override
     public void onBackPressed() {
         new AbortEvent(viewTracker).track();
+        exit();
+    }
+
+    private void exit() {
         processCustomExit(new ExitAction("exit", RESULT_OK));
     }
 

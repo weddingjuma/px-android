@@ -42,21 +42,17 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     @NonNull private final PluginRepository pluginRepository;
 
-    @NonNull private final PaymentRepository paymentRepository;
+    @NonNull /* default */ final PaymentRepository paymentRepository;
 
-    @NonNull
-    private final GroupsRepository groupsRepository;
-    @NonNull
-    /* default */ final PaymentSettingRepository paymentSettingRepository;
+    @NonNull private final GroupsRepository groupsRepository;
 
-    @NonNull
-    /* default */ final UserSelectionRepository userSelectionRepository;
+    @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
 
-    @NonNull
-    private final InternalConfiguration internalConfiguration;
+    @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
 
-    @NonNull
-    private final BusinessModelMapper businessModelMapper;
+    @NonNull private final InternalConfiguration internalConfiguration;
+
+    @NonNull /* default */ final BusinessModelMapper businessModelMapper;
 
     private transient FailureRecovery failureRecovery;
 
@@ -198,12 +194,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
                 public void onFailure(final MercadoPagoError error) {
                     if (isViewAttached()) {
                         getView().showError(error);
-                        setFailureRecovery(new FailureRecovery() {
-                            @Override
-                            public void recover() {
-                                retrieveCheckoutPreference(checkoutPreferenceId);
-                            }
-                        });
+                        setFailureRecovery(() -> retrieveCheckoutPreference(checkoutPreferenceId));
                     }
                 }
             });
@@ -253,12 +244,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
                     .build();
             getView().showPaymentResult(paymentResult);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
-            setFailureRecovery(new FailureRecovery() {
-                @Override
-                public void recover() {
-                    getView().startPayment();
-                }
-            });
+            setFailureRecovery(() -> getView().startPayment());
             getView().showError(mercadoPagoError);
         } else {
             // Strange that mercadoPagoError can be nullable here, but it was like this

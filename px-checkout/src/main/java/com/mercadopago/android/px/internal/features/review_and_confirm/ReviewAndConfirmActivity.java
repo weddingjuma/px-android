@@ -494,7 +494,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
      * be transferred.
      */
     @Override
-    public void showResult(final BusinessPaymentModel businessPaymentModel) {
+    public void showResult(@NonNull final BusinessPaymentModel businessPaymentModel) {
         overrideTransitionFadeInFadeOut();
         final Intent intent = BusinessPaymentResultActivity.getIntent(this, businessPaymentModel);
         intent.addFlags(FLAG_ACTIVITY_FORWARD_RESULT);

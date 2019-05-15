@@ -15,7 +15,6 @@ import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
-import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
@@ -25,7 +24,6 @@ import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
-import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 
@@ -65,22 +63,13 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
         }
     }
 
-    @Nullable
+    @NonNull
     private ViewTracker createTracker(final BusinessPaymentModel model) {
-        final Session session = Session.getSession(this);
-        //Session not correctly persisted workaround
-        final List<PaymentData> paymentDataList;
-        try {
-            paymentDataList = session.getPaymentRepository().getPaymentDataList();
-        } catch (final Exception e) {
-            exit();
-            return null;
-        }
         final CheckoutPreference checkoutPreference =
-            session.getConfigurationModule().getPaymentSettings().getCheckoutPreference();
+            Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
-            .setPaymentData(paymentDataList)
+            .setPaymentData(model.getPaymentDataList())
             .setPaymentStatus(model.payment.getPaymentStatus())
             .setPaymentStatusDetail(model.payment.getPaymentStatusDetail())
             .setPaymentId(model.payment.getId())
@@ -114,10 +103,6 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     @Override
     public void onBackPressed() {
         new AbortEvent(viewTracker).track();
-        exit();
-    }
-
-    private void exit() {
         processCustomExit(new ExitAction("exit", RESULT_OK));
     }
 

@@ -10,6 +10,7 @@ import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
+import com.mercadopago.android.px.internal.core.SessionIdProvider;
 import com.mercadopago.android.px.internal.datasource.AmountConfigurationRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.AmountService;
 import com.mercadopago.android.px.internal.datasource.BankDealsService;
@@ -106,8 +107,9 @@ public final class Session extends ApplicationModule implements AmountComponent 
         // delete old data.
         clear();
 
-        //start new session id
-        MPTracker.getInstance().setSessionId(newSessionIdProvider().getSessionId());
+        final SessionIdProvider sessionIdProvider =
+            newSessionProvider(mercadoPagoCheckout.getTrackingConfiguration().getSessionId());
+        MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
 
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();

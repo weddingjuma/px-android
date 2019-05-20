@@ -158,7 +158,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             }
             presenter.loadViewModel();
         } catch (final Exception e) {
-            //Nothing to do here
+            cancel();
         }
 
         // Order is important - On click and events should be wired AFTER view is attached.
@@ -274,7 +274,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onPause() {
-        presenter.onViewPaused();
+        if (presenter != null) {
+            presenter.onViewPaused();
+        }
         super.onPause();
     }
 

@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.internal.features.payment_vault;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
@@ -32,6 +34,8 @@ import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodChildView;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
 import java.util.List;
+
+import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 
 public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> implements AmountView.OnClick,
     PaymentVault.Actions, AmountRowController.AmountRowVisibilityBehaviour, SearchItemOnClickListenerHandler {
@@ -186,12 +190,16 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
         if (noPaymentMethodsAvailable()) {
             getView().showEmptyPaymentMethodsError();
         } else if (isOnlyOneItemAvailable() && !isDiscountAvailable()) {
+            /**
+             * isOnlyOneItemAvailable counts both lists, groups and customSearchItems
+             * We need to show discount
+             */
             if (!paymentMethodSearch.getGroups().isEmpty()) {
-                selectItem(paymentMethodSearch.getGroups().get(0), true);
-            } else if (!paymentMethodSearch.getCustomSearchItems().isEmpty()) {
-                if (PaymentTypes.CREDIT_CARD.equals(paymentMethodSearch.getCustomSearchItems().get(0).getType())) {
-                    selectItem(paymentMethodSearch.getCustomSearchItems().get(0));
-                }
+                getView().saveAutomaticSelection(true);
+                selectItem(paymentMethodSearch.getGroups().get(0));
+            } else {
+                getView().saveAutomaticSelection(true);
+                selectItem(paymentMethodSearch.getCustomSearchItems().get(0));
             }
         } else {
             showAvailableOptions();
@@ -201,12 +209,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     @Override
     public void selectItem(@NonNull final PaymentMethodSearchItem item) {
-        selectItem(item, false);
-    }
-
-    private void selectItem(@NonNull final PaymentMethodSearchItem item, final boolean automaticSelection) {
         userSelectionRepository.select((Card) null, null);
-        getView().saveAutomaticSelection(automaticSelection);
         if (item.hasChildren()) {
             getView().showSelectedItem(item);
         } else if (item.isPaymentType()) {
@@ -269,9 +272,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private void startNextStepForPaymentType(final PaymentMethodSearchItem item) {
-
         final String itemId = item.getId();
-
         if (PaymentTypes.isCardPaymentType(itemId)) {
             userSelectionRepository.select(itemId);
             getView().startCardFlow();
@@ -282,10 +283,9 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private void resolvePaymentMethodSelection(final PaymentMethodSearchItem item) {
-
         final PaymentMethod selectedPaymentMethod = paymentMethodSearch.getPaymentMethodBySearchItem(item);
         userSelectionRepository.select(selectedPaymentMethod, null);
-
+        setSelectedSearchItem(item);
         if (selectedPaymentMethod == null) {
             getView().showMismatchingPaymentMethodError();
         } else {
@@ -295,21 +295,20 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     private void handleCollectPayerInformation(final PaymentMethod selectedPaymentMethod) {
         new DefaultPayerInformationDriver(paymentSettingRepository.getCheckoutPreference().getPayer(),
-            selectedPaymentMethod).drive(
-            new DefaultPayerInformationDriver.PayerInformationDriverCallback() {
-                @Override
-                public void driveToNewPayerData() {
-                    getView().collectPayerInformation();
-                }
+            selectedPaymentMethod).drive(new DefaultPayerInformationDriver.PayerInformationDriverCallback() {
+            @Override
+            public void driveToNewPayerData() {
+                getView().collectPayerInformation();
+            }
 
-                @Override
-                public void driveToReviewConfirm() {
-                    getView().finishPaymentMethodSelection(selectedPaymentMethod);
-                }
-            });
+            @Override
+            public void driveToReviewConfirm() {
+                getView().finishPaymentMethodSelection(selectedPaymentMethod);
+            }
+        });
     }
 
-    public boolean isOnlyOneItemAvailable() {
+    private boolean isOnlyOneItemAvailable() {
         return paymentMethodSearch.getGroups().size() + paymentMethodSearch.getCustomSearchItems().size() == 1;
     }
 
@@ -317,15 +316,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
         return paymentMethodSearch.getGroups().isEmpty() && paymentMethodSearch.getCustomSearchItems().isEmpty();
     }
 
-    public PaymentMethodSearchItem getSelectedSearchItem() {
-        return selectedSearchItem;
-    }
-
     public void setSelectedSearchItem(final PaymentMethodSearchItem mSelectedSearchItem) {
         selectedSearchItem = mSelectedSearchItem;
     }
 
-    public void trackScreen() {
+    private void trackScreen() {
         // Do not remove check paymentMethodSearch, sometimes in recovery status is null.
         if (paymentMethodSearch != null) {
             if (selectedSearchItem == null) {
@@ -356,6 +351,20 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
             tracker.trackAbort();
         } else {
             tracker.trackBack();
+        }
+    }
+
+    @Override
+    public void onActivityResultNotOk(@Nullable final Intent data) {
+        trackScreen();
+        final boolean hasError = data != null && data.getStringExtra(EXTRA_ERROR) != null;
+        final boolean shouldFinishOnBack =
+            hasError || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
+                selectedSearchItem.getChildren().size() == 1;
+        if (shouldFinishOnBack) {
+            getView().cancel(data);
+        } else {
+            getView().overrideTransitionInOut();
         }
     }
 

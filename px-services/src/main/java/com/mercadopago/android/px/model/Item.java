@@ -214,7 +214,7 @@ public class Item implements Serializable, Parcelable {
         }
 
         /**
-         * Item category id is an optional value. 
+         * Item category id is an optional value.
          * You could use this value when you want to send an item category identification to the backend.
          *
          * @param categoryId item category identification.

@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.model;
 
+import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Payer implements Serializable {
@@ -8,7 +9,9 @@ public class Payer implements Serializable {
     private Identification identification;
     private String type;
     private String email;
+    @SerializedName("name")
     private String firstName;
+    @SerializedName("surname")
     private String lastName;
 
     public String getEmail() {

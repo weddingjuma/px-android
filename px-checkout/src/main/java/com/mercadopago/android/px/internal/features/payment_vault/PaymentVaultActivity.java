@@ -242,7 +242,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         } else if (requestCode == Constants.Activities.PAYMENT_VAULT_REQUEST_CODE) {
             resolvePaymentVaultRequest(resultCode, data);
         } else if (requestCode == PAYER_INFORMATION_REQUEST_CODE) {
-            resolvePayerInformationRequest(resultCode);
+            resolvePayerInformationRequest(resultCode, data);
         } else if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             resolveErrorRequest(resultCode, data);
             overrideTransitionOut();
@@ -276,14 +276,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
             finish();
         } else {
             //When it comes back from payment vault "children" view
-            presenter.trackScreen();
-
-            if (shouldFinishOnBack(data)) {
-                setResult(Activity.RESULT_CANCELED, data);
-                finish();
-            } else {
-                overridePendingTransition(R.anim.px_slide_left_to_right_in, R.anim.px_slide_left_to_right_out);
-            }
+            presenter.onActivityResultNotOk(data);
         }
     }
 
@@ -298,33 +291,16 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
             setResult(RESULT_SILENT_ERROR);
             finish();
         } else {
-            presenter.trackScreen();
-
-            if (shouldFinishOnBack(data)) {
-                setResult(Activity.RESULT_CANCELED, data);
-                finish();
-            } else {
-                overridePendingTransition(R.anim.px_slide_left_to_right_in, R.anim.px_slide_left_to_right_out);
-            }
+            presenter.onActivityResultNotOk(data);
         }
     }
 
-    private void resolvePayerInformationRequest(final int resultCode) {
+    private void resolvePayerInformationRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             presenter.onPayerInformationReceived();
         } else {
-            overridePendingTransition(R.anim.px_slide_left_to_right_in, R.anim.px_slide_left_to_right_out);
+            presenter.onActivityResultNotOk(data);
         }
-    }
-
-    private boolean shouldFinishOnBack(final Intent data) {
-        return presenter.getSelectedSearchItem() == null ||
-            (presenter.getSelectedSearchItem() != null &&
-                (!presenter.getSelectedSearchItem().hasChildren()
-                    || (presenter.getSelectedSearchItem().getChildren().size() == 1))
-                || (presenter.getSelectedSearchItem() == null &&
-                presenter.isOnlyOneItemAvailable()) ||
-                (data != null) && (data.getStringExtra(EXTRA_ERROR) != null));
     }
 
     @Override
@@ -485,5 +461,16 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     public void showDisabledPaymentMethodDetailDialog(@NonNull final String paymentMethodType) {
         DisabledPaymentMethodDetailDialog.showDialog(getSupportFragmentManager(), paymentMethodType);
+    }
+
+    @Override
+    public void cancel(final Intent data) {
+        setResult(Activity.RESULT_CANCELED, data);
+        finish();
+    }
+
+    @Override
+    public void overrideTransitionInOut() {
+        overridePendingTransition(R.anim.px_slide_left_to_right_in, R.anim.px_slide_left_to_right_out);
     }
 }

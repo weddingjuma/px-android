@@ -119,7 +119,7 @@ public class GroupsService implements GroupsRepository {
 
         final PaymentMethodSearchBody paymentMethodSearchBody = new PaymentMethodSearchBody.Builder()
             .setPrivateKey(paymentSettingRepository.getPrivateKey())
-            .setPayerEmail(paymentSettingRepository.getCheckoutPreference().getPayer().getEmail())
+            .setPayerEmail(checkoutPreference.getPayer().getEmail())
             .setMarketplace(checkoutPreference.getMarketplace())
             .setProductId(discountParamsConfiguration.getProductId())
             .setLabels(discountParamsConfiguration.getLabels())

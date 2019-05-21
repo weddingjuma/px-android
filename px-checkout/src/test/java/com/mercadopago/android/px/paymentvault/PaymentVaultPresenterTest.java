@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.paymentvault;
 
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolver;
@@ -546,6 +548,16 @@ public class PaymentVaultPresenterTest {
 
         @Override
         public void showDisabledPaymentMethodDetailDialog(@NonNull final String paymentMethodType) {
+            //Do nothing
+        }
+
+        @Override
+        public void cancel(@Nullable final Intent data) {
+            //Do nothing
+        }
+
+        @Override
+        public void overrideTransitionInOut() {
             //Do nothing
         }
 

@@ -98,7 +98,7 @@ public class Item implements Serializable, Parcelable {
     }
 
     public static boolean areItemsValid(@NonNull final Collection<Item> items) {
-        return !items.isEmpty() && isEachItemValid(items);
+        return !items.isEmpty() && isEachItemValid(items) && BigDecimal.ZERO.compareTo(getTotalAmountWith(items)) < 0;
     }
 
     private static boolean isEachItemValid(@NonNull final Iterable<Item> items) {
@@ -110,8 +110,7 @@ public class Item implements Serializable, Parcelable {
     }
 
     private boolean isItemValid() {
-        return BigDecimal.ZERO.compareTo(getUnitPrice()) < 0
-            && getQuantity() > 0;
+        return getQuantity() > 0;
     }
 
     public static BigDecimal getTotalAmountWith(@NonNull final Iterable<Item> items) {

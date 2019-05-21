@@ -1,3 +1,10 @@
+## VERSION 4.12.4
+_20_05_2019_
+* Fix automatic selection when the only payment method isn't card
+* Changed item validation
+* Fix serialization of payer lastName and firstName
+* Fix amount descriptor view crop
+
 ## VERSION 4.12.3
 _13_05_2019_
 * FIX - Business result crash when session isn't initialized correctly

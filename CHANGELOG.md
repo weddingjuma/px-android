@@ -1,3 +1,7 @@
+## VERSION 4.12.5
+_23_05_2019_
+* Fix invalid tracks
+
 ## VERSION 4.12.4
 _20_05_2019_
 * Fix automatic selection when the only payment method isn't card

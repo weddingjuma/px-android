@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
@@ -67,6 +68,9 @@ public interface ExpressPayment {
         boolean isExploding();
 
         void resetPagerIndex();
+
+        void showDynamicDialog(@NonNull final DynamicDialogCreator creatorFor,
+            @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
     }
 
     interface Actions extends PaymentServiceHandler {
@@ -100,5 +104,7 @@ public interface ExpressPayment {
         void manageNoConnection();
 
         void onSplitChanged(boolean isChecked, int currentItem);
+
+        void onHeaderClicked();
     }
 }

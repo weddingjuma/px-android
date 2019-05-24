@@ -205,11 +205,9 @@ public final class Session extends ApplicationModule implements AmountComponent 
         if (amountRepository == null) {
             final ConfigurationModule configurationModule = getConfigurationModule();
             final PaymentSettingRepository configuration = configurationModule.getPaymentSettings();
-            final UserSelectionRepository userSelectionRepository = configurationModule.getUserSelectionRepository();
             amountRepository = new AmountService(configuration,
                 configurationModule.getChargeSolver(),
-                getDiscountRepository(),
-                userSelectionRepository);
+                getDiscountRepository());
         }
         return amountRepository;
     }

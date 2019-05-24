@@ -3,8 +3,9 @@ package com.mercadopago.android.px.internal.features.express;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -28,6 +29,7 @@ import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.Constants;
@@ -49,7 +51,6 @@ import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAda
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
@@ -87,6 +88,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     SplitPaymentHeaderAdapter.SplitListener {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
+    private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
     private static final int REQ_CODE_CARD_VAULT = 0x999;
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 0x123;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
@@ -118,6 +120,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private TitlePager titlePager;
     private PaymentMethodHeaderView paymentMethodHeaderView;
     private LabeledSwitch splitPaymentView;
+    private PaymentMethodFragmentAdapter paymentMethodFragmentAdapter;
 
     private final HubAdapter hubAdapter = new HubAdapter();
 
@@ -163,6 +166,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         // Order is important - On click and events should be wired AFTER view is attached.
         summaryView.setOnFitListener(this);
+        final View.OnClickListener listener = v -> presenter.onHeaderClicked();
+        summaryView.setBigHeaderListener(listener);
+        toolbarElementDescriptor.setOnClickListener(listener);
+
         toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
         toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
 
@@ -183,6 +190,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         summaryView = view.findViewById(R.id.summary_view);
 
         toolbarElementDescriptor = view.findViewById(R.id.element_descriptor_toolbar);
+
         pagerAndConfirmButtonContainer = view.findViewById(R.id.container);
         aspectRatioContainer = view.findViewById(R.id.aspect_ratio_container);
         paymentMethodPager = view.findViewById(R.id.payment_method_pager);
@@ -193,7 +201,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         fadeAnimation = new FadeAnimator(view.getContext());
 
         paymentMethodSlideAnim = new SlideAnim(aspectRatioContainer);
-        configureCardAspectRatio(aspectRatioContainer);
+        configureCardAspectRatio(ASPECT_RATIO_HIGH_RES);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         installmentsRecyclerView.setLayoutManager(linearLayoutManager);
@@ -234,12 +242,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         configureToolbar(view);
     }
 
-    private void configureCardAspectRatio(final FixedAspectRatioFrameLayout aspectRatioContainer) {
-        if (ScaleUtil.isLowRes(aspectRatioContainer.getContext())) {
-            aspectRatioContainer.setAspectRatio(ASPECT_RATIO_LOW_RES.first, ASPECT_RATIO_LOW_RES.second);
-        } else {
-            aspectRatioContainer.setAspectRatio(ASPECT_RATIO_HIGH_RES.first, ASPECT_RATIO_HIGH_RES.second);
-        }
+    private void configureCardAspectRatio(@NonNull final Pair<Integer, Integer> aspect) {
+        aspectRatioContainer.setAspectRatio(aspect.first, aspect.second);
     }
 
     private ExpressPaymentPresenter createPresenter(@NonNull final Context context) {
@@ -250,7 +254,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getGroupsRepository(),
-            session.getAmountConfigurationRepository());
+            session.getAmountConfigurationRepository(),
+            session.getConfigurationModule().getChargeSolver());
     }
 
     @Override
@@ -303,18 +308,13 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         @NonNull final Site site,
         @NonNull final HubAdapter.Model model) {
 
-        if (paymentMethodPager.getAdapter() == null) {
-            paymentMethodPager
-                .setAdapter(PaymentMethodFragmentAdapter.with(getContext(), getChildFragmentManager(), items));
+        if (paymentMethodFragmentAdapter == null) {
+            paymentMethodFragmentAdapter = new PaymentMethodFragmentAdapter(getChildFragmentManager(), items);
         }
 
         installmentsAdapter = new InstallmentsAdapter(site, new ArrayList<>(), PayerCost.NO_SELECTED, this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
         installmentsRecyclerView.setVisibility(View.GONE);
-
-        indicator.attachToPager(paymentMethodPager);
-
-        // indicator must be after paymentMethodPager adapter is set.
 
         final TitlePagerAdapter titlePagerAdapter =
             new TitlePagerAdapter(model.paymentMethodDescriptorModels, titlePager);
@@ -584,6 +584,24 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
+    public void onSummaryMeasured(final boolean itemsClipped) {
+        if (itemsClipped) {
+            configureCardAspectRatio(ASPECT_RATIO_LOW_RES);
+            paymentMethodFragmentAdapter.setLowResMode();
+        }
+        final Runnable runnable = () -> {
+            paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
+            indicator.attachToPager(paymentMethodPager);
+        };
+        //Workaround to weird bug in older versions with the view pager
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            runnable.run();
+        } else {
+            new Handler().post(runnable);
+        }
+    }
+
+    @Override
     public void showDiscountDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
         DiscountDetailDialog.showDialog(getFragmentManager(), discountModel);
     }
@@ -601,5 +619,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void resetPagerIndex() {
         paymentMethodPager.setCurrentItem(0);
+    }
+
+    @Override
+    public void showDynamicDialog(@NonNull final DynamicDialogCreator creator,
+        @NonNull final DynamicDialogCreator.CheckoutData checkoutData) {
+        if (creator.shouldShowDialog(getContext(), checkoutData)) {
+            creator.create(getContext(), checkoutData).show(getChildFragmentManager(),
+                TAG_HEADER_DYNAMIC_DIALOG);
+        }
     }
 }

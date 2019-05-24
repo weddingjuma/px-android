@@ -123,7 +123,8 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     @Override
     public void showAmountRow() {
         getView().showAmount(discountRepository.getCurrentConfiguration(),
-                amountRepository.getItemsPlusCharges(), configuration.getCheckoutPreference().getSite());
+            amountRepository.getItemsPlusCharges(userSelectionRepository.getPaymentMethod().getPaymentTypeId()),
+            configuration.getCheckoutPreference().getSite());
     }
 
     @Override

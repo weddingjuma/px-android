@@ -6,5 +6,5 @@
     android:layout_height="wrap_content"
     android:clickable="false"
     android:focusable="false"
-    android:layout_marginTop="@dimen/px_xxxs_margin"
+    android:paddingTop="@dimen/px_xxxs_margin"
     tools:background="@color/px_colorPrimary"/>

@@ -1,13 +1,15 @@
 package com.mercadopago.android.px.internal.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import java.math.BigDecimal;
 
 public interface ChargeRepository {
 
     @NonNull
-    BigDecimal getChargeAmount();
+    BigDecimal getChargeAmount(@NonNull String paymentTypeId);
 
-    boolean shouldApply(PaymentTypeChargeRule paymentTypeRule);
+    @Nullable
+    PaymentTypeChargeRule getChargeRule(@NonNull String paymentTypeId);
 }

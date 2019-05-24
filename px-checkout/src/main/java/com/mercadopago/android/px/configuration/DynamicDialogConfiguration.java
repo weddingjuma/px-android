@@ -17,6 +17,7 @@ public final class DynamicDialogConfiguration implements Serializable {
 
     public enum DialogLocation {
         ENTER_REVIEW_AND_CONFIRM,
+        TAP_ONE_TAP_HEADER,
     }
 
     /* default */ DynamicDialogConfiguration(@NonNull final Builder builder) {

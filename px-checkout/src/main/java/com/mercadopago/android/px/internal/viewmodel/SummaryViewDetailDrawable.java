@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import com.mercadopago.android.px.R;
 
-public class DiscountDetailDrawable implements IDetailDrawable {
+public final class SummaryViewDetailDrawable implements IDetailDrawable {
 
     @Override
     public Drawable getDrawable(@NonNull final Context context) {

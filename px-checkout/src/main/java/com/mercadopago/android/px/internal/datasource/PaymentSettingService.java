@@ -111,8 +111,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @NonNull
     @Override
     public List<PaymentTypeChargeRule> chargeRules() {
-        final PaymentConfiguration paymentConfiguration = getPaymentConfiguration();
-        return paymentConfiguration.getCharges();
+        return getPaymentConfiguration().getCharges();
     }
 
     @NonNull

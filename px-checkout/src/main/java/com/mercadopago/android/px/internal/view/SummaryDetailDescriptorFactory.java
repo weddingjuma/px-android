@@ -1,56 +1,86 @@
 package com.mercadopago.android.px.internal.view;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
+import com.mercadopago.android.px.internal.viewmodel.ChargeLocalized;
 import com.mercadopago.android.px.internal.viewmodel.DiscountAmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.DiscountDescriptionLocalized;
 import com.mercadopago.android.px.internal.viewmodel.DiscountDetailColor;
-import com.mercadopago.android.px.internal.viewmodel.DiscountDetailDrawable;
-import com.mercadopago.android.px.internal.viewmodel.ItemDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.ItemLocalized;
-import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountLocalized;
+import com.mercadopago.android.px.internal.viewmodel.SummaryViewDefaultColor;
+import com.mercadopago.android.px.internal.viewmodel.SummaryViewDetailDrawable;
+import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SummaryDetailDescriptorFactory {
 
+    @NonNull private final AmountDescriptorView.OnClickListener listener;
     @NonNull private final DiscountConfigurationModel discountModel;
-    @NonNull private final CheckoutPreference checkoutPreference;
+    @NonNull private final AmountRepository amountRepository;
     @NonNull private final SummaryInfo summaryInfo;
+    @NonNull private final String currencyId;
+    @Nullable private final PaymentTypeChargeRule chargeRule;
 
-    public SummaryDetailDescriptorFactory(@NonNull final DiscountConfigurationModel discountModel,
-        @NonNull final CheckoutPreference checkoutPreference, @NonNull final SummaryInfo summaryInfo) {
+    public SummaryDetailDescriptorFactory(@NonNull final AmountDescriptorView.OnClickListener listener,
+        @NonNull final DiscountConfigurationModel discountModel, @NonNull final AmountRepository amountRepository,
+        @NonNull final SummaryInfo summaryInfo, @NonNull final String currencyId,
+        @Nullable final PaymentTypeChargeRule chargeRule) {
+        this.listener = listener;
         this.discountModel = discountModel;
-        this.checkoutPreference = checkoutPreference;
+        this.amountRepository = amountRepository;
         this.summaryInfo = summaryInfo;
+        this.currencyId = currencyId;
+        this.chargeRule = chargeRule;
     }
 
     public List<AmountDescriptorView.Model> create() {
         final List<AmountDescriptorView.Model> list = new ArrayList<>();
 
-        if (discountModel.getDiscount() != null) {
-            list.add(new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
-                new AmountLocalized(checkoutPreference.getTotalAmount(),
-                    checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
-            list.add(new AmountDescriptorView.Model(new DiscountDescriptionLocalized(discountModel.getDiscount()),
-                new DiscountAmountLocalized(discountModel.getDiscount().getCouponAmount(),
-                    checkoutPreference.getSite().getCurrencyId()), new DiscountDetailColor())
-                .setDetailDrawable(new DiscountDetailDrawable()).enableListener());
+        addDiscountRow(list);
+        if (chargeRule != null) {
+            addChargesRow(list);
         }
-
-        if (!discountModel.isAvailable()) {
-            list.add(new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
-                new AmountLocalized(checkoutPreference.getTotalAmount(),
-                    checkoutPreference.getSite().getCurrencyId()), new ItemDetailColor()));
-            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new SoldOutDiscountDetailColor())
-                .setDetailDrawable(new DiscountDetailDrawable(), new SoldOutDiscountDetailColor())
-                .enableListener());
-        }
+        addTotalRow(list);
 
         return list;
+    }
+
+    private void addDiscountRow(@NonNull final Collection<AmountDescriptorView.Model> list) {
+        final Discount discount = discountModel.getDiscount();
+        if (!discountModel.isAvailable()) {
+            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new SummaryViewDefaultColor())
+                .setDetailDrawable(new SummaryViewDetailDrawable(), new SummaryViewDefaultColor())
+                .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
+        } else if (discount != null) {
+            list.add(new AmountDescriptorView.Model(new DiscountDescriptionLocalized(discount),
+                new DiscountAmountLocalized(discount.getCouponAmount(), currencyId), new DiscountDetailColor())
+                .setDetailDrawable(new SummaryViewDetailDrawable(), new DiscountDetailColor())
+                .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
+        }
+    }
+
+    private void addChargesRow(@NonNull final Collection<AmountDescriptorView.Model> list) {
+        final AmountDescriptorView.Model model = new AmountDescriptorView.Model(new ChargeLocalized(summaryInfo),
+            new AmountLocalized(chargeRule.charge(), currencyId), new SummaryViewDefaultColor());
+        if (chargeRule.hasDetailModal()) {
+            model.setDetailDrawable(new SummaryViewDetailDrawable(), new SummaryViewDefaultColor())
+                .setListener(v -> listener.onChargesAmountDescriptorClicked(chargeRule.getDetailModal()));
+        }
+        list.add(model);
+    }
+
+    private void addTotalRow(@NonNull final List<AmountDescriptorView.Model> list) {
+        if (!list.isEmpty()) {
+            list.add(0, new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
+                new AmountLocalized(amountRepository.getItemsAmount(), currencyId), new SummaryViewDefaultColor()));
+        }
     }
 }

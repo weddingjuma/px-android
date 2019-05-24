@@ -1,46 +1,49 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import java.math.BigDecimal;
 
 public class ChargeService implements ChargeRepository {
 
-    @NonNull private final UserSelectionRepository userSelectionRepository;
     @NonNull private final PaymentSettingRepository configuration;
 
-    public ChargeService(@NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final PaymentSettingRepository configuration) {
-        this.userSelectionRepository = userSelectionRepository;
+    public ChargeService(@NonNull final PaymentSettingRepository configuration) {
         this.configuration = configuration;
     }
 
+    @Override
     @NonNull
-    private BigDecimal charges(@NonNull final Iterable<? extends PaymentTypeChargeRule> rules) {
+    public BigDecimal getChargeAmount(@NonNull final String paymentTypeId) {
+        return charges(paymentTypeId);
+    }
+
+    @Nullable
+    @Override
+    public PaymentTypeChargeRule getChargeRule(@NonNull final String paymentTypeId) {
+        for (final PaymentTypeChargeRule rule : configuration.chargeRules()) {
+            if (shouldApply(paymentTypeId, rule)) {
+                return rule;
+            }
+        }
+        return null;
+    }
+
+    private boolean shouldApply(@NonNull final String paymentTypeId, @NonNull final PaymentTypeChargeRule rule) {
+        return rule.getPaymentTypeId().equalsIgnoreCase(paymentTypeId);
+    }
+
+    @NonNull
+    private BigDecimal charges(@NonNull final String paymentTypeId) {
         BigDecimal chargeAmount = BigDecimal.ZERO;
-        for (final PaymentTypeChargeRule rule : rules) {
-            if (rule.shouldBeTriggered(this)) {
+        for (final PaymentTypeChargeRule rule : configuration.chargeRules()) {
+            if (shouldApply(paymentTypeId, rule)) {
                 chargeAmount = chargeAmount.add(rule.charge());
             }
         }
         return chargeAmount;
-    }
-
-    @Override
-    @NonNull
-    public BigDecimal getChargeAmount() {
-        return charges(configuration.chargeRules());
-    }
-
-    @Override
-    public boolean shouldApply(@NonNull final PaymentTypeChargeRule rule) {
-        final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
-        final boolean notNull = paymentMethod != null;
-        return notNull && (rule.getPaymentTypeId().equalsIgnoreCase(paymentMethod.getId()) ||
-            rule.getPaymentTypeId().equalsIgnoreCase(paymentMethod.getPaymentTypeId()));
     }
 }

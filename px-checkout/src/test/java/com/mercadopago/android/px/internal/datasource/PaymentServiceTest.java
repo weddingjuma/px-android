@@ -63,6 +63,7 @@ public class PaymentServiceTest {
     @Mock private ExpressMetadata node;
     @Mock private CardMetadata cardMetadata;
     @Mock private PayerCost payerCost;
+    @Mock private PaymentMethod paymentMethod;
 
     private PaymentService paymentService;
 
@@ -87,6 +88,8 @@ public class PaymentServiceTest {
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));
         when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
+        when(paymentMethod.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
     }
 
     @Test
@@ -173,9 +176,6 @@ public class PaymentServiceTest {
     @NonNull
     private Card savedCreditCardOneTapPresent() {
         final Card card = creditCardPresetMock();
-        final PaymentMethod paymentMethod = mock(PaymentMethod.class);
-        when(paymentMethod.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
-        when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
         when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
         when(userSelectionRepository.getCard()).thenReturn(card);

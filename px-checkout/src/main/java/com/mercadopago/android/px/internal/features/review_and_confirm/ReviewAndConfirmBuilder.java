@@ -20,6 +20,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Item;
+import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
@@ -87,11 +88,11 @@ public class ReviewAndConfirmBuilder {
         final PaymentModel paymentModel =
             new PaymentModel(paymentMethod, token, issuer, hasExtraPaymentMethods);
 
+        final PayerCost payerCost = userSelectionRepository.getPayerCost();
         final SummaryModel summaryModel =
-            new SummaryModel(amountRepository.getAmountToPay(), paymentMethod, site,
-                userSelectionRepository.getPayerCost(), discountModel.getDiscount(), title,
-                checkoutPreference.getTotalAmount(),
-                amountRepository.getAppliedCharges());
+            new SummaryModel(amountRepository.getAmountToPay(paymentMethod.getPaymentTypeId(), payerCost),
+                paymentMethod, site, payerCost, discountModel.getDiscount(), title, checkoutPreference.getTotalAmount(),
+                amountRepository.getAppliedCharges(paymentMethod.getPaymentTypeId(), payerCost));
 
         final ItemsModel itemsModel = new ItemsModel(site.getCurrencyId(), items);
         if (postPaymentAction != null) {

@@ -142,7 +142,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
                 session.getConfigurationModule().getUserSelectionRepository(),
                 session.getMercadoPagoESC());
             presenter.attachView(this);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
                 FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
                 .track();
@@ -203,28 +203,13 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
         case REQ_CARD_VAULT:
-            getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    resolveCardVaultRequest(resultCode, data);
-                }
-            });
+            getWindow().getDecorView().post(() -> resolveCardVaultRequest(resultCode, data));
             break;
         case ErrorUtil.ERROR_REQUEST_CODE:
-            getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    resolveErrorRequest(resultCode, data);
-                }
-            });
+            getWindow().getDecorView().post(() -> resolveErrorRequest(resultCode, data));
             break;
         case PAYER_INFORMATION_REQUEST_CODE:
-            getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    resolvePayerInformationRequest(resultCode);
-                }
-            });
+            getWindow().getDecorView().post(() -> resolvePayerInformationRequest(resultCode));
             break;
         default:
             //Do nothing
@@ -264,12 +249,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         supportActionBar.setDisplayShowTitleEnabled(false);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
         supportActionBar.setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
         final CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle(getString(R.string.px_activity_checkout_title));
         if (FontCache.hasTypeface(FontCache.CUSTOM_REGULAR_FONT)) {
@@ -280,12 +260,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     private void initFloatingButton(final ViewGroup scrollView) {
         floatingConfirmLayout = findViewById(R.id.floating_confirm_layout);
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                presenter.onPaymentConfirm();
-            }
-        });
+        confirmButton.setOnClickListener(v -> presenter.onPaymentConfirm());
         configureFloatingBehaviour(scrollView, floatingConfirmLayout);
     }
 
@@ -297,36 +272,25 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     private void addScrollBottomPadding(final View floatingConfirmLayout, final View scrollView) {
         final ViewTreeObserver floatingObserver = floatingConfirmLayout.getViewTreeObserver();
-        floatingObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                final int bottomPadding = floatingConfirmLayout.getHeight();
-                if (scrollView.getPaddingBottom() != bottomPadding) {
-                    scrollView.setPadding(scrollView.getPaddingLeft(), scrollView.getPaddingTop(),
-                        scrollView.getPaddingRight(), bottomPadding);
-                }
+        floatingObserver.addOnGlobalLayoutListener(() -> {
+            final int bottomPadding = floatingConfirmLayout.getHeight();
+            if (scrollView.getPaddingBottom() != bottomPadding) {
+                scrollView.setPadding(scrollView.getPaddingLeft(), scrollView.getPaddingTop(),
+                    scrollView.getPaddingRight(), bottomPadding);
             }
         });
     }
 
     private void configureScrollLayoutListener(final View floatingConfirmLayout, final ViewGroup scrollView) {
         final ViewTreeObserver viewTreeObserver = scrollView.getViewTreeObserver();
-        viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                resolveFloatingButtonElevationVisibility(floatingConfirmLayout, scrollView);
-            }
-        });
+        viewTreeObserver.addOnGlobalLayoutListener(
+            () -> resolveFloatingButtonElevationVisibility(floatingConfirmLayout, scrollView));
     }
 
     private void addScrollListener(final View floatingConfirmLayout, final ViewGroup scrollView) {
         final ViewTreeObserver viewTreeObserver = scrollView.getViewTreeObserver();
-        viewTreeObserver.addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
-            @Override
-            public void onScrollChanged() {
-                resolveFloatingButtonElevationVisibility(floatingConfirmLayout, scrollView);
-            }
-        });
+        viewTreeObserver.addOnScrollChangedListener(
+            () -> resolveFloatingButtonElevationVisibility(floatingConfirmLayout, scrollView));
     }
 
     /* default */ void resolveFloatingButtonElevationVisibility(final View floatingConfirmLayout,
@@ -349,7 +313,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         //TODO remove try/catch after session is persisted
         try {
             manager.render(container, mainContent);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
                 FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
                 .track();
@@ -587,7 +551,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     public void finishLoading(@NonNull final ExplodeDecorator decorator) {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-        if (fragment != null && fragment instanceof ExplodingFragment && fragment.isAdded() && fragment.isVisible()) {
+        if (fragment instanceof ExplodingFragment && fragment.isAdded() && fragment.isVisible()) {
             final ExplodingFragment explodingFragment = (ExplodingFragment) fragment;
             explodingFragment.finishLoading(decorator);
         } else {

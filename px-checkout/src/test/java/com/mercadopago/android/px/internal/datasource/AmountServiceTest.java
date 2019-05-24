@@ -7,6 +7,7 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
 import org.junit.Before;
@@ -37,9 +38,7 @@ public class AmountServiceTest {
 
     @Before
     public void setUp() {
-        amountService =
-            new AmountService(paymentSettingRepository, chargeRepository, discountRepository,
-                userSelectionRepository);
+        amountService = new AmountService(paymentSettingRepository, chargeRepository, discountRepository);
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.TEN);
         when(discountRepository.getCurrentConfiguration()).thenReturn(discountModel);
@@ -49,32 +48,34 @@ public class AmountServiceTest {
 
     @Test
     public void whenHasDiscountAndNoChargesAmountThenGetAmountToPayIsAmountLessDiscount() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ZERO);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ZERO);
 
-        assertEquals(BigDecimal.TEN.subtract(BigDecimal.ONE), amountService.getAmountToPay());
+        assertEquals(BigDecimal.TEN.subtract(BigDecimal.ONE),
+            amountService.getAmountToPay(PaymentTypes.CREDIT_CARD, null));
     }
 
     @Test
     public void whenHasNoDiscountAndNoChargesAmountThenGetAmountToPayIsJustAmount() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ZERO);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ZERO);
         when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);
 
-        assertEquals(BigDecimal.TEN, amountService.getAmountToPay());
+        assertEquals(BigDecimal.TEN, amountService.getAmountToPay(PaymentTypes.CREDIT_CARD, null));
     }
 
     @Test
     public void whenHasNoDiscountAndHasChargesAmountThenGetAmountToPayIsAmountPlusChargesAmount() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ONE);
         when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);
 
-        assertEquals(BigDecimal.TEN.add(BigDecimal.ONE), amountService.getAmountToPay());
+        assertEquals(BigDecimal.TEN.add(BigDecimal.ONE),
+            amountService.getAmountToPay(PaymentTypes.CREDIT_CARD, null));
     }
 
     @Test
     public void whenHasDiscountAndHasChargesAmountThenGetAmountToPayIsAmountLessDiscountAndPlusChargesAmount() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ONE);
 
-        assertEquals(BigDecimal.TEN, amountService.getAmountToPay());
+        assertEquals(BigDecimal.TEN, amountService.getAmountToPay(PaymentTypes.CREDIT_CARD, null));
     }
 
     @Test
@@ -84,48 +85,42 @@ public class AmountServiceTest {
 
     @Test
     public void whenHasChargesAmountThenGetItemsAmountPlusCharges() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ONE);
 
-        assertEquals(BigDecimal.TEN.add(BigDecimal.ONE), amountService.getItemsPlusCharges());
+        assertEquals(BigDecimal.TEN.add(BigDecimal.ONE),
+            amountService.getItemsPlusCharges(PaymentTypes.CREDIT_CARD));
     }
 
     @Test
     public void whenHasNoChargesAmountThenGetItemsAmount() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ZERO);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ZERO);
 
-        assertEquals(BigDecimal.TEN, amountService.getItemsPlusCharges());
+        assertEquals(BigDecimal.TEN, amountService.getItemsPlusCharges(PaymentTypes.CREDIT_CARD));
     }
 
     @Test
     public void whenGetAppliedChargesAndNoCardChargesReturnOnlyChargesByPaymentMethod() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.TEN);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.TEN);
 
-        assertEquals(BigDecimal.TEN, amountService.getAppliedCharges());
+        assertEquals(BigDecimal.TEN, amountService.getAppliedCharges(PaymentTypes.CREDIT_CARD));
     }
 
     @Test
     public void whenGetAppliedChargesAndCardChargesReturnSumOfThem() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
+        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ONE);
         when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.ONE);
         when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(null);
-        when(userSelectionRepository.hasPayerCostSelected()).thenReturn(true);
-        when(userSelectionRepository.getPayerCost()).thenReturn(payerCost);
 
         // 10 de payer cost total = + 1 pref = 9 adicionales
         when(payerCost.getTotalAmount()).thenReturn(BigDecimal.TEN);
 
-        assertEquals(new BigDecimal("9"), amountService.getAppliedCharges());
+        assertEquals(new BigDecimal("9"), amountService.getAppliedCharges(PaymentTypes.CREDIT_CARD, payerCost));
     }
 
     @Test
     public void whenGetAmountToPayChargesAndCardChargesReturnCardTotal() {
-        when(chargeRepository.getChargeAmount()).thenReturn(BigDecimal.ONE);
-        when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.ONE);
-        when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(null);
-        when(userSelectionRepository.hasPayerCostSelected()).thenReturn(true);
-        when(userSelectionRepository.getPayerCost()).thenReturn(payerCost);
         when(payerCost.getTotalAmount()).thenReturn(BigDecimal.TEN);
 
-        assertEquals(BigDecimal.TEN, amountService.getAmountToPay());
+        assertEquals(BigDecimal.TEN, amountService.getAmountToPay(PaymentTypes.CREDIT_CARD, payerCost));
     }
 }

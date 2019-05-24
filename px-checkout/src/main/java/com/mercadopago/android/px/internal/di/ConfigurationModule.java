@@ -44,7 +44,7 @@ public final class ConfigurationModule extends ApplicationModule implements Conf
     @Override
     public ChargeRepository getChargeSolver() {
         if (chargeRepository == null) {
-            chargeRepository = new ChargeService(getUserSelectionRepository(), getPaymentSettings());
+            chargeRepository = new ChargeService(getPaymentSettings());
         }
         return chargeRepository;
     }

@@ -11,6 +11,7 @@
     <!--Add view switcher, depending on how many elements there are.-->
 
     <FrameLayout
+        android:id="@+id/items_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1">

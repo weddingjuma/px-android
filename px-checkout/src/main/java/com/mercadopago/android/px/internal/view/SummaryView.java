@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
     @NonNull private final ElementDescriptorView bigHeaderDescriptor;
     @NonNull private final AmountDescriptorView totalAmountDescriptor;
+    @NonNull private final FrameLayout itemsContainer;
     private final DetailAdapter detailAdapter;
 
     private final RecyclerView detailRecyclerView;
@@ -32,6 +34,8 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
     private boolean showingBigLogo = false;
     private boolean animating = false;
+    private boolean alreadyMeasured = false;
+    private int maxElementsToShow;
 
     public SummaryView(final Context context) {
         this(context, null);
@@ -44,6 +48,7 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     public SummaryView(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         inflate(getContext(), R.layout.px_view_express_summary, this);
+        itemsContainer = findViewById(R.id.items_container);
         bigHeaderDescriptor = findViewById(R.id.bigElementDescriptor);
         bigHeaderDescriptor.setVisibility(INVISIBLE);
         totalAmountDescriptor = findViewById(R.id.total);
@@ -73,6 +78,14 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         logoDisappearAnimation = AnimationUtils.loadAnimation(context, R.anim.px_summary_logo_disappear);
     }
 
+    public void setMaxElementsToShow(final int maxElementsToShow) {
+        this.maxElementsToShow = maxElementsToShow;
+    }
+
+    public void setBigHeaderListener(@NonNull final OnClickListener listener) {
+        bigHeaderDescriptor.setOnClickListener(listener);
+    }
+
     private boolean isViewOverlapping(final View firstView, final View secondView) {
         final int yFirstViewEnd = firstView.getTop() + firstView.getHeight();
         final int ySecondViewInit = secondView.getTop();
@@ -98,9 +111,27 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         totalAmountDescriptor.setBold(AmountDescriptorView.Position.RIGHT);
         totalAmountDescriptor.update(model.total);
 
-        detailAdapter.setOnAmountDescriptorListener(model.listener);
         detailAdapter.updateItems(model.elements);
         detailRecyclerView.startAnimation(listAppearAnimation);
+    }
+
+    @Override
+    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (!alreadyMeasured && allViewsFullyMeasured()) {
+            alreadyMeasured = true;
+            final int availableSummaryHeight = itemsContainer.getMeasuredHeight();
+            final float singleItemHeight = AmountDescriptorView.getDesiredHeight(getContext());
+            final int expectedItemsHeight = Math.round(singleItemHeight * maxElementsToShow);
+            listener.onSummaryMeasured(expectedItemsHeight > availableSummaryHeight);
+        }
+    }
+
+    private boolean allViewsFullyMeasured() {
+        final int parentHeight = ((View) getParent()).getMeasuredHeight();
+        final boolean parentMeasured = parentHeight > 0;
+        //In some cases the parent is already measured but this view AT_MOST measure pass isn't done
+        return parentMeasured && parentHeight != getMeasuredHeight();
     }
 
     @Override
@@ -126,10 +157,9 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     }
 
     public interface OnFitListener {
-
         void onBigHeaderOverlaps();
-
         void onBigHeaderDoesNotOverlaps();
+        void onSummaryMeasured(boolean itemsClipped);
     }
 
     public void setOnFitListener(final OnFitListener callback) {
@@ -144,29 +174,24 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
         /* default */ @NonNull final AmountDescriptorView.Model total;
 
-        /* default */ @NonNull final AmountDescriptorView.OnClickListener listener;
-
         public Model(@Nullable final ElementDescriptorView.Model headerDescriptor,
             @NonNull final List<AmountDescriptorView.Model> elements,
-            @NonNull final AmountDescriptorView.Model total,
-            @NonNull final AmountDescriptorView.OnClickListener listener) {
+            @NonNull final AmountDescriptorView.Model total) {
             this.elements = elements;
             this.headerDescriptor = headerDescriptor;
             this.total = total;
-            this.listener = listener;
+        }
+
+        public int getElementsSize() {
+            return elements.size();
         }
     }
 
     /* default */ static final class DetailAdapter extends RecyclerView.Adapter<AmountViewHolder> {
         @NonNull private List<AmountDescriptorView.Model> items;
-        private AmountDescriptorView.OnClickListener listener;
 
         /* default */ DetailAdapter() {
             items = new ArrayList<>();
-        }
-
-        public void setOnAmountDescriptorListener(final AmountDescriptorView.OnClickListener listener) {
-            this.listener = listener;
         }
 
         @Override
@@ -180,7 +205,6 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         @Override
         public void onBindViewHolder(final AmountViewHolder holder, final int position) {
             holder.populate(items.get(position));
-            holder.setListener(listener);
         }
 
         @Override
@@ -205,10 +229,6 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
         public void populate(@NonNull final AmountDescriptorView.Model model) {
             amountDescView.update(model);
-        }
-
-        public void setListener(@NonNull final AmountDescriptorView.OnClickListener listener) {
-            amountDescView.setOnDescriptorClickListener(listener);
         }
     }
 }

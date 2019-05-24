@@ -1,25 +1,25 @@
 package com.mercadopago.android.px.internal.features.installments;
 
 import android.support.annotation.NonNull;
-
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
+import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.mocks.StubSummaryAmount;
-import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.PaymentMethod;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
-
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +49,7 @@ public class InstallmentsPresenterTest {
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
     @Mock private PayerCostSolver payerCostSolver;
     @Mock private AdvancedConfiguration advancedConfiguration;
-
+    @Mock private PaymentMethod paymentMethod;
     @Mock private InstallmentsView view;
 
     @Before
@@ -58,6 +58,8 @@ public class InstallmentsPresenterTest {
         when(configuration.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(configuration.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
+        when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
+        when(paymentMethod.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         presenter = new InstallmentsPresenter(amountRepository, configuration, userSelectionRepository,
             discountRepository, summaryAmountRepository, amountConfigurationRepository, payerCostSolver);
         presenter.attachView(view);
@@ -194,7 +196,7 @@ public class InstallmentsPresenterTest {
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
 
         BigDecimal itemPlusCharges = new BigDecimal(100);
-        when(amountRepository.getItemsPlusCharges()).thenReturn(itemPlusCharges);
+        when(amountRepository.getItemsPlusCharges(anyString())).thenReturn(itemPlusCharges);
 
         presenter.initialize();
 
@@ -226,7 +228,7 @@ public class InstallmentsPresenterTest {
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
 
         BigDecimal itemPlusCharges = new BigDecimal(100);
-        when(amountRepository.getItemsPlusCharges()).thenReturn(itemPlusCharges);
+        when(amountRepository.getItemsPlusCharges(anyString())).thenReturn(itemPlusCharges);
 
         presenter.initialize();
 

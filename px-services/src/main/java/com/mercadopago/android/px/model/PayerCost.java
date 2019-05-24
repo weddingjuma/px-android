@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -85,7 +84,7 @@ public final class PayerCost implements Parcelable, Serializable {
 
     @NonNull
     public String getProcessingMode() {
-        return processingMode == null ? ProcessingModes.AGGREGATOR : processingMode;
+        return processingMode == null ? ProcessingMode.AGGREGATOR.asQueryParamName() : processingMode;
     }
 
     @NonNull

@@ -1,11 +1,11 @@
 package com.mercadopago.android.px.internal.features.paymentresult.props;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 
 public class PaymentResultProps {
 
@@ -13,7 +13,7 @@ public class PaymentResultProps {
     public final Instruction instruction;
     public final String headerMode;
     public final boolean loading;
-    public final String processingMode;
+    public final ProcessingMode processingMode;
     public final String currencyId;
     @NonNull private final PaymentResultScreenConfiguration paymentResultScreenPreferences;
 
@@ -40,40 +40,6 @@ public class PaymentResultProps {
 
     private boolean isStatusApproved() {
         return paymentResult != null && paymentResult.getPaymentStatus().equals(Payment.StatusCodes.STATUS_APPROVED);
-    }
-
-    private boolean isStatusRejected() {
-        return paymentResult != null && paymentResult.getPaymentStatus().equals(Payment.StatusCodes.STATUS_REJECTED);
-    }
-
-    public boolean hasCustomizedLabel() {
-
-        if (isApprovedLabelValidState()) {
-            return paymentResultScreenPreferences.getApprovedLabelText() != null &&
-                !paymentResultScreenPreferences.getApprovedLabelText().isEmpty();
-        } else if (isRejectedLabelValidState()) {
-            return !paymentResultScreenPreferences.isRejectedLabelTextEnabled();
-        }
-
-        return false;
-    }
-
-    public String getPreferenceLabel() {
-
-        if (isApprovedLabelValidState()) {
-            return paymentResultScreenPreferences.getApprovedLabelText();
-        } else if (isRejectedLabelValidState() && !paymentResultScreenPreferences.isRejectedLabelTextEnabled()) {
-            return "";
-        }
-        return "";
-    }
-
-    private boolean isApprovedLabelValidState() {
-        return isStatusApproved();
-    }
-
-    private boolean isRejectedLabelValidState() {
-        return isStatusRejected();
     }
 
     public boolean hasCustomizedBadge() {
@@ -115,7 +81,7 @@ public class PaymentResultProps {
         /* default */ Instruction instruction;
         /* default */ String headerMode = HeaderProps.HEADER_MODE_WRAP;
         /* default */ boolean loading = true;
-        /* default */ String processingMode;
+        /* default */ ProcessingMode processingMode;
         /* default */ String currencyId;
 
         public Builder(@NonNull final PaymentResultScreenConfiguration paymentResultScreenConfiguration) {
@@ -142,7 +108,7 @@ public class PaymentResultProps {
             return this;
         }
 
-        public Builder setProcessingMode(final String processingMode) {
+        public Builder setProcessingMode(final ProcessingMode processingMode) {
             this.processingMode = processingMode;
             return this;
         }

@@ -1,13 +1,13 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.mocks.Instructions;
-import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsContent;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsSecondaryInfo;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsSubtitle;
 import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsProps;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.mocks.Instructions;
+import com.mercadopago.android.px.model.Instruction;
+import com.mercadopago.android.px.model.ProcessingMode;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -98,7 +98,7 @@ public class InstructionsTest {
     public void testOnGatewayThenDontShowEmailInSecondaryInfo() {
         final Instruction instruction = Instructions.getRapipagoInstruction();
         final InstructionsProps props = new InstructionsProps.Builder()
-            .setProcessingMode(ProcessingModes.GATEWAY)
+            .setProcessingMode(ProcessingMode.GATEWAY)
             .setInstruction(instruction)
             .build();
 
@@ -111,7 +111,7 @@ public class InstructionsTest {
     private com.mercadopago.android.px.internal.features.paymentresult.components.Instructions getInstructionsComponent(
         Instruction instruction) {
         final InstructionsProps props = new InstructionsProps.Builder()
-            .setProcessingMode(ProcessingModes.AGGREGATOR)
+            .setProcessingMode(ProcessingMode.AGGREGATOR)
             .setInstruction(instruction)
             .build();
         final com.mercadopago.android.px.internal.features.paymentresult.components.Instructions component =

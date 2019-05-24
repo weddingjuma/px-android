@@ -1,11 +1,9 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.features.paymentresult.components.Body;
 import com.mercadopago.android.px.internal.features.paymentresult.components.BodyError;
 import com.mercadopago.android.px.internal.features.paymentresult.props.PaymentResultBodyProps;
@@ -16,10 +14,10 @@ import com.mercadopago.android.px.mocks.PaymentResults;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 
 import static org.mockito.Mockito.mock;
 
@@ -62,7 +60,7 @@ public class BodyTest {
                 .setPaymentStatus(Payment.StatusCodes.STATUS_PENDING)
                 .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_WAITING_PAYMENT)
                 .build())
-            .setProcessingMode(ProcessingModes.AGGREGATOR)
+            .setProcessingMode(ProcessingMode.AGGREGATOR)
             .setInstruction(instruction)
             .build();
     }

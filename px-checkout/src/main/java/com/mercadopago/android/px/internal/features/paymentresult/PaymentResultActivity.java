@@ -62,6 +62,7 @@ import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaym
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
@@ -250,7 +251,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void setPropInstruction(@NonNull final Instruction instruction,
-        @NonNull final String processingModeString,
+        @NonNull final ProcessingMode processingModeString,
         final boolean showLoading) {
 
         props = props.toBuilder()

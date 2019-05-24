@@ -2,11 +2,11 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.IssuersService;
 import com.mercadopago.android.px.model.Issuer;
+import com.mercadopago.android.px.model.ProcessingMode;
 import java.util.List;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
@@ -25,6 +25,6 @@ public class IssuersServiceImp implements IssuersRepository {
     @Override
     public MPCall<List<Issuer>> getIssuers(final String paymentMethodId, final String bin) {
         return issuersService.getIssuers(API_ENVIRONMENT, paymentSettingRepository.getPublicKey(),
-            paymentSettingRepository.getPrivateKey(), paymentMethodId, bin, ProcessingModes.AGGREGATOR);
+            paymentSettingRepository.getPrivateKey(), paymentMethodId, bin, ProcessingMode.AGGREGATOR.asQueryParamName());
     }
 }

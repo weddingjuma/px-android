@@ -3,18 +3,18 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
-import com.mercadopago.android.px.model.internal.PaymentMethodSearchBody;
 import com.mercadopago.android.px.model.PaymentTypes;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.PaymentMethodSearchBody;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.ArrayList;
@@ -132,7 +132,8 @@ public class GroupsService implements GroupsRepository {
             .getPaymentMethodSearch(API_ENVIRONMENT,
                 language, paymentSettingRepository.getPublicKey(),
                 checkoutPreference.getTotalAmount(), excludedPaymentTypesAppended, excludedPaymentMethodsAppended,
-                checkoutPreference.getSite().getId(), ProcessingModes.AGGREGATOR, cardsWithEscAppended,
+                checkoutPreference.getSite().getId(), ProcessingMode.AGGREGATOR.asQueryParamName(),
+                cardsWithEscAppended,
                 differentialPricingId, defaultInstallments, expressPaymentEnabled, hasSplitPaymentProcessor, body);
     }
 

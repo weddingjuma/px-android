@@ -108,7 +108,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         RendererFactory.register(BodyError.class, BodyErrorRenderer.class);
 
         final PaymentSettingRepository paymentSettings =
-            Session.getSession(this).getConfigurationModule().getPaymentSettings();
+            Session.getInstance().getConfigurationModule().getPaymentSettings();
 
         final PaymentResultScreenConfiguration paymentResultScreenConfiguration =
             paymentSettings.getAdvancedConfiguration().getPaymentResultScreenConfiguration();
@@ -132,7 +132,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private PaymentResultPresenter createPresenter(final PaymentSettingRepository paymentSettings) {
         final Intent intent = getIntent();
         final PaymentResult paymentResult = (PaymentResult) intent.getSerializableExtra(EXTRA_PAYMENT_RESULT);
-        return new PaymentResultPresenter(paymentSettings, Session.getSession(this).getInstructionsRepository(),
+        return new PaymentResultPresenter(paymentSettings, Session.getInstance().getInstructionsRepository(),
             paymentResult);
     }
 

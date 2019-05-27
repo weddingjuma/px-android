@@ -28,7 +28,7 @@ public abstract class CheckoutLazyInit {
     public final void fetch(final Context context) {
         final MercadoPagoCheckout checkout = builder.build();
         // Generates new session.
-        prefetchService = new PrefetchService(checkout, Session.getSession(context), this);
+        prefetchService = new PrefetchService(checkout, Session.getInstance(), this);
         prefetchService.prefetch();
     }
 

@@ -82,7 +82,7 @@ public final class MercadoPagoCheckout {
         final int requestCode) {
 
         initFonts(context);
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
 
         if (!prefetch) {
             session.init(this);

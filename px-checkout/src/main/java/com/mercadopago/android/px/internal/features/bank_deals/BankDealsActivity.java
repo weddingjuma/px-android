@@ -38,7 +38,7 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter>
     }
 
     private void createPresenter() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         presenter = new BankDealsPresenter(session
             .getBankDealsRepository());
         presenter.attachView(this);

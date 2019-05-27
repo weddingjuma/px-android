@@ -90,6 +90,11 @@
         <activity
             android:name=".internal.features.guessing_card.card_association_result.CardAssociationResultErrorActivity"
             android:theme="@style/ToolbarTransparentTheme"/>
+
+        <provider
+            android:name=".internal.di.PxCheckoutInitProvider"
+            android:authorities="${applicationId}.internal.providers.PxCheckoutContentProvider"
+            android:exported="false"/>
     </application>
 
 </manifest>

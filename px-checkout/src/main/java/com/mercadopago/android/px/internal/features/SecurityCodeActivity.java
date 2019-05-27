@@ -106,7 +106,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            final Session session = Session.getSession(this);
+            final Session session = Session.getInstance();
             final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();
             presenter = new SecurityCodePresenter(paymentSettings, session.getCardTokenRepository(),
                 session.getMercadoPagoESC());
@@ -135,7 +135,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     private void createPresenter() {
         if (presenter == null) {
-            final Session session = Session.getSession(this);
+            final Session session = Session.getInstance();
             presenter = new SecurityCodePresenter(session.getConfigurationModule().getPaymentSettings(),
                 session.getCardTokenRepository(), session.getMercadoPagoESC());
         }

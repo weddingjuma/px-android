@@ -66,7 +66,7 @@ public class BusinessPaymentResultActivity extends PXActivity implements ActionD
     @NonNull
     private ViewTracker createTracker(final BusinessPaymentModel model) {
         final CheckoutPreference checkoutPreference =
-            Session.getSession(this).getConfigurationModule().getPaymentSettings().getCheckoutPreference();
+            Session.getInstance().getConfigurationModule().getPaymentSettings().getCheckoutPreference();
 
         return new ResultViewTrack(ResultViewTrack.Style.CUSTOM, new PaymentResult.Builder()
             .setPaymentData(model.getPaymentDataList())

@@ -106,7 +106,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
     }
 
     private void getActivityParameters() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final List<Issuer> issuers = getIntent().getParcelableArrayListExtra(EXTRA_ISSUERS);
 
         final PaymentMethod paymentMethod = getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD);
@@ -342,7 +342,7 @@ public class IssuersActivity extends PXActivity<IssuersPresenter> implements Iss
     @Override
     public void finishWithResult(final Issuer issuer) {
         setResult(RESULT_OK);
-        Session.getSession(this).getConfigurationModule().getUserSelectionRepository().select(issuer);
+        Session.getInstance().getConfigurationModule().getUserSelectionRepository().select(issuer);
         finish();
         animateTransitionSlideInSlideOut();
     }

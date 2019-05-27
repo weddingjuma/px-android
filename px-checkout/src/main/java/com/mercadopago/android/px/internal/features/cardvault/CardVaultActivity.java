@@ -72,7 +72,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     private void configure() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
         presenter = new CardVaultPresenter(session.getConfigurationModule().getUserSelectionRepository(),
             paymentSettingRepository,

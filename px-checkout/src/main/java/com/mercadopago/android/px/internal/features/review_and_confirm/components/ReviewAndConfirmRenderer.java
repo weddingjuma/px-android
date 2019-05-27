@@ -52,7 +52,7 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
                 component.props.preferences.getTopFragment());
         }
 
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final PaymentMethod paymentMethod = configurationModule.getUserSelectionRepository().getPaymentMethod();
 

@@ -44,7 +44,7 @@ public class ReviewAndConfirmBuilder {
 
     public Intent getIntent(@NonNull final Context context) {
         final Resources resources = context.getResources();
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final UserSelectionRepository userSelectionRepository =
             configurationModule.getUserSelectionRepository();

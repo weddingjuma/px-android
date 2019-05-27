@@ -131,7 +131,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         super.onCreate(savedInstanceState);
         setContentView(R.layout.px_view_container_review_and_confirm);
         initializeViews();
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
 
         //TODO remove try/catch after session is persisted
         try {
@@ -340,7 +340,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             final TermsAndConditionsModel discountTermsAndConditions =
                 extras.getParcelable(EXTRA_DISCOUNT_TERMS_AND_CONDITIONS);
 
-            final Session session = Session.getSession(this);
+            final Session session = Session.getInstance();
             final ConfigurationModule configurationModule = session.getConfigurationModule();
             final AdvancedConfiguration advancedConfiguration = configurationModule.getPaymentSettings()
                 .getAdvancedConfiguration();

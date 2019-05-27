@@ -99,7 +99,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final PaymentSettingRepository configuration = session.getConfigurationModule().getPaymentSettings();
         presenter = new PaymentVaultPresenter(configuration,
             session.getConfigurationModule().getUserSelectionRepository(),
@@ -138,7 +138,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         try {
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();

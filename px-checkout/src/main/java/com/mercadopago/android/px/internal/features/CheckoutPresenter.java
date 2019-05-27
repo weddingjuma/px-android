@@ -64,6 +64,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         @NonNull final PaymentRepository paymentRepository,
         @NonNull final InternalConfiguration internalConfiguration,
         @NonNull final BusinessModelMapper businessModelMapper) {
+
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
         this.groupsRepository = groupsRepository;

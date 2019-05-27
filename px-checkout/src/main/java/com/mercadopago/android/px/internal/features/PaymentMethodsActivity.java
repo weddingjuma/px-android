@@ -41,7 +41,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         super.onCreate(savedInstanceState);
 
         mPresenter =
-            new PaymentMethodsPresenter(Session.getSession(this).getConfigurationModule().getUserSelectionRepository());
+            new PaymentMethodsPresenter(Session.getInstance().getConfigurationModule().getUserSelectionRepository());
 
         try {
             getActivityParameters();
@@ -105,7 +105,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         mBankDealsTextView = findViewById(R.id.mpsdkBankDeals);
         mTitle = findViewById(R.id.mpsdkToolbarTitle);
 
-        final String mainVerb = getString(Session.getSession(this).getMainVerb());
+        final String mainVerb = getString(Session.getInstance().getMainVerb());
         mTitle.setText(getString(R.string.px_title_activity_payment_methods, mainVerb));
 
         setSupportActionBar(mToolbar);

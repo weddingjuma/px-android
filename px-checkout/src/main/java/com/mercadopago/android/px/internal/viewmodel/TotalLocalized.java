@@ -12,7 +12,7 @@ public class TotalLocalized implements ILocalizedCharSequence {
     public CharSequence get(@NonNull final Context context) {
         final Resources resources = context.getResources();
         final int mainVerbStringResourceId =
-            Session.getSession(context).getMainVerb();
+            Session.getInstance().getMainVerb();
         final String verb = resources.getString(mainVerbStringResourceId);
         return resources.getString(R.string.px_total_to_pay, verb);
     }

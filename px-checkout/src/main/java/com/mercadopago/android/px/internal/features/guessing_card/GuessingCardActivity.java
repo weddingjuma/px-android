@@ -236,12 +236,12 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             final PaymentRecovery paymentRecovery =
                 JsonUtil.getInstance().fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
             presenter =
-                GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getSession(this), paymentRecovery);
+                GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getInstance(), paymentRecovery);
         } else {
             final MercadoPagoCardStorage mercadoPagoCardStorage = intent.getParcelableExtra(
                 PARAM_MERCADO_PAGO_CARD_STORAGE);
             presenter = GuessingCardPresenter
-                .buildGuessingCardStoragePresenter(Session.getSession(this),
+                .buildGuessingCardStoragePresenter(Session.getInstance(),
                     CardAssociationSession.getCardAssociationSession(this), mercadoPagoCardStorage);
         }
 
@@ -273,7 +273,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         try {
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();

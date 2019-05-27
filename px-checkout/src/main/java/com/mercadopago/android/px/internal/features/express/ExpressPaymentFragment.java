@@ -247,7 +247,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private ExpressPaymentPresenter createPresenter(@NonNull final Context context) {
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
             session.getConfigurationModule().getPaymentSettings(),
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),

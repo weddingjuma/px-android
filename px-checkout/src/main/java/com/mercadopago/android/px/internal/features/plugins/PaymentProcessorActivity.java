@@ -85,7 +85,7 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragmentByTag = supportFragmentManager.findFragmentByTag(TAG_PROCESSOR_FRAGMENT);
 
-        final Session session = Session.getSession(getApplicationContext());
+        final Session session = Session.getInstance();
 
         try {
             paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),

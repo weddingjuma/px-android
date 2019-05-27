@@ -90,7 +90,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     private void configurePresenter() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final CheckoutProvider provider = new CheckoutProviderImpl(this, merchantPublicKey, privateKey,
             new ReflectiveESCManager(this, session.getSessionIdProvider().getSessionId(), presenter.isESCEnabled()));
         presenter.attachResourcesProvider(provider);
@@ -112,7 +112,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            final Session session = Session.getSession(this);
+            final Session session = Session.getInstance();
             final ConfigurationModule configurationModule = session.getConfigurationModule();
 
             //TODO remove try catch after session is persisted
@@ -154,15 +154,13 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     protected CheckoutPresenter getActivityParameters() {
-
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final PaymentSettingRepository configuration = configurationModule.getPaymentSettings();
 
         privateKey = configuration.getPrivateKey();
 
-        final CheckoutStateModel
-            persistentData = new CheckoutStateModel();
+        final CheckoutStateModel persistentData = new CheckoutStateModel();
 
         merchantPublicKey = configuration.getPublicKey();
 

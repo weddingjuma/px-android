@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
@@ -41,7 +39,6 @@ import com.mercadopago.android.px.internal.view.MPEditText;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
@@ -106,7 +103,7 @@ public class PayerInformationActivity extends PXActivity<PayerInformationPresent
         setContentView();
         initializeControls();
         initializeToolbar();
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         presenter =
             new PayerInformationPresenter(PayerInformationStateModel.fromBundle(savedInstanceState),
                 session.getConfigurationModule().getPaymentSettings(),

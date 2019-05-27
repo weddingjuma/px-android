@@ -71,7 +71,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         configuration = configurationModule.getPaymentSettings();
         presenter = new InstallmentsPresenter(session.getAmountRepository(), configuration,

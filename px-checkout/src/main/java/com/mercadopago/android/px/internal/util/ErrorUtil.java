@@ -43,7 +43,7 @@ public final class ErrorUtil {
     public static void startErrorActivity(final Activity launcherActivity,
         @Nullable final MercadoPagoError mercadoPagoError) {
         final String publicKey =
-            Session.getSession(launcherActivity)
+            Session.getInstance()
                 .getConfigurationModule()
                 .getPaymentSettings()
                 .getPublicKey();

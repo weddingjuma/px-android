@@ -3,6 +3,7 @@ package com.mercadopago.android.px.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -27,6 +28,8 @@ public final class PayerCost implements Parcelable, Serializable {
     // params to support hybrid mode.
     private String processingMode;
     private List<Agreement> agreements;
+
+    @Nullable private String paymentMethodOptionId;
 
     @NonNull
     public Integer getInstallments() {
@@ -90,6 +93,11 @@ public final class PayerCost implements Parcelable, Serializable {
     @NonNull
     public List<Agreement> getAgreements() {
         return agreements == null ? Collections.emptyList() : agreements;
+    }
+
+    @Nullable
+    public String getPaymentMethodOptionId() {
+        return paymentMethodOptionId;
     }
 
     @Override
@@ -223,6 +231,7 @@ public final class PayerCost implements Parcelable, Serializable {
 
         dest.writeString(processingMode);
         dest.writeTypedList(agreements);
+        dest.writeString(paymentMethodOptionId);
     }
 
     protected PayerCost(final Parcel in) {
@@ -250,5 +259,6 @@ public final class PayerCost implements Parcelable, Serializable {
 
         processingMode = in.readString();
         agreements = in.createTypedArrayList(Agreement.CREATOR);
+        paymentMethodOptionId = in.readString();
     }
 }

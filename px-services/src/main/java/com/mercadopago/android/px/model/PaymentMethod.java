@@ -23,7 +23,7 @@ public class PaymentMethod implements Parcelable, Serializable {
     private List<Setting> settings;
     private List<String> additionalInfoNeeded;
     private List<FinancialInstitution> financialInstitutions;
-    @NonNull private List<ProcessingMode> processingModes;
+    private ProcessingMode[] processingModes;
 
     @Nullable
     private BigDecimal minAllowedAmount;
@@ -254,8 +254,9 @@ public class PaymentMethod implements Parcelable, Serializable {
     }
 
     @NonNull
-    public List<ProcessingMode> getProcessingModes() {
-        return processingModes;
+    public ProcessingMode[] getProcessingModes() {
+        final ProcessingMode[] empty = {};
+        return processingModes == null ? empty : processingModes;
     }
 
     @Nullable

@@ -8,6 +8,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.payment_vault.SearchItemOnClickListenerHandler;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.util.MercadoPagoUtil;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
 import com.mercadopago.android.px.model.CustomSearchItem;
@@ -40,7 +41,8 @@ public class CustomSearchOptionViewModelMapper
 
             @Override
             public String getPaymentMethodId() {
-                return val.getPaymentMethodId();
+                return TextUtil.isEmpty(val.getLastFourDigits()) ? val.getPaymentMethodId() :
+                String.format("%1$s/%2$s", val.getType(), val.getLastFourDigits());
             }
 
             @Override

@@ -43,6 +43,7 @@ public class CreditCardTestFlow extends TestFlow {
             .pressConfirmButton();
     }
 
+    @Deprecated
     @NonNull
     public CongratsPage runCreditCardPaymentFlowWithInstallmentsFromOneTapSavedCard(
         @NonNull PaymentMethodPage paymentMethodPage, @NonNull final Card card, final int installmentsOption) {

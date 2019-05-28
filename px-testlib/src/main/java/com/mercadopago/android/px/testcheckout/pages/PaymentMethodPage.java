@@ -1,17 +1,20 @@
 package com.mercadopago.android.px.testcheckout.pages;
 
+import android.support.annotation.NonNull;
 import android.support.test.espresso.action.ViewActions;
 import android.support.test.espresso.contrib.RecyclerViewActions;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.model.PaymentMethods;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.testcheckout.assertions.CheckoutValidator;
 import com.mercadopago.android.testlib.pages.PageObject;
-import org.hamcrest.Matchers;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static android.support.test.espresso.matcher.ViewMatchers.withTagValue;
+import static org.hamcrest.Matchers.is;
 
 public class PaymentMethodPage extends PageObject<CheckoutValidator> {
 
@@ -24,49 +27,62 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
 
     //Payer access token 1 = "APP_USR-1505-080815-c6ea450de1bf828e39add499237d727f-312667294"
     public InstallmentsPage selectVisaCreditCardWithoutEsc(final String lastFourDigits) {
-        onView(withText(Matchers.containsString(lastFourDigits))).perform(click());
+        clickViewWithTag(getFormattedTag(PaymentTypes.CREDIT_CARD, lastFourDigits));
         return new InstallmentsPage(validator);
     }
 
     public ReviewAndConfirmPage selectAccountMoney() {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        clickViewWithTag(PaymentTypes.ACCOUNT_MONEY);
         return new ReviewAndConfirmPage(validator);
     }
 
+    @Deprecated
     public SecurityCodePage selectSavedDebitCard() {
         onView(withId(R.id.mpsdkGroupsList))
             .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
         return new SecurityCodePage(validator);
     }
 
+    public SecurityCodePage selectSavedDebitCard(@NonNull final String lastFourDigits) {
+        clickViewWithTag(getFormattedTag(PaymentTypes.DEBIT_CARD, lastFourDigits));
+        return new SecurityCodePage(validator);
+    }
+
     public CardPage selectCard() {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
+        clickViewWithTag("cards");
         return new CardPage(validator);
     }
 
+    @Deprecated
     public CreditCardPage selectCardWhenSavedPresent() {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+        clickViewWithTag(PaymentTypes.CREDIT_CARD);
         return new CreditCardPage(validator);
     }
 
     public CashPage selectCash() {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(1, click()));
+        clickViewWithTag(PaymentTypes.TICKET);
         return new CashPage(validator);
     }
 
+    @Deprecated
     public ReviewAndConfirmPage selectTicketWithDefaultPayer(final int paymentMethodPosition) {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(paymentMethodPosition, click()));
+        return selectTicketWithDefaultPayer(paymentMethodPosition == 0 ? PaymentMethods.BRASIL.BOLBRADESCO :
+            PaymentMethods.BRASIL.PEC);
+    }
+
+    @Deprecated
+    public PayerInformationPage selectTicketWithoutPayer(final int paymentMethodPosition) {
+        return selectTicketWithoutPayer(paymentMethodPosition == 0 ? PaymentMethods.BRASIL.BOLBRADESCO :
+            PaymentMethods.BRASIL.PEC);
+    }
+
+    public ReviewAndConfirmPage selectTicketWithDefaultPayer(@NonNull final String paymentType) {
+        clickViewWithTag(paymentType);
         return new ReviewAndConfirmPage(validator);
     }
 
-    public PayerInformationPage selectTicketWithoutPayer(final int paymentMethodPosition) {
-        onView(withId(R.id.mpsdkGroupsList))
-            .perform(RecyclerViewActions.actionOnItemAtPosition(paymentMethodPosition, click()));
+    public PayerInformationPage selectTicketWithoutPayer(@NonNull final String paymentType) {
+        clickViewWithTag(paymentType);
         return new PayerInformationPage(validator);
     }
 
@@ -81,8 +97,16 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
     }
 
     @Override
-    public PaymentMethodPage validate(CheckoutValidator validator) {
+    public PaymentMethodPage validate(final CheckoutValidator validator) {
         validator.validate(this);
         return this;
+    }
+
+    private String getFormattedTag(@NonNull final String paymentType, @NonNull final String lastFourDigits) {
+        return String.format("%1$s/%2$s", paymentType, lastFourDigits);
+    }
+
+    private void clickViewWithTag(@NonNull final String tag) {
+        onView(withTagValue(is(tag))).perform(click());
     }
 }

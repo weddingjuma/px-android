@@ -62,6 +62,7 @@ import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -89,6 +90,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
+    private static final String EXTRA_RENDER_MODE = "render_mode";
     private static final int REQ_CODE_CARD_VAULT = 0x999;
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 0x123;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
@@ -121,6 +123,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private PaymentMethodHeaderView paymentMethodHeaderView;
     private LabeledSwitch splitPaymentView;
     private PaymentMethodFragmentAdapter paymentMethodFragmentAdapter;
+    @RenderMode private String renderMode;
 
     private final HubAdapter hubAdapter = new HubAdapter();
 
@@ -157,6 +160,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             if (savedInstanceState == null) {
                 presenter.trackExpressView();
             } else {
+                renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
                 presenter.recoverFromBundle(savedInstanceState);
             }
             presenter.loadViewModel();
@@ -260,6 +264,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putString(EXTRA_RENDER_MODE, renderMode);
         if (presenter != null) {
             super.onSaveInstanceState(presenter.storeInBundle(outState));
         } else {
@@ -308,8 +313,17 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         @NonNull final Site site,
         @NonNull final HubAdapter.Model model) {
 
-        if (paymentMethodFragmentAdapter == null) {
+        if (paymentMethodPager.getAdapter() == null) {
             paymentMethodFragmentAdapter = new PaymentMethodFragmentAdapter(getChildFragmentManager(), items);
+            if (renderMode == null) {
+                summaryView.setMeasureListener((itemsClipped) -> {
+                    summaryView.setMeasureListener(null);
+                    renderMode = itemsClipped ? RenderMode.LOW_RES : RenderMode.HIGH_RES;
+                    setPagerAdapter();
+                });
+            } else {
+                setPagerAdapter();
+            }
         }
 
         installmentsAdapter = new InstallmentsAdapter(site, new ArrayList<>(), PayerCost.NO_SELECTED, this);
@@ -584,24 +598,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void onSummaryMeasured(final boolean itemsClipped) {
-        if (itemsClipped) {
-            configureCardAspectRatio(ASPECT_RATIO_LOW_RES);
-            paymentMethodFragmentAdapter.setLowResMode();
-        }
-        final Runnable runnable = () -> {
-            paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
-            indicator.attachToPager(paymentMethodPager);
-        };
-        //Workaround to weird bug in older versions with the view pager
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            runnable.run();
-        } else {
-            new Handler().post(runnable);
-        }
-    }
-
-    @Override
     public void showDiscountDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
         DiscountDetailDialog.showDialog(getFragmentManager(), discountModel);
     }
@@ -627,6 +623,23 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (creator.shouldShowDialog(getContext(), checkoutData)) {
             creator.create(getContext(), checkoutData).show(getChildFragmentManager(),
                 TAG_HEADER_DYNAMIC_DIALOG);
+        }
+    }
+
+    private void setPagerAdapter() {
+        if (renderMode.equals(RenderMode.LOW_RES)) {
+            configureCardAspectRatio(ASPECT_RATIO_LOW_RES);
+        }
+        final Runnable runnable = () -> {
+            paymentMethodFragmentAdapter.setRenderMode(renderMode);
+            paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
+            indicator.attachToPager(paymentMethodPager);
+        };
+        //Workaround to weird bug in older versions with the view pager
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            runnable.run();
+        } else {
+            new Handler().post(runnable);
         }
     }
 }

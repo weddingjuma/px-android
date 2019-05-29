@@ -27,6 +27,7 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
     private final RecyclerView detailRecyclerView;
     private OnFitListener listener;
+    @Nullable private OnMeasureListener measureListener;
 
     private final Animation listAppearAnimation;
     private final Animation logoAppearAnimation;
@@ -34,7 +35,6 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
 
     private boolean showingBigLogo = false;
     private boolean animating = false;
-    private boolean alreadyMeasured = false;
     private int maxElementsToShow;
 
     public SummaryView(final Context context) {
@@ -86,6 +86,14 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
         bigHeaderDescriptor.setOnClickListener(listener);
     }
 
+    public void setOnFitListener(final OnFitListener listener) {
+        this.listener = listener;
+    }
+
+    public void setMeasureListener(@Nullable final OnMeasureListener measureListener) {
+        this.measureListener = measureListener;
+    }
+
     private boolean isViewOverlapping(final View firstView, final View secondView) {
         final int yFirstViewEnd = firstView.getTop() + firstView.getHeight();
         final int ySecondViewInit = secondView.getTop();
@@ -118,12 +126,11 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     @Override
     protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (!alreadyMeasured && allViewsFullyMeasured()) {
-            alreadyMeasured = true;
+        if (measureListener != null && allViewsFullyMeasured()) {
             final int availableSummaryHeight = itemsContainer.getMeasuredHeight();
             final float singleItemHeight = AmountDescriptorView.getDesiredHeight(getContext());
             final int expectedItemsHeight = Math.round(singleItemHeight * maxElementsToShow);
-            listener.onSummaryMeasured(expectedItemsHeight > availableSummaryHeight);
+            measureListener.onSummaryMeasured(expectedItemsHeight > availableSummaryHeight);
         }
     }
 
@@ -159,11 +166,10 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     public interface OnFitListener {
         void onBigHeaderOverlaps();
         void onBigHeaderDoesNotOverlaps();
-        void onSummaryMeasured(boolean itemsClipped);
     }
 
-    public void setOnFitListener(final OnFitListener callback) {
-        listener = callback;
+    public interface OnMeasureListener {
+        void onSummaryMeasured(boolean itemsClipped);
     }
 
     public static class Model {

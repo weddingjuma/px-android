@@ -57,8 +57,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         body.put("labels", advancedConfiguration.getDiscountParamsConfiguration().getLabels());
         body.put("default_installments", checkoutPreference.getDefaultInstallments());
         body.put("differential_pricing_id", differentialPricingId);
-        body.put("processing_modes", paymentMethod.getProcessingModes());
-        body.put("branch_id", checkoutPreference.getBranchId());
+        body.put("processing_mode", ProcessingMode.AGGREGATOR.asQueryParamName());
         body.put("charges", paymentSettingRepository.getPaymentConfiguration().getCharges());
 
         return installmentService.createSummaryAmount(API_ENVIRONMENT, body,

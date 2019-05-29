@@ -1,8 +1,9 @@
 package com.mercadopago.android.px.internal.features.payer_information;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-
+import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
@@ -47,7 +48,7 @@ import java.util.List;
         this.state = state;
         this.paymentSettings = paymentSettings;
         this.identificationRepository = identificationRepository;
-        this.paymentMethodInformation = paymentMethod;
+        paymentMethodInformation = paymentMethod;
     }
 
     @Override
@@ -67,36 +68,34 @@ import java.util.List;
             view.setLastName(state.getIdentificationLastName());
             view.setNumber(state.getIdentificationNumber());
             view.identificationDraw();
+            restoreViewFocus();
         }
     }
 
-    private void getIdentificationTypesAsync() {
+    /* default */ void getIdentificationTypesAsync() {
         identificationRepository.getIdentificationTypes().enqueue(
             new TaggedCallback<List<IdentificationType>>(ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES) {
                 @Override
                 public void onSuccess(final List<IdentificationType> identificationTypes) {
                     resolveIdentificationTypes(identificationTypes);
                     getView().hideProgressBar();
-                    getView().requestIdentificationNumberFocus();
+                    getView().showIdentificationNumberFocus();
                 }
 
                 @Override
                 public void onFailure(final MercadoPagoError error) {
                     if (isViewAttached()) {
                         getView().showError(error, ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES);
-                        setFailureRecovery(new FailureRecovery() {
-                            @Override
-                            public void recover() {
-                                getView().showProgressBar();
-                                getIdentificationTypesAsync();
-                            }
+                        setFailureRecovery(() -> {
+                            getView().showProgressBar();
+                            getIdentificationTypesAsync();
                         });
                     }
                 }
             });
     }
 
-    private void resolveIdentificationTypes(final List<IdentificationType> identificationTypes) {
+    /* default */ void resolveIdentificationTypes(final List<IdentificationType> identificationTypes) {
         state.setIdentificationTypes(identificationTypes);
         if (identificationTypes.isEmpty()) {
             getView().showMissingIdentificationTypesError();
@@ -138,6 +137,7 @@ import java.util.List;
         }
     }
 
+    @Override
     public void createPayer() {
         //Get current payer
         final CheckoutPreference checkoutPreference = paymentSettings.getCheckoutPreference();
@@ -157,14 +157,11 @@ import java.util.List;
         paymentSettings.configure(checkoutPreference);
     }
 
-    public FailureRecovery getFailureRecovery() {
-        return mFailureRecovery;
-    }
-
-    public void setFailureRecovery(final FailureRecovery failureRecovery) {
+    /* default */ void setFailureRecovery(final FailureRecovery failureRecovery) {
         mFailureRecovery = failureRecovery;
     }
 
+    @VisibleForTesting
     public void recoverFromFailure() {
         if (mFailureRecovery != null) {
             mFailureRecovery.recover();
@@ -172,15 +169,12 @@ import java.util.List;
     }
 
     private void resolveInvalidFieldException(final InvalidFieldException e) {
-        switch (e.getErrorCode()) {
-        case InvalidFieldException.INVALID_IDENTIFICATION_LENGHT:
+        if (e.getErrorCode() == InvalidFieldException.INVALID_IDENTIFICATION_LENGHT) {
             getView().showInvalidLengthIdentificationNumberErrorView();
             getView().showErrorIdentificationNumber();
-            break;
-        default:
+        } else {
             getView().showInvalidIdentificationNumberErrorView();
             getView().showErrorIdentificationNumber();
-            break;
         }
     }
 
@@ -201,7 +195,7 @@ import java.util.List;
         if (TextUtil.isNotEmpty(state.getIdentificationLastName())) {
             getView().clearErrorView();
             getView().clearErrorLastName();
-            getView().showCardFlowEnd();
+            getView().showCardFlowEnd(state.getCurrentFocusType());
         } else {
             getView().showInvalidIdentificationLastNameErrorView();
             getView().showErrorLastName();
@@ -213,7 +207,7 @@ import java.util.List;
         if (TextUtil.isNotEmpty(state.getIdentificationBusinessName())) {
             getView().clearErrorView();
             getView().clearErrorBusinessName();
-            getView().showCardFlowEnd();
+            getView().showCardFlowEnd(state.getCurrentFocusType());
         } else {
             getView().showInvalidIdentificationBusinessNameErrorView();
             getView().showErrorBusinessName();
@@ -227,7 +221,7 @@ import java.util.List;
             getView().clearErrorView();
             getView().clearErrorIdentificationNumber();
             showIdentificationNumberNextScreen();
-        } catch (InvalidFieldException e) {
+        } catch (final InvalidFieldException e) {
             resolveInvalidFieldException(e);
         }
     }
@@ -241,41 +235,26 @@ import java.util.List;
     }
 
     @Override
-    public void trackIdentificationNumberView() {
-        final CPFViewTracker cpfViewTracker = new CPFViewTracker(paymentMethodInformation);
-        setCurrentViewTracker(cpfViewTracker);
-    }
-
-    @Override
-    public void trackIdentificationNameView() {
-        final NameViewTracker nameViewTracker = new NameViewTracker(paymentMethodInformation);
-        setCurrentViewTracker(nameViewTracker);
-    }
-
-    @Override
-    public void trackIdentificationLastNameView() {
-        final LastNameViewTracker lastNameViewTracker = new LastNameViewTracker(paymentMethodInformation);
-        setCurrentViewTracker(lastNameViewTracker);
-    }
-
-    @Override
     public void trackAbort() {
         tracker.trackAbort();
     }
 
     @Override
-    public void trackBack() {
-        tracker.trackBack();
-    }
-
-    @NonNull
-    @Override
-    public PayerInformationStateModel getState() {
-        return state;
-    }
-
-    @Override
-    public void focus(final String currentFocusType) {
+    public void setCurrentFocus(@PayerInformationFocus final String currentFocusType) {
+        switch (currentFocusType) {
+        case PayerInformationFocus.NUMBER_INPUT:
+            final CPFViewTracker cpfViewTracker = new CPFViewTracker(paymentMethodInformation);
+            setCurrentViewTracker(cpfViewTracker);
+            break;
+        case PayerInformationFocus.NAME_INPUT:
+            final NameViewTracker nameViewTracker = new NameViewTracker(paymentMethodInformation);
+            setCurrentViewTracker(nameViewTracker);
+            break;
+        case PayerInformationFocus.LAST_NAME_INPUT:
+            final LastNameViewTracker lastNameViewTracker = new LastNameViewTracker(paymentMethodInformation);
+            setCurrentViewTracker(lastNameViewTracker);
+            break;
+        }
         state.setFocus(currentFocusType);
     }
 
@@ -285,6 +264,64 @@ import java.util.List;
             getView().configureCnpjFlow();
         } else {
             getView().configureCpfFlow();
+        }
+    }
+
+    @Override
+    public void validateCurrentEditText() {
+        switch (state.getCurrentFocusType()) {
+        case PayerInformationFocus.NUMBER_INPUT:
+            validateIdentification();
+            break;
+        case PayerInformationFocus.NAME_INPUT:
+            validateName();
+            break;
+        case PayerInformationFocus.LAST_NAME_INPUT:
+            validateLastName();
+            break;
+        case PayerInformationFocus.BUSINESS_NAME_INPUT:
+            validateBusinessName();
+            break;
+        }
+    }
+
+    @Override
+    public void onSaveInstance(@NonNull final Bundle bundle) {
+        state.toBundle(bundle);
+    }
+
+    private void restoreViewFocus() {
+        switch (state.getCurrentFocusType()) {
+        case PayerInformationFocus.NAME_INPUT:
+            getView().showIdentificationNameFocus();
+            break;
+        case PayerInformationFocus.LAST_NAME_INPUT:
+            getView().showIdentificationLastNameFocus();
+            break;
+        case PayerInformationFocus.BUSINESS_NAME_INPUT:
+            getView().showIdentificationBusinessNameFocus();
+            break;
+        default:
+            getView().showIdentificationNumberFocus();
+            break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        tracker.trackBack();
+        switch (state.getCurrentFocusType()) {
+        case PayerInformationFocus.NAME_INPUT:
+        case PayerInformationFocus.BUSINESS_NAME_INPUT:
+            getView().showIdentificationNumberFocus();
+            break;
+        case PayerInformationFocus.LAST_NAME_INPUT:
+            getView().showIdentificationNameFocus();
+            break;
+        case PayerInformationFocus.NUMBER_INPUT:
+        default:
+            getView().cancel();
+            break;
         }
     }
 }

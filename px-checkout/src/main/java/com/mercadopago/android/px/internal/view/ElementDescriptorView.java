@@ -91,7 +91,7 @@ public class ElementDescriptorView extends LinearLayout {
     }
 
     private void init(final float iconWidth, final float iconHeight, final float titleSize, final int titleTextColor,
-        final int titleTextMaxLines, final float subtitleSize, final int subtitletextColor,
+        final int titleTextMaxLines, final float subtitleSize, final int subtitleTextColor,
         final int subtitleTextMaxLines, final int gravity) {
         inflate(getContext(), R.layout.px_view_element_descriptor, this);
         title = findViewById(R.id.title);
@@ -99,7 +99,7 @@ public class ElementDescriptorView extends LinearLayout {
         icon = findViewById(R.id.icon);
         setIconSize((int) iconWidth, (int) iconHeight);
         configureTextView(title, titleSize, titleTextColor, titleTextMaxLines, gravity);
-        configureTextView(subtitle, subtitleSize, subtitleTextMaxLines, subtitleTextMaxLines, gravity);
+        configureTextView(subtitle, subtitleSize, subtitleTextColor, subtitleTextMaxLines, gravity);
     }
 
     private void configureTextView(final TextView text, final float textSize, final int textColor,

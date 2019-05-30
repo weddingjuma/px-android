@@ -23,7 +23,7 @@ public class PaymentMethod implements Parcelable, Serializable {
     private List<Setting> settings;
     private List<String> additionalInfoNeeded;
     private List<FinancialInstitution> financialInstitutions;
-    @NonNull private List<ProcessingMode> processingModes;
+    private ProcessingMode[] processingModes;
 
     @Nullable
     private BigDecimal minAllowedAmount;
@@ -212,6 +212,7 @@ public class PaymentMethod implements Parcelable, Serializable {
         minAllowedAmount = minString != null ? new BigDecimal(minString) : null;
         String maxString = in.readString();
         maxAllowedAmount = maxString != null ? new BigDecimal(maxString) : null;
+        processingModes = in.createTypedArray(ProcessingMode.CREATOR);
     }
 
     public static final Creator<PaymentMethod> CREATOR = new Creator<PaymentMethod>() {
@@ -251,11 +252,13 @@ public class PaymentMethod implements Parcelable, Serializable {
         dest.writeTypedList(financialInstitutions);
         dest.writeString(minAllowedAmount != null ? minAllowedAmount.toString() : null);
         dest.writeString(maxAllowedAmount != null ? maxAllowedAmount.toString() : null);
+        dest.writeTypedArray(processingModes, flags);
     }
 
     @NonNull
-    public List<ProcessingMode> getProcessingModes() {
-        return processingModes;
+    public ProcessingMode[] getProcessingModes() {
+        ProcessingMode[] empty = {};
+        return processingModes == null ? empty : processingModes;
     }
 
     @Nullable

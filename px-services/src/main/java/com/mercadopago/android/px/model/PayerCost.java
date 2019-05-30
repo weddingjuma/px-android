@@ -25,7 +25,7 @@ public final class PayerCost implements Parcelable, Serializable {
     private BigDecimal installmentAmount;
 
     // params to support hybrid mode.
-    private String processingMode;
+    private ProcessingMode processingMode;
     private List<Agreement> agreements;
 
     @NonNull
@@ -83,8 +83,8 @@ public final class PayerCost implements Parcelable, Serializable {
     }
 
     @NonNull
-    public String getProcessingMode() {
-        return processingMode == null ? ProcessingMode.AGGREGATOR.asQueryParamName() : processingMode;
+    public ProcessingMode getProcessingMode() {
+        return processingMode == null ? ProcessingMode.AGGREGATOR : processingMode;
     }
 
     @NonNull
@@ -221,7 +221,7 @@ public final class PayerCost implements Parcelable, Serializable {
             dest.writeString(installmentAmount.toString());
         }
 
-        dest.writeString(processingMode);
+        dest.writeParcelable(processingMode, flags);
         dest.writeTypedList(agreements);
     }
 
@@ -248,7 +248,7 @@ public final class PayerCost implements Parcelable, Serializable {
             installmentAmount = new BigDecimal(in.readString());
         }
 
-        processingMode = in.readString();
+        processingMode = in.readParcelable(ProcessingMode.class.getClassLoader());
         agreements = in.createTypedArrayList(Agreement.CREATOR);
     }
 }

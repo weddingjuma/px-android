@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.BasePresenter;
+import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
@@ -83,6 +84,7 @@ import java.util.Set;
     @NonNull private final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
+    @NonNull private final IESCManager mercadoPagoESC;
 
     //TODO remove.
     /* default */ List<ExpressMetadata> expressMetadataList;
@@ -97,7 +99,8 @@ import java.util.Set;
         @NonNull final AmountRepository amountRepository,
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
-        @NonNull final ChargeRepository chargeRepository) {
+        @NonNull final ChargeRepository chargeRepository,
+        @NonNull final IESCManager mercadoPagoESC) {
 
         this.paymentRepository = paymentRepository;
         this.paymentConfiguration = paymentConfiguration;
@@ -105,6 +108,7 @@ import java.util.Set;
         this.discountRepository = discountRepository;
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
+        this.mercadoPagoESC = mercadoPagoESC;
         this.chargeRepository = chargeRepository;
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
         paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
@@ -219,7 +223,7 @@ import java.util.Set;
         final OneTapViewTracker oneTapViewTracker = new OneTapViewTracker(expressMetadataList,
             paymentConfiguration.getCheckoutPreference(),
             discountRepository.getCurrentConfiguration(),
-            Collections.emptySet(),
+            mercadoPagoESC.getESCCardIds(),
             cardsWithSplit);
         setCurrentViewTracker(oneTapViewTracker);
     }
@@ -249,8 +253,7 @@ import java.util.Set;
             splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
         }
 
-        //TODO fill cards with esc
-        ConfirmEvent.from(Collections.emptySet(), expressMetadata, payerCost, splitPayment).track();
+        ConfirmEvent.from(mercadoPagoESC.getESCCardIds(), expressMetadata, payerCost, splitPayment).track();
 
         paymentRepository.startExpressPayment(expressMetadata, payerCost, splitPayment);
     }

@@ -155,7 +155,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         //TODO remove try catch after session is persisted
         try {
-            presenter = createPresenter(view.getContext());
+            presenter = createPresenter();
             presenter.attachView(this);
             if (savedInstanceState == null) {
                 presenter.trackExpressView();
@@ -250,7 +250,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         aspectRatioContainer.setAspectRatio(aspect.first, aspect.second);
     }
 
-    private ExpressPaymentPresenter createPresenter(@NonNull final Context context) {
+    private ExpressPaymentPresenter createPresenter() {
         final Session session = Session.getInstance();
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
             session.getConfigurationModule().getPaymentSettings(),
@@ -259,7 +259,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getAmountRepository(),
             session.getGroupsRepository(),
             session.getAmountConfigurationRepository(),
-            session.getConfigurationModule().getChargeSolver());
+            session.getConfigurationModule().getChargeSolver(),
+            session.getMercadoPagoESC());
     }
 
     @Override

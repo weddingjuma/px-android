@@ -13,7 +13,7 @@ import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 
-public class PayerInformationLastNamePage extends PageObject<CheckoutValidator> {
+public final class PayerInformationLastNamePage extends PageObject<CheckoutValidator> {
 
     public PayerInformationLastNamePage(final CheckoutValidator validator) {
         super(validator);

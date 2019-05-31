@@ -14,7 +14,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 
-public class PayerInformationIdentificationPage extends PageObject<CheckoutValidator> {
+public final class PayerInformationIdentificationPage extends PageObject<CheckoutValidator> {
 
     public PayerInformationIdentificationPage(final CheckoutValidator validator) {
         super(validator);

@@ -72,8 +72,9 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
 
     @Deprecated
     public PayerInformationPage selectTicketWithoutPayer(final int paymentMethodPosition) {
-        return selectTicketWithoutPayer(paymentMethodPosition == 0 ? PaymentMethods.BRASIL.BOLBRADESCO :
+         selectTicketWithoutPayer(paymentMethodPosition == 0 ? PaymentMethods.BRASIL.BOLBRADESCO :
             PaymentMethods.BRASIL.PEC);
+         return new PayerInformationPage(validator);
     }
 
     public ReviewAndConfirmPage selectTicketWithDefaultPayer(@NonNull final String paymentType) {
@@ -81,9 +82,9 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
         return new ReviewAndConfirmPage(validator);
     }
 
-    public PayerInformationPage selectTicketWithoutPayer(@NonNull final String paymentType) {
+    public PayerInformationIdentificationPage selectTicketWithoutPayer(@NonNull final String paymentType) {
         clickViewWithTag(paymentType);
-        return new PayerInformationPage(validator);
+        return new PayerInformationIdentificationPage(validator);
     }
 
     public DiscountDetailPage pressOnDiscountDetail() {

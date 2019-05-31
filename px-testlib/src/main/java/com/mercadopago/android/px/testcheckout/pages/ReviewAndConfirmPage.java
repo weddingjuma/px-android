@@ -18,7 +18,7 @@ public class ReviewAndConfirmPage extends PageObject<CheckoutValidator> {
     public ReviewAndConfirmPage() {
     }
 
-    protected ReviewAndConfirmPage(final CheckoutValidator validator) {
+    public ReviewAndConfirmPage(final CheckoutValidator validator) {
         super(validator);
     }
 
@@ -33,7 +33,7 @@ public class ReviewAndConfirmPage extends PageObject<CheckoutValidator> {
     }
 
     @Override
-    public ReviewAndConfirmPage validate(CheckoutValidator validator) {
+    public ReviewAndConfirmPage validate(final CheckoutValidator validator) {
         validator.validate(this);
         return this;
     }
@@ -54,10 +54,19 @@ public class ReviewAndConfirmPage extends PageObject<CheckoutValidator> {
         return new PaymentMethodPage(validator);
     }
 
+    /**
+     * @deprecated use clickModifyPayerInformation instead.
+     */
+    @Deprecated
     @NonNull
     public PayerInformationPage pressModifyPayerInformation() {
         onView(withText(R.string.px_payer_information_modify)).perform(NestedScroll.nestedScrollTo()).perform(click());
         return new PayerInformationPage(validator);
     }
 
+    @NonNull
+    public PayerInformationIdentificationPage clickModifyPayerInformation() {
+        onView(withText(R.string.px_payer_information_modify)).perform(NestedScroll.nestedScrollTo()).perform(click());
+        return new PayerInformationIdentificationPage(validator);
+    }
 }

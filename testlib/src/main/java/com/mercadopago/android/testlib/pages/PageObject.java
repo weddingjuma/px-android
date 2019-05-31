@@ -10,7 +10,7 @@ public abstract class PageObject<T extends Validator> {
         this(null);
     }
 
-    protected PageObject(T validator) {
+    protected PageObject(final T validator) {
         this.validator = validator;
         if (validator != null) {
             validate(validator);

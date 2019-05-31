@@ -51,6 +51,7 @@ public class PayerInformationPresenterTest {
     public void whenInitializePresenterAndHasFilledInfoThenSetIt() {
         when(stateModel.hasFilledInfo()).thenReturn(true);
         when(stateModel.hasIdentificationTypes()).thenReturn(true);
+        when(stateModel.getCurrentFocusType()).thenReturn(PayerInformationFocus.NAME_INPUT);
 
         presenter.attachView(view);
 
@@ -61,6 +62,7 @@ public class PayerInformationPresenterTest {
         verify(view).setLastName(stateModel.getIdentificationLastName());
         verify(view).setNumber(stateModel.getIdentificationNumber());
         verify(view).identificationDraw();
+        verify(view).showIdentificationNameFocus();
         verifyNoMoreInteractions(view);
     }
 
@@ -76,7 +78,7 @@ public class PayerInformationPresenterTest {
         verify(view).showProgressBar();
         verify(view).initializeIdentificationTypes(stubIdentificationTypes, stateModel.getIdentificationType());
         verify(view).hideProgressBar();
-        verify(view).requestIdentificationNumberFocus();
+        verify(view).showIdentificationNumberFocus();
         verifyNoMoreInteractions(view);
     }
 
@@ -92,7 +94,7 @@ public class PayerInformationPresenterTest {
         verify(view).showProgressBar();
         verify(view).showMissingIdentificationTypesError();
         verify(view).hideProgressBar();
-        verify(view).requestIdentificationNumberFocus();
+        verify(view).showIdentificationNumberFocus();
         verifyNoMoreInteractions(view);
     }
 
@@ -132,7 +134,7 @@ public class PayerInformationPresenterTest {
         verify(view)
             .initializeIdentificationTypes(stateModel.getIdentificationTypeList(), stateModel.getIdentificationType());
         verify(view).hideProgressBar();
-        verify(view).requestIdentificationNumberFocus();
+        verify(view).showIdentificationNumberFocus();
         verifyNoMoreInteractions(view);
     }
 
@@ -169,6 +171,7 @@ public class PayerInformationPresenterTest {
     public void whenLastNameIsValidThenClearError() {
         when(stateModel.hasIdentificationTypes()).thenReturn(true);
         when(stateModel.getIdentificationLastName()).thenReturn(DUMMY_NAME);
+        when(stateModel.getCurrentFocusType()).thenReturn(PayerInformationFocus.LAST_NAME_INPUT);
         presenter.attachView(view);
 
         presenter.validateLastName();
@@ -176,7 +179,7 @@ public class PayerInformationPresenterTest {
         verify(view).hideProgressBar();
         verify(view).clearErrorView();
         verify(view).clearErrorLastName();
-        verify(view).showCardFlowEnd();
+        verify(view).showCardFlowEnd(PayerInformationFocus.LAST_NAME_INPUT);
         verifyNoMoreInteractions(view);
     }
 
@@ -351,7 +354,7 @@ public class PayerInformationPresenterTest {
         verify(view).showProgressBar();
         verify(view).initializeIdentificationTypes(stubIdentificationTypes, stateModel.getIdentificationType());
         verify(view).hideProgressBar();
-        verify(view).requestIdentificationNumberFocus();
+        verify(view).showIdentificationNumberFocus();
         verify(view).setIdentificationNumberRestrictions(identificationType.getType());
         verifyNoMoreInteractions(view);
     }

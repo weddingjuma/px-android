@@ -1,32 +1,41 @@
 package com.mercadopago.android.px.model;
 
+import android.support.annotation.Nullable;
+import android.support.test.runner.AndroidJUnit4;
 import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.test.BaseTest;
 import com.mercadopago.android.px.test.StaticMock;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
 public class AllModelTest extends BaseTest<CheckoutActivity> {
 
     public AllModelTest() {
-        super(CheckoutActivity.class);
+        setup(CheckoutActivity.class);
     }
 
+    @Test
     public void testAddress() {
-
-        Address address = new Address();
+        final Address address = new Address();
         address.setStreetName("abcd");
         address.setStreetNumber(Long.parseLong("100"));
         address.setZipCode("1000");
-        assertTrue(address.getStreetName().equals("abcd"));
-        assertTrue(Long.toString(address.getStreetNumber()).equals("100"));
-        assertTrue(address.getZipCode().equals("1000"));
+        assertEquals("abcd", address.getStreetName());
+        assertEquals("100", Long.toString(address.getStreetNumber()));
+        assertEquals("1000", address.getZipCode());
     }
 
+    @Test
     public void testPayment() {
-
-        Payment payment = new Payment();
+        final Payment payment = new Payment();
         payment.setBinaryMode(true);
         payment.setCallForAuthorizeId("123");
         payment.setCaptured(false);
@@ -61,54 +70,54 @@ public class AllModelTest extends BaseTest<CheckoutActivity> {
         payment.setTransactionAmountRefunded(new BigDecimal("20.50"));
         payment.setTransactionDetails(StaticMock.getPayment(getApplicationContext()).getTransactionDetails());
         assertTrue(payment.getBinaryMode());
-        assertTrue(payment.getCallForAuthorizeId().equals("123"));
+        assertEquals("123", payment.getCallForAuthorizeId());
         assertTrue(!payment.getCaptured());
-        assertTrue(payment.getCard().getId().equals("149024476"));
-        assertTrue(payment.getCollectorId() == 1234567L);
-        assertTrue(payment.getCouponAmount().toString().equals("19"));
-        assertTrue(payment.getCurrencyId().equals("ARS"));
+        assertEquals("149024476", payment.getCard().getId());
+        assertEquals(1234567L, (long) payment.getCollectorId());
+        assertEquals("19", payment.getCouponAmount().toString());
+        assertEquals("ARS", payment.getCurrencyId());
         assertTrue(validateDate(payment.getDateApproved(), "2015-01-01"));
         assertTrue(validateDate(payment.getDateCreated(), "2015-01-02"));
         assertTrue(validateDate(payment.getDateLastUpdated(), "2015-01-03"));
-        assertTrue(payment.getDescription().equals("some desc"));
-        assertTrue(Long.toString(payment.getDifferentialPricingId()).equals("789"));
-        assertTrue(payment.getExternalReference().equals("some ext ref"));
-        assertTrue(payment.getFeeDetails().get(0).getAmount().toString().equals("5.99"));
-        assertTrue(Long.toString(payment.getId()).equals("123456"));
-        assertTrue(Integer.toString(payment.getInstallments()).equals("3"));
-        assertTrue(payment.getIssuerId().equals("3"));
-        assertTrue(payment.getLiveMode());
-        assertTrue(payment.getMetadata() == null);
-        assertTrue(validateDate(payment.getMoneyReleaseDate(), "2015-01-04"));
-        assertTrue(payment.getNotificationUrl().equals("http://some_url.com"));
-        assertTrue(payment.getOperationType().equals("regular_payment"));
-        assertTrue(payment.getOrder().getId() == null);
-        assertTrue(payment.getPayer().getId().equals("178101336"));
-        assertTrue(payment.getPaymentMethodId().equals("visa"));
-        assertTrue(payment.getPaymentTypeId().equals("credit_card"));
-        assertTrue(payment.getRefunds() == null);
-        assertTrue(payment.getStatementDescriptor().equals("statement"));
-        assertTrue(payment.getPaymentStatus().equals("approved"));
-        assertTrue(payment.getPaymentStatusDetail().equals("accredited"));
-        assertTrue(payment.getTransactionAmount().toString().equals("10.50"));
-        assertTrue(payment.getTransactionAmountRefunded().toString().equals("20.50"));
-        assertTrue(payment.getTransactionDetails().getTotalPaidAmount().toString().equals("100"));
+        assertEquals("some desc", payment.getDescription());
+        assertEquals("789", Long.toString(payment.getDifferentialPricingId()));
+        assertEquals("some ext ref", payment.getExternalReference());
+        assertEquals("5.99", payment.getFeeDetails().get(0).getAmount().toString());
+        assertEquals("123456", Long.toString(payment.getId()));
+        assertEquals("3", Integer.toString(payment.getInstallments()));
+        assertEquals("3", payment.getIssuerId());
+        assertEquals(true, payment.getLiveMode());
+        assertNull(payment.getMetadata());
+        assertEquals(true, validateDate(payment.getMoneyReleaseDate(), "2015-01-04"));
+        assertEquals("http://some_url.com", payment.getNotificationUrl());
+        assertEquals("regular_payment", payment.getOperationType());
+        assertNull(payment.getOrder().getId());
+        assertEquals("178101336", payment.getPayer().getId());
+        assertEquals("visa", payment.getPaymentMethodId());
+        assertEquals("credit_card", payment.getPaymentTypeId());
+        assertNull(payment.getRefunds());
+        assertEquals("statement", payment.getStatementDescriptor());
+        assertEquals("approved", payment.getPaymentStatus());
+        assertEquals("accredited", payment.getPaymentStatusDetail());
+        assertEquals("10.50", payment.getTransactionAmount().toString());
+        assertEquals("20.50", payment.getTransactionAmountRefunded().toString());
+        assertEquals("100", payment.getTransactionDetails().getTotalPaidAmount().toString());
     }
 
-    private Date getDummyDate(String date) {
-
+    @Nullable
+    private Date getDummyDate(final String date) {
         try {
             return new SimpleDateFormat("yyyy-MM-dd").parse(date);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             return null;
         }
     }
 
-    private Boolean validateDate(Date date, String value) {
-
+    @Nullable
+    private Boolean validateDate(final Date date, final String value) {
         try {
             return new SimpleDateFormat("yyyy-MM-dd").parse(value).equals(date);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             return null;
         }
     }

@@ -49,6 +49,11 @@ public class PaymentMethodSearchs {
         return JsonUtil.getInstance().fromJson(json, PaymentMethodSearch.class);
     }
 
+    public static PaymentMethodSearch getPaymentMethodSearchWithOnlyMercadoCredito() {
+        String json = ResourcesUtil.getStringResource("mercado_credito_mock.json");
+        return JsonUtil.getInstance().fromJson(json, PaymentMethodSearch.class);
+    }
+
     public static PaymentMethodSearch getPaymentMethodSearchWithOnlyCreditCardAndOneCardMLA() {
         String json = ResourcesUtil.getStringResource("only_credit_card_and_one_card_MLA.json");
         return JsonUtil.getInstance().fromJson(json, PaymentMethodSearch.class);

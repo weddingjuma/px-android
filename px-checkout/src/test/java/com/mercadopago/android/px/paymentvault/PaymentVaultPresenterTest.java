@@ -19,6 +19,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodSearch
 import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.MercadoCredito;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
@@ -432,6 +433,37 @@ public class PaymentVaultPresenterTest {
         verify(view).finishPaymentMethodSelection(userSelectionRepository.getPaymentMethod());
     }
 
+    @Test
+    public void whenHasMercadoCreditoVerifyIsShown() {
+        final PaymentMethodSearch paymentMethodSearch = PaymentMethodSearchs.getPaymentMethodSearchWithOnlyMercadoCredito();
+        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        presenter.initialize();
+
+        final List<PaymentMethodViewModel> models =
+                new CustomSearchOptionViewModelMapper(presenter, disabledPaymentMethodRepository)
+                        .map(paymentMethodSearch.getCustomSearchItems());
+
+        verify(view).showSearchItems(argThat(
+                argument -> IntStream.range(0, models.size()).anyMatch( i -> models.get(i).getPaymentMethodId().equals("mercado_credito"))));
+    }
+
+    @Test
+    public void whenMercadoCreditoIsSelectedVerifyFlow() {
+        final PaymentMethodSearch paymentMethodSearch = PaymentMethodSearchs.getPaymentMethodSearchWithOnlyMercadoCredito();
+        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        presenter.initialize();
+
+        final CustomSearchItem mercadoCreditoItem = paymentMethodSearch.getCustomSearchItems()
+                .stream()
+                .filter( item -> item.getPaymentMethodId().equals("mercado_credito"))
+                .findAny().orElse(null);
+
+        presenter.selectItem(mercadoCreditoItem);
+
+        Assert.assertTrue(PaymentTypes.isMercadoCredito(mercadoCreditoItem.getType()));
+
+        verify(view, times(1)).startMercadoCreditoFlow(any());
+    }
     // --------- Helper methods ----------- //
 
     private void verifyInitializeWithGroups() {
@@ -564,6 +596,11 @@ public class PaymentVaultPresenterTest {
         @Override
         public void saveAutomaticSelection(final boolean automaticSelection) {
             //Not yet tested
+        }
+
+        @Override
+        public void startMercadoCreditoFlow(final MercadoCredito mercadoCredito) {
+
         }
     }
 }

@@ -1,33 +1,39 @@
 package com.mercadopago.android.px.model;
 
+import android.support.test.runner.AndroidJUnit4;
 import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.test.BaseTest;
 import com.mercadopago.android.px.test.StaticMock;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@RunWith(AndroidJUnit4.class)
 public class CardTest extends BaseTest<CheckoutActivity> {
 
     public CardTest() {
-        super(CheckoutActivity.class);
+        setup(CheckoutActivity.class);
     }
 
+    @Test
     public void testIsSecurityCodeRequired() {
-
-        Card card = StaticMock.getCard();
-
+        final Card card = StaticMock.getCard();
         assertTrue(card.isSecurityCodeRequired());
     }
 
+    @Test
     public void testIsSecurityCodeRequiredNull() {
-
-        Card card = StaticMock.getCard();
+        final Card card = StaticMock.getCard();
         card.setSecurityCode(null);
-        assertTrue(!card.isSecurityCodeRequired());
+        assertFalse(card.isSecurityCodeRequired());
     }
 
+    @Test
     public void testIsSecurityCodeRequiredLengthZero() {
-
-        Card card = StaticMock.getCard();
+        final Card card = StaticMock.getCard();
         card.getSecurityCode().setLength(0);
-        assertTrue(!card.isSecurityCodeRequired());
+        assertFalse(card.isSecurityCodeRequired());
     }
 }

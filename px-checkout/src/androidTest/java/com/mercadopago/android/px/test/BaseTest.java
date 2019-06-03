@@ -3,50 +3,50 @@ package com.mercadopago.android.px.test;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.test.ActivityInstrumentationTestCase2;
+import android.support.test.InstrumentationRegistry;
+import android.support.test.rule.ActivityTestRule;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import java.util.List;
+import org.junit.Rule;
 
-public class BaseTest<T extends Activity> extends ActivityInstrumentationTestCase2<T> {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-    public BaseTest(final Class<T> activityClass) {
-        super(activityClass);
-    }
+public class BaseTest<T extends Activity> {
 
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
+    @Rule
+    public ActivityTestRule<T> testRule;
+
+    protected void setup(final Class<T> activityClass) {
+        testRule = new ActivityTestRule<>(activityClass, true, false);
     }
 
     protected Context getApplicationContext() {
-
-        return getInstrumentation().getContext();
+        return InstrumentationRegistry.getTargetContext();
     }
 
-    protected void assertFinishCalledWithResult(Activity activity, int resultCode) {
-
+    protected void assertFinishCalledWithResult(final Activity activity, final int resultCode) {
         assertTrue(activity.isFinishing());
         try {
-            Field field = Activity.class.getDeclaredField("mResultCode");
+            final Field field = Activity.class.getDeclaredField("mResultCode");
             field.setAccessible(true);
-            int actualResultCode = (Integer) field.get(activity);
-            assertTrue(actualResultCode == resultCode);
-        } catch (NoSuchFieldException e) {
+            final int actualResultCode = (Integer) field.get(activity);
+            assertEquals(actualResultCode, resultCode);
+        } catch (final NoSuchFieldException e) {
             throw new RuntimeException(
                 "Looks like the Android Activity class has changed it's private fields for mResultCode or mResultData.Time to update the reflection code.",
                 e);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    protected ActivityResult getActivityResult(Activity activity) {
-
+    protected ActivityResult getActivityResult(final Activity activity) {
         try {
-            ActivityResult activityResult = new ActivityResult();
+            final ActivityResult activityResult = new ActivityResult();
             // Result code
             Field field = Activity.class.getDeclaredField("mResultCode");
             field.setAccessible(true);
@@ -69,26 +69,22 @@ public class BaseTest<T extends Activity> extends ActivityInstrumentationTestCas
         }
     }
 
-    protected static <T> void putListExtra(Intent intent, String listName, List<T> list) {
-
+    protected static <T> void putListExtra(final Intent intent, final String listName, final List<T> list) {
         if (list != null) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<T>>() {
-            }.getType();
+            final Gson gson = new Gson();
+            final Type listType = new TypeToken<List<T>>() {}.getType();
             intent.putExtra(listName, gson.toJson(list, listType));
         }
     }
 
     protected void sleepThread() {
-
         sleepThread(3000);
     }
 
-    protected void sleepThread(int milliseconds) {
-
+    protected void sleepThread(final int milliseconds) {
         try {
             Thread.sleep(milliseconds);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             // do nothing
         }
     }

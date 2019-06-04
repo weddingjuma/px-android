@@ -29,11 +29,10 @@ public class PaymentMethodHeaderAdapter
     public void updateData(final int currentIndex, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         this.currentIndex = currentIndex;
-        PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex);
-        view.showTitlePager(currentModel.hasPayerCostList() && !currentModel.isDisabledPaymentMethod());
-        // Needed to update when no position is changed, but
-        // title content has.
-        updatePosition(0f, currentIndex);
+        final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex);
+        final boolean isExpandible = currentModel.hasPayerCostList() && !currentModel.isDisabledPaymentMethod();
+        view.showTitlePager(isExpandible);
+        view.setArrowVisibility(isExpandible);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class PaymentMethodHeaderAdapter
             final PaymentMethodHeaderView.Model viewModel = new PaymentMethodHeaderView.Model(goingTo,
                 currentModel.hasPayerCostList() && !currentModel.isDisabledPaymentMethod(),
                 nextModel.hasPayerCostList() && !nextModel.isDisabledPaymentMethod());
-            view.updateArrowVisibility(positionOffset, viewModel);
+            view.trackPagerPosition(positionOffset, viewModel);
         }
     }
 }

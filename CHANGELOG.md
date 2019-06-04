@@ -1,3 +1,18 @@
+## VERSION 4.13.0
+_03_06_2019_
+* FEATURE - Express Payment Subtitle
+* FEATURE - Express Payment Charges
+* FEATURE - Modified Processing Mode
+* FEATURE - New agreement params for Payer Cost
+* ENHANCEMENT - Dynamic Low res in Express Payment
+* ENHANCEMENT - Context for Session using a Content Provider
+* ENHANCEMENT - Added view tags for ETEs
+* ENHANCEMENT - IPaymentDescriptor default methods
+* ENHANCEMENT - Tracking cards ESC
+* ENHANCEMENT - Payer Information ETEs refactor
+* ENHANCEMENT - Migration to API 28
+* FIX - Payer Information restore instance
+
 ## VERSION 4.12.5
 _23_05_2019_
 * Fix invalid tracks

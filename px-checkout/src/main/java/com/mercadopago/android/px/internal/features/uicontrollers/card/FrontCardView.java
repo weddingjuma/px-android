@@ -20,14 +20,11 @@ import com.mercadopago.android.px.internal.util.MPAnimationUtils;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Bin;
 import com.mercadopago.android.px.model.PaymentMethod;
-
-/**
- * Created by vaserber on 9/29/16.
- */
 
 public class FrontCardView {
 
@@ -271,8 +268,8 @@ public class FrontCardView {
         transitionImage(ResourceUtil.getCardImage(mContext, pmId), true);
     }
 
-    public void fillCardHolderName(String cardholderName) {
-        if (cardholderName == null || cardholderName.length() == 0) {
+    public void fillCardHolderName(final String cardholderName) {
+        if (TextUtil.isEmpty(cardholderName)) {
             mCardholderNameTextView.setText(mContext.getResources().getString(R.string.px_cardholder_name_short));
         } else {
             mCardholderNameTextView.setText(cardholderName.toUpperCase());
@@ -325,15 +322,15 @@ public class FrontCardView {
         onPaymentMethodSet();
     }
 
-    private void setCardColor(int color) {
+    private void setCardColor(final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCardLowApiImageView.setVisibility(View.GONE);
             mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.setImageViewColorLollipop(mCardLollipopImageView, mContext, color);
+            MPAnimationUtils.setImageViewColorLollipop(mCardLollipopImageView, color);
         } else {
             mCardLollipopImageView.setVisibility(View.GONE);
             mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.setImageViewColor(mCardLowApiImageView, mContext, color);
+            MPAnimationUtils.setImageViewColor(mCardLowApiImageView, color);
         }
     }
 
@@ -431,11 +428,11 @@ public class FrontCardView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCardLowApiImageView.setVisibility(View.GONE);
             mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeInLollipop(color, mCardLollipopImageView, mContext);
+            MPAnimationUtils.fadeInLollipop(color, mCardLollipopImageView);
         } else {
             mCardLollipopImageView.setVisibility(View.GONE);
             mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeIn(color, mCardLowApiImageView, mContext);
+            MPAnimationUtils.fadeIn(color, mCardLowApiImageView);
         }
     }
 
@@ -443,11 +440,11 @@ public class FrontCardView {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCardLowApiImageView.setVisibility(View.GONE);
             mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeOutLollipop(color, mCardLollipopImageView, mContext);
+            MPAnimationUtils.fadeOutLollipop(color, mCardLollipopImageView);
         } else {
             mCardLollipopImageView.setVisibility(View.GONE);
             mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeOut(color, mCardLowApiImageView, mContext);
+            MPAnimationUtils.fadeOut(color, mCardLowApiImageView);
         }
     }
 

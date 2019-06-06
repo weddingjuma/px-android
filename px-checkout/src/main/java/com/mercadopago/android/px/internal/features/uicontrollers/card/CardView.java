@@ -183,7 +183,7 @@ public class CardView {
         float scale = mContext.getResources().getDisplayMetrics().density;
         float cameraDistance = scale * distance;
 
-        MPAnimationUtils.flipToBack(mContext, cameraDistance, mFrontCardView.getView(), mBackCardView.getView(),
+        MPAnimationUtils.flipToBack(cameraDistance, mFrontCardView.getView(), mBackCardView.getView(),
             mBackCardView);
 
         mBackCardView.draw();
@@ -205,7 +205,7 @@ public class CardView {
         float scale = mContext.getResources().getDisplayMetrics().density;
         float cameraDistance = scale * distance;
 
-        MPAnimationUtils.flipToFront(mContext, cameraDistance, mFrontCardView.getView(), mBackCardView.getView());
+        MPAnimationUtils.flipToFront(cameraDistance, mFrontCardView.getView(), mBackCardView.getView());
 
         mFrontCardView.drawEditingCard(cardNumber, cardholderName, expiryMonth, expiryYear, securityCodeFront);
 

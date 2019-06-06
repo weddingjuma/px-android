@@ -4,13 +4,14 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.tracking.internal.mapper.FromPaymentMethodToAvailableMethods;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.math.BigDecimal;
 
 public final class ResultViewTrackModel extends TrackingMapModel {
 
     private final String style;
+    private String paymentMethodId;
+    private String paymentMethodType;
     private final Long paymentId;
     private final String paymentStatus;
     private final String paymentStatusDetail;
@@ -18,7 +19,6 @@ public final class ResultViewTrackModel extends TrackingMapModel {
     private final boolean hasSplitPayment;
     private final BigDecimal preferenceAmount;
     private final BigDecimal discountCouponAmount;
-    private AvailableMethod availableMethod;
 
     public ResultViewTrackModel(@NonNull final ResultViewTrack.Style style, @NonNull final PaymentResult payment,
         @NonNull final CheckoutPreference checkoutPreference) {
@@ -32,8 +32,8 @@ public final class ResultViewTrackModel extends TrackingMapModel {
         discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(payment.getPaymentDataList());
 
         if (payment.getPaymentData() != null && payment.getPaymentData().getPaymentMethod() != null) {
-            availableMethod =
-                new FromPaymentMethodToAvailableMethods().map(payment.getPaymentData().getPaymentMethod());
+            paymentMethodId = payment.getPaymentData().getPaymentMethod().getId();
+            paymentMethodType = payment.getPaymentData().getPaymentMethod().getPaymentTypeId();
         }
     }
 

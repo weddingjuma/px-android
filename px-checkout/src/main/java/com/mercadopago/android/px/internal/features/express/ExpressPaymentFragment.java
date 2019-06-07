@@ -3,9 +3,7 @@ package com.mercadopago.android.px.internal.features.express;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -631,16 +629,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (renderMode.equals(RenderMode.LOW_RES)) {
             configureCardAspectRatio(ASPECT_RATIO_LOW_RES);
         }
-        final Runnable runnable = () -> {
+        //Workaround to weird bug when setting the pager adapter not right away
+        paymentMethodPager.post(() -> {
             paymentMethodFragmentAdapter.setRenderMode(renderMode);
             paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
             indicator.attachToPager(paymentMethodPager);
-        };
-        //Workaround to weird bug in older versions with the view pager
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            runnable.run();
-        } else {
-            new Handler().post(runnable);
-        }
+        });
     }
 }

@@ -124,21 +124,14 @@ public class SummaryView extends LinearLayout implements ViewTreeObserver.OnGlob
     }
 
     @Override
-    protected void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        if (measureListener != null && allViewsFullyMeasured()) {
+    protected void onLayout(final boolean changed, final int l, final int t, final int r, final int b) {
+        super.onLayout(changed, l, t, r, b);
+        if (measureListener != null) {
             final int availableSummaryHeight = itemsContainer.getMeasuredHeight();
             final float singleItemHeight = AmountDescriptorView.getDesiredHeight(getContext());
             final int expectedItemsHeight = Math.round(singleItemHeight * maxElementsToShow);
             measureListener.onSummaryMeasured(expectedItemsHeight > availableSummaryHeight);
         }
-    }
-
-    private boolean allViewsFullyMeasured() {
-        final int parentHeight = ((View) getParent()).getMeasuredHeight();
-        final boolean parentMeasured = parentHeight > 0;
-        //In some cases the parent is already measured but this view AT_MOST measure pass isn't done
-        return parentMeasured && parentHeight != getMeasuredHeight();
     }
 
     @Override

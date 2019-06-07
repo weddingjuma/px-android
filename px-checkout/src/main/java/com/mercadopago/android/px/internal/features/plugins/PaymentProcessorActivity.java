@@ -82,9 +82,6 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         setContentView(frameLayout, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT));
 
-        final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        final Fragment fragmentByTag = supportFragmentManager.findFragmentByTag(TAG_PROCESSOR_FRAGMENT);
-
         final Session session = Session.getInstance();
 
         try {
@@ -92,12 +89,17 @@ public final class PaymentProcessorActivity extends AppCompatActivity
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
                 new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository());
 
-            if (fragmentByTag == null) { // if fragment is not added, then create it.
-                addPaymentProcessorFragment(supportFragmentManager, session);
+            if (getFragmentByTag() == null) { // if fragment is not added, then create it.
+                addPaymentProcessorFragment(getSupportFragmentManager(), session);
             }
         } catch (final Exception e) {
-            onBackPressed();
+            finishWithCanceledResult();
         }
+    }
+
+    @Nullable
+    private Fragment getFragmentByTag() {
+        return getSupportFragmentManager().findFragmentByTag(TAG_PROCESSOR_FRAGMENT);
     }
 
     private void addPaymentProcessorFragment(@NonNull final FragmentManager supportFragmentManager,
@@ -198,7 +200,7 @@ public final class PaymentProcessorActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ERROR_REQUEST_CODE) {
             //TODO verify error handling
-            onBackPressed();
+            finishWithCanceledResult();
         }
     }
 
@@ -229,6 +231,24 @@ public final class PaymentProcessorActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
+        final Fragment fragment = getFragmentByTag();
+        if (isBackHandlerFragment(fragment)) {
+            if (((SplitPaymentProcessor.BackHandler)fragment).isBackEnabled()) {
+                finishWithCanceledResult();
+            } else {
+                //TODO: maybe can track this scenario
+                //Do nothing
+            }
+        } else {
+            finishWithCanceledResult();
+        }
+    }
+
+    private boolean isBackHandlerFragment(@Nullable final Fragment fragment) {
+        return fragment instanceof SplitPaymentProcessor.BackHandler;
+    }
+
+    private void finishWithCanceledResult() {
         setResult(RESULT_CANCELED);
         finish();
     }

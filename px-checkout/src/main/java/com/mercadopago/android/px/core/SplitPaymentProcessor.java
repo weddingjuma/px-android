@@ -82,6 +82,17 @@ public interface SplitPaymentProcessor extends Parcelable {
         void onPaymentError(@NonNull final MercadoPagoError error);
     }
 
+    interface BackHandler {
+
+        /**
+         * The implementation of this method can tell you if the back action is enabled or disabled.
+         * In certain cases you want to block UI, disabling the back button. This occurs for toolbar back button,
+         * display screen back button and swipe back gestures.
+         */
+        boolean isBackEnabled();
+
+    }
+
     /**
      * If the boolean is true payment processor's fragment will be showed instead review and confirm screen
      *

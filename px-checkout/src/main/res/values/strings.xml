@@ -158,6 +158,7 @@
     <string name="px_error_message_missing_payer_cost">No installments found</string>
     <string name="px_error_message_missing_identification_types">No identification type found</string>
     <string name="px_error_message_missing_setting_for_bin">No setting found for that bin</string>
+    <string name="px_error_failure_recovery_not_defined">Failure recovery not defined</string>
 
 
     <!-- API exception messages -->

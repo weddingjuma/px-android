@@ -3,10 +3,6 @@ package com.mercadopago.android.px.internal.features.uicontrollers;
 import android.graphics.Typeface;
 import java.util.HashMap;
 
-/**
- * Created by vaserber on 1/9/17.
- */
-
 public class FontCache {
 
     public static final String CUSTOM_REGULAR_FONT = "custom_regular";

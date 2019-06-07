@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.model;
 
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import android.support.test.runner.AndroidJUnit4;
-import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;

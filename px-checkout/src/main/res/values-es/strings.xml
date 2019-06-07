@@ -148,6 +148,7 @@
     <string name="px_error_message_missing_payer_cost">No se encontraron cuotas</string>
     <string name="px_error_message_missing_identification_types">No se encontraron identification types</string>
     <string name="px_error_message_missing_setting_for_bin">No se encontraron settings para ese bin</string>
+    <string name="px_error_failure_recovery_not_defined">Recupero de falla no definido</string>
 
     <!-- API exception messages -->
     <string name="px_empty_card_expiration_month">No se ingresó el mes de la fecha de expiración de la tarjeta</string>

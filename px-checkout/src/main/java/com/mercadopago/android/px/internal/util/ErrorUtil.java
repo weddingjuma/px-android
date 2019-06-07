@@ -22,9 +22,15 @@ public final class ErrorUtil {
 
     public static final int ERROR_REQUEST_CODE = 94;
 
-    public static final String PUBLIC_KEY_EXTRA = "publicKey";
+    private static final String PUBLIC_KEY_EXTRA = "publicKey";
 
     private ErrorUtil() {
+    }
+
+    public static void startErrorActivity(final Activity launcherActivity) {
+        final String message = launcherActivity.getResources().getString(R.string.px_standard_error_message);
+        final MercadoPagoError mercadoPagoError = new MercadoPagoError(message, false);
+        startErrorActivity(launcherActivity, mercadoPagoError);
     }
 
     public static void startErrorActivity(final Activity launcherActivity, final String message,

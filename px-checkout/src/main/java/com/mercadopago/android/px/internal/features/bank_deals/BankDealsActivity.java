@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.BankDealsAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -16,20 +16,33 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.bank_deal_detail.BankDealDetailActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.util.List;
 
-public class BankDealsActivity extends PXActivity<BankDealsPresenter>
-    implements BankDeals.View {
+public class BankDealsActivity extends PXActivity<BankDealsPresenter> implements BankDeals.View {
+
+    public static void start(@NonNull final Activity activity) {
+        final Intent intent = new Intent(activity, BankDealsActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void start(@NonNull final Activity activity, final int requestCode,
+        @Nullable final List<BankDeal> bankDeals) {
+        final Intent intent = new Intent(activity, BankDealsActivity.class);
+        if (bankDeals != null) {
+            intent.putExtra("bankDeals", JsonUtil.getInstance().toJson(bankDeals));
+        }
+        activity.startActivityForResult(intent, requestCode);
+    }
 
     protected RecyclerView bankDealsRecyclerView;
     protected Toolbar toolbar;
-    private BankDealsAdapter bankDealsAdapter;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.px_activity_bank_deals);
         initializeControls();
@@ -39,8 +52,7 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter>
 
     private void createPresenter() {
         final Session session = Session.getInstance();
-        presenter = new BankDealsPresenter(session
-            .getBankDealsRepository());
+        presenter = new BankDealsPresenter(session.getBankDealsRepository());
         presenter.attachView(this);
     }
 
@@ -58,16 +70,11 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter>
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             presenter.attachView(this);
             if (resultCode == Activity.RESULT_OK) {
@@ -102,9 +109,9 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter>
         ViewUtils.showRegularLayout(this);
     }
 
-    private void initializeAdapter(final @NonNull List<BankDeal> bankDeals,
-        final @NonNull OnSelectedCallback<BankDeal> onSelectedCallback) {
-        bankDealsAdapter = new BankDealsAdapter(bankDeals, onSelectedCallback);
+    private void initializeAdapter(@NonNull final List<BankDeal> bankDeals,
+        @NonNull final OnSelectedCallback<BankDeal> onSelectedCallback) {
+        final BankDealsAdapter bankDealsAdapter = new BankDealsAdapter(bankDeals, onSelectedCallback);
         bankDealsRecyclerView.setAdapter(bankDealsAdapter);
     }
 

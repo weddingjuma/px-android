@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -19,7 +18,7 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
+import com.mercadopago.android.px.internal.features.PaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
@@ -57,7 +56,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     public static final int COLUMN_SPACING_DP_VALUE = 20;
     public static final int COLUMNS = 2;
     private static final int PAYER_INFORMATION_REQUEST_CODE = 22;
+    private static final int REQ_CODE_PAYMENT_METHODS = 666;
     private static final int REQ_CARD_VAULT = 102;
+    private static final int REQ_CODE_MYSELF = 10;
     private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
     private static final String EXTRA_AUTOMATIC_SELECTION = "automaticSelection";
     private static final String MISMATCHING_PAYMENT_METHOD_ERROR = "Payment method in search not found";
@@ -82,17 +83,17 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     private boolean automaticSelection;
 
-    public static void start(@NonNull final AppCompatActivity from) {
+    public static void start(@NonNull final Activity from, final int requestCode) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);
-        from.startActivityForResult(intent, Constants.Activities.PAYMENT_VAULT_REQUEST_CODE);
+        from.startActivityForResult(intent, requestCode);
         from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
 
-    public static void startWithPaymentMethodSelected(@NonNull final AppCompatActivity from,
+    public static void startWithPaymentMethodSelected(@NonNull final Activity from, final int requestCode,
         @NonNull final PaymentMethodSearchItem item) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);
         intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.getInstance().toJson(item));
-        from.startActivityForResult(intent, Constants.Activities.PAYMENT_VAULT_REQUEST_CODE);
+        from.startActivityForResult(intent, requestCode);
         from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
 
@@ -229,7 +230,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     @Override
     public void showSelectedItem(final PaymentMethodSearchItem item) {
-        startWithPaymentMethodSelected(this, item);
+        startWithPaymentMethodSelected(this, REQ_CODE_MYSELF, item);
     }
 
     @Override
@@ -237,9 +238,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         presenter.initializeAmountRow();
         if (requestCode == REQ_CARD_VAULT) {
             resolveCardRequest(resultCode, data);
-        } else if (requestCode == Constants.Activities.PAYMENT_METHODS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_PAYMENT_METHODS) {
             presenter.onPaymentMethodReturned();
-        } else if (requestCode == Constants.Activities.PAYMENT_VAULT_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_MYSELF) {
             resolvePaymentVaultRequest(resultCode, data);
         } else if (requestCode == PAYER_INFORMATION_REQUEST_CODE) {
             resolvePayerInformationRequest(resultCode, data);
@@ -367,10 +368,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     @Override
     public void startPaymentMethodsSelection(final PaymentPreference paymentPreference) {
-        new Constants.Activities.PaymentMethodsActivityBuilder()
-            .setActivity(this)
-            .setPaymentPreference(paymentPreference)
-            .startActivity();
+        PaymentMethodsActivity.start(this, REQ_CODE_PAYMENT_METHODS, paymentPreference);
     }
 
     public void showApiException(final ApiException apiException, final String requestOrigin) {

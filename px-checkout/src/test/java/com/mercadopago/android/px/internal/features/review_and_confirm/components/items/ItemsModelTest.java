@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.features.review_and_confirm.components.items;
 
-import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.ItemModel;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.ItemsModel;
+import com.mercadopago.android.px.model.Item;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

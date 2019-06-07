@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.installments;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,10 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
@@ -40,6 +41,10 @@ import java.util.List;
 
 public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> implements InstallmentsView {
 
+    private static final int TOOLBAR_TEXT_SIZE = 19;
+    private static final int TIMER_TEXT_SIZE = 17;
+    private static final String EXTRA_CARD_INFO = "cardInfo";
+
     private RecyclerView installmentsRecyclerView;
 
     //Local vars
@@ -60,12 +65,16 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     protected FrontCardView mFrontCardView;
     protected MPTextView mTimerTextView;
 
-    private static final int TOOLBAR_TEXT_SIZE = 19;
-    private static final int TIMER_TEXT_SIZE = 17;
-    private static final String CARD_INFO_KEY = "cardInfo";
+
 
     private AmountView amountView;
     private PaymentSettingRepository configuration;
+
+    public static void start(@NonNull final Activity activity, final int requestCode, @NonNull final CardInfo cardInfo) {
+        final Intent intent = new Intent(activity, InstallmentsActivity.class);
+        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        activity.startActivityForResult(intent, requestCode);
+    }
 
     @Override
     public void onCreate(final Bundle savedInstanceState) {
@@ -93,7 +102,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     private void getActivityParameters() {
         final Intent intent = getIntent();
-        presenter.setCardInfo(JsonUtil.getInstance().fromJson(intent.getStringExtra(CARD_INFO_KEY), CardInfo.class));
+        presenter.setCardInfo(JsonUtil.getInstance().fromJson(intent.getStringExtra(EXTRA_CARD_INFO), CardInfo.class));
     }
 
     public void setContentView() {
@@ -210,12 +219,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
         if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    onBackPressed();
-                }
-            });
+            toolbar.setNavigationOnClickListener(v -> onBackPressed());
         }
     }
 

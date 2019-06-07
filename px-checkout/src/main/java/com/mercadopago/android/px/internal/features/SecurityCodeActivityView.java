@@ -1,9 +1,9 @@
 package com.mercadopago.android.px.internal.features;
 
 import com.mercadopago.android.px.internal.base.MvpView;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
 public interface SecurityCodeActivityView extends MvpView {
     void setSecurityCodeInputMaxLength(int length);

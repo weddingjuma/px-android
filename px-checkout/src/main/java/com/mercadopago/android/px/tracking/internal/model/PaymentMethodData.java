@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.tracking.internal.model;
 
 import android.support.annotation.Nullable;
-
 import com.mercadopago.android.px.model.PaymentMethod;
 
 public class PaymentMethodData extends TrackingMapModel {

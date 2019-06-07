@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.paymentresult.props;
 
 import android.support.annotation.NonNull;
-import java.math.BigInteger;
 
 /**
  * Created by vaserber on 27/11/2017.

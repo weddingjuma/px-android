@@ -26,7 +26,6 @@
 
     <!-- Vault -->
     <string name="px_last_digits_label">Terminada en</string>
-    <string name="px_confirm">Confirmar</string>
     <string name="px_title_activity_payment_vault">¿Cómo quieres %1$s?</string>
     <string name="px_no_payment_methods_found">No hay medios de pago disponibles</string>
 

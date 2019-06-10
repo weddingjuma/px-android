@@ -24,11 +24,13 @@ import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ConfirmButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SplitHeaderMapper;
@@ -90,6 +92,7 @@ import java.util.Set;
     /* default */ List<ExpressMetadata> expressMetadataList;
 
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
+    private final PayButtonViewModel payButtonViewModel;
     private Set<String> cardsWithSplit;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
@@ -113,6 +116,8 @@ import java.util.Set;
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
         paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
         splitSelectionState = new SplitSelectionState();
+        payButtonViewModel = new PayButtonViewModelMapper().map(
+            paymentConfiguration.getAdvancedConfiguration().getCustomStringConfiguration());
 
         groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
             @Override
@@ -163,6 +168,8 @@ import java.util.Set;
 
         getView().configureAdapters(paymentMethodDrawableItemMapper.map(expressMetadataList),
             paymentConfiguration.getCheckoutPreference().getSite(), model);
+
+        getView().setPayButtonText(payButtonViewModel);
     }
 
     @Override
@@ -260,7 +267,7 @@ import java.util.Set;
 
     private void refreshExplodingState() {
         if (paymentRepository.isExplodingAnimationCompatible()) {
-            getView().startLoadingButton(paymentRepository.getPaymentTimeout());
+            getView().startLoadingButton(paymentRepository.getPaymentTimeout(), payButtonViewModel);
             getView().disableToolbarBack();
         }
     }

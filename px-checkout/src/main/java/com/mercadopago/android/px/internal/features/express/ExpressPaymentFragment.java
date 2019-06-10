@@ -60,6 +60,7 @@ import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
@@ -347,6 +348,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
+    public void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel) {
+        confirmButton.setText(payButtonViewModel.getButtonText(getContext()));
+    }
+
+    @Override
     public void cancel() {
         if (callback != null) {
             callback.onOneTapCanceled();
@@ -539,19 +545,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void startLoadingButton(final int paymentTimeout) {
-
+    public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
         hideConfirmButton();
-        final int[] location = new int[2];
-        confirmButton.getLocationOnScreen(location);
-
-        // TODO refactor - unify review and confirm.
-        final ExplodeParams explodeParams =
-            new ExplodeParams(location[1] - confirmButton.getMeasuredHeight() / 2, confirmButton.getMeasuredHeight(),
-                (int) getContext().getResources().getDimension(R.dimen.px_m_margin),
-                getContext().getResources().getString(R.string.px_processing_payment_button),
-                paymentTimeout);
-
+        final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
+            payButtonViewModel.getButtonProgressText(getContext()), paymentTimeout);
         final FragmentManager childFragmentManager = getChildFragmentManager();
         final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
         childFragmentManager.beginTransaction()

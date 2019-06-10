@@ -30,7 +30,6 @@
 
     <!-- Vault -->
     <string name="px_last_digits_label">Ending in</string>
-    <string name="px_confirm">Confirm</string>
     <string name="px_title_activity_payment_vault">How do you want to %1$s?</string>
     <string name="px_no_payment_methods_found">There are no available payment methods</string>
 

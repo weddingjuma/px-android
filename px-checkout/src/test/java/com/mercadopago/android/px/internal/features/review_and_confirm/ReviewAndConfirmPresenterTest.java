@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.review_and_confirm;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
+import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
@@ -10,6 +11,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
@@ -64,10 +66,10 @@ public class ReviewAndConfirmPresenterTest {
 
     @Before
     public void setUp() {
-
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(paymentSettingRepository.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.getDynamicDialogConfiguration()).thenReturn(dynamicDialogConfiguration);
+        when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
         when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
         reviewAndConfirmPresenter =
             new ReviewAndConfirmPresenter(paymentRepository, businessModelMapper,
@@ -81,6 +83,7 @@ public class ReviewAndConfirmPresenterTest {
     private void verifyAttachView() {
         reviewAndConfirmPresenter.attachView(view);
         verify(paymentRepository, atLeastOnce()).attach(reviewAndConfirmPresenter);
+        verify(view, atLeastOnce()).setPayButtonText(any(PayButtonViewModel.class));
     }
 
     @Test
@@ -321,7 +324,7 @@ public class ReviewAndConfirmPresenterTest {
     private void verifyPaymentExplodingCompatible() {
         verify(paymentRepository).isExplodingAnimationCompatible();
         verify(paymentRepository).getPaymentTimeout();
-        verify(view).startLoadingButton(any(Integer.class));
+        verify(view).startLoadingButton(any(Integer.class), any(PayButtonViewModel.class));
         verify(view).hideConfirmButton();
         verify(paymentRepository, atLeastOnce()).attach(reviewAndConfirmPresenter);
         verify(paymentRepository).startPayment();

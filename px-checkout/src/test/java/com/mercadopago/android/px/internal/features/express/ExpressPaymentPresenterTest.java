@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
+import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
@@ -15,6 +16,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.CardMetadata;
@@ -109,6 +111,7 @@ public class ExpressPaymentPresenterTest {
         when(configuration.getCheckoutPreference()).thenReturn(preference);
         when(configuration.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.getDynamicDialogConfiguration()).thenReturn(dynamicDialogConfiguration);
+        when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
         when(groupsRepository.getGroups())
             .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
@@ -228,6 +231,7 @@ public class ExpressPaymentPresenterTest {
         verify(view).showToolbarElementDescriptor(any(ElementDescriptorView.Model.class));
         verify(view).configureAdapters(anyListOf(DrawableFragmentItem.class), any(Site.class),
             any(HubAdapter.Model.class));
+        verify(view).setPayButtonText(any(PayButtonViewModel.class));
     }
 
     private void verifyOnViewResumed() {

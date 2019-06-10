@@ -9,37 +9,17 @@ public class ExplodeParams implements Parcelable, Serializable {
     private int buttonHeightInPixels;
     private int buttonLeftRightMarginInPixels;
     private int yButtonPositionInPixels;
-    private String buttonText;
+    private CharSequence buttonText;
     private int paymentTimeout;
 
     public ExplodeParams(final int yButtonPositionInPixels, final int buttonHeightInPixels,
-        final int buttonLeftRightMarginInPixels, final String buttonText, final int paymentTimeout) {
+        final int buttonLeftRightMarginInPixels, final CharSequence buttonText, final int paymentTimeout) {
         this.buttonHeightInPixels = buttonHeightInPixels;
         this.yButtonPositionInPixels = yButtonPositionInPixels;
         this.buttonLeftRightMarginInPixels = buttonLeftRightMarginInPixels;
         this.buttonText = buttonText;
         this.paymentTimeout = paymentTimeout;
     }
-
-    protected ExplodeParams(Parcel in) {
-        buttonHeightInPixels = in.readInt();
-        buttonLeftRightMarginInPixels = in.readInt();
-        yButtonPositionInPixels = in.readInt();
-        buttonText = in.readString();
-        paymentTimeout = in.readInt();
-    }
-
-    public static final Creator<ExplodeParams> CREATOR = new Creator<ExplodeParams>() {
-        @Override
-        public ExplodeParams createFromParcel(Parcel in) {
-            return new ExplodeParams(in);
-        }
-
-        @Override
-        public ExplodeParams[] newArray(int size) {
-            return new ExplodeParams[size];
-        }
-    };
 
     public int getButtonHeightInPixels() {
         return buttonHeightInPixels;
@@ -53,13 +33,33 @@ public class ExplodeParams implements Parcelable, Serializable {
         return yButtonPositionInPixels;
     }
 
-    public String getButtonText() {
+    public CharSequence getButtonText() {
         return buttonText;
     }
 
     public int getPaymentTimeout() {
         return paymentTimeout;
     }
+
+    /* default */ ExplodeParams(final Parcel in) {
+        buttonHeightInPixels = in.readInt();
+        buttonLeftRightMarginInPixels = in.readInt();
+        yButtonPositionInPixels = in.readInt();
+        buttonText = in.readString();
+        paymentTimeout = in.readInt();
+    }
+
+    public static final Creator<ExplodeParams> CREATOR = new Creator<ExplodeParams>() {
+        @Override
+        public ExplodeParams createFromParcel(final Parcel in) {
+            return new ExplodeParams(in);
+        }
+
+        @Override
+        public ExplodeParams[] newArray(final int size) {
+            return new ExplodeParams[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -71,7 +71,7 @@ public class ExplodeParams implements Parcelable, Serializable {
         dest.writeInt(buttonHeightInPixels);
         dest.writeInt(buttonLeftRightMarginInPixels);
         dest.writeInt(yButtonPositionInPixels);
-        dest.writeString(buttonText);
+        dest.writeString(buttonText.toString());
         dest.writeInt(paymentTimeout);
     }
 }

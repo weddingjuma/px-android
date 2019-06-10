@@ -16,6 +16,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
@@ -48,6 +49,7 @@ import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.ComponentManager;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.Card;
@@ -82,7 +84,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     private static final int PAYER_INFORMATION_REQUEST_CODE = 22;
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
 
-    private View confirmButton;
+    private MeliButton confirmButton;
     private View floatingConfirmLayout;
 
     //TODO refactor.
@@ -440,6 +442,11 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         ErrorUtil.startErrorActivity(this, error);
     }
 
+    @Override
+    public void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel) {
+        confirmButton.setText(payButtonViewModel.getButtonText(this));
+    }
+
     /**
      * When payment needs to start the visual payment processor it won't come back to review and confirm. The result for
      * the start activity will be delegated to Checkout activity.
@@ -517,16 +524,9 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     }
 
     @Override
-    public void startLoadingButton(final int paymentTimeout) {
-        final int[] location = new int[2];
-
-        confirmButton.getLocationOnScreen(location);
-        final ExplodeParams explodeParams =
-            new ExplodeParams(location[1] - confirmButton.getMeasuredHeight() / 2,
-                confirmButton.getMeasuredHeight(),
-                (int) getResources().getDimension(R.dimen.px_s_margin),
-                getResources().getString(R.string.px_processing_payment_button),
-                paymentTimeout);
+    public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
+        final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
+            payButtonViewModel.getButtonProgressText(this), paymentTimeout);
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
         supportFragmentManager.beginTransaction()

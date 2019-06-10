@@ -11,10 +11,14 @@ public final class CustomStringConfiguration implements Serializable {
 
     @StringRes private final int mainVerbStringResourceId;
     @Nullable private final String customPaymentVaultTitle;
+    @Nullable private final String customPayButtonText;
+    @Nullable private final String customPayButtonProgressText;
 
     /* default */ CustomStringConfiguration(@NonNull final Builder builder) {
         mainVerbStringResourceId = builder.mainVerbStringResourceId;
         customPaymentVaultTitle = builder.customPaymentVaultTitle;
+        customPayButtonText = builder.customPayButtonText;
+        customPayButtonProgressText = builder.customPayButtonProgressText;
     }
 
     /**
@@ -46,9 +50,31 @@ public final class CustomStringConfiguration implements Serializable {
         return customPaymentVaultTitle;
     }
 
+    /**
+     * Obtain customized pay button text
+     *
+     * @return Custom Pay Button Text
+     */
+    @Nullable
+    public String getCustomPayButtonText() {
+        return customPayButtonText;
+    }
+
+    /**
+     * Obtain customized pay button progress text
+     *
+     * @return Custom Pay Button Progress Text
+     */
+    @Nullable
+    public String getCustomPayButtonProgressText() {
+        return customPayButtonProgressText;
+    }
+
     public static class Builder {
         /* default */ int mainVerbStringResourceId;
         /* default */ String customPaymentVaultTitle;
+        /* default */ String customPayButtonText;
+        /* default */ String customPayButtonProgressText;
 
         public Builder() {
             mainVerbStringResourceId = R.string.px_main_verb;
@@ -72,8 +98,33 @@ public final class CustomStringConfiguration implements Serializable {
          * @param title Custom title to be setted
          * @return builder to keep operating
          */
-        public Builder setCustomPaymentVaultTitle(@NonNull final String title){
-            this.customPaymentVaultTitle = title;
+        @SuppressWarnings("unused")
+        public Builder setCustomPaymentVaultTitle(@NonNull final String title) {
+            customPaymentVaultTitle = title;
+            return this;
+        }
+
+        /**
+         * Set custom text to the pay button.
+         *
+         * @param text Custom text
+         * @return builder to keep operating
+         */
+        @SuppressWarnings("unused")
+        public Builder setCustomPayButtonText(@NonNull final String text) {
+            customPayButtonText = text;
+            return this;
+        }
+
+        /**
+         * Set custom text to the pay button progress.
+         *
+         * @param text Custom text
+         * @return builder to keep operating
+         */
+        @SuppressWarnings("unused")
+        public Builder setCustomPayButtonProgressText(@NonNull final String text) {
+            customPayButtonProgressText = text;
             return this;
         }
 

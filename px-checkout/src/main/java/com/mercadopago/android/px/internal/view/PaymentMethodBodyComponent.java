@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -83,6 +84,7 @@ public class PaymentMethodBodyComponent
 
         final Context context = parent.getContext();
         final LinearLayout linearContainer = ViewUtils.createLinearContainer(context);
+        linearContainer.setGravity(Gravity.CENTER_VERTICAL);
         PaymentMethodComponent paymentMethodComponent;
         final Iterator<PaymentMethodComponent.PaymentMethodProps> paymentMethodPropsIterator =
             props.paymentMethodProps.iterator();

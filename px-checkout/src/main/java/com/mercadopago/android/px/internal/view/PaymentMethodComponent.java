@@ -109,8 +109,8 @@ public class PaymentMethodComponent extends CompactComponent<PaymentMethodCompon
         descriptionTextView
             .setText(getDescription(props.paymentMethod.getName(), props.paymentMethod.getPaymentTypeId(),
                 props.lastFourDigits, context));
-        statementDescriptionTextView.setText(getDisclaimer(props.paymentMethod.getPaymentTypeId(),
-            props.disclaimer, context));
+        final String disclaimerText = getDisclaimer(props.paymentMethod.getPaymentTypeId(), props.disclaimer, context);
+        ViewUtils.loadOrGone(disclaimerText, statementDescriptionTextView);
         return paymentMethodView;
     }
 

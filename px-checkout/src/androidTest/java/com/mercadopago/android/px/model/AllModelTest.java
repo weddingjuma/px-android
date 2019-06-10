@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.model;
 
-import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import android.support.annotation.Nullable;
 import android.support.test.runner.AndroidJUnit4;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.test.BaseTest;
 import com.mercadopago.android.px.test.StaticMock;
 import java.math.BigDecimal;

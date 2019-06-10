@@ -8,12 +8,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.SummaryModel;
+import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 
 public class CompactSummaryRenderer extends Renderer<CompactSummary> {
 

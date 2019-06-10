@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.Nullable;
-
 import java.util.regex.Pattern;
 
 public final class TextUtil {

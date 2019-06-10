@@ -160,7 +160,7 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
     private void checkStartInstallmentsActivity() {
         if (userSelectionRepository.getPayerCost() == null) {
             installmentsListShown = true;
-            getView().askForInstallments();
+            getView().askForInstallments(getCardInfo());
         } else {
             getView().finishWithResult();
         }
@@ -323,6 +323,6 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     @Override
     public void displayInstallments(final List<PayerCost> payerCosts) {
-        getView().askForInstallments();
+        getView().askForInstallments(getCardInfo());
     }
 }

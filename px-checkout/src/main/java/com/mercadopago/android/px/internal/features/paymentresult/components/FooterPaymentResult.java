@@ -5,12 +5,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 import android.view.View;
 import android.view.ViewGroup;
-import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.Button;
 import com.mercadopago.android.px.internal.view.CompactComponent;
 import com.mercadopago.android.px.internal.view.Footer;
+import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.model.PaymentResult;
 import javax.annotation.Nonnull;
 

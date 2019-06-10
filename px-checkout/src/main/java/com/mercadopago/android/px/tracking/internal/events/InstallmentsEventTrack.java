@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.tracking.internal.events;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.tracking.internal.model.ExpressInstallmentsData;
 import java.util.Map;
 

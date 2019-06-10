@@ -1,11 +1,11 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.mocks.Instructions;
-import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionReferenceComponent;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsReferences;
 import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsReferencesProps;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.mocks.Instructions;
+import com.mercadopago.android.px.model.Instruction;
 import java.util.List;
 import junit.framework.Assert;
 import org.junit.Before;

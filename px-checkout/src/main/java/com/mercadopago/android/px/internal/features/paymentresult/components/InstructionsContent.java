@@ -10,8 +10,8 @@ import com.mercadopago.android.px.internal.features.paymentresult.props.Instruct
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.Component;
 import com.mercadopago.android.px.model.InstructionAction;
-import com.mercadopago.android.px.model.Interaction;
 import com.mercadopago.android.px.model.InstructionReference;
+import com.mercadopago.android.px.model.Interaction;
 import java.util.ArrayList;
 import java.util.List;
 

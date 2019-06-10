@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +12,7 @@ import android.widget.ImageView;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AddNewCardFragmentDrawableFragmentItem;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
@@ -64,12 +64,15 @@ public class AddNewCardFragment extends Fragment implements AddNewCard.View, Vie
 
     @Override
     public void showPaymentMethods() {
-        PaymentVaultActivity.start((AppCompatActivity) getActivity());
+        //TODO refactor
+        PaymentVaultActivity.start(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT);
     }
 
     @Override
     public void showPaymentMethodsWithSelection(@NonNull final PaymentMethodSearchItem paymentMethodSearchItem) {
-        PaymentVaultActivity.startWithPaymentMethodSelected((AppCompatActivity) getActivity(), paymentMethodSearchItem);
+        //TODO refactor
+        PaymentVaultActivity.startWithPaymentMethodSelected(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT,
+            paymentMethodSearchItem);
     }
 
     private AddNewCardPresenter createPresenter() {

@@ -16,6 +16,7 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import java.util.HashMap;
 import java.util.Map;
+
 import static com.mercadopago.android.px.model.Payment.StatusCodes.STATUS_APPROVED;
 import static com.mercadopago.android.px.model.Payment.StatusCodes.STATUS_IN_PROCESS;
 import static com.mercadopago.android.px.model.Payment.StatusCodes.STATUS_PENDING;

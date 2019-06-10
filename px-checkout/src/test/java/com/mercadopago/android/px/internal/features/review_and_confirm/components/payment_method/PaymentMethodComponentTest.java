@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.features.review_and_confirm.components.payment_method;
 
+import com.mercadopago.android.px.internal.features.review_and_confirm.models.PaymentModel;
 import com.mercadopago.android.px.internal.view.CompactComponent;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.internal.features.review_and_confirm.models.PaymentModel;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

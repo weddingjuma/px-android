@@ -16,7 +16,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 

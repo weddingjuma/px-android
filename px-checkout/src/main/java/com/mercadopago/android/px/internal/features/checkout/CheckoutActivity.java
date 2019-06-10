@@ -11,10 +11,10 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
+import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAndConfirmBuilder;
@@ -67,6 +67,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     private static final int REQ_PAYMENT_PROCESSOR = 0x03;
     private static final int REQ_CARD_VAULT = 0x04;
     private static final int REQ_REVIEW_AND_CONFIRM = 0x05;
+    public static final int REQ_PAYMENT_VAULT = 0x06;
     private static final String TAG_ONETAP_FRAGMENT = "TAG_ONETAP";
 
     //TODO do not make it public - Needed refactor one tap for this.
@@ -257,7 +258,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         case ErrorUtil.ERROR_REQUEST_CODE:
             resolveErrorRequest(resultCode, data);
             break;
-        case Constants.Activities.PAYMENT_VAULT_REQUEST_CODE: //TODO refactor REQ_CODE.
+        case REQ_PAYMENT_VAULT:
             resolvePaymentVaultRequest(resultCode, data);
             break;
         case REQ_CARD_VAULT:
@@ -435,10 +436,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     public void showPaymentMethodSelection() {
         if (isActive()) {
-            new Constants.Activities.PaymentVaultActivityBuilder()
-                .setActivity(this)
-                .startActivity();
-            overrideTransitionIn();
+            PaymentVaultActivity.start(this, REQ_PAYMENT_VAULT);
         }
     }
 

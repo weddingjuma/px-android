@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.uicontrollers;
 
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

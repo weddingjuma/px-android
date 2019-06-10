@@ -13,6 +13,7 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -27,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -145,7 +147,7 @@ public class CardVaultPresenterTest {
 
         presenter.resolveNewCardRequest(mock(Intent.class));
 
-        verify(view).askForInstallments();
+        verify(view).askForInstallments(any(CardInfo.class));
     }
 
     @Test
@@ -197,10 +199,12 @@ public class CardVaultPresenterTest {
     @Test
     public void verifyResolvesDisplayInstallments() {
         final List<PayerCost> payerCosts = Collections.singletonList(mock(PayerCost.class));
+        final CardInfo cardInfo = mock(CardInfo.class);
 
+        presenter.setCardInfo(cardInfo);
         presenter.displayInstallments(payerCosts);
 
-        verify(view).askForInstallments();
+        verify(view).askForInstallments(cardInfo);
         verifyNoMoreInteractions(view);
     }
 

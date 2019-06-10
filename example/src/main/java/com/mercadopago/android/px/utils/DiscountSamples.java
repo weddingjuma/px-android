@@ -1,10 +1,10 @@
 package com.mercadopago.android.px.utils;
 
 import android.support.v4.util.Pair;
-import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.SamplePaymentProcessor;
 import com.mercadopago.android.px.configuration.DiscountConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;

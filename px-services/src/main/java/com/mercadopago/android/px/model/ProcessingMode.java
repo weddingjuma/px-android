@@ -2,7 +2,6 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
 import com.google.gson.annotations.SerializedName;
 
 public enum ProcessingMode implements Parcelable {

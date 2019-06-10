@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.Button;
 import com.mercadopago.android.px.internal.view.ButtonLink;
 import com.mercadopago.android.px.internal.view.CompactComponent;
-import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.PaymentTypes;
 
 public class PaymentMethodComponent extends CompactComponent<PaymentModel, PaymentMethodComponent.Actions> {

@@ -15,7 +15,6 @@ import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationComment;
 import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationCommentRenderer;
 import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationTime;
@@ -72,6 +71,11 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUST
 public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> implements
     PaymentResultContract.PaymentResultView {
 
+    private static final int CONGRATS_REQUEST_CODE = 16;
+    private static final int INSTRUCTIONS_REQUEST_CODE = 14;
+    private static final int REJECTION_REQUEST_CODE = 9;
+    private static final int PENDING_REQUEST_CODE = 8;
+    private static final int CALL_FOR_AUTHORIZE_REQUEST_CODE = 7;
     private static final String EXTRA_PAYMENT_RESULT = "extra_payment_result";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
 
@@ -154,15 +158,15 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == Constants.Activities.CONGRATS_REQUEST_CODE) {
+        if (requestCode == CONGRATS_REQUEST_CODE) {
             finishWithOkResult(resultCode, data);
-        } else if (requestCode == Constants.Activities.PENDING_REQUEST_CODE) {
+        } else if (requestCode == PENDING_REQUEST_CODE) {
             resolveRequest(resultCode, data);
-        } else if (requestCode == Constants.Activities.REJECTION_REQUEST_CODE) {
+        } else if (requestCode == REJECTION_REQUEST_CODE) {
             resolveRequest(resultCode, data);
-        } else if (requestCode == Constants.Activities.CALL_FOR_AUTHORIZE_REQUEST_CODE) {
+        } else if (requestCode == CALL_FOR_AUTHORIZE_REQUEST_CODE) {
             resolveRequest(resultCode, data);
-        } else if (requestCode == Constants.Activities.INSTRUCTIONS_REQUEST_CODE) {
+        } else if (requestCode == INSTRUCTIONS_REQUEST_CODE) {
             finishWithOkResult(resultCode, data);
         } else {
             finishWithCancelResult(data);

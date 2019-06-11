@@ -1,3 +1,8 @@
+## VERSION 4.12.6
+_11_06_2019_
+* Fix invalid tracks again
+* Fix circle reveal animation crash on Android 6
+
 ## VERSION 4.13.0
 _03_06_2019_
 * FEATURE - Express Payment Subtitle

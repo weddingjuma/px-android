@@ -1,3 +1,12 @@
+## VERSION 4.14.0
+_11_06_2019_
+* FEATURE - Custom pay button text support
+* FEATURE - BackHandler interface for visual Payment Processor
+* ENHANCEMENT - Better error handling in Express Payment
+* ENHANCEMENT - CheckoutActivity MVP refactor
+* ENHANCEMENT - Constants refactor
+* FIX - Congrats layout
+
 ## VERSION 4.12.6
 _11_06_2019_
 * Fix invalid tracks again

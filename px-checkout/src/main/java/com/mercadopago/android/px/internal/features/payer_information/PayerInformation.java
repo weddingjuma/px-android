@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.features.payer_information;
 
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
-import com.mercadopago.android.px.internal.viewmodel.PayerInformationStateModel;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.util.List;
@@ -10,6 +10,8 @@ import java.util.List;
 public interface PayerInformation {
 
     interface View extends MvpView {
+
+        void cancel();
 
         void setIdentificationNumberRestrictions(String type);
 
@@ -31,15 +33,15 @@ public interface PayerInformation {
 
         void clearErrorView();
 
-        void showCardFlowEnd();
+        void showCardFlowEnd(@PayerInformationFocus String currentFocus);
+
+        void showIdentificationNumberFocus();
 
         void showIdentificationLastNameFocus();
 
         void showIdentificationNameFocus();
 
         void showIdentificationBusinessNameFocus();
-
-        void requestIdentificationNumberFocus();
 
         void showError(MercadoPagoError error, String requestOrigin);
 
@@ -79,6 +81,8 @@ public interface PayerInformation {
 
     interface Actions {
 
+        void createPayer();
+
         void validateName();
 
         void validateBusinessName();
@@ -87,20 +91,16 @@ public interface PayerInformation {
 
         void validateIdentification();
 
-        void trackIdentificationNumberView();
-
-        void trackIdentificationNameView();
-
-        void trackIdentificationLastNameView();
-
         void trackAbort();
 
-        void trackBack();
-
-        PayerInformationStateModel getState();
-
-        void focus(final String currentFocusType);
+        void setCurrentFocus(@PayerInformationFocus String currentFocus);
 
         void configureIdentificationTypeFlow(@NonNull IdentificationType identificationType);
+
+        void validateCurrentEditText();
+
+        void onSaveInstance(@NonNull Bundle bundle);
+
+        void onBackPressed();
     }
 }

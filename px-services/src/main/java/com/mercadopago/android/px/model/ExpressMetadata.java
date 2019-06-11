@@ -2,23 +2,27 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
 import java.io.Serializable;
 
-public class ExpressMetadata implements Parcelable, Serializable {
+public final class ExpressMetadata implements Parcelable, Serializable, ExpressPaymentMethod {
 
     private final String paymentMethodId;
     private final String paymentTypeId;
     private final CardMetadata card;
     private final AccountMoneyMetadata accountMoney;
 
+    @Override
     public String getPaymentMethodId() {
         return paymentMethodId;
     }
 
+    @Override
     public String getPaymentTypeId() {
         return paymentTypeId;
     }
 
+    @Override
     public CardMetadata getCard() {
         return card;
     }
@@ -31,6 +35,7 @@ public class ExpressMetadata implements Parcelable, Serializable {
         return accountMoney != null;
     }
 
+    @Override
     public boolean isCard() {
         return card != null;
     }

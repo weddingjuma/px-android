@@ -1,10 +1,10 @@
 package com.mercadopago.android.px.internal.datasource.cache;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.services.Callback;
 
 public class GroupsMemCache implements GroupsCache {
 

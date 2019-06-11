@@ -39,6 +39,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -280,6 +281,9 @@ public class PaymentService implements PaymentRepository {
         final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
         final PaymentMethod secondaryPaymentMethod = userSelectionRepository.getSecondaryPaymentMethod();
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
+        final BigDecimal amountToPay =
+            amountRepository.getAmountToPay(userSelectionRepository.getPaymentMethod().getPaymentTypeId(),
+            userSelectionRepository.getPayerCost());
 
         if (secondaryPaymentMethod != null) { // is split payment
             final AmountConfiguration currentConfiguration = amountConfigurationRepository.getCurrentConfiguration();
@@ -291,14 +295,14 @@ public class PaymentService implements PaymentRepository {
                 .setToken(paymentSettingRepository.getToken())
                 .setIssuer(userSelectionRepository.getIssuer())
                 .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
-                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setTransactionAmount(amountToPay)
                 .setCampaign(discountModel.getCampaign())
                 .setDiscount(splitConfiguration.primaryPaymentMethod.discount)
                 .setRawAmount(splitConfiguration.primaryPaymentMethod.amount)
                 .createPaymentData();
 
             final PaymentData secondaryPaymentData = new PaymentData.Builder()
-                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setTransactionAmount(amountToPay)
                 .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
                 .setPaymentMethod(secondaryPaymentMethod)
                 .setCampaign(discountModel.getCampaign())
@@ -324,9 +328,9 @@ public class PaymentService implements PaymentRepository {
                 .setIssuer(userSelectionRepository.getIssuer())
                 .setDiscount(discount)
                 .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
-                .setTransactionAmount(amountRepository.getAmountToPay())
+                .setTransactionAmount(amountToPay)
                 .setCampaign(discountModel.getCampaign())
-                .setRawAmount(paymentSettingRepository.getCheckoutPreference().getTotalAmount())
+                .setRawAmount(getRawAmountForRegularPayment())
                 .createPaymentData();
 
             return Collections.singletonList(paymentData);
@@ -359,5 +363,12 @@ public class PaymentService implements PaymentRepository {
 
     public MercadoPagoError getError() {
         return new MercadoPagoError("Something went wrong", false);
+    }
+
+    @NonNull
+    private BigDecimal getRawAmountForRegularPayment() {
+        final PayerCost payerCost = userSelectionRepository.getPayerCost();
+        return payerCost != null ? payerCost.getTotalAmount() :
+            amountRepository.getItemsPlusCharges(userSelectionRepository.getPaymentMethod().getPaymentTypeId());
     }
 }

@@ -1,12 +1,13 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Discount;
+import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
 
 public class AmountService implements AmountRepository {
@@ -14,71 +15,67 @@ public class AmountService implements AmountRepository {
     @NonNull private final PaymentSettingRepository paymentSetting;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final DiscountRepository discountRepository;
-    @NonNull private final UserSelectionRepository userSelectionRepository;
 
     public AmountService(@NonNull final PaymentSettingRepository paymentSetting,
         @NonNull final ChargeRepository chargeRepository,
-        @NonNull final DiscountRepository discountRepository,
-        @NonNull final UserSelectionRepository userSelectionRepository) {
+        @NonNull final DiscountRepository discountRepository) {
         this.paymentSetting = paymentSetting;
         this.chargeRepository = chargeRepository;
         this.discountRepository = discountRepository;
-        this.userSelectionRepository = userSelectionRepository;
     }
 
     @Override
     @NonNull
-    public BigDecimal getAmountToPay() {
-        final BigDecimal amount = amountWithoutPayerCosts();
-        final BigDecimal installmentTotalAmount = getInstallmentTotalAmount();
-        final int cmp = amount.compareTo(installmentTotalAmount);
-        // if amount  > installment amount ; return amount else installmentAmount
-        return cmp == 0 ? amount : installmentTotalAmount;
-    }
-
-    private BigDecimal amountWithoutPayerCosts() {
-        return paymentSetting.getCheckoutPreference()
-            .getTotalAmount()
-            .add(chargeRepository.getChargeAmount())
-            .subtract(getDiscountAmount());
+    public BigDecimal getAmountToPay(@NonNull final String paymentTypeId, @Nullable final PayerCost payerCost) {
+        if (payerCost == null) {
+            return amountWithoutPayerCosts(paymentTypeId);
+        } else {
+            return payerCost.getTotalAmount();
+        }
     }
 
     @Override
     @NonNull
     public BigDecimal getItemsAmount() {
+        return paymentSetting.getCheckoutPreference().getTotalAmount();
+    }
+
+    @NonNull
+    @Override
+    public BigDecimal getItemsPlusCharges(@NonNull final String paymentTypeId) {
+        return paymentSetting.getCheckoutPreference().getTotalAmount()
+            .add(chargeRepository.getChargeAmount(paymentTypeId));
+    }
+
+    @NonNull
+    @Override
+    public BigDecimal getAppliedCharges(@NonNull final String paymentTypeId) {
+        return getAppliedCharges(paymentTypeId, null);
+    }
+
+    @NonNull
+    @Override
+    public BigDecimal getAppliedCharges(@NonNull final String paymentTypeId, @Nullable final PayerCost payerCost) {
+        if (payerCost == null) {
+            return chargeRepository.getChargeAmount(paymentTypeId);
+        } else {
+            return payerCost.getTotalAmount()
+                .subtract(amountWithoutPayerCosts(paymentTypeId))
+                .add(chargeRepository.getChargeAmount(paymentTypeId));
+        }
+    }
+
+    @NonNull
+    private BigDecimal amountWithoutPayerCosts(@NonNull final String paymentTypeId) {
         return paymentSetting.getCheckoutPreference()
-            .getTotalAmount();
+            .getTotalAmount()
+            .add(chargeRepository.getChargeAmount(paymentTypeId))
+            .subtract(getDiscountAmount());
     }
 
     @NonNull
-    @Override
-    public BigDecimal getItemsPlusCharges() {
-        final BigDecimal totalAmount = paymentSetting.getCheckoutPreference()
-            .getTotalAmount();
-        return totalAmount.add(chargeRepository.getChargeAmount());
-    }
-
-    @NonNull
-    @Override
-    public BigDecimal getAppliedCharges() {
-        final BigDecimal amountWithoutPayerCosts = amountWithoutPayerCosts();
-        final BigDecimal installmentTotalAmount = getInstallmentTotalAmount();
-        final int compare = amountWithoutPayerCosts.compareTo(installmentTotalAmount);
-        // if amount  > installment amount ; return only charges else charges plus diff
-        return compare == 0 ? chargeRepository.getChargeAmount() :
-            installmentTotalAmount.subtract(amountWithoutPayerCosts)
-                .add(chargeRepository.getChargeAmount());
-    }
-
     private BigDecimal getDiscountAmount() {
         final Discount discount = discountRepository.getCurrentConfiguration().getDiscount();
         return discount == null ? BigDecimal.ZERO : discount.getCouponAmount();
-    }
-
-    @NonNull
-    private BigDecimal getInstallmentTotalAmount() {
-        return userSelectionRepository.hasPayerCostSelected() ? userSelectionRepository.getPayerCost()
-            .getTotalAmount()
-            : amountWithoutPayerCosts();
     }
 }

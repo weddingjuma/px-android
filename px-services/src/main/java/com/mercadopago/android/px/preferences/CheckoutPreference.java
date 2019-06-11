@@ -8,6 +8,7 @@ import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.OpenPayer;
 import com.mercadopago.android.px.model.Payer;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
@@ -67,6 +68,10 @@ public class CheckoutPreference implements Serializable {
 
     @Nullable private final String additionalInfo;
 
+    @Nullable private final String branchId;
+
+    @Nullable private final ProcessingMode[] processingModes;
+
     @SerializedName("binary_mode")
     private boolean isBinaryMode = false;
     //endregion support external integrations
@@ -86,7 +91,9 @@ public class CheckoutPreference implements Serializable {
         payer = builder.payer;
         isBinaryMode = builder.isBinaryMode;
         additionalInfo = builder.additionalInfo;
+        processingModes = builder.processingModes;
 
+        branchId = builder.branchId;
         paymentPreference = new PaymentPreference();
         paymentPreference.setExcludedPaymentTypeIds(builder.excludedPaymentTypes);
         paymentPreference.setExcludedPaymentMethodIds(builder.excludedPaymentMethods);
@@ -223,6 +230,18 @@ public class CheckoutPreference implements Serializable {
         return getPaymentPreference().getExcludedPaymentMethodIds();
     }
 
+    @Nullable
+    public String getBranchId() {
+        return branchId;
+    }
+
+    @NonNull
+    public ProcessingMode[] getProcessingModes() {
+        // when comes from backend this value can be null.
+        final ProcessingMode[] defaultProcessingMode = { ProcessingMode.AGGREGATOR };
+        return processingModes == null ? defaultProcessingMode : processingModes;
+    }
+
     @NonNull
     public String getMarketplace() {
         return marketplace;
@@ -280,6 +299,7 @@ public class CheckoutPreference implements Serializable {
 
         /* default */ final List<String> excludedPaymentMethods;
         /* default */ final List<String> excludedPaymentTypes;
+        /* default */ ProcessingMode[] processingModes = { ProcessingMode.AGGREGATOR };
         /* default */ Integer maxInstallments;
         /* default */ Integer defaultInstallments;
         /* default */ Date expirationDateTo;
@@ -294,6 +314,7 @@ public class CheckoutPreference implements Serializable {
         /* default */ boolean isBinaryMode = false;
         /* default */ final Payer payer;
         /* default */ String additionalInfo;
+        /* default */ @Nullable String branchId;
 
         /**
          * Builder for custom CheckoutPreference construction. It should be only used if you are processing the payment
@@ -534,6 +555,27 @@ public class CheckoutPreference implements Serializable {
             this.additionalInfo = additionalInfo;
             return this;
         }
+
+        /**
+         * External id that will be pass through installments to define custom payment method agreements for this id.
+         *
+         * @param branchId custom branch id for this payment.
+         */
+        public Builder setBranchId(@Nullable final String branchId) {
+            this.branchId = branchId;
+            return this;
+        }
+
+        /**
+         * Processing mode allowed for this payment. Can be any of {@link ProcessingMode} values.
+         *
+         * @param processingMode allowed for this payment preference.
+         */
+        public Builder setProcessingModes(@NonNull final ProcessingMode[] processingModes) {
+            this.processingModes = processingModes;
+            return this;
+        }
+
 
         /**
          * It creates the checkout preference.

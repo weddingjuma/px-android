@@ -1,7 +1,10 @@
 package com.mercadopago.android.px.internal.features;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,12 +12,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.PaymentMethodsAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
 import com.mercadopago.android.px.internal.features.providers.PaymentMethodsProvider;
 import com.mercadopago.android.px.internal.features.providers.PaymentMethodsProviderImpl;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
@@ -23,10 +25,11 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
-import java.lang.reflect.Type;
 import java.util.List;
 
 public class PaymentMethodsActivity extends PXActivity implements PaymentMethodsView {
+
+    private static final String EXTRA_PAYMENT_PREFERENCE = "paymentPreference";
 
     protected RecyclerView mRecyclerView;
     protected Toolbar mToolbar;
@@ -36,12 +39,21 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     private PaymentMethodsPresenter mPresenter;
     private PaymentMethodsProvider mResourcesProvider;
 
+
+    public static void start(@NonNull final Activity activity, final int requestCode,
+        final PaymentPreference paymentPreference) {
+        final Intent paymentMethodsIntent = new Intent(activity, PaymentMethodsActivity.class);
+        paymentMethodsIntent.putExtra(EXTRA_PAYMENT_PREFERENCE, (Parcelable) paymentPreference);
+
+        activity.startActivityForResult(paymentMethodsIntent, requestCode);
+    }
+
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mPresenter =
-            new PaymentMethodsPresenter(Session.getSession(this).getConfigurationModule().getUserSelectionRepository());
+            new PaymentMethodsPresenter(Session.getInstance().getConfigurationModule().getUserSelectionRepository());
 
         try {
             getActivityParameters();
@@ -52,24 +64,9 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         }
     }
 
-    protected void getActivityParameters() {
-
-        PaymentPreference paymentPreference =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra("paymentPreference"), PaymentPreference.class);
+    private void getActivityParameters() {
+        final PaymentPreference paymentPreference = getIntent().getParcelableExtra(EXTRA_PAYMENT_PREFERENCE);
         mPresenter.setPaymentPreference(paymentPreference);
-
-        Boolean showBankDeals = getIntent().getBooleanExtra("showBankDeals", true);
-        mPresenter.setShowBankDeals(showBankDeals);
-
-        if (getIntent().getStringExtra("supportedPaymentTypes") != null) {
-            Gson gson = new Gson();
-            Type listType = new TypeToken<List<String>>() {
-            }.getType();
-
-            List<String> supportedPaymentTypes =
-                gson.fromJson(getIntent().getStringExtra("supportedPaymentTypes"), listType);
-            mPresenter.setSupportedPaymentTypes(supportedPaymentTypes);
-        }
     }
 
     protected void setContentView() {
@@ -95,7 +92,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         mPresenter.start();
     }
 
-    protected void onInvalidStart(String message) {
+    protected void onInvalidStart(final String message) {
         ErrorUtil.startErrorActivity(this, message, false);
     }
 
@@ -105,7 +102,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         mBankDealsTextView = findViewById(R.id.mpsdkBankDeals);
         mTitle = findViewById(R.id.mpsdkToolbarTitle);
 
-        final String mainVerb = getString(Session.getSession(this).getMainVerb());
+        final String mainVerb = getString(Session.getInstance().getMainVerb());
         mTitle.setText(getString(R.string.px_title_activity_payment_methods, mainVerb));
 
         setSupportActionBar(mToolbar);
@@ -113,12 +110,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
         supportActionBar.setDisplayShowTitleEnabled(false);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
         supportActionBar.setDisplayShowHomeEnabled(true);
-        mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
+        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     @Override
@@ -128,7 +120,7 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -145,17 +137,14 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     }
 
     @Override
-    public void showPaymentMethods(List<PaymentMethod> paymentMethods) {
-        mRecyclerView.setAdapter(new PaymentMethodsAdapter(this, paymentMethods, new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // Return to parent
-                Intent returnIntent = new Intent();
-                PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
-                returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
-                setResult(RESULT_OK, returnIntent);
-                finish();
-            }
+    public void showPaymentMethods(final List<PaymentMethod> paymentMethods) {
+        mRecyclerView.setAdapter(new PaymentMethodsAdapter(this, paymentMethods, view -> {
+            // Return to parent
+            final Intent returnIntent = new Intent();
+            final PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
+            returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+            setResult(RESULT_OK, returnIntent);
+            finish();
         }));
     }
 
@@ -170,21 +159,13 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     }
 
     @Override
-    public void showError(MercadoPagoError exception) {
+    public void showError(final MercadoPagoError exception) {
         ErrorUtil.startErrorActivity(this, exception);
     }
 
     @Override
     public void showBankDeals() {
         mBankDealsTextView.setVisibility(View.VISIBLE);
-        mBankDealsTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new Constants.Activities.BankDealsActivityBuilder()
-                    .setActivity(PaymentMethodsActivity.this)
-                    .startActivity();
-            }
-        });
+        mBankDealsTextView.setOnClickListener(v -> BankDealsActivity.start(this));
     }
 }
-

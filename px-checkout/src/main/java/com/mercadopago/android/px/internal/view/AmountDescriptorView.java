@@ -6,10 +6,12 @@ import android.support.annotation.Nullable;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.EmptyLocalized;
 import com.mercadopago.android.px.internal.viewmodel.IDetailColor;
@@ -26,7 +28,12 @@ public class AmountDescriptorView extends LinearLayout {
     private ImageView imageView;
     private boolean rightLabelSemiBold;
     private boolean leftLabelSemiBold;
-    /* default */ boolean listenerEnabled;
+
+    public static int getDesiredHeight(@NonNull final Context context) {
+        final View view = inflate(context, R.layout.px_viewholder_amountdescription, null);
+        view.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        return view.getMeasuredHeight();
+    }
 
     public AmountDescriptorView(final Context context) {
         this(context, null);
@@ -42,11 +49,8 @@ public class AmountDescriptorView extends LinearLayout {
     }
 
     public interface OnClickListener {
-        void onAmountDescriptorClicked();
-    }
-
-    public interface OnClickListenerWithDiscount {
-        void onAmountDescriptorClicked(@NonNull final DiscountConfigurationModel discountModel);
+        void onDiscountAmountDescriptorClicked(@NonNull final DiscountConfigurationModel discountModel);
+        void onChargesAmountDescriptorClicked(@NonNull final DynamicDialogCreator dynamicDialogCreator);
     }
 
     private void init() {
@@ -61,7 +65,7 @@ public class AmountDescriptorView extends LinearLayout {
         updateRightLabel(model);
         updateDrawable(model.detailDrawable, model.detailDrawableColor);
         updateTextColor(model.detailColor);
-        listenerEnabled = model.listenerEnabled;
+        setOnClickListener(model.listener);
     }
 
     private void updateRightLabel(@NonNull final AmountDescriptorView.Model model) {
@@ -78,8 +82,8 @@ public class AmountDescriptorView extends LinearLayout {
         spannableStringBuilder.append(charSequence);
 
         if (isSemiBold) {
-            ViewUtils
-                .setSemiBoldFontInSpannable(0, spannableStringBuilder.length(), spannableStringBuilder, getContext());
+            ViewUtils.setSemiBoldFontInSpannable(0, spannableStringBuilder.length(),
+                spannableStringBuilder, getContext());
         }
 
         if (isEmpty(charSequence)) {
@@ -116,6 +120,7 @@ public class AmountDescriptorView extends LinearLayout {
     private void updateDrawable(@Nullable final IDetailDrawable detailDrawable,
         @Nullable final IDetailColor detailColor) {
         if (detailDrawable != null) {
+            imageView.setVisibility(VISIBLE);
             imageView.setImageDrawable(detailDrawable.getDrawable(getContext()));
         } else {
             imageView.setVisibility(INVISIBLE);
@@ -126,21 +131,13 @@ public class AmountDescriptorView extends LinearLayout {
         }
     }
 
-    public void setOnDescriptorClickListener(final OnClickListener listener) {
-        setOnClickListener(v -> {
-            if (listenerEnabled) {
-                listener.onAmountDescriptorClicked();
-            }
-        });
-    }
-
     public static class Model {
         /* default */ @NonNull final ILocalizedCharSequence left;
         /* default */ @NonNull final ILocalizedCharSequence right;
         /* default */ @NonNull final IDetailColor detailColor;
         /* default */ @Nullable IDetailDrawable detailDrawable;
         /* default */ @Nullable IDetailColor detailDrawableColor;
-        /* default */ boolean listenerEnabled = false;
+        /* default */ @Nullable View.OnClickListener listener;
 
         public Model(@NonNull final ILocalizedCharSequence left, @NonNull final ILocalizedCharSequence right,
             @NonNull final IDetailColor detailColor) {
@@ -155,12 +152,6 @@ public class AmountDescriptorView extends LinearLayout {
             right = new EmptyLocalized();
         }
 
-        public AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable) {
-            this.detailDrawable = detailDrawable;
-            detailDrawableColor = null;
-            return this;
-        }
-
         public AmountDescriptorView.Model setDetailDrawable(@Nullable final IDetailDrawable detailDrawable,
             @Nullable final IDetailColor detailDrawableColor) {
             this.detailDrawable = detailDrawable;
@@ -168,8 +159,8 @@ public class AmountDescriptorView extends LinearLayout {
             return this;
         }
 
-        public AmountDescriptorView.Model enableListener() {
-            listenerEnabled = true;
+        public AmountDescriptorView.Model setListener(@NonNull final View.OnClickListener listener) {
+            this.listener = listener;
             return this;
         }
     }

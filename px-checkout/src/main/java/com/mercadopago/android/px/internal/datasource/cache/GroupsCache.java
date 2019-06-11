@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.internal.datasource.cache;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
+import com.mercadopago.android.px.model.PaymentMethodSearch;
 
 public interface GroupsCache {
 

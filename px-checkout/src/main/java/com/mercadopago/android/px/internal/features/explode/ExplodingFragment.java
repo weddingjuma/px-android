@@ -53,7 +53,7 @@ public class ExplodingFragment extends Fragment {
     private int buttonHeight;
     private int buttonLeftRightMargin;
     private int yButtonPosition;
-    private String buttonText;
+    private CharSequence buttonText;
     //TODO add loading time payment processor
     private int maxLoadingTime;
     private int previousOrientation;
@@ -74,6 +74,14 @@ public class ExplodingFragment extends Fragment {
         bundle.putSerializable(ARG_EXPLODING_PARAMS, explodeParams);
         explodingFragment.setArguments(bundle);
         return explodingFragment;
+    }
+
+    public static ExplodeParams getParams(@NonNull final View button, @NonNull final CharSequence progressText,
+        final int timeout) {
+        final int[] location = new int[2];
+        button.getLocationOnScreen(location);
+        return new ExplodeParams(location[1] - button.getMeasuredHeight() / 2,
+            button.getMeasuredHeight(), location[0], progressText, timeout);
     }
 
     @Override

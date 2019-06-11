@@ -1,9 +1,15 @@
 package com.mercadopago.android.px.utils;
 
+import android.content.Context;
+import android.os.Parcel;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.util.Pair;
-import com.mercadopago.android.px.configuration.PaymentConfiguration;
-import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.SampleDialog;
 import com.mercadopago.SamplePaymentProcessor;
+import com.mercadopago.android.px.configuration.PaymentConfiguration;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
@@ -25,7 +31,28 @@ final class ChargesSamples {
 
     private static MercadoPagoCheckout.Builder chargeType(final String type) {
         final Collection<PaymentTypeChargeRule> charges = new ArrayList<>();
-        charges.add(new PaymentTypeChargeRule(type, BigDecimal.TEN));
+        charges.add(new PaymentTypeChargeRule(type, BigDecimal.TEN, new DynamicDialogCreator() {
+            @Override
+            public boolean shouldShowDialog(@NonNull final Context context, @NonNull final CheckoutData checkoutData) {
+                return true;
+            }
+
+            @NonNull
+            @Override
+            public DialogFragment create(@NonNull final Context context, @NonNull final CheckoutData checkoutData) {
+                return new SampleDialog();
+            }
+
+            @Override
+            public int describeContents() {
+                return 0;
+            }
+
+            @Override
+            public void writeToParcel(final Parcel parcel, final int i) {
+
+            }
+        }));
 
         final BusinessPayment payment = BusinessSamples.getBusinessRejected();
 

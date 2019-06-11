@@ -54,6 +54,7 @@ public class DiscountConfigurationModel implements Parcelable {
         return discount != null && campaign != null;
     }
 
+    @Deprecated
     public BigDecimal getAmountWithDiscount(final BigDecimal amount) {
         if (hasValidDiscount()) {
             return discount.getAmountWithDiscount(amount);

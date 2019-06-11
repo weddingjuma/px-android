@@ -34,7 +34,7 @@ public class PaymentMethodPluginActivity extends AppCompatActivity implements
         setContentView(frameLayout,
             new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final UserSelectionRepository userSelectionRepository = configurationModule.getUserSelectionRepository();
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();

@@ -3,10 +3,10 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.services.CardService;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Issuer;
+import com.mercadopago.android.px.model.ProcessingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +37,6 @@ public class CardAssociationService {
     public MPCall<List<Issuer>> getCardIssuers(@NonNull final String accessToken, @NonNull final String paymentMethodId,
         @NonNull final String bin) {
         return cardService
-            .getCardIssuers(API_ENVIRONMENT, accessToken, paymentMethodId, bin, ProcessingModes.AGGREGATOR);
+            .getCardIssuers(API_ENVIRONMENT, accessToken, paymentMethodId, bin, ProcessingMode.AGGREGATOR.asQueryParamName());
     }
 }

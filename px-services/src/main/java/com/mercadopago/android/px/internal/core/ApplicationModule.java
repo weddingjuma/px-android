@@ -13,15 +13,15 @@ public class ApplicationModule implements PreferenceComponent {
     private static final String SHARED_PREFERENCE_NAME = "com.mercadopago.checkout.store";
 
     @NonNull
-    private final Context context;
+    private Context applicationContext;
 
-    public ApplicationModule(@NonNull final Context context) {
-        this.context = context.getApplicationContext();
+    public ApplicationModule(@NonNull final Context applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
     @NonNull
-    public Context getContext() {
-        return context;
+    public Context getApplicationContext() {
+        return applicationContext;
     }
 
     @NonNull
@@ -36,7 +36,7 @@ public class ApplicationModule implements PreferenceComponent {
 
     @Override
     public SharedPreferences getSharedPreferences() {
-        return context.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
+        return applicationContext.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
     }
 
     public JsonUtil getJsonUtil() {
@@ -48,10 +48,10 @@ public class ApplicationModule implements PreferenceComponent {
     }
 
     public File getCacheDir() {
-        return context.getCacheDir();
+        return applicationContext.getCacheDir();
     }
 
     public Retrofit getRetrofitClient() {
-        return RetrofitUtil.getRetrofitClient(context);
+        return RetrofitUtil.getRetrofitClient(applicationContext);
     }
 }

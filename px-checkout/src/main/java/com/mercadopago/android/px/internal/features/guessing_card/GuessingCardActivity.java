@@ -41,9 +41,10 @@ import com.mercadopago.android.px.internal.callbacks.card.CardholderNameEditText
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.di.CardAssociationSession;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.IssuersActivity;
+import com.mercadopago.android.px.internal.features.PaymentTypesActivity;
 import com.mercadopago.android.px.internal.features.ReviewPaymentMethodsActivity;
+import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
 import com.mercadopago.android.px.internal.features.card.CardExpiryDateTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardIdentificationNumberTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardNumberTextWatcher;
@@ -84,7 +85,10 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILE
 public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> implements
     CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener, GuessingCard.View {
 
-    public static final int REVIEW_PAYMENT_METHODS_REQUEST_CODE = 21;
+    private static final int REQ_CODE_ISSUERS = 3;
+    private static final int REQ_CODE_BANK_DEALS = 11;
+    private static final int REQ_CODE_PAYMENT_TYPES = 17;
+    private static final int REQ_CODE_REVIEW_PAYMENT = 21;
 
     public static final String PARAM_MERCADO_PAGO_CARD_STORAGE = "mercadoPagoCardStorage";
     public static final String PARAM_INCLUDES_PAYMENT = "includesPayment";
@@ -115,7 +119,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     protected ScrollView mScrollView;
     //ViewMode
     private boolean mLowResActive;
-    private Activity mActivity;
     //View Low Res
     private Toolbar mLowResToolbar;
     private MPTextView mLowResTitleToolbar;
@@ -175,16 +178,16 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     /**
      * Starts the guessing card flow with the purpose of performing a payment in the end.
      *
-     * @param callerActivity: the activity that calls this one
+     * @param activity: the activity that calls this one
      * @param paymentRecovery: payment recovery
      */
-    public static void startGuessingCardActivityForPayment(final Activity callerActivity,
+    public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
         final PaymentRecovery paymentRecovery) {
-        final Intent intent = new Intent(callerActivity, GuessingCardActivity.class);
+        final Intent intent = new Intent(activity, GuessingCardActivity.class);
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, true);
-        callerActivity.startActivityForResult(intent, Constants.Activities.GUESSING_CARD_FOR_PAYMENT_REQUEST_CODE);
+        activity.startActivityForResult(intent, requestCode);
     }
 
     public static List<Issuer> extractIssuersFromIntent(@NonNull final Intent intent) {
@@ -194,7 +197,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     @Override
     public void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mActivity = this;
         mActivityActive = true;
         mButtonContainerMustBeShown = true;
         analizeLowRes();
@@ -236,12 +238,12 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             final PaymentRecovery paymentRecovery =
                 JsonUtil.getInstance().fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
             presenter =
-                GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getSession(this), paymentRecovery);
+                GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getInstance(), paymentRecovery);
         } else {
             final MercadoPagoCardStorage mercadoPagoCardStorage = intent.getParcelableExtra(
                 PARAM_MERCADO_PAGO_CARD_STORAGE);
             presenter = GuessingCardPresenter
-                .buildGuessingCardStoragePresenter(Session.getSession(this),
+                .buildGuessingCardStoragePresenter(Session.getInstance(),
                     CardAssociationSession.getCardAssociationSession(this), mercadoPagoCardStorage);
         }
 
@@ -273,7 +275,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         try {
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
             session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
@@ -377,8 +379,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         mInfoTextView = findViewById(R.id.mpsdkBlackInfoTextView);
         mErrorTextView = findViewById(R.id.mpsdkErrorTextView);
         mScrollView = findViewById(R.id.mpsdkScrollViewContainer);
-        mContainerUpAnimation = AnimationUtils.loadAnimation(mActivity, R.anim.px_slide_bottom_up);
-        mContainerDownAnimation = AnimationUtils.loadAnimation(mActivity, R.anim.px_slide_bottom_down);
+        mContainerUpAnimation = AnimationUtils.loadAnimation(this, R.anim.px_slide_bottom_up);
+        mContainerDownAnimation = AnimationUtils.loadAnimation(this, R.anim.px_slide_bottom_down);
 
         fullScrollDown();
     }
@@ -448,14 +450,14 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     private void loadNormalViews() {
         loadToolbarArrow(mNormalToolbar);
 
-        mCardView = new CardView(mActivity);
+        mCardView = new CardView(this);
         mCardView.setSize(CardRepresentationModes.BIG_SIZE);
         mCardView.inflateInParent(mCardViewContainer, true);
         mCardView.initializeControls();
         mCardView.draw(CardView.CARD_SIDE_FRONT);
         mCardSideState = CardView.CARD_SIDE_FRONT;
 
-        mIdentificationCardView = new IdentificationCardView(mActivity);
+        mIdentificationCardView = new IdentificationCardView(this);
         mIdentificationCardView.inflateInParent(mIdentificationCardContainer, true);
         mIdentificationCardView.initializeControls();
         mIdentificationCardView.hide();
@@ -672,7 +674,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     private void startReviewPaymentMethodsActivity(final List<PaymentMethod> supportedPaymentMethods) {
-        ReviewPaymentMethodsActivity.start(this, supportedPaymentMethods, REVIEW_PAYMENT_METHODS_REQUEST_CODE);
+        ReviewPaymentMethodsActivity.start(this, supportedPaymentMethods, REQ_CODE_REVIEW_PAYMENT);
         overridePendingTransition(R.anim.px_slide_up_activity, R.anim.px_no_change_animation);
     }
 
@@ -935,7 +937,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     @Override
     public void showApiExceptionError(final ApiException exception, final String requestOrigin) {
-        ErrorUtil.showApiExceptionError(mActivity, exception, requestOrigin);
+        ErrorUtil.showApiExceptionError(this, exception, requestOrigin);
     }
 
     @Override
@@ -1394,13 +1396,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     @Override
     public void askForPaymentType(final List<PaymentMethod> paymentMethods, final List<PaymentType> paymentTypes,
         final CardInfo cardInfo) {
-        new Constants.Activities.PaymentTypesActivityBuilder()
-            .setActivity(mActivity)
-            .setPaymentMethods(paymentMethods)
-            .setPaymentTypes(paymentTypes)
-            .setCardInfo(cardInfo)
-            .startActivity();
-        overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
+        PaymentTypesActivity.start(this, REQ_CODE_PAYMENT_TYPES, paymentMethods, paymentTypes, cardInfo);
     }
 
     @Override
@@ -1413,7 +1409,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, @Nullable final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == Constants.Activities.PAYMENT_TYPES_REQUEST_CODE) {
+        if (requestCode == REQ_CODE_PAYMENT_TYPES) {
             if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                 final Bundle bundle = data.getExtras();
                 final String paymentTypeJson = bundle.getString("paymentType");
@@ -1426,7 +1422,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             } else if (resultCode == RESULT_CANCELED) {
                 finish();
             }
-        } else if (requestCode == REVIEW_PAYMENT_METHODS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_REVIEW_PAYMENT) {
             clearReviewPaymentMethodsMode();
         } else if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
@@ -1435,9 +1431,9 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
                 setResult(resultCode, data);
                 finish();
             }
-        } else if (requestCode == Constants.Activities.BANK_DEALS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_BANK_DEALS) {
             setSoftInputMode();
-        } else if (requestCode == Constants.Activities.ISSUERS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_ISSUERS) {
             if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                 final Long issuerId = IssuersActivity.extractIssuerIdFromIntent(data);
                 ViewUtils.hideKeyboard(this);
@@ -1479,8 +1475,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
     @Override
     public void askForIssuer(final CardInfo cardInfo, final List<Issuer> issuers, final PaymentMethod paymentMethod) {
-        IssuersActivity.startWithPaymentMethod(this, Constants.Activities.ISSUERS_REQUEST_CODE, issuers,
-            cardInfo, paymentMethod);
+        IssuersActivity.startWithPaymentMethod(this, REQ_CODE_ISSUERS, issuers, cardInfo, paymentMethod);
     }
 
     @Override
@@ -1575,10 +1570,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         // this listener covers all on touch events.
         final int id = v.getId();
         if (id == R.id.mpsdkBankDealsText) {
-            new Constants.Activities.BankDealsActivityBuilder()
-                .setActivity(mActivity)
-                .setBankDeals(presenter.getBankDealsList())
-                .startActivity();
+            BankDealsActivity.start(this, REQ_CODE_BANK_DEALS, presenter.getBankDealsList());
         } else if (id == R.id.mpsdkNextButton) {
             validateCurrentEditText();
         } else if (id == R.id.mpsdkBackButton && !mCurrentEditingEditText.equals(CARD_NUMBER_INPUT)) {
@@ -1601,4 +1593,3 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         return super.onOptionsItemSelected(item);
     }
 }
-

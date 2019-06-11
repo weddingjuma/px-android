@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.checkout;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,19 +9,18 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.datasource.ReflectiveESCManager;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
+import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
-import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
-import com.mercadopago.android.px.internal.features.providers.CheckoutProviderImpl;
 import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAndConfirmBuilder;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.FontUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -35,6 +34,8 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
+import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FinishCheckoutEventTracker;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
@@ -54,7 +55,8 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILE
 import static com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity.EXTRA_RESULT_CODE;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
 
-public class CheckoutActivity extends PXActivity implements CheckoutView, ExpressPaymentFragment.CallBack {
+public class CheckoutActivity extends PXActivity<CheckoutPresenter>
+    implements Checkout.View, ExpressPaymentFragment.CallBack {
 
     private static final String EXTRA_PAYMENT_METHOD_CHANGED = "paymentMethodChanged";
     private static final String EXTRA_PRIVATE_KEY = "extra_private_key";
@@ -65,6 +67,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     private static final int REQ_PAYMENT_PROCESSOR = 0x03;
     private static final int REQ_CARD_VAULT = 0x04;
     private static final int REQ_REVIEW_AND_CONFIRM = 0x05;
+    public static final int REQ_PAYMENT_VAULT = 0x06;
     private static final String TAG_ONETAP_FRAGMENT = "TAG_ONETAP";
 
     //TODO do not make it public - Needed refactor one tap for this.
@@ -84,17 +87,9 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
         setContentView(R.layout.px_activity_checkout);
         if (savedInstanceState == null) {
             presenter = getActivityParameters();
-            configurePresenter();
+            presenter.attachView(this);
             presenter.initialize();
         }
-    }
-
-    private void configurePresenter() {
-        final Session session = Session.getSession(this);
-        final CheckoutProvider provider = new CheckoutProviderImpl(this, merchantPublicKey, privateKey,
-            new ReflectiveESCManager(this, session.getSessionIdProvider().getSessionId(), presenter.isESCEnabled()));
-        presenter.attachResourcesProvider(provider);
-        presenter.attachView(this);
     }
 
     @Override
@@ -112,7 +107,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            final Session session = Session.getSession(this);
+            final Session session = Session.getInstance();
             final ConfigurationModule configurationModule = session.getConfigurationModule();
 
             //TODO remove try catch after session is persisted
@@ -124,12 +119,13 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
                         session.getGroupsRepository(),
                         session.getPluginRepository(),
                         session.getPaymentRepository(),
+                        session.getCheckoutPreferenceRepository(),
                         session.getInternalConfiguration(),
                         session.getBusinessModelMapper());
 
                 privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
                 merchantPublicKey = savedInstanceState.getString(EXTRA_PUBLIC_KEY);
-                configurePresenter();
+                presenter.attachView(this);
 
                 if (presenter.getState().isExpressCheckout) {
                     presenter.retrievePaymentMethodSearch();
@@ -154,15 +150,13 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     protected CheckoutPresenter getActivityParameters() {
-
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
         final PaymentSettingRepository configuration = configurationModule.getPaymentSettings();
 
         privateKey = configuration.getPrivateKey();
 
-        final CheckoutStateModel
-            persistentData = new CheckoutStateModel();
+        final CheckoutStateModel persistentData = new CheckoutStateModel();
 
         merchantPublicKey = configuration.getPublicKey();
 
@@ -172,6 +166,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
             session.getGroupsRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
+            session.getCheckoutPreferenceRepository(),
             session.getInternalConfiguration(),
             session.getBusinessModelMapper());
     }
@@ -220,11 +215,6 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     @Override
-    public void trackScreen() {
-        //TODO Implement when Events definition is done.
-    }
-
-    @Override
     public void showReviewAndConfirmAndRecoverPayment(final boolean isUniquePaymentMethod,
         @NonNull final PostPaymentAction postPaymentAction) {
         overrideTransitionOut();
@@ -246,13 +236,29 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     }
 
     @Override
+    public void showCheckoutExceptionError(final CheckoutPreferenceException checkoutPreferenceException) {
+        final String message = ExceptionHandler.getErrorMessage(this, checkoutPreferenceException);
+        showError(MercadoPagoError.createNotRecoverable(message));
+    }
+
+    @Override
+    public void fetchFonts() {
+        FontUtil.fetchFonts(this);
+    }
+
+    @Override
+    public void showFailureRecoveryError() {
+        showError(MercadoPagoError.createNotRecoverable(getString(R.string.px_error_failure_recovery_not_defined)));
+    }
+
+    @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
         case ErrorUtil.ERROR_REQUEST_CODE:
             resolveErrorRequest(resultCode, data);
             break;
-        case Constants.Activities.PAYMENT_VAULT_REQUEST_CODE: //TODO refactor REQ_CODE.
+        case REQ_PAYMENT_VAULT:
             resolvePaymentVaultRequest(resultCode, data);
             break;
         case REQ_CARD_VAULT:
@@ -430,10 +436,7 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     @Override
     public void showPaymentMethodSelection() {
         if (isActive()) {
-            new Constants.Activities.PaymentVaultActivityBuilder()
-                .setActivity(this)
-                .startActivity();
-            overrideTransitionIn();
+            PaymentVaultActivity.start(this, REQ_PAYMENT_VAULT);
         }
     }
 
@@ -505,7 +508,6 @@ public class CheckoutActivity extends PXActivity implements CheckoutView, Expres
     protected void onDestroy() {
         //TODO remove null check after session is persisted
         if (presenter != null) {
-            presenter.detachResourceProvider();
             presenter.detachView();
         }
         super.onDestroy();

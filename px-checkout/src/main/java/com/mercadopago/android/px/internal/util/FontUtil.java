@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.providers;
+package com.mercadopago.android.px.internal.util;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -8,49 +8,28 @@ import android.support.annotation.NonNull;
 import android.support.v4.provider.FontRequest;
 import android.support.v4.provider.FontsContractCompat;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
-import com.mercadopago.android.px.internal.datasource.IESCManager;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
-import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.QueryBuilder;
-import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
-import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
-import com.mercadopago.android.px.services.Callback;
 
-public class CheckoutProviderImpl implements CheckoutProvider {
+public final class FontUtil {
 
-    private final Context context;
-    private final MercadoPagoServicesAdapter mercadoPagoServicesAdapter;
-    private final IESCManager IESCManager;
-    private Handler mHandler;
+    private static Handler mHandler;
 
-    public CheckoutProviderImpl(@NonNull final Context context,
-        @NonNull String publicKey,
-        @NonNull String privateKey,
-        @NonNull final IESCManager IESCManager) {
-        this.context = context;
-        mercadoPagoServicesAdapter = new MercadoPagoServicesAdapter(context, publicKey, privateKey);
-        this.IESCManager = IESCManager;
+    private FontUtil() {
     }
 
-    @Override
-    public void fetchFonts() {
+    public static void fetchFonts(@NonNull final Context context) {
         if (!FontCache.hasTypeface(FontCache.CUSTOM_REGULAR_FONT)) {
-            fetchRegularFont();
+            fetchRegularFont(context);
         }
         if (!FontCache.hasTypeface(FontCache.CUSTOM_MONO_FONT)) {
-            fetchMonoFont();
+            fetchMonoFont(context);
         }
         if (!FontCache.hasTypeface(FontCache.CUSTOM_LIGHT_FONT)) {
-            fetchLightFont();
+            fetchLightFont(context);
         }
     }
 
-    private void fetchRegularFont() {
+    private static void fetchRegularFont(@NonNull final Context context) {
         FontsContractCompat.FontRequestCallback regularFontCallback = new FontsContractCompat
             .FontRequestCallback() {
             @Override
@@ -70,7 +49,7 @@ public class CheckoutProviderImpl implements CheckoutProvider {
             getHandlerThreadHandler());
     }
 
-    private void fetchLightFont() {
+    private static void fetchLightFont(@NonNull final Context context) {
         FontsContractCompat.FontRequestCallback lightFontCallback = new FontsContractCompat
             .FontRequestCallback() {
             @Override
@@ -90,7 +69,7 @@ public class CheckoutProviderImpl implements CheckoutProvider {
             getHandlerThreadHandler());
     }
 
-    private void fetchMonoFont() {
+    private static void fetchMonoFont(@NonNull final Context context) {
         FontsContractCompat.FontRequestCallback monoFontCallback = new FontsContractCompat
             .FontRequestCallback() {
             @Override
@@ -110,7 +89,7 @@ public class CheckoutProviderImpl implements CheckoutProvider {
             getHandlerThreadHandler());
     }
 
-    private FontRequest getFontRequest(String fontName, int width, int weight, float italic) {
+    private static FontRequest getFontRequest(@NonNull final String fontName, final int width, final int weight, final float italic) {
         QueryBuilder queryBuilder = new QueryBuilder(fontName)
             .withWidth(width)
             .withWeight(weight)
@@ -125,38 +104,12 @@ public class CheckoutProviderImpl implements CheckoutProvider {
             R.array.com_google_android_gms_fonts_certs);
     }
 
-    private Handler getHandlerThreadHandler() {
+    private static Handler getHandlerThreadHandler() {
         if (mHandler == null) {
             HandlerThread handlerThread = new HandlerThread("fonts");
             handlerThread.start();
             mHandler = new Handler(handlerThread.getLooper());
         }
         return mHandler;
-    }
-
-    @Override
-    public void getCheckoutPreference(String checkoutPreferenceId,
-        final TaggedCallback<CheckoutPreference> taggedCallback) {
-        mercadoPagoServicesAdapter.getCheckoutPreference(checkoutPreferenceId, new Callback<CheckoutPreference>() {
-            @Override
-            public void success(CheckoutPreference checkoutPreference) {
-                taggedCallback.onSuccess(checkoutPreference);
-            }
-
-            @Override
-            public void failure(ApiException apiException) {
-                taggedCallback.onFailure(new MercadoPagoError(apiException, ApiUtil.RequestOrigin.GET_PREFERENCE));
-            }
-        });
-    }
-
-    @Override
-    public String getCheckoutExceptionMessage(CheckoutPreferenceException exception) {
-        return ExceptionHandler.getErrorMessage(context, exception);
-    }
-
-    @Override
-    public String getCheckoutExceptionMessage(final Exception exception) {
-        return context.getString(R.string.px_standard_error_message);
     }
 }

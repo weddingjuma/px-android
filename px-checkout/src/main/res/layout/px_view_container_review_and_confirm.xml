@@ -46,7 +46,7 @@
             android:gravity="center"
             app:type="actionPrimary"
             app:state="normal"
-            android:text="@string/px_confirm"
+            android:text="@string/px_pay"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground"

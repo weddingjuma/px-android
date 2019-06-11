@@ -1,12 +1,8 @@
 package com.mercadopago.android.px.internal.datasource;
 
-
+import android.content.Context;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
-
-
-import android.content.Context;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

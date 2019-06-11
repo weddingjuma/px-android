@@ -13,7 +13,7 @@ import com.mercadopago.android.px.configuration.TrackingConfiguration;
 import com.mercadopago.android.px.internal.callbacks.CallbackHolder;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoPaymentConfiguration;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.CheckoutActivity;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -82,7 +82,7 @@ public final class MercadoPagoCheckout {
         final int requestCode) {
 
         initFonts(context);
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
 
         if (!prefetch) {
             session.init(this);

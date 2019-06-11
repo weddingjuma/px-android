@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.internal.repository;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
 
 public interface AmountRepository {
@@ -12,7 +14,7 @@ public interface AmountRepository {
      * @return amount to be processed by groups and installments
      */
     @NonNull
-    BigDecimal getAmountToPay();
+    BigDecimal getAmountToPay(@NonNull String paymentTypeId, @Nullable PayerCost payerCost);
 
     /**
      * Partial amount to pay - No charges, discounts or payer costs applied
@@ -28,7 +30,7 @@ public interface AmountRepository {
      * @return amount items plus charges.
      */
     @NonNull
-    BigDecimal getItemsPlusCharges();
+    BigDecimal getItemsPlusCharges(@NonNull String paymentTypeId);
 
     /**
      * Partial amount that represents charges.
@@ -37,5 +39,14 @@ public interface AmountRepository {
      * @return amount charges.
      */
     @NonNull
-    BigDecimal getAppliedCharges();
+    BigDecimal getAppliedCharges(@NonNull String paymentTypeId, @Nullable PayerCost payerCost);
+
+    /**
+     * Partial amount that represents charges.
+     * Only payment method charges.
+     *
+     * @return amount charges.
+     */
+    @NonNull
+    BigDecimal getAppliedCharges(@NonNull String paymentTypeId);
 }

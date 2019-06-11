@@ -36,8 +36,6 @@ import com.squareup.picasso.Picasso;
 import javax.annotation.Nonnull;
 import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
-import static android.view.View.GONE;
-
 public final class ViewUtils {
 
     private ViewUtils() {
@@ -73,7 +71,7 @@ public final class ViewUtils {
         }
     }
 
-    public static void loadOrCallError(final String imgUrl, final ImageView logo, Callback callback) {
+    public static void loadOrCallError(final String imgUrl, final ImageView logo, final Callback callback) {
         if (!TextUtil.isEmpty(imgUrl)) {
             Picasso.with(logo.getContext())
                 .load(imgUrl)
@@ -85,9 +83,10 @@ public final class ViewUtils {
 
     public static void loadOrGone(@Nullable final CharSequence text, @NonNull final TextView textView) {
         if (TextUtil.isEmpty(text)) {
-            textView.setVisibility(GONE);
+            textView.setVisibility(View.GONE);
         } else {
             textView.setText(text);
+            textView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -101,6 +100,7 @@ public final class ViewUtils {
             imageView.setVisibility(View.GONE);
         } else {
             imageView.setImageResource(resId);
+            imageView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -145,17 +145,17 @@ public final class ViewUtils {
         showLayout(activity, false, true);
     }
 
-    private static void showLayout(Activity activity, final boolean showProgress, final boolean showLayout) {
+    private static void showLayout(final Activity activity, final boolean showProgress, final boolean showLayout) {
 
         final View form = activity.findViewById(R.id.mpsdkRegularLayout);
         final View progress = activity.findViewById(R.id.mpsdkProgressLayout);
 
         if (progress != null) {
-            progress.setVisibility(showLayout ? GONE : View.VISIBLE);
+            progress.setVisibility(showLayout ? View.GONE : View.VISIBLE);
         }
 
         if (form != null) {
-            form.setVisibility(showProgress ? GONE : View.VISIBLE);
+            form.setVisibility(showProgress ? View.GONE : View.VISIBLE);
         }
     }
 

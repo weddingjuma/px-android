@@ -74,6 +74,7 @@ public class PaymentMethodSearchItemAdapter extends RecyclerView.Adapter<Payment
             ViewUtils.loadOrGone(model.getDiscountInfo(), discountInfo);
             ViewUtils.loadOrGone(model.getBadgeResourceId(context), badge);
             model.tint(icon);
+            itemView.setTag(model.getPaymentMethodId());
             itemView.setOnClickListener(v -> model.handleOnClick());
         }
     }

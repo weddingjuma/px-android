@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.testcheckout.assertions.CheckoutValidator;
 import com.mercadopago.android.px.testcheckout.input.Card;
-import com.mercadopago.android.px.testcheckout.pages.CardPage;
 import com.mercadopago.android.px.testcheckout.pages.CongratsPage;
 import com.mercadopago.android.px.testcheckout.pages.CreditCardPage;
 import com.mercadopago.android.px.testcheckout.pages.NamePage;
@@ -43,6 +42,7 @@ public class CreditCardTestFlow extends TestFlow {
             .pressConfirmButton();
     }
 
+    @Deprecated
     @NonNull
     public CongratsPage runCreditCardPaymentFlowWithInstallmentsFromOneTapSavedCard(
         @NonNull PaymentMethodPage paymentMethodPage, @NonNull final Card card, final int installmentsOption) {

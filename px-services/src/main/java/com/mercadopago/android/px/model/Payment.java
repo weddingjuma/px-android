@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import junit.framework.Test;
 
 public final class Payment implements IPayment, IPaymentDescriptor {
 

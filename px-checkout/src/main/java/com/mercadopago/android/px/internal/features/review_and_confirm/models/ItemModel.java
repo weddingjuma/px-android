@@ -4,8 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import java.math.BigDecimal;
 
 public class ItemModel implements Parcelable {

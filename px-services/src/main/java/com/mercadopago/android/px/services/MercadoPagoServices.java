@@ -3,7 +3,6 @@ package com.mercadopago.android.px.services;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.services.BankDealService;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.DiscountService;
@@ -27,6 +26,7 @@ import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.SavedCardToken;
 import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Site;
@@ -48,7 +48,7 @@ public class MercadoPagoServices {
     /* default */ final Context context;
     /* default */ final String publicKey;
     /* default */ final String privateKey;
-    private final String processingMode;
+    private final ProcessingMode processingMode;
 
     /**
      * @param context context to obtain connection interceptor and cache.
@@ -61,7 +61,7 @@ public class MercadoPagoServices {
         this.context = context;
         this.publicKey = publicKey;
         this.privateKey = privateKey;
-        processingMode = ProcessingModes.AGGREGATOR;
+        processingMode = ProcessingMode.AGGREGATOR;
     }
 
     public void getCheckoutPreference(final String checkoutPreferenceId, final Callback<CheckoutPreference> callback) {
@@ -105,7 +105,7 @@ public class MercadoPagoServices {
             API_ENVIRONMENT,
             LocaleUtil.getLanguage(context), publicKey, amount,
             excludedPaymentTypesAppended, excludedPaymentMethodsAppended, site.getId(),
-            processingMode, cardsWithEscAppended,
+            processingMode.asQueryParamName(), cardsWithEscAppended,
             differentialPricing, null, false,
             privateKey).
             enqueue(callback);
@@ -172,13 +172,14 @@ public class MercadoPagoServices {
         final Callback<List<Installment>> callback) {
         final InstallmentService service = RetrofitUtil.getRetrofitClient(context).create(InstallmentService.class);
         service.getInstallments(API_ENVIRONMENT, publicKey, privateKey, bin, amount, issuerId,
-            paymentMethodId, LocaleUtil.getLanguage(context), processingMode, differentialPricingId).enqueue(callback);
+            paymentMethodId, LocaleUtil.getLanguage(context), processingMode.asQueryParamName(), differentialPricingId)
+            .enqueue(callback);
     }
 
     public void getIssuers(final String paymentMethodId, final String bin, final Callback<List<Issuer>> callback) {
         final IssuersService service = RetrofitUtil.getRetrofitClient(context).create(IssuersService.class);
         service
-            .getIssuers(API_ENVIRONMENT, publicKey, privateKey, paymentMethodId, bin, processingMode)
+            .getIssuers(API_ENVIRONMENT, publicKey, privateKey, paymentMethodId, bin, processingMode.asQueryParamName())
             .enqueue(callback);
     }
 

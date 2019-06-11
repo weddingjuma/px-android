@@ -64,6 +64,7 @@ public class SavedCardTestFlow extends TestFlow {
         return new ReviewAndConfirmPage().pressConfirmButton();
     }
 
+    @Deprecated
     public CongratsPage runInvalidDefaultCardIdPaymentFlow() {
         final PaymentMethodPage paymentMethodPage = new PaymentMethodPage(null);
         startCheckout();

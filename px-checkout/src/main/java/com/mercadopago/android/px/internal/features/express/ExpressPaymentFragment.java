@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.features.express;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -28,10 +27,11 @@ import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
@@ -48,8 +48,8 @@ import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAd
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
+import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
@@ -60,7 +60,9 @@ import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -87,6 +89,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     SplitPaymentHeaderAdapter.SplitListener {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
+    private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
+    private static final String EXTRA_RENDER_MODE = "render_mode";
     private static final int REQ_CODE_CARD_VAULT = 0x999;
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 0x123;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
@@ -118,6 +122,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private TitlePager titlePager;
     private PaymentMethodHeaderView paymentMethodHeaderView;
     private LabeledSwitch splitPaymentView;
+    private PaymentMethodFragmentAdapter paymentMethodFragmentAdapter;
+    @RenderMode private String renderMode;
 
     private final HubAdapter hubAdapter = new HubAdapter();
 
@@ -149,20 +155,29 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         //TODO remove try catch after session is persisted
         try {
-            presenter = createPresenter(view.getContext());
+            presenter = createPresenter();
             presenter.attachView(this);
             if (savedInstanceState == null) {
                 presenter.trackExpressView();
             } else {
+                renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
                 presenter.recoverFromBundle(savedInstanceState);
             }
             presenter.loadViewModel();
         } catch (final Exception e) {
-            cancel();
+            if (savedInstanceState == null) {
+                ErrorUtil.startErrorActivity(getActivity());
+            } else {
+                cancel();
+            }
         }
 
         // Order is important - On click and events should be wired AFTER view is attached.
         summaryView.setOnFitListener(this);
+        final View.OnClickListener listener = v -> presenter.onHeaderClicked();
+        summaryView.setBigHeaderListener(listener);
+        toolbarElementDescriptor.setOnClickListener(listener);
+
         toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
         toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
 
@@ -183,6 +198,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         summaryView = view.findViewById(R.id.summary_view);
 
         toolbarElementDescriptor = view.findViewById(R.id.element_descriptor_toolbar);
+
         pagerAndConfirmButtonContainer = view.findViewById(R.id.container);
         aspectRatioContainer = view.findViewById(R.id.aspect_ratio_container);
         paymentMethodPager = view.findViewById(R.id.payment_method_pager);
@@ -193,7 +209,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         fadeAnimation = new FadeAnimator(view.getContext());
 
         paymentMethodSlideAnim = new SlideAnim(aspectRatioContainer);
-        configureCardAspectRatio(aspectRatioContainer);
+        configureCardAspectRatio(ASPECT_RATIO_HIGH_RES);
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         installmentsRecyclerView.setLayoutManager(linearLayoutManager);
@@ -234,27 +250,26 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         configureToolbar(view);
     }
 
-    private void configureCardAspectRatio(final FixedAspectRatioFrameLayout aspectRatioContainer) {
-        if (ScaleUtil.isLowRes(aspectRatioContainer.getContext())) {
-            aspectRatioContainer.setAspectRatio(ASPECT_RATIO_LOW_RES.first, ASPECT_RATIO_LOW_RES.second);
-        } else {
-            aspectRatioContainer.setAspectRatio(ASPECT_RATIO_HIGH_RES.first, ASPECT_RATIO_HIGH_RES.second);
-        }
+    private void configureCardAspectRatio(@NonNull final Pair<Integer, Integer> aspect) {
+        aspectRatioContainer.setAspectRatio(aspect.first, aspect.second);
     }
 
-    private ExpressPaymentPresenter createPresenter(@NonNull final Context context) {
-        final Session session = Session.getSession(context);
+    private ExpressPaymentPresenter createPresenter() {
+        final Session session = Session.getInstance();
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
             session.getConfigurationModule().getPaymentSettings(),
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getGroupsRepository(),
-            session.getAmountConfigurationRepository());
+            session.getAmountConfigurationRepository(),
+            session.getConfigurationModule().getChargeSolver(),
+            session.getMercadoPagoESC());
     }
 
     @Override
     public void onSaveInstanceState(@NonNull final Bundle outState) {
+        outState.putString(EXTRA_RENDER_MODE, renderMode);
         if (presenter != null) {
             super.onSaveInstanceState(presenter.storeInBundle(outState));
         } else {
@@ -304,17 +319,21 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         @NonNull final HubAdapter.Model model) {
 
         if (paymentMethodPager.getAdapter() == null) {
-            paymentMethodPager
-                .setAdapter(PaymentMethodFragmentAdapter.with(getContext(), getChildFragmentManager(), items));
+            paymentMethodFragmentAdapter = new PaymentMethodFragmentAdapter(getChildFragmentManager(), items);
+            if (renderMode == null) {
+                summaryView.setMeasureListener((itemsClipped) -> {
+                    summaryView.setMeasureListener(null);
+                    renderMode = itemsClipped ? RenderMode.LOW_RES : RenderMode.HIGH_RES;
+                    setPagerAdapter();
+                });
+            } else {
+                setPagerAdapter();
+            }
         }
 
         installmentsAdapter = new InstallmentsAdapter(site, new ArrayList<>(), PayerCost.NO_SELECTED, this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
         installmentsRecyclerView.setVisibility(View.GONE);
-
-        indicator.attachToPager(paymentMethodPager);
-
-        // indicator must be after paymentMethodPager adapter is set.
 
         final TitlePagerAdapter titlePagerAdapter =
             new TitlePagerAdapter(model.paymentMethodDescriptorModels, titlePager);
@@ -326,6 +345,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             new PaymentMethodHeaderAdapter(model.paymentMethodDescriptorModels, paymentMethodHeaderView),
             new ConfirmButtonAdapter(model.confirmButtonViewModels, confirmButton)
         ));
+    }
+
+    @Override
+    public void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel) {
+        confirmButton.setText(payButtonViewModel.getButtonText(getContext()));
     }
 
     @Override
@@ -521,19 +545,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void startLoadingButton(final int paymentTimeout) {
-
+    public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
         hideConfirmButton();
-        final int[] location = new int[2];
-        confirmButton.getLocationOnScreen(location);
-
-        // TODO refactor - unify review and confirm.
-        final ExplodeParams explodeParams =
-            new ExplodeParams(location[1] - confirmButton.getMeasuredHeight() / 2, confirmButton.getMeasuredHeight(),
-                (int) getContext().getResources().getDimension(R.dimen.px_m_margin),
-                getContext().getResources().getString(R.string.px_processing_payment_button),
-                paymentTimeout);
-
+        final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
+            payButtonViewModel.getButtonProgressText(getContext()), paymentTimeout);
         final FragmentManager childFragmentManager = getChildFragmentManager();
         final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
         childFragmentManager.beginTransaction()
@@ -601,5 +616,26 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void resetPagerIndex() {
         paymentMethodPager.setCurrentItem(0);
+    }
+
+    @Override
+    public void showDynamicDialog(@NonNull final DynamicDialogCreator creator,
+        @NonNull final DynamicDialogCreator.CheckoutData checkoutData) {
+        if (creator.shouldShowDialog(getContext(), checkoutData)) {
+            creator.create(getContext(), checkoutData).show(getChildFragmentManager(),
+                TAG_HEADER_DYNAMIC_DIALOG);
+        }
+    }
+
+    private void setPagerAdapter() {
+        if (renderMode.equals(RenderMode.LOW_RES)) {
+            configureCardAspectRatio(ASPECT_RATIO_LOW_RES);
+        }
+        //Workaround to weird bug when setting the pager adapter not right away
+        paymentMethodPager.post(() -> {
+            paymentMethodFragmentAdapter.setRenderMode(renderMode);
+            paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
+            indicator.attachToPager(paymentMethodPager);
+        });
     }
 }

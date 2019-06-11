@@ -70,9 +70,9 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public void configure(@NonNull final AdvancedConfiguration advancedConfiguration) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(PREF_PRODUCT_ID, advancedConfiguration.getDiscountParamsConfiguration().getProductId()).apply();
+        edit.putString(PREF_PRODUCT_ID, advancedConfiguration.getDiscountParamsConfiguration().getProductId());
         edit.putStringSet(PREF_LABELS, advancedConfiguration.getDiscountParamsConfiguration().getLabels());
-        edit.putBoolean(PREF_AMOUNT_ROW_ENABLED, advancedConfiguration.isAmountRowEnabled());
+        edit.putBoolean(PREF_AMOUNT_ROW_ENABLED, advancedConfiguration.isAmountRowEnabled()).apply();
 
         this.advancedConfiguration = advancedConfiguration;
     }
@@ -111,8 +111,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @NonNull
     @Override
     public List<PaymentTypeChargeRule> chargeRules() {
-        final PaymentConfiguration paymentConfiguration = getPaymentConfiguration();
-        return paymentConfiguration.getCharges();
+        return getPaymentConfiguration().getCharges();
     }
 
     @NonNull

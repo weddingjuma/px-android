@@ -6,6 +6,7 @@ import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -26,7 +27,7 @@ public interface ReviewAndConfirm {
 
         void showResult(@NonNull PaymentResult paymentResult);
 
-        void startLoadingButton(final int paymentTimeout);
+        void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel);
 
         void cancelLoadingButton();
 
@@ -48,6 +49,8 @@ public interface ReviewAndConfirm {
         void reloadBody();
 
         void finishAndChangePaymentMethod();
+
+        void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel);
     }
 
     interface Action extends PaymentServiceHandler {

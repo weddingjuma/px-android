@@ -46,7 +46,7 @@ import com.mercadopago.android.px.services.Callback;
         final View paymentView = ViewUtils.inflate(parent, R.layout.px_payment_method_account_money);
 
         // TODO: process this on PaymentMethodComponent to only render here.
-        final Session session = Session.getSession(parent.getContext());
+        final Session session = Session.getInstance();
         final MPCall<PaymentMethodSearch> groups = session.getGroupsRepository().getGroups();
         groups.execute(new Callback<PaymentMethodSearch>() {
             @Override

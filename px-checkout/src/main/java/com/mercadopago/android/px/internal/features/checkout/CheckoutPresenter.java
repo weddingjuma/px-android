@@ -1,15 +1,15 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.checkout;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.internal.base.MvpPresenter;
+import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
-import com.mercadopago.android.px.internal.features.providers.CheckoutProvider;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
+import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -35,8 +35,8 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
-public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvider> implements PaymentServiceHandler,
-    PostPaymentAction.ActionController {
+public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
+    PostPaymentAction.ActionController, Checkout.Actions {
 
     @NonNull /* default */ final CheckoutStateModel state;
 
@@ -54,6 +54,8 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     @NonNull /* default */ final BusinessModelMapper businessModelMapper;
 
+    @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
+
     private transient FailureRecovery failureRecovery;
 
     public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
@@ -62,13 +64,16 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
+        @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
         @NonNull final InternalConfiguration internalConfiguration,
         @NonNull final BusinessModelMapper businessModelMapper) {
+
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
         this.groupsRepository = groupsRepository;
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
+        this.checkoutPreferenceRepository = checkoutPreferenceRepository;
         this.internalConfiguration = internalConfiguration;
         this.businessModelMapper = businessModelMapper;
         state = persistentData;
@@ -79,13 +84,14 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         return state;
     }
 
+    @Override
     public void initialize() {
         getView().showProgress();
         configurePreference();
     }
 
     @Override
-    public void attachView(final CheckoutView view) {
+    public void attachView(final Checkout.View view) {
         super.attachView(view);
     }
 
@@ -104,20 +110,19 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
 
     /* default */ void startCheckoutForPreference() {
         try {
-            getCheckoutPreference().validate();
-            getView().trackScreen();
+            paymentSettingRepository.getCheckoutPreference().validate();
             startCheckout();
         } catch (final CheckoutPreferenceException e) {
-            final String message = getResourcesProvider().getCheckoutExceptionMessage(e);
-            getView().showError(new MercadoPagoError(message, false));
+            getView().showCheckoutExceptionError(e);
         }
     }
 
     private void startCheckout() {
-        getResourcesProvider().fetchFonts();
+        getView().fetchFonts();
         retrievePaymentMethodSearch();
     }
 
+    @Override
     public void retrievePaymentMethodSearch() {
         if (isViewAttached()) {
             groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
@@ -175,13 +180,14 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    @Override
     public boolean isESCEnabled() {
         return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
     }
 
     /* default */ void retrieveCheckoutPreference(final String checkoutPreferenceId) {
-        getResourcesProvider().getCheckoutPreference(checkoutPreferenceId,
-            new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
+        checkoutPreferenceRepository.getCheckoutPreference(checkoutPreferenceId)
+            .enqueue(new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
                 @Override
                 public void onSuccess(final CheckoutPreference checkoutPreference) {
                     paymentSettingRepository.configure(checkoutPreference);
@@ -200,6 +206,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
             });
     }
 
+    @Override
     public void onErrorCancel(@Nullable final MercadoPagoError mercadoPagoError) {
         if (isIdentificationInvalidInPayment(mercadoPagoError)) {
             getView().showPaymentMethodSelection();
@@ -252,14 +259,17 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    @Override
     public void onPaymentMethodSelectionError(final MercadoPagoError mercadoPagoError) {
         getView().cancelCheckout(mercadoPagoError);
     }
 
+    @Override
     public void onPaymentMethodSelectionCancel() {
         cancelCheckout();
     }
 
+    @Override
     public void onReviewAndConfirmCancel() {
         if (isUniquePaymentMethod()) {
             getView().cancelCheckout();
@@ -271,14 +281,17 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    @Override
     public void onReviewAndConfirmError(final MercadoPagoError mercadoPagoError) {
         getView().cancelCheckout(mercadoPagoError);
     }
 
+    @Override
     public void onPaymentResultResponse() {
         finishCheckout();
     }
 
+    @Override
     public void onCardFlowResponse() {
         if (isRecoverableTokenProcess()) {
             getView().startPayment();
@@ -287,10 +300,12 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    @Override
     public void onTerminalError(@NonNull final MercadoPagoError mercadoPagoError) {
         getView().cancelCheckout(mercadoPagoError);
     }
 
+    @Override
     public void onCardFlowCancel() {
         groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
             @Override
@@ -324,6 +339,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         });
     }
 
+    @Override
     public void onCustomReviewAndConfirmResponse(final Integer customResultCode) {
         getView().cancelCheckout(customResultCode, state.paymentMethodEdited);
     }
@@ -347,25 +363,22 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         state.isUniquePaymentMethod = groupCount + customCount + pluginCount == 1;
     }
 
+    @Override
     public void recoverFromFailure() {
         if (failureRecovery != null) {
             failureRecovery.recover();
         } else {
-            IllegalStateException e = new IllegalStateException("Failure recovery not defined");
-            getView().showError(new MercadoPagoError(getResourcesProvider().getCheckoutExceptionMessage(e), false));
+            getView().showFailureRecoveryError();
         }
     }
 
+    @Override
     public void setFailureRecovery(final FailureRecovery failureRecovery) {
         this.failureRecovery = failureRecovery;
     }
 
     private boolean isRecoverableTokenProcess() {
         return paymentRepository.hasPayment() && paymentRepository.createPaymentRecovery().isTokenRecoverable();
-    }
-
-    public CheckoutPreference getCheckoutPreference() {
-        return paymentSettingRepository.getCheckoutPreference();
     }
 
     private void finishCheckout() {
@@ -377,6 +390,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
         }
     }
 
+    @Override
     public void onCustomPaymentResultResponse(final Integer customResultCode) {
         //TODO improve this
         if (paymentRepository.hasPayment() && paymentRepository.getPayment() instanceof Payment) {
@@ -389,6 +403,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     /**
      * Send intention to close checkout if the checkout has oneTap data then it should not close.
      */
+    @Override
     public void cancelCheckout() {
         //TODO improve this
         if (state.isExpressCheckout) {
@@ -405,10 +420,12 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     /**
      * Close checkout with resCode
      */
+    @Override
     public void exitWithCode(final int resCode) {
         getView().exitCheckout(resCode);
     }
 
+    @Override
     public boolean isUniquePaymentMethod() {
         return state.isUniquePaymentMethod;
     }
@@ -494,6 +511,7 @@ public class CheckoutPresenter extends MvpPresenter<CheckoutView, CheckoutProvid
     }
 
     //TODO separate with better navigation when we have a proper driver.
+    @Override
     public void onChangePaymentMethodFromReviewAndConfirm() {
         onChangePaymentMethod();
     }

@@ -5,17 +5,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.features.payer_information.PayerInformationFocus;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class PayerInformationStateModel implements Parcelable {
 
     private static final String BUNDLE_PAYER_INFO = "bundle_payer_info";
-    private static final String IDENTIFICATION_TYPE_CPF = "CPF";
-    private static final String IDENTIFICATION_TYPE_CNPJ = "CNPJ";
 
     private String identificationNumber;
     private String identificationName;
@@ -24,7 +22,7 @@ public final class PayerInformationStateModel implements Parcelable {
     private final Identification identification;
     private IdentificationType identificationType;
     private List<IdentificationType> identificationTypeList;
-    private String currentFocusType;
+    @PayerInformationFocus private String currentFocusType;
 
     private PayerInformationStateModel() {
         identification = new Identification();
@@ -74,6 +72,7 @@ public final class PayerInformationStateModel implements Parcelable {
         dest.writeString(identificationNumber);
         dest.writeString(identificationName);
         dest.writeString(identificationLastName);
+        dest.writeString(identificationBusinessName);
         dest.writeString(currentFocusType);
         dest.writeParcelable(identification, flags);
         dest.writeParcelable(identificationType, flags);
@@ -95,6 +94,7 @@ public final class PayerInformationStateModel implements Parcelable {
         return TextUtil.isNotEmpty(identificationNumber) ||
             TextUtil.isNotEmpty(identificationLastName) ||
             TextUtil.isNotEmpty(identificationName) ||
+            TextUtil.isNotEmpty(identificationBusinessName) ||
             identificationType != null;
     }
 
@@ -135,6 +135,7 @@ public final class PayerInformationStateModel implements Parcelable {
         this.identificationName = identificationName;
     }
 
+    @PayerInformationFocus
     public String getCurrentFocusType() {
         return currentFocusType;
     }
@@ -151,7 +152,7 @@ public final class PayerInformationStateModel implements Parcelable {
         this.identificationBusinessName = identificationBusinessName;
     }
 
-    public void setFocus(final String currentFocusType) {
+    public void setFocus(@PayerInformationFocus final String currentFocusType) {
         this.currentFocusType = currentFocusType;
     }
 }

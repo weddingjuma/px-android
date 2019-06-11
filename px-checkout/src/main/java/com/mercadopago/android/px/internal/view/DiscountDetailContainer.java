@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.DiscountHelper;
 import com.mercadopago.android.px.internal.util.ViewUtils;
-import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import javax.annotation.Nonnull;

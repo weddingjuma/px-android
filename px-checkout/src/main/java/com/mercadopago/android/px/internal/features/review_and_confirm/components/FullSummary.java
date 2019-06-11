@@ -105,7 +105,7 @@ public class FullSummary extends Component<SummaryComponent.SummaryProps, Void> 
 
     private int getDisclaimerTextColor(@NonNull final Context context) {
         final ReviewAndConfirmConfiguration reviewAndConfirmConfiguration =
-            Session.getSession(context).getConfigurationModule().getPaymentSettings().getAdvancedConfiguration()
+            Session.getInstance().getConfigurationModule().getPaymentSettings().getAdvancedConfiguration()
                 .getReviewAndConfirmConfiguration();
         if (TextUtil.isEmpty(reviewAndConfirmConfiguration.getDisclaimerTextColor())) {
             return ContextCompat.getColor(context, R.color.px_default_disclaimer);

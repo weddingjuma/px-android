@@ -9,10 +9,10 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
+import com.mercadopago.android.px.internal.features.installments.InstallmentsActivity;
 import com.mercadopago.android.px.internal.features.providers.CardVaultProviderImpl;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
@@ -35,6 +35,10 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILE
 
 public class CardVaultActivity extends AppCompatActivity implements CardVaultView {
 
+    private static final int REQ_CODE_INSTALLMENTS = 2;
+    private static final int REQ_CODE_ISSUERS = 3;
+    private static final int REQ_CODE_GUESSING_CARD = 13;
+    private static final int REQ_CODE_SECURITY_CODE = 18;
     private static final String EXTRA_CARD = "card";
     private static final String EXTRA_PAYMENT_RECOVERY = "paymentRecovery";
     private static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
@@ -72,7 +76,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     private void configure() {
-        final Session session = Session.getSession(this);
+        final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
         presenter = new CardVaultPresenter(session.getConfigurationModule().getUserSelectionRepository(),
             paymentSettingRepository,
@@ -148,25 +152,25 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
             .setCard(presenter.getCard())
             .setPaymentRecovery(presenter.getPaymentRecovery())
             .setReason(reason)
-            .startActivity(this, Constants.Activities.SECURITY_CODE_REQUEST_CODE);
+            .startActivity(this, REQ_CODE_SECURITY_CODE);
     }
 
     @Override
     public void askForCardInformation() {
-        GuessingCardActivity.startGuessingCardActivityForPayment(this,
+        GuessingCardActivity.startGuessingCardActivityForPayment(this, REQ_CODE_GUESSING_CARD,
             presenter.getPaymentRecovery());
         overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
 
     @Override
     protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == Constants.Activities.GUESSING_CARD_FOR_PAYMENT_REQUEST_CODE) {
+        if (requestCode == REQ_CODE_GUESSING_CARD) {
             resolveGuessingCardRequest(resultCode, data);
-        } else if (requestCode == Constants.Activities.ISSUERS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_ISSUERS) {
             resolveIssuersRequest(resultCode);
-        } else if (requestCode == Constants.Activities.INSTALLMENTS_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_INSTALLMENTS) {
             resolveInstallmentsRequest(resultCode);
-        } else if (requestCode == Constants.Activities.SECURITY_CODE_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_SECURITY_CODE) {
             resolveSecurityCodeRequest(resultCode);
         } else if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             resolveErrorRequest(resultCode, data);
@@ -253,20 +257,13 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
 
     @Override
     public void startIssuersActivity(@NonNull final List<Issuer> issuers) {
-        IssuersActivity.start(this, Constants.Activities.ISSUERS_REQUEST_CODE, issuers, presenter.getCardInfo());
+        IssuersActivity.start(this, REQ_CODE_ISSUERS, issuers, presenter.getCardInfo());
     }
 
     @Override
-    public void askForInstallments() {
-        startInstallmentsActivity();
+    public void askForInstallments(final CardInfo cardInfo) {
+        InstallmentsActivity.start(this, REQ_CODE_INSTALLMENTS, cardInfo);
         animateTransitionSlideInSlideOut();
-    }
-
-    private void startInstallmentsActivity() {
-        new Constants.Activities.InstallmentsActivityBuilder()
-            .setActivity(this)
-            .setCardInfo(presenter.getCardInfo())
-            .startActivity();
     }
 
     @Override

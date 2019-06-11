@@ -47,12 +47,12 @@ public final class CardAssociationSession extends ApplicationModule {
 
     @NonNull
     public IESCManager getMercadoPagoESC() {
-        return new ReflectiveESCManager(getContext(), getSessionIdProvider().getSessionId(), true);
+        return new ReflectiveESCManager(getApplicationContext(), getSessionIdProvider().getSessionId(), true);
     }
 
     @NonNull
     public CardAssociationGatewayService getGatewayService() {
         return new CardAssociationGatewayService(
-            RetrofitUtil.getRetrofitClient(getContext()).create(GatewayService.class), new Device(getContext()));
+            RetrofitUtil.getRetrofitClient(getApplicationContext()).create(GatewayService.class), new Device(getApplicationContext()));
     }
 }

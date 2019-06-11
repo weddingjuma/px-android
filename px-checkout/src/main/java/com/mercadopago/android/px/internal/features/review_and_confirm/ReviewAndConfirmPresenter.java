@@ -11,8 +11,10 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
@@ -37,6 +39,7 @@ import java.util.Set;
     private final ConfirmEvent confirmEvent;
     private final UserSelectionRepository userSelectionRepository;
     private FailureRecovery recovery;
+    private final PayButtonViewModel payButtonViewModel;
 
     /* default */ ReviewAndConfirmPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final BusinessModelMapper businessModelMapper,
@@ -55,12 +58,15 @@ import java.util.Set;
             new ReviewAndConfirmViewTracker(escCardIds, userSelectionRepository, paymentSettings,
                 discountRepository.getCurrentConfiguration());
         confirmEvent = ConfirmEvent.from(escCardIds, userSelectionRepository);
+        payButtonViewModel = new PayButtonViewModelMapper().map(
+            paymentSettings.getAdvancedConfiguration().getCustomStringConfiguration());
     }
 
     @Override
     public void attachView(final ReviewAndConfirm.View view) {
         super.attachView(view);
         paymentRepository.attach(this);
+        view.setPayButtonText(payButtonViewModel);
     }
 
     @Override
@@ -112,7 +118,7 @@ import java.util.Set;
 
     /* default */ void pay() {
         if (paymentRepository.isExplodingAnimationCompatible()) {
-            getView().startLoadingButton(paymentRepository.getPaymentTimeout());
+            getView().startLoadingButton(paymentRepository.getPaymentTimeout(), payButtonViewModel);
             getView().hideConfirmButton();
         }
         // TODO improve: This was added because onetap can detach this listener on its OnDestroy

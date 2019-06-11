@@ -27,7 +27,7 @@ public abstract class PaymentMethodFragment extends Fragment implements PaymentM
     public void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         presenter = new PaymentMethodPresenter(
-            Session.getSession(getContext()).getConfigurationModule().getDisabledPaymentMethodRepository(),
+            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(),
             (DrawableFragmentItem) getArguments().getSerializable(ARG_MODEL));
     }
 

@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.view;
 
 import android.content.Context;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.view.ReceiptRenderer;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

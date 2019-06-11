@@ -27,14 +27,11 @@ public class PaymentMethodHeaderView extends FrameLayout {
     private final TitlePager titlePager;
 
     public interface Listener {
-
         void onDescriptorViewClicked();
-
         void onInstallmentsSelectorCancelClicked();
     }
 
-    public PaymentMethodHeaderView(final Context context,
-        @Nullable final AttributeSet attrs) {
+    public PaymentMethodHeaderView(final Context context, @Nullable final AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
@@ -47,20 +44,18 @@ public class PaymentMethodHeaderView extends FrameLayout {
         titleView = findViewById(R.id.installments_title);
         titlePager = findViewById(R.id.title_pager);
         arrow = findViewById(R.id.arrow);
+        titleView.setVisibility(GONE);
     }
 
     public void setListener(final Listener listener) {
-        setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                if (hasEndedAnim(arrow)) {
-                    if (titleView.getVisibility() == VISIBLE) {
-                        arrow.startAnimation(rotateDown);
-                        listener.onInstallmentsSelectorCancelClicked();
-                    } else {
-                        arrow.startAnimation(rotateUp);
-                        listener.onDescriptorViewClicked();
-                    }
+        setOnClickListener(v -> {
+            if (hasEndedAnim(arrow)) {
+                if (titleView.getVisibility() == VISIBLE) {
+                    arrow.startAnimation(rotateDown);
+                    listener.onInstallmentsSelectorCancelClicked();
+                } else {
+                    arrow.startAnimation(rotateUp);
+                    listener.onDescriptorViewClicked();
                 }
             }
         });
@@ -82,7 +77,7 @@ public class PaymentMethodHeaderView extends FrameLayout {
         setClickable(isClickable);
     }
 
-    public void updateArrowVisibility(float positionOffset, final Model model) {
+    public void trackPagerPosition(float positionOffset, final Model model) {
         if (model.goingTo == GoingToModel.BACKWARDS) {
             positionOffset = 1.0f - positionOffset;
         }
@@ -100,6 +95,10 @@ public class PaymentMethodHeaderView extends FrameLayout {
                 arrow.setAlpha(0.0f);
             }
         }
+    }
+
+    public void setArrowVisibility(final boolean visible) {
+        arrow.setAlpha(visible ? 1.0f : 0.0f);
     }
 
     public static class Model {

@@ -2,7 +2,6 @@ package com.mercadopago.android.px.utils;
 
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.mocks.DummyCard;
-
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;

@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -18,6 +17,7 @@ import com.mercadopago.android.px.internal.view.ResultCodeAction;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
@@ -109,7 +109,8 @@ import java.util.List;
         if (instruction == null) {
             getView().showInstructionsError();
         } else {
-            getView().setPropInstruction(instruction, ProcessingModes.AGGREGATOR, false);
+            //TODO fix this logic, future processing mode is not allways aggregator.
+            getView().setPropInstruction(instruction, ProcessingMode.AGGREGATOR, false);
             getView().notifyPropsChanged();
         }
     }

@@ -15,6 +15,7 @@ public class SummaryViewAdapter extends ViewAdapter<List<SummaryView.Model>, Sum
 
     public SummaryViewAdapter(@NonNull final List<SummaryView.Model> data, @NonNull final SummaryView view) {
         super(data, view);
+        view.setMaxElementsToShow(getMaxItemsInSummaryAvailable());
     }
 
     @Override
@@ -46,5 +47,13 @@ public class SummaryViewAdapter extends ViewAdapter<List<SummaryView.Model>, Sum
             }
             view.animateElementList(positionOffset);
         }
+    }
+
+    private int getMaxItemsInSummaryAvailable() {
+        int maxItems = 0;
+        for (final SummaryView.Model model : data) {
+            maxItems = Math.max(maxItems, model.getElementsSize());
+        }
+        return maxItems;
     }
 }

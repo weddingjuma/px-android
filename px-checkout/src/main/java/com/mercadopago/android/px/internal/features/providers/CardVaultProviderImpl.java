@@ -14,7 +14,7 @@ public class CardVaultProviderImpl implements CardVaultProvider {
     private final MercadoPagoServicesAdapter mercadoPago;
 
     public CardVaultProviderImpl(@NonNull final Context context) {
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();
         mercadoPago =
             new MercadoPagoServicesAdapter(context, paymentSettings.getPublicKey(), paymentSettings.getPrivateKey());

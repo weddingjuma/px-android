@@ -1,8 +1,5 @@
 package com.mercadopago.android.px.internal.features.paymentresult;
 
-import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.mocks.Instructions;
-import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.internal.features.paymentresult.components.AccreditationTime;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsActions;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsContent;
@@ -10,6 +7,9 @@ import com.mercadopago.android.px.internal.features.paymentresult.components.Ins
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsReferences;
 import com.mercadopago.android.px.internal.features.paymentresult.components.InstructionsTertiaryInfo;
 import com.mercadopago.android.px.internal.features.paymentresult.props.InstructionsContentProps;
+import com.mercadopago.android.px.internal.view.ActionDispatcher;
+import com.mercadopago.android.px.mocks.Instructions;
+import com.mercadopago.android.px.model.Instruction;
 import java.util.ArrayList;
 import java.util.List;
 import junit.framework.Assert;

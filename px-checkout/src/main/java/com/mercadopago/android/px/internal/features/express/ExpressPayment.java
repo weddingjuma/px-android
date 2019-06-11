@@ -1,11 +1,13 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.Card;
@@ -36,7 +38,7 @@ public interface ExpressPayment {
 
         void cancelLoading();
 
-        void startLoadingButton(final int paymentTimeout);
+        void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel);
 
         //TODO shared with Checkout activity
 
@@ -67,6 +69,11 @@ public interface ExpressPayment {
         boolean isExploding();
 
         void resetPagerIndex();
+
+        void showDynamicDialog(@NonNull final DynamicDialogCreator creatorFor,
+            @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
+
+        void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel);
     }
 
     interface Actions extends PaymentServiceHandler {
@@ -100,5 +107,7 @@ public interface ExpressPayment {
         void manageNoConnection();
 
         void onSplitChanged(boolean isChecked, int currentItem);
+
+        void onHeaderClicked();
     }
 }

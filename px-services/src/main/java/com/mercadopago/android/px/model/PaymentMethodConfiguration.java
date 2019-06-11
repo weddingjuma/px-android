@@ -10,7 +10,7 @@ import java.util.List;
 public class PaymentMethodConfiguration implements Serializable {
 
     /**
-     * amount to pay with alternative payment method - always account money.
+     * amount to pay with this payment method
      */
     public BigDecimal amount;
 
@@ -37,7 +37,7 @@ public class PaymentMethodConfiguration implements Serializable {
     @NonNull
     public List<PayerCost>
     getPayerCosts() {
-        return payerCosts == null ? new ArrayList<PayerCost>() : payerCosts;
+        return payerCosts == null ? new ArrayList<>() : payerCosts;
     }
 
     @NonNull

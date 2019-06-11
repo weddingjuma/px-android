@@ -2,12 +2,12 @@ package com.mercadopago.android.px.internal.navigation;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.preferences.PaymentPreference;
-import com.mercadopago.android.px.internal.util.TextUtil;
 
 public class DefaultPaymentMethodDriver {
 

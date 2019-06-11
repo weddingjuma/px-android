@@ -44,7 +44,7 @@ public class MercadoPagoPaymentProcessor implements PaymentProcessor {
     public void startPayment(@NonNull final CheckoutData data, @NonNull final Context context,
         @NonNull final OnPaymentListener paymentListener) {
 
-        final Session session = Session.getSession(context);
+        final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();
         final String publicKey = paymentSettings.getPublicKey();
         final MercadoPagoServicesAdapter mercadoPagoServiceAdapter = session.getMercadoPagoServiceAdapter();

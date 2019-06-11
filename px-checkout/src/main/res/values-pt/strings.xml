@@ -26,7 +26,6 @@
 
     <!-- Vault -->
     <string name="px_last_digits_label">Terminado em</string>
-    <string name="px_confirm">Confirmar</string>
     <string name="px_title_activity_payment_vault">Como você prefere %1$s?</string>
     <string name="px_no_payment_methods_found">Não há meios de pagamento disponíveis</string>
 
@@ -149,6 +148,7 @@
     <string name="px_error_message_missing_payer_cost">Nenhuma parcela encontrada</string>
     <string name="px_error_message_missing_identification_types">Nenhum tipo de identificação encontrado</string>
     <string name="px_error_message_missing_setting_for_bin">Nenhuma configuração encontrada para esse bin</string>
+    <string name="px_error_failure_recovery_not_defined">Recuperação de falha indefinida</string>
 
     <!-- API exception messages -->
     <string name="px_empty_card_expiration_month">O mês da data de validade do cartão não foi digitado</string>

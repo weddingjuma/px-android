@@ -4,11 +4,12 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 
 public class PaymentResultBodyProps {
 
     public final Instruction instruction;
-    public final String processingMode;
+    public final ProcessingMode processingMode;
     public final String currencyId;
     public PaymentResultScreenConfiguration paymentResultScreenConfiguration;
     public PaymentResult paymentResult;
@@ -32,7 +33,7 @@ public class PaymentResultBodyProps {
     public static class Builder {
 
         public Instruction instruction;
-        public String processingMode;
+        public ProcessingMode processingMode;
         public String currencyId;
 
         public PaymentResultScreenConfiguration paymentResultScreenConfiguration;
@@ -48,7 +49,7 @@ public class PaymentResultBodyProps {
             return this;
         }
 
-        public Builder setProcessingMode(final String processingMode) {
+        public Builder setProcessingMode(final ProcessingMode processingMode) {
             this.processingMode = processingMode;
             return this;
         }

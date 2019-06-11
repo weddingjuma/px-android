@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 
 public interface PaymentResultContract {
@@ -15,7 +16,7 @@ public interface PaymentResultContract {
             final boolean showLoading);
 
         void setPropInstruction(@NonNull final Instruction instruction,
-            @NonNull final String processingModeString,
+            @NonNull final ProcessingMode processingMode,
             final boolean showLoading);
 
         void notifyPropsChanged();

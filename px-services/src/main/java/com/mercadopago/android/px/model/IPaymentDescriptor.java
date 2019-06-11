@@ -25,5 +25,7 @@ public interface IPaymentDescriptor extends IPayment {
      *
      * @param handler
      */
-    void process(@NonNull final IPaymentDescriptorHandler handler);
+    default void process(@NonNull final IPaymentDescriptorHandler handler) {
+        handler.visit(this);
+    }
 }

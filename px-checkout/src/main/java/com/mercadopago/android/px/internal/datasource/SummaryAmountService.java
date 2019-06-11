@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.internal.constants.ProcessingModes;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -11,6 +10,7 @@ import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         body.put("labels", advancedConfiguration.getDiscountParamsConfiguration().getLabels());
         body.put("default_installments", checkoutPreference.getDefaultInstallments());
         body.put("differential_pricing_id", differentialPricingId);
-        body.put("processing_mode", ProcessingModes.AGGREGATOR);
+        body.put("processing_mode", ProcessingMode.AGGREGATOR.asQueryParamName());
         body.put("charges", paymentSettingRepository.getPaymentConfiguration().getCharges());
 
         return installmentService.createSummaryAmount(API_ENVIRONMENT, body,

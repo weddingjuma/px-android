@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.mocks.StubSummaryAmount;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
@@ -21,6 +22,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -47,10 +49,11 @@ public class InstallmentsPresenterTest {
     @Mock private DiscountRepository discountRepository;
     @Mock private SummaryAmountRepository summaryAmountRepository;
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
-    @Mock private PayerCostSolver payerCostSolver;
     @Mock private AdvancedConfiguration advancedConfiguration;
     @Mock private PaymentMethod paymentMethod;
     @Mock private InstallmentsView view;
+    @Mock private DiscountConfigurationModel discountConfigurationModel;
+    @Mock private AmountConfiguration amountConfiguration;
 
     @Before
     public void setUp() {
@@ -60,8 +63,11 @@ public class InstallmentsPresenterTest {
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
         when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
         when(paymentMethod.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
+        when(discountRepository.getCurrentConfiguration()).thenReturn(discountConfigurationModel);
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(amountConfiguration);
+        when(amountRepository.getItemsPlusCharges(anyString())).thenReturn(BigDecimal.TEN);
         presenter = new InstallmentsPresenter(amountRepository, configuration, userSelectionRepository,
-            discountRepository, summaryAmountRepository, amountConfigurationRepository, payerCostSolver);
+            discountRepository, summaryAmountRepository, amountConfigurationRepository);
         presenter.attachView(view);
     }
 
@@ -83,8 +89,10 @@ public class InstallmentsPresenterTest {
 
         presenter.initialize();
 
+        verify(view).showLoadingView();
         verify(view).hideLoadingView();
         verify(view).showApiErrorScreen(apiException, ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT);
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -92,14 +100,20 @@ public class InstallmentsPresenterTest {
         when(userSelectionRepository.hasCardSelected()).thenReturn(false);
         final SummaryAmount response = StubSummaryAmount.getSummaryAmountTwoPayerCosts();
         when(summaryAmountRepository.getSummaryAmount(anyString())).thenReturn(new StubSuccessMpCall<>(response));
-
-        final String selectedAmountConfiguration = response.getDefaultAmountConfiguration();
+        final List<PayerCost> payerCosts = response.getAmountConfiguration(response.getDefaultAmountConfiguration())
+            .getPayerCosts();
 
         presenter.initialize();
-        presenter.onClick(response.getAmountConfiguration(selectedAmountConfiguration).getPayerCosts().get(0));
+        presenter.onClick(payerCosts.get(0));
 
+        verify(view).showLoadingView();
         verify(view).hideLoadingView();
+        verify(view).showInstallments(payerCosts);
+        verify(view).showAmount(discountConfigurationModel, BigDecimal.TEN, Sites.ARGENTINA);
         verify(view).finishWithResult();
+        verify(summaryAmountRepository).getSummaryAmount(anyString());
+        verify(userSelectionRepository).select(payerCosts.get(0));
+        verifyNoMoreInteractions(view, summaryAmountRepository);
     }
 
     @Test
@@ -115,12 +129,9 @@ public class InstallmentsPresenterTest {
 
     @Test
     public void whenCardSelectedThenResolvePayerCosts() {
-        final AmountConfiguration amountConfiguration = mock(AmountConfiguration.class);
-        final List<PayerCost> payerCosts = mock(List.class);
+        final List<PayerCost> payerCosts = Collections.emptyList();
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
-        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(amountConfiguration);
         when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
-        when(amountConfigurationRepository.getCurrentConfiguration().getPayerCosts()).thenReturn(payerCosts);
 
         presenter.initialize();
 
@@ -128,51 +139,47 @@ public class InstallmentsPresenterTest {
     }
 
     @Test
-    public void verifyIsGuessingAndSolverIsCalled() {
-        when(userSelectionRepository.hasCardSelected()).thenReturn(false);
-        final SummaryAmount response = StubSummaryAmount.getSummaryAmountEmptyPayerCosts();
-        when(summaryAmountRepository.getSummaryAmount(anyString())).thenReturn(new StubSuccessMpCall<>(response));
-
-        presenter.initialize();
-
-        verify(view).hideLoadingView();
-        verify(payerCostSolver).solve(presenter,
-            response.getAmountConfiguration(response.getDefaultAmountConfiguration()).getPayerCosts());
-    }
-
-    @Test
-    public void verifyIsSavedCardAndSolverIsCalled() {
+    public void whenCardSelectedAndNoPayerCostsThenShowError() {
+        final List<PayerCost> payerCosts = Collections.emptyList();
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
-        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
+        when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
 
         presenter.initialize();
 
-        verify(payerCostSolver)
-            .solve(presenter, amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
-    }
-
-    @Test
-    public void verifyResolvesEmptyPayerCostList() {
-        presenter.onEmptyOptions();
-
+        verify(view).hideLoadingView();
+        verify(view).showAmount(discountConfigurationModel, BigDecimal.TEN, Sites.ARGENTINA);
         verify(view).showErrorNoPayerCost();
         verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void verifyResolvesOnSelectedPayerCostPayerCostList() {
-        presenter.onSelectedPayerCost();
+    public void whenCardSelectedAndOnlyOnePayerCostThenSelectAndFinish() {
+        final PayerCost selectedPayerCost = mock(PayerCost.class);
+        final List<PayerCost> payerCosts = Collections.singletonList(selectedPayerCost);
+        when(userSelectionRepository.hasCardSelected()).thenReturn(true);
+        when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
 
+        presenter.initialize();
+
+        verify(userSelectionRepository).select(selectedPayerCost);
+        verify(view).hideLoadingView();
+        verify(view).showAmount(discountConfigurationModel, amountRepository.getItemsPlusCharges(anyString()),
+            checkoutPreference.getSite());
         verify(view).finishWithResult();
         verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void verifyResolvesDisplayInstallments() {
-        final List<PayerCost> payerCosts = Collections.singletonList(mock(PayerCost.class));
+    public void whenCardSelectedAndMultiplePayerCostThenDisplayThem() {
+        final List<PayerCost> payerCosts = Arrays.asList(mock(PayerCost.class), mock(PayerCost.class));
+        when(userSelectionRepository.hasCardSelected()).thenReturn(true);
+        when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
 
-        presenter.displayInstallments(payerCosts);
+        presenter.initialize();
 
+        verify(view).hideLoadingView();
+        verify(view).showAmount(discountConfigurationModel, amountRepository.getItemsPlusCharges(anyString()),
+            checkoutPreference.getSite());
         verify(view).showInstallments(payerCosts);
         verifyNoMoreInteractions(view);
     }
@@ -180,8 +187,6 @@ public class InstallmentsPresenterTest {
     @Test
     public void whenAmountRowIsNotEnabledItShouldBeHidden(){
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
-        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
-
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(false);
 
         presenter.initialize();
@@ -192,16 +197,12 @@ public class InstallmentsPresenterTest {
     @Test
     public void whenAmountRowIsEnabledItShouldBeSetted(){
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
-        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(mock(AmountConfiguration.class));
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
-
-        BigDecimal itemPlusCharges = new BigDecimal(100);
-        when(amountRepository.getItemsPlusCharges(anyString())).thenReturn(itemPlusCharges);
 
         presenter.initialize();
 
-        verify(view).showAmount(discountRepository.getCurrentConfiguration(),
-                itemPlusCharges, checkoutPreference.getSite());
+        verify(view).showAmount(discountConfigurationModel, amountRepository.getItemsPlusCharges(anyString()),
+            checkoutPreference.getSite());
     }
 
     @Test
@@ -227,13 +228,10 @@ public class InstallmentsPresenterTest {
 
         when(advancedConfiguration.isAmountRowEnabled()).thenReturn(true);
 
-        BigDecimal itemPlusCharges = new BigDecimal(100);
-        when(amountRepository.getItemsPlusCharges(anyString())).thenReturn(itemPlusCharges);
-
         presenter.initialize();
 
-        verify(view).showAmount(discountRepository.getCurrentConfiguration(),
-                itemPlusCharges, checkoutPreference.getSite());
+        verify(view).showAmount(discountConfigurationModel, amountRepository.getItemsPlusCharges(anyString()),
+            checkoutPreference.getSite());
         verify(view).hideLoadingView();
     }
 
@@ -241,7 +239,7 @@ public class InstallmentsPresenterTest {
     private ApiException presetApiError() {
         final ApiException apiException = new ApiException();
         when(summaryAmountRepository.getSummaryAmount(anyString()))
-            .thenReturn(new StubFailMpCall<SummaryAmount>(apiException));
+            .thenReturn(new StubFailMpCall<>(apiException));
         return apiException;
     }
 }

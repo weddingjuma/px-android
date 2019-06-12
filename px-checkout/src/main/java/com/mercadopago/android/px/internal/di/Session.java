@@ -34,8 +34,6 @@ import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
-import com.mercadopago.android.px.internal.features.guessing_card.IssuersSolver;
-import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
@@ -342,14 +340,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
         return instructionsRepository;
     }
 
-    @NonNull
-    public PayerCostSolver providePayerCostSolver() {
-        final ConfigurationModule configurationModule = getConfigurationModule();
-        return new PayerCostSolver(
-            configurationModule.getPaymentSettings().getCheckoutPreference().getPaymentPreference(),
-            configurationModule.getUserSelectionRepository());
-    }
-
     public IssuersRepository getIssuersRepository() {
         if (issuersRepository == null) {
             final com.mercadopago.android.px.internal.services.IssuersService issuersService =
@@ -360,14 +350,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 getConfigurationModule().getUserSelectionRepository());
         }
         return issuersRepository;
-    }
-
-    @NonNull
-    public IssuersSolver provideIssuersSolver() {
-        final ConfigurationModule configurationModule = getConfigurationModule();
-        return new IssuersSolver(
-            configurationModule.getUserSelectionRepository(),
-            configurationModule.getPaymentSettings());
     }
 
     public CardTokenRepository getCardTokenRepository() {

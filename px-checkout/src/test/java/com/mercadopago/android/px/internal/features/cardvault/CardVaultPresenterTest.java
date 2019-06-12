@@ -1,31 +1,23 @@
 package com.mercadopago.android.px.internal.features.cardvault;
 
 import android.content.Intent;
-import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
-import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
-import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
-import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
-import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import org.junit.Before;
@@ -35,10 +27,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -53,50 +43,40 @@ public class CardVaultPresenterTest {
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
     @Mock private CardTokenRepository cardTokenRepository;
     @Mock private IESCManager iESCManager;
-    @Mock private PayerCostSolver payerCostSolver;
-
+    @Mock private AmountConfiguration amountConfiguration;
     @Mock private CardVault.View view;
 
     @Before
     public void setUp() {
-        configurePaymentPreferenceMock(null);
+        when(amountConfigurationRepository.getCurrentConfiguration()).thenReturn(amountConfiguration);
 
         presenter = new CardVaultPresenter(userSelectionRepository, paymentSettingRepository, iESCManager,
-            amountConfigurationRepository, cardTokenRepository, payerCostSolver);
+            amountConfigurationRepository, cardTokenRepository);
 
         presenter.setPaymentRecovery(null);
         presenter.attachView(view);
     }
 
-    private void configurePaymentPreferenceMock(@Nullable final Integer defaultInstallments) {
-        final PaymentPreference paymentPreference = new PaymentPreference();
-        paymentPreference.setDefaultInstallments(defaultInstallments);
-    }
-
-    private PaymentRecovery providePaymentRecoveryMock() {
-        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
-        when(paymentRecovery.isTokenRecoverable()).thenReturn(true);
-        return paymentRecovery;
-    }
-
-    private void configureMockedCardWith() {
+    private void configureMockedCard() {
         final Card card = mock(Card.class);
         when(card.getId()).thenReturn("1");
+        when(card.getFirstSixDigits()).thenReturn("123456");
+        when(card.getLastFourDigits()).thenReturn("1234");
         when(userSelectionRepository.getCard()).thenReturn(card);
         presenter.setCard(card);
     }
 
     @Test
     public void whenTokenIsRecoverableThenStartTokenRecoveryFlow() {
-
         when(paymentSettingRepository.getToken()).thenReturn(mock(Token.class));
+        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
+        when(paymentRecovery.isTokenRecoverable()).thenReturn(true);
 
-        PaymentRecovery paymentRecovery = providePaymentRecoveryMock();
         presenter.setPaymentRecovery(paymentRecovery);
-
         presenter.initialize();
 
         verify(view).askForSecurityCodeFromTokenRecovery(Reason.from(paymentRecovery));
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -104,6 +84,7 @@ public class CardVaultPresenterTest {
         presenter.initialize();
 
         verify(view).askForCardInformation();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -111,6 +92,7 @@ public class CardVaultPresenterTest {
         presenter.onResultCancel();
 
         verify(view).cancelCardVault();
+        verifyNoMoreInteractions(view);
     }
 
     @Test
@@ -118,6 +100,7 @@ public class CardVaultPresenterTest {
         presenter.resolveSecurityCodeRequest();
 
         verify(view).finishWithResult();
+        verifyNoMoreInteractions(view);
     }
 
     /**
@@ -126,7 +109,7 @@ public class CardVaultPresenterTest {
 
     @Test
     public void whenGuessingCardHasInstallmentSelectedAndWithoutTokenThenStartSecurityCodeFlow() {
-        configureMockedCardWith();
+        configureMockedCard();
         final Card card = userSelectionRepository.getCard();
         when(iESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()))
             .thenReturn(TextUtil.EMPTY);
@@ -171,29 +154,32 @@ public class CardVaultPresenterTest {
      */
 
     @Test
-    public void whenEmptyOptionsThenShowEmptyPayerCostScreen() {
-        presenter.onEmptyOptions();
+    public void verifyResolvesEmptyPayerCostList() {
+        configureMockedCard();
+
+        presenter.initialize();
 
         verify(view).showEmptyPayerCostScreen();
         verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void whenSelectedPayerCostWithoutESCThenStartSecurityCodeActivity() {
-        configureMockedCardWith();
+    public void verifyResolvesOnSelectedPayerCostPayerCostListWithoutESC() {
+        configureMockedCard();
         final Card card = userSelectionRepository.getCard();
         when(iESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()))
             .thenReturn(TextUtil.EMPTY);
+        when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
 
-        presenter.onSelectedPayerCost();
+        presenter.initialize();
 
         verify(view).startSecurityCodeActivity(Reason.SAVED_CARD);
         verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void whenPayerCostIsSelectedWithESCThenGetPayerCostList() {
-        configureMockedCardWith();
+    public void verifyResolvesOnSelectedPayerCostPayerCostListWithESC() {
+        configureMockedCard();
         final Card card = userSelectionRepository.getCard();
         final SavedESCCardToken savedESCCardToken = any(SavedESCCardToken.class);
 
@@ -201,29 +187,66 @@ public class CardVaultPresenterTest {
             .thenReturn(new StubSuccessMpCall<>(mock(Token.class)));
         when(iESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()))
             .thenReturn("1");
+        when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
 
-        presenter.onSelectedPayerCost();
+        presenter.initialize();
 
         verify(view).showProgressLayout();
-    }
-
-    @Test
-    public void whenCardInfoIsSetAndDisplayInstallmentsThenAskForInstallments() {
-        final List<PayerCost> payerCosts = Collections.singletonList(mock(PayerCost.class));
-        final CardInfo cardInfo = mock(CardInfo.class);
-
-        presenter.setCardInfo(cardInfo);
-        presenter.displayInstallments(payerCosts);
-
-        verify(view).askForInstallments(cardInfo);
+        verify(view).finishWithResult();
         verifyNoMoreInteractions(view);
     }
 
     @Test
-    public void whenSelectedPayerCostPayerWithEscAndTokenApiCallFailsThenShowError() {
-        configureMockedCardWith();
+    public void whenOnlyOnePayerCostThenSelectsAndAsksForSecCode() {
+        configureMockedCard();
         final Card card = userSelectionRepository.getCard();
-        final SavedESCCardToken savedESCCardToken = any(SavedESCCardToken.class);
+        when(iESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()))
+            .thenReturn(TextUtil.EMPTY);
+        final List<PayerCost> payerCosts = Collections.singletonList(mock(PayerCost.class));
+        when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
+
+        presenter.initialize();
+
+        verify(view).startSecurityCodeActivity(Reason.SAVED_CARD);
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void verifyResolvesDisplayInstallments() {
+        configureMockedCard();
+        final List<PayerCost> payerCosts = Arrays.asList(mock(PayerCost.class), mock(PayerCost.class));
+        when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
+
+        presenter.initialize();
+
+        verify(view).askForInstallments(any(CardInfo.class));
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenIsOneTapFlowThenDontAskForInstallmentsAndContinueFlow() {
+        configureMockedCard();
+        when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
+
+        presenter.initialize();
+
+        verifyNoMoreInteractions(amountConfigurationRepository);
+    }
+
+    /*
+
+    @Test
+    public void ifPaymentRecoveryIsSetThenStartTokenRecoverableFlow() {
+
+        final Token mockedToken = Tokens.getToken();
+        final PaymentMethod mockedPaymentMethod = PaymentMethods.getPaymentMethodOnVisa();
+        final Issuer mockedIssuer = Issuers.getIssuerMLA();
+        final String mockedPaymentStatus = Payment.StatusCodes.STATUS_REJECTED;
+        final String mockedPaymentStatusDeatil = Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE;
+
+        final PaymentRecovery mockedPaymentRecovery =
+            new PaymentRecovery(mockedToken, mockedPaymentMethod, mockedIssuer, mockedPaymentStatus,
+                mockedPaymentStatusDeatil);
 
         when(cardTokenRepository.createToken(savedESCCardToken))
             .thenReturn(new StubFailMpCall<>(mock(ApiException.class)));
@@ -304,13 +327,5 @@ public class CardVaultPresenterTest {
             .solve(presenter, amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
     }
 
-    @Test
-    public void whenIsOneTapFlowThenDoNotAskForInstallmentsAndContinueFlow() {
-        configureMockedCardWith();
-        when(userSelectionRepository.getPayerCost()).thenReturn(mock(PayerCost.class));
-
-        presenter.initialize();
-
-        verifyNoMoreInteractions(payerCostSolver);
-    }
+    */
 }

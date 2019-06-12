@@ -79,8 +79,7 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         final PaymentSettingRepository paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
         presenter = new CardVaultPresenter(session.getConfigurationModule().getUserSelectionRepository(),
             paymentSettingRepository,
-            session.getMercadoPagoESC(), session.getAmountConfigurationRepository(), session.getCardTokenRepository(),
-            session.providePayerCostSolver());
+            session.getMercadoPagoESC(), session.getAmountConfigurationRepository(), session.getCardTokenRepository());
         presenter.attachView(this);
         final Card card = session.getConfigurationModule().getUserSelectionRepository().getCard();
         presenter.setCard(card);
@@ -298,5 +297,4 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         InstallmentsActivity.start(this, REQ_CODE_INSTALLMENTS, cardInfo);
         animateTransitionSlideInSlideOut();
     }
-
 }

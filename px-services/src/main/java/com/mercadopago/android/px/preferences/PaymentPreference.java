@@ -96,6 +96,7 @@ public class PaymentPreference implements Serializable, Parcelable {
         return defaultPaymentTypeId;
     }
 
+    @Deprecated
     public List<PayerCost> getInstallmentsBelowMax(final List<PayerCost> payerCosts) {
         final List<PayerCost> validPayerCosts = new ArrayList<>();
 

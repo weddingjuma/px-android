@@ -1,3 +1,7 @@
+## VERSION 4.14.1
+_13_06_2019_
+* FIX - Added back deprecated method
+
 ## VERSION 4.14.0
 _11_06_2019_
 * FEATURE - Custom pay button text support

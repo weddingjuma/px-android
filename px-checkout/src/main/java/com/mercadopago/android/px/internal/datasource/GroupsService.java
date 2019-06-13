@@ -124,17 +124,18 @@ public class GroupsService implements GroupsRepository {
             .setProductId(discountParamsConfiguration.getProductId())
             .setLabels(discountParamsConfiguration.getLabels())
             .setCharges(paymentSettingRepository.getPaymentConfiguration().getCharges())
+            .setProcessingModes(checkoutPreference.getProcessingModes())
+            .setBranchId(checkoutPreference.getBranchId())
             .build();
 
         final Map<String, Object> body = JsonUtil.getInstance().getMapFromObject(paymentMethodSearchBody);
 
         return checkoutService
             .getPaymentMethodSearch(API_ENVIRONMENT,
-                language, paymentSettingRepository.getPublicKey(),
-                checkoutPreference.getTotalAmount(), excludedPaymentTypesAppended, excludedPaymentMethodsAppended,
-                checkoutPreference.getSite().getId(), ProcessingMode.AGGREGATOR.asQueryParamName(),
-                cardsWithEscAppended,
-                differentialPricingId, defaultInstallments, expressPaymentEnabled, hasSplitPaymentProcessor, body);
+                language, paymentSettingRepository.getPublicKey(), checkoutPreference.getTotalAmount(),
+                excludedPaymentTypesAppended, excludedPaymentMethodsAppended, checkoutPreference.getSite().getId(),
+                cardsWithEscAppended, differentialPricingId, defaultInstallments, expressPaymentEnabled,
+                hasSplitPaymentProcessor, body);
     }
 
     private Collection<String> getUnsupportedPaymentTypes(@NonNull final Site site) {

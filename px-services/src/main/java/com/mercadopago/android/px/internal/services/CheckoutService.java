@@ -27,7 +27,6 @@ public interface CheckoutService {
         @Query("excluded_payment_types") String excludedPaymentTypes,
         @Query("excluded_payment_methods") String excludedPaymentMethods,
         @Query("site_id") String siteId,
-        @Query("processing_mode") String processingMode,
         @Query("cards_esc") String cardsWithEsc,
         @Nullable @Query("differential_pricing_id") Integer differentialPricingId,
         @Nullable @Query("default_installments") final Integer defaultInstallments,

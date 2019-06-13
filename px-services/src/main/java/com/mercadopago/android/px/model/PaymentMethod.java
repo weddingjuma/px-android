@@ -257,8 +257,7 @@ public class PaymentMethod implements Parcelable, Serializable {
 
     @NonNull
     public ProcessingMode[] getProcessingModes() {
-        ProcessingMode[] empty = {};
-        return processingModes == null ? empty : processingModes;
+        return processingModes;
     }
 
     @Nullable

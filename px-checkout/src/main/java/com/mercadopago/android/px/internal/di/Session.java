@@ -95,11 +95,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
         super(context);
     }
 
-    @Deprecated
-    public static Session getSession(final Context context) {
-        return getInstance();
-    }
-
     public static Session getInstance() {
         if (instance == null) {
             throw new IllegalStateException(

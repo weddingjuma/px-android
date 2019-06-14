@@ -3,9 +3,10 @@ package com.mercadopago.android.px.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import java.io.Serializable;
 import java.util.List;
 
-public final class Agreement implements Parcelable {
+public final class Agreement implements Parcelable, Serializable {
 
     @NonNull private List<MerchantAccount> merchantAccounts;
 

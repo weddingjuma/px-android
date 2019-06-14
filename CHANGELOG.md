@@ -1,3 +1,7 @@
+## VERSION 4.14.2
+_14_06_2019_
+* ENHANCEMENT - Now express presenter saves the current payment method index
+
 ## VERSION 4.14.1
 _13_06_2019_
 * FIX - Added back deprecated method

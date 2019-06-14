@@ -8,9 +8,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Build;
-import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -33,7 +31,7 @@ public final class MPAnimationUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void fadeInLollipop(final int color, final ImageView imageView) {
-        runWhenViewIsAttached(imageView, () -> {
+        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
             imageView.setColorFilter(ContextCompat.getColor(imageView.getContext(), color),
                 PorterDuff.Mode.SRC_ATOP);
 
@@ -49,7 +47,7 @@ public final class MPAnimationUtils {
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void fadeOutLollipop(final int color, final ImageView imageView) {
-        runWhenViewIsAttached(imageView, () -> {
+        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
             final int width = imageView.getWidth();
             final Animator anim = ViewAnimationUtils.createCircularReveal(imageView, -width, 0,
                 ANIMATION_EXTRA_FACTOR * width, width);
@@ -82,7 +80,7 @@ public final class MPAnimationUtils {
     }
 
     public static void fadeIn(final int color, final ImageView imageView) {
-        runWhenViewIsAttached(imageView, () -> {
+        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
             final Animation mAnimFadeIn = AnimationUtils.loadAnimation(imageView.getContext(), R.anim.px_fade_in);
             mAnimFadeIn.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -106,7 +104,7 @@ public final class MPAnimationUtils {
     }
 
     public static void fadeOut(final int color, final ImageView imageView) {
-        runWhenViewIsAttached(imageView, () -> {
+        ViewUtils.runWhenViewIsFullyMeasured(imageView, () -> {
             final Animation mAnimFadeOut = AnimationUtils.loadAnimation(imageView.getContext(), R.anim.px_fade_out);
             mAnimFadeOut.setAnimationListener(new Animation.AnimationListener() {
                 @Override
@@ -316,20 +314,5 @@ public final class MPAnimationUtils {
 
         cardView.getView().startAnimation(animAppear);
         cardView.show();
-    }
-
-    private static void runWhenViewIsAttached(@NonNull final View view, @NonNull final Runnable runnable) {
-        if (ViewCompat.isAttachedToWindow(view)) {
-            runnable.run();
-        } else {
-            view.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-                @Override
-                public void onLayoutChange(final View v, final int left, final int top, final int right,
-                    final int bottom, final int oldLeft, final int oldTop, final int oldRight, final int oldBottom) {
-                    view.removeOnLayoutChangeListener(this);
-                    runnable.run();
-                }
-            });
-        }
     }
 }

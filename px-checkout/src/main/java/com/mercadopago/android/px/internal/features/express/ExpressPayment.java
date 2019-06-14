@@ -80,33 +80,31 @@ public interface ExpressPayment {
 
         void trackExpressView();
 
-        void confirmPayment(final int paymentMethodSelectedIndex);
+        void confirmPayment();
 
         void cancel();
 
-        void onTokenResolved(final int paymentMethodSelectedIndex);
+        void onTokenResolved();
 
         void loadViewModel();
 
         void onViewResumed();
 
-        void updateElementPosition(int paymentMethodIndex);
-
         void onViewPaused();
 
-        void onInstallmentsRowPressed(int currentItem);
+        void onInstallmentsRowPressed();
 
-        void onInstallmentSelectionCanceled(final int currentItem);
+        void onInstallmentSelectionCanceled();
 
-        void onSliderOptionSelected(final int position);
+        void onSliderOptionSelected(final int paymentMethodIndex);
 
-        void onPayerCostSelected(final int paymentMethodIndex, final PayerCost payerCostSelected);
+        void onPayerCostSelected(final PayerCost payerCostSelected);
 
         void hasFinishPaymentAnimation();
 
         void manageNoConnection();
 
-        void onSplitChanged(boolean isChecked, int currentItem);
+        void onSplitChanged(boolean isChecked);
 
         void onHeaderClicked();
     }

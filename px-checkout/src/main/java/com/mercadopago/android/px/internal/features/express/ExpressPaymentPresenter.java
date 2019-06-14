@@ -65,14 +65,10 @@ import java.util.Set;
     implements PostPaymentAction.ActionController, ExpressPayment.Actions,
     AmountDescriptorView.OnClickListener {
 
-    private static final String BUNDLE_STATE_PAYER_COST =
-        "com.mercadopago.android.px.internal.features.express.PAYER_COST";
-
-    private static final String BUNDLE_STATE_SPLIT_PREF =
-        "com.mercadopago.android.px.internal.features.express.SPLIT_PREF";
-
-    private static final String BUNDLE_STATE_AVAILABLE_PM_COUNT =
-        "com.mercadopago.android.px.internal.features.express.AVAILABLE_PM_COUNT";
+    private static final String BUNDLE_STATE_PAYER_COST = "state_payer_cost";
+    private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
+    private static final String BUNDLE_STATE_AVAILABLE_PM_COUNT = "state_available_pm_count";
+    private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
 
     private PayerCostSelection payerCostSelection;
     private SplitSelectionState splitSelectionState;
@@ -94,6 +90,7 @@ import java.util.Set;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
     private final PayButtonViewModel payButtonViewModel;
     private Set<String> cardsWithSplit;
+    private int paymentMethodIndex;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentConfiguration,
@@ -184,6 +181,7 @@ import java.util.Set;
         if (shouldReloadModel()) {
             loadViewModel();
         }
+        updateElementPosition();
     }
 
     private boolean shouldReloadModel() {
@@ -214,6 +212,7 @@ import java.util.Set;
         payerCostSelection = bundle.getParcelable(BUNDLE_STATE_PAYER_COST);
         splitSelectionState = bundle.getParcelable(BUNDLE_STATE_SPLIT_PREF);
         availablePaymentMethodsCount = bundle.getInt(BUNDLE_STATE_AVAILABLE_PM_COUNT);
+        paymentMethodIndex = bundle.getInt(BUNDLE_STATE_CURRENT_PM_INDEX);
     }
 
     @NonNull
@@ -222,6 +221,7 @@ import java.util.Set;
         bundle.putParcelable(BUNDLE_STATE_PAYER_COST, payerCostSelection);
         bundle.putParcelable(BUNDLE_STATE_SPLIT_PREF, splitSelectionState);
         bundle.putInt(BUNDLE_STATE_AVAILABLE_PM_COUNT, availablePaymentMethodsCount);
+        bundle.putInt(BUNDLE_STATE_CURRENT_PM_INDEX, paymentMethodIndex);
         return bundle;
     }
 
@@ -236,13 +236,13 @@ import java.util.Set;
     }
 
     @Override
-    public void confirmPayment(final int paymentMethodSelectedIndex) {
+    public void confirmPayment() {
         refreshExplodingState();
 
         // TODO improve: This was added because onetap can detach this listener on its onDestroy
         paymentRepository.attach(this);
 
-        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodSelectedIndex);
+        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
 
         PayerCost payerCost = null;
         boolean splitPayment = false;
@@ -253,7 +253,7 @@ import java.util.Set;
             splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
             payerCost = amountConfiguration
                 .getCurrentPayerCost(
-                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodSelectedIndex));
+                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex));
         } else if (expressMetadata.isAccountMoney()) {
             final AmountConfiguration amountConfiguration =
                 amountConfigurationRepository.getConfigurationFor(expressMetadata.getPaymentMethodId());
@@ -278,11 +278,10 @@ import java.util.Set;
         getView().cancel();
     }
 
-    //TODO verify if current item still persist when activity is destroyed.
     @Override
-    public void onTokenResolved(final int paymentMethodSelectedIndex) {
+    public void onTokenResolved() {
         cancelLoading();
-        confirmPayment(paymentMethodSelectedIndex);
+        confirmPayment();
     }
 
     /**
@@ -326,9 +325,9 @@ import java.util.Set;
         getView().showCardFlow(recovery);
     }
 
-    private void updateElementPosition(final int paymentMethodIndex, final int selectedPayerCost) {
+    private void updateElementPosition(final int selectedPayerCost) {
         payerCostSelection.save(paymentMethodIndex, selectedPayerCost);
-        updateElementPosition(paymentMethodIndex);
+        updateElementPosition();
     }
 
     @Override
@@ -337,19 +336,18 @@ import java.util.Set;
     }
 
     @Override
-    public void onInstallmentsRowPressed(final int currentItem) {
-
-        final ExpressMetadata expressMetadata = expressMetadataList.get(currentItem);
+    public void onInstallmentsRowPressed() {
+        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
         final CardMetadata cardMetadata = expressMetadata.getCard();
 
-        if (currentItem <= expressMetadataList.size() && cardMetadata != null) {
+        if (paymentMethodIndex <= expressMetadataList.size() && cardMetadata != null) {
             final AmountConfiguration amountConfiguration =
                 amountConfigurationRepository.getConfigurationFor(cardMetadata.getId());
             final List<PayerCost> payerCostList = amountConfiguration.getAppliedPayerCost(
                 splitSelectionState.userWantsToSplit());
             final int index = payerCostList.indexOf(
                 amountConfiguration.getCurrentPayerCost(
-                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(currentItem)));
+                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex)));
             getView().showInstallmentsList(payerCostList, index);
             new InstallmentsEventTrack(expressMetadata, amountConfiguration).track();
         }
@@ -357,12 +355,10 @@ import java.util.Set;
 
     /**
      * When user cancel the payer cost selection this method will be called with the current payment method position
-     *
-     * @param position current payment method position.
      */
     @Override
-    public void onInstallmentSelectionCanceled(final int position) {
-        updateElementPosition(position);
+    public void onInstallmentSelectionCanceled() {
+        updateElementPosition();
         getView().collapseInstallmentsSelection();
     }
 
@@ -373,12 +369,12 @@ import java.util.Set;
      */
     @Override
     public void onSliderOptionSelected(final int paymentMethodIndex) {
+        this.paymentMethodIndex = paymentMethodIndex;
         new SwipeOneTapEventTracker().track();
-        updateElementPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex));
+        updateElementPosition(payerCostSelection.get(paymentMethodIndex));
     }
 
-    @Override
-    public void updateElementPosition(final int paymentMethodIndex) {
+    private void updateElementPosition() {
         getView().updateViewForPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex),
             splitSelectionState);
     }
@@ -386,17 +382,16 @@ import java.util.Set;
     /**
      * When user selects a new payer cost for certain payment method this method will be called.
      *
-     * @param paymentMethodIndex current payment method position.
      * @param payerCostSelected user selected payerCost.
      */
     @Override
-    public void onPayerCostSelected(final int paymentMethodIndex, final PayerCost payerCostSelected) {
+    public void onPayerCostSelected(final PayerCost payerCostSelected) {
         final CardMetadata cardMetadata = expressMetadataList.get(paymentMethodIndex).getCard();
         final int selected = amountConfigurationRepository.getConfigurationFor(cardMetadata.getId())
             .getAppliedPayerCost(splitSelectionState.userWantsToSplit())
             .indexOf(payerCostSelected);
 
-        updateElementPosition(paymentMethodIndex, selected);
+        updateElementPosition(selected);
         getView().collapseInstallmentsSelection();
     }
 
@@ -438,14 +433,14 @@ import java.util.Set;
     }
 
     @Override
-    public void onSplitChanged(final boolean isChecked, final int currentItem) {
+    public void onSplitChanged(final boolean isChecked) {
         if (splitSelectionState.userWantsToSplit() != isChecked) {
             payerCostSelection = createNewPayerCostSelected();
         }
         splitSelectionState.setUserWantsToSplit(isChecked);
         // cancel also update the position.
         // it is used because the installment selection can be expanded by the user.
-        onInstallmentSelectionCanceled(currentItem);
+        onInstallmentSelectionCanceled();
     }
 
     @Override

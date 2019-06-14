@@ -52,6 +52,7 @@ import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.FixedAspectRatioFrameLayout;
@@ -100,7 +101,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     // Width / Height
     @NonNull private static final Pair<Integer, Integer> ASPECT_RATIO_LOW_RES = new Pair<>(288, 98);
 
-    private CallBack callback;
+    @Nullable private CallBack callback;
 
     /* default */ ExpressPaymentPresenter presenter;
 
@@ -133,7 +134,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onSplitChanged(final boolean isChecked) {
-        presenter.onSplitChanged(isChecked, paymentMethodPager.getCurrentItem());
+        presenter.onSplitChanged(isChecked);
     }
 
     public interface CallBack {
@@ -183,7 +184,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         confirmButton.setOnClickListener(v -> {
             if (ApiUtil.checkConnection(getContext())) {
-                presenter.confirmPayment(paymentMethodPager.getCurrentItem());
+                presenter.confirmPayment();
             } else {
                 presenter.manageNoConnection();
             }
@@ -238,12 +239,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         paymentMethodHeaderView.setListener(new PaymentMethodHeaderView.Listener() {
             @Override
             public void onDescriptorViewClicked() {
-                presenter.onInstallmentsRowPressed(paymentMethodPager.getCurrentItem());
+                presenter.onInstallmentsRowPressed();
             }
 
             @Override
             public void onInstallmentsSelectorCancelClicked() {
-                presenter.onInstallmentSelectionCanceled(paymentMethodPager.getCurrentItem());
+                presenter.onInstallmentSelectionCanceled();
             }
         });
 
@@ -283,7 +284,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         //TODO remove null check after session is persisted
         if (presenter != null) {
             presenter.onViewResumed();
-            presenter.updateElementPosition(paymentMethodPager.getCurrentItem());
         }
     }
 
@@ -395,19 +395,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_OK) {
-            getActivity().getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    presenter.onTokenResolved(paymentMethodPager.getCurrentItem());
-                }
-            });
+            presenter.onTokenResolved();
         } else if (requestCode == REQ_CODE_CARD_VAULT && resultCode == RESULT_CANCELED) {
-            getActivity().getWindow().getDecorView().post(new Runnable() {
-                @Override
-                public void run() {
-                    presenter.trackExpressView();
-                }
-            });
+            presenter.trackExpressView();
             super.onActivityResult(requestCode, resultCode, data);
         } else if (resultCode == Constants.RESULT_ACTION) {
             handleAction(data);
@@ -465,7 +455,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startPayment() {
-        presenter.confirmPayment(paymentMethodPager.getCurrentItem());
+        presenter.confirmPayment();
     }
 
     @Override
@@ -515,12 +505,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 actionBar.setDisplayShowHomeEnabled(true);
                 enableToolbarBack();
             }
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(final View v) {
-                    presenter.cancel();
-                }
-            });
+            toolbar.setNavigationOnClickListener(v -> presenter.cancel());
         }
     }
 
@@ -546,15 +531,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
-        hideConfirmButton();
-        final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
-            payButtonViewModel.getButtonProgressText(getContext()), paymentTimeout);
-        final FragmentManager childFragmentManager = getChildFragmentManager();
-        final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
-        childFragmentManager.beginTransaction()
-            .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
-            .commitNowAllowingStateLoss();
-        childFragmentManager.executePendingTransactions();
+        ViewUtils.runWhenViewIsFullyMeasured(getView(), () -> {
+            hideConfirmButton();
+            final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
+                payButtonViewModel.getButtonProgressText(confirmButton.getContext()), paymentTimeout);
+            final FragmentManager childFragmentManager = getChildFragmentManager();
+            final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
+            childFragmentManager.beginTransaction()
+                .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
+                .commitNowAllowingStateLoss();
+        });
     }
 
     @Override
@@ -569,7 +555,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onClick(final PayerCost payerCostSelected) {
-        presenter.onPayerCostSelected(paymentMethodPager.getCurrentItem(), payerCostSelected);
+        presenter.onPayerCostSelected(payerCostSelected);
     }
 
     @Override

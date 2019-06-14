@@ -250,10 +250,6 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     }
 
     private void loadViews() {
-        loadNormalViews();
-    }
-
-    private void loadNormalViews() {
         mCardView = new CardView(this);
         mCardView.setSize(CardRepresentationModes.BIG_SIZE);
         mCardView.inflateInParent(mCardContainer, true);

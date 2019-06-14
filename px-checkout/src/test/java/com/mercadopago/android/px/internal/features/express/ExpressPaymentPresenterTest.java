@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
+import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.CardMetadata;
@@ -217,7 +218,7 @@ public class ExpressPaymentPresenterTest {
         final List<PayerCost> payerCostList =
             Arrays.asList(mock(PayerCost.class), firstPayerCost, mock(PayerCost.class));
         when(amountConfiguration.getAppliedPayerCost(false)).thenReturn(payerCostList);
-        expressPaymentPresenter.onPayerCostSelected(paymentMethodIndex, payerCostList.get(selectedPayerCostIndex));
+        expressPaymentPresenter.onPayerCostSelected(payerCostList.get(selectedPayerCostIndex));
 
         verify(view).updateViewForPosition(eq(paymentMethodIndex), eq(selectedPayerCostIndex), any());
         verify(view).collapseInstallmentsSelection();
@@ -239,5 +240,6 @@ public class ExpressPaymentPresenterTest {
 
         verify(paymentRepository).hasPayment();
         verify(paymentRepository).attach(expressPaymentPresenter);
+        verify(view).updateViewForPosition(eq(0), eq(PayerCost.NO_SELECTED), any(SplitSelectionState.class));
     }
 }

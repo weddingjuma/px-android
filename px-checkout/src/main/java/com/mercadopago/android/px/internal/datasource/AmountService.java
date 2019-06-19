@@ -28,7 +28,8 @@ public class AmountService implements AmountRepository {
     @NonNull
     public BigDecimal getAmountToPay(@NonNull final String paymentTypeId, @Nullable final PayerCost payerCost) {
         if (payerCost == null) {
-            return amountWithoutPayerCosts(paymentTypeId);
+            return getItemsPlusCharges(paymentTypeId)
+                .subtract(getDiscountAmount());
         } else {
             return payerCost.getTotalAmount();
         }
@@ -43,14 +44,8 @@ public class AmountService implements AmountRepository {
     @NonNull
     @Override
     public BigDecimal getItemsPlusCharges(@NonNull final String paymentTypeId) {
-        return paymentSetting.getCheckoutPreference().getTotalAmount()
+        return getItemsAmount()
             .add(chargeRepository.getChargeAmount(paymentTypeId));
-    }
-
-    @NonNull
-    @Override
-    public BigDecimal getAppliedCharges(@NonNull final String paymentTypeId) {
-        return getAppliedCharges(paymentTypeId, null);
     }
 
     @NonNull
@@ -59,18 +54,21 @@ public class AmountService implements AmountRepository {
         if (payerCost == null) {
             return chargeRepository.getChargeAmount(paymentTypeId);
         } else {
-            return payerCost.getTotalAmount()
-                .subtract(amountWithoutPayerCosts(paymentTypeId))
-                .add(chargeRepository.getChargeAmount(paymentTypeId));
+            return payerCost.getTotalAmount() //Payer cost has discount already applied
+                .subtract(getItemsAmount())
+                .add(getDiscountAmount());
         }
     }
 
     @NonNull
-    private BigDecimal amountWithoutPayerCosts(@NonNull final String paymentTypeId) {
-        return paymentSetting.getCheckoutPreference()
-            .getTotalAmount()
-            .add(chargeRepository.getChargeAmount(paymentTypeId))
-            .subtract(getDiscountAmount());
+    @Override
+    public BigDecimal getAmountWithoutDiscount(@NonNull final String paymentTypeId, @Nullable final PayerCost payerCost) {
+        if (payerCost == null) {
+            return getItemsPlusCharges(paymentTypeId);
+        } else {
+            return payerCost.getTotalAmount() //Payer cost has discount already applied
+                .add(getDiscountAmount());
+        }
     }
 
     @NonNull

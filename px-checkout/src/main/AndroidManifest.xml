@@ -93,7 +93,7 @@
 
         <provider
             android:name=".internal.di.PxCheckoutInitProvider"
-            android:authorities="${applicationId}.internal.providers.PxCheckoutContentProvider"
+            android:authorities="${applicationId}.px.provider"
             android:exported="false"/>
     </application>
 

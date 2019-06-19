@@ -37,6 +37,6 @@ public class CardAssociationService {
     public MPCall<List<Issuer>> getCardIssuers(@NonNull final String accessToken, @NonNull final String paymentMethodId,
         @NonNull final String bin) {
         return cardService
-            .getCardIssuers(API_ENVIRONMENT, accessToken, paymentMethodId, bin, ProcessingMode.AGGREGATOR.asQueryParamName());
+            .getCardIssuers(accessToken, paymentMethodId, bin, ProcessingMode.AGGREGATOR.asQueryParamName());
     }
 }

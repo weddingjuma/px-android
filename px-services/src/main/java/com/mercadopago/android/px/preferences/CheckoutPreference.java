@@ -239,7 +239,7 @@ public class CheckoutPreference implements Serializable {
     public ProcessingMode[] getProcessingModes() {
         // when comes from backend this value can be null.
         final ProcessingMode[] defaultProcessingMode = { ProcessingMode.AGGREGATOR };
-        return processingModes == null ? defaultProcessingMode : processingModes;
+        return processingModes == null || processingModes.length == 0 ? defaultProcessingMode : processingModes;
     }
 
     @NonNull

@@ -1,7 +1,9 @@
 package com.mercadopago.android.px.model.internal;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
+import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import java.util.Collection;
 import java.util.Set;
@@ -16,6 +18,8 @@ public class PaymentMethodSearchBody {
     private final String productId;
     private final Set<String> labels;
     private final Collection<PaymentTypeChargeRule> charges;
+    @NonNull private final ProcessingMode[] processingModes;
+    @Nullable private final String branchId;
 
     /* default */ PaymentMethodSearchBody(final Builder builder) {
         privateKey = builder.privateKey;
@@ -24,6 +28,8 @@ public class PaymentMethodSearchBody {
         productId = builder.productId;
         labels = builder.labels;
         charges = builder.charges;
+        processingModes = builder.processingModes;
+        branchId = builder.branchId;
     }
 
     public static class Builder {
@@ -33,6 +39,8 @@ public class PaymentMethodSearchBody {
         /* default */ String productId;
         /* default */ Set<String> labels;
         /* default */ Collection<PaymentTypeChargeRule> charges;
+        @NonNull /* default */ ProcessingMode[] processingModes = { ProcessingMode.AGGREGATOR };
+        @Nullable /* default */ String branchId;
 
         public Builder setPrivateKey(@Nullable final String privateKey) {
             this.privateKey = privateKey;
@@ -61,6 +69,16 @@ public class PaymentMethodSearchBody {
 
         public Builder setCharges(@Nullable final Collection<PaymentTypeChargeRule> charges) {
             this.charges = charges;
+            return this;
+        }
+
+        public Builder setProcessingModes(@NonNull final ProcessingMode[] processingModes) {
+            this.processingModes = processingModes;
+            return this;
+        }
+
+        public Builder setBranchId(@Nullable final String branchId) {
+            this.branchId = branchId;
             return this;
         }
 

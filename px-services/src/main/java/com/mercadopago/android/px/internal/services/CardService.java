@@ -16,9 +16,8 @@ public interface CardService {
     MPCall<Card> assignCard(@Path(value = "version", encoded = true) String version,
         @Query("access_token") String accessToken, @Body HashMap<String, Object> body);
 
-    @GET("/{version}/payment_methods/card_issuers")
-    MPCall<List<Issuer>> getCardIssuers(@Path(value = "version", encoded = true) String version,
-        @Query("access_token") String accessToken,
+    @GET("/v1/payment_methods/card_issuers")
+    MPCall<List<Issuer>> getCardIssuers(@Query("access_token") String accessToken,
         @Query("payment_method_id") String paymentMethodId, @Query("bin") String bin,
         @Query("processing_mode") String processingMode);
 

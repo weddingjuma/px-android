@@ -277,13 +277,11 @@ public class PaymentService implements PaymentRepository {
     @NonNull
     @Override
     public List<PaymentData> getPaymentDataList() {
-
         final DiscountConfigurationModel discountModel = discountRepository.getCurrentConfiguration();
         final PaymentMethod secondaryPaymentMethod = userSelectionRepository.getSecondaryPaymentMethod();
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
-        final BigDecimal amountToPay =
-            amountRepository.getAmountToPay(userSelectionRepository.getPaymentMethod().getPaymentTypeId(),
-            userSelectionRepository.getPayerCost());
+        final PayerCost payerCost = userSelectionRepository.getPayerCost();
+        final BigDecimal amountToPay = amountRepository.getAmountToPay(paymentMethod.getPaymentTypeId(), payerCost);
 
         if (secondaryPaymentMethod != null) { // is split payment
             final AmountConfiguration currentConfiguration = amountConfigurationRepository.getCurrentConfiguration();
@@ -291,7 +289,7 @@ public class PaymentService implements PaymentRepository {
 
             final PaymentData paymentData = new PaymentData.Builder()
                 .setPaymentMethod(paymentMethod)
-                .setPayerCost(userSelectionRepository.getPayerCost())
+                .setPayerCost(payerCost)
                 .setToken(paymentSettingRepository.getToken())
                 .setIssuer(userSelectionRepository.getIssuer())
                 .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
@@ -323,14 +321,14 @@ public class PaymentService implements PaymentRepository {
 
             final PaymentData paymentData = new PaymentData.Builder()
                 .setPaymentMethod(paymentMethod)
-                .setPayerCost(userSelectionRepository.getPayerCost())
+                .setPayerCost(payerCost)
                 .setToken(paymentSettingRepository.getToken())
                 .setIssuer(userSelectionRepository.getIssuer())
                 .setDiscount(discount)
                 .setPayer(paymentSettingRepository.getCheckoutPreference().getPayer())
                 .setTransactionAmount(amountToPay)
                 .setCampaign(discountModel.getCampaign())
-                .setRawAmount(getRawAmountForRegularPayment())
+                .setRawAmount(amountRepository.getAmountWithoutDiscount(paymentMethod.getPaymentTypeId(), payerCost))
                 .createPaymentData();
 
             return Collections.singletonList(paymentData);
@@ -363,12 +361,5 @@ public class PaymentService implements PaymentRepository {
 
     public MercadoPagoError getError() {
         return new MercadoPagoError("Something went wrong", false);
-    }
-
-    @NonNull
-    private BigDecimal getRawAmountForRegularPayment() {
-        final PayerCost payerCost = userSelectionRepository.getPayerCost();
-        return payerCost != null ? payerCost.getTotalAmount() :
-            amountRepository.getItemsPlusCharges(userSelectionRepository.getPaymentMethod().getPaymentTypeId());
     }
 }

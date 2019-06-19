@@ -1,3 +1,7 @@
+## VERSION 4.14.3
+_19_06_2019_
+* FIX - Incorrect amount on congrats when discount and one installment
+
 ## VERSION 4.15.0
 _14_06_2019_
 * FEATURE - Added gateway mode support

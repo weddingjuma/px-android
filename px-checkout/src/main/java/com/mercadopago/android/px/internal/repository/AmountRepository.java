@@ -19,7 +19,7 @@ public interface AmountRepository {
     /**
      * Partial amount to pay - No charges, discounts or payer costs applied
      *
-     * @return amount summatory of items values * quantity
+     * @return amount summation of items values * quantity
      */
     @NonNull
     BigDecimal getItemsAmount();
@@ -42,11 +42,10 @@ public interface AmountRepository {
     BigDecimal getAppliedCharges(@NonNull String paymentTypeId, @Nullable PayerCost payerCost);
 
     /**
-     * Partial amount that represents charges.
-     * Only payment method charges.
+     * Amount to pay with no discount applied.
      *
-     * @return amount charges.
+     * @return amount without discount.
      */
     @NonNull
-    BigDecimal getAppliedCharges(@NonNull String paymentTypeId);
+    BigDecimal getAmountWithoutDiscount(@NonNull String paymentTypeId, @Nullable PayerCost payerCost);
 }

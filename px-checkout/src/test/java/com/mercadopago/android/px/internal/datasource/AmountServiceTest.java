@@ -102,12 +102,11 @@ public class AmountServiceTest {
     public void whenGetAppliedChargesAndNoCardChargesReturnOnlyChargesByPaymentMethod() {
         when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.TEN);
 
-        assertEquals(BigDecimal.TEN, amountService.getAppliedCharges(PaymentTypes.CREDIT_CARD));
+        assertEquals(BigDecimal.TEN, amountService.getAppliedCharges(PaymentTypes.CREDIT_CARD, null));
     }
 
     @Test
     public void whenGetAppliedChargesAndCardChargesReturnSumOfThem() {
-        when(chargeRepository.getChargeAmount(PaymentTypes.CREDIT_CARD)).thenReturn(BigDecimal.ONE);
         when(checkoutPreference.getTotalAmount()).thenReturn(BigDecimal.ONE);
         when(discountRepository.getCurrentConfiguration().getDiscount()).thenReturn(null);
 

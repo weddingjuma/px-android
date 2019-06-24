@@ -18,7 +18,7 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.PaymentMethodsActivity;
+import com.mercadopago.android.px.internal.features.payment_methods.PaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;

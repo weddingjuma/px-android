@@ -24,6 +24,7 @@ import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
+import com.mercadopago.android.px.internal.datasource.PaymentMethodsService;
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.ReflectiveESCManager;
@@ -45,6 +46,7 @@ import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
+import com.mercadopago.android.px.internal.repository.PaymentMethodsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
@@ -90,30 +92,23 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private BankDealsRepository bankDealsRepository;
     private IdentificationRepository identificationRepository;
     private CheckoutPreferenceRepository checkoutPreferenceRepository;
+    private PaymentMethodsRepository paymentMethodsRepository;
 
-    private Session(Context context) {
+    private Session(@NonNull final Context context) {
         super(context);
     }
 
     public static Session getInstance() {
         if (instance == null) {
             throw new IllegalStateException(
-                "Session is not initialized. Make sure to call "
-                    + "Session.initialize(Context) first.");
+                "Session is not initialized. Make sure to call Session.initialize(Context) first.");
         }
         return instance;
     }
 
-    public static Session initialize(Context context) {
-        Context applicationContext;
-        if (context.getApplicationContext() == null) {
-            // In shared processes' content providers getApplicationContext() can return null.
-            applicationContext = context;
-        } else {
-            applicationContext = context.getApplicationContext();
-        }
-        instance = new Session(applicationContext);
-
+    public static Session initialize(@NonNull final Context context) {
+        // In shared processes' content providers getApplicationContext() can return null.
+        instance = new Session(context.getApplicationContext() == null ? context : context.getApplicationContext());
         return instance;
     }
 
@@ -142,7 +137,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
-
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,
@@ -174,6 +168,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         issuersRepository = null;
         cardTokenRepository = null;
         checkoutPreferenceRepository = null;
+        paymentMethodsRepository = null;
     }
 
     public GroupsRepository getGroupsRepository() {
@@ -418,5 +413,15 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 new CheckoutPreferenceService(preferenceService, getConfigurationModule().getPaymentSettings());
         }
         return checkoutPreferenceRepository;
+    }
+
+    public PaymentMethodsRepository getPaymentMethodsRepository() {
+        if (paymentMethodsRepository == null) {
+            final CheckoutService checkoutService =
+                RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class);
+            paymentMethodsRepository =
+                new PaymentMethodsService(getConfigurationModule().getPaymentSettings(), checkoutService);
+        }
+        return paymentMethodsRepository;
     }
 }

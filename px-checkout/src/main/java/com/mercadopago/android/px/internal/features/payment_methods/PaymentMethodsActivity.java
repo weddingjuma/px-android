@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.payment_methods;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,8 +17,6 @@ import com.mercadopago.android.px.internal.adapters.PaymentMethodsAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
-import com.mercadopago.android.px.internal.features.providers.PaymentMethodsProvider;
-import com.mercadopago.android.px.internal.features.providers.PaymentMethodsProviderImpl;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -27,7 +25,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import java.util.List;
 
-public class PaymentMethodsActivity extends PXActivity implements PaymentMethodsView {
+public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> implements PaymentMethods.View {
 
     private static final String EXTRA_PAYMENT_PREFERENCE = "paymentPreference";
 
@@ -37,8 +35,6 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     protected TextView mTitle;
 
     private PaymentMethodsPresenter mPresenter;
-    private PaymentMethodsProvider mResourcesProvider;
-
 
     public static void start(@NonNull final Activity activity, final int requestCode,
         final PaymentPreference paymentPreference) {
@@ -52,12 +48,13 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        final Session session = Session.getInstance();
         mPresenter =
-            new PaymentMethodsPresenter(Session.getInstance().getConfigurationModule().getUserSelectionRepository());
+            new PaymentMethodsPresenter(session.getConfigurationModule().getUserSelectionRepository(),
+                session.getPaymentMethodsRepository());
 
         try {
             getActivityParameters();
-            mResourcesProvider = new PaymentMethodsProviderImpl(this);
             onValidStart();
         } catch (final IllegalStateException exception) {
             onInvalidStart(exception.getMessage());
@@ -85,7 +82,6 @@ public class PaymentMethodsActivity extends PXActivity implements PaymentMethods
 
     protected void onValidStart() {
         mPresenter.attachView(this);
-        mPresenter.attachResourcesProvider(mResourcesProvider);
 
         setContentView();
         initializeControls();

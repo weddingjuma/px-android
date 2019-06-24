@@ -1,10 +1,10 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.payment_methods;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.internal.base.MvpPresenter;
+import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
-import com.mercadopago.android.px.internal.features.providers.PaymentMethodsProvider;
+import com.mercadopago.android.px.internal.repository.PaymentMethodsRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -14,30 +14,38 @@ import com.mercadopago.android.px.preferences.PaymentPreference;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PaymentMethodsPresenter extends MvpPresenter<PaymentMethodsView, PaymentMethodsProvider> {
+/* default */ class PaymentMethodsPresenter extends BasePresenter<PaymentMethods.View>
+    implements PaymentMethods.Actions {
 
     private boolean showBankDeals;
     private PaymentPreference paymentPreference;
     private List<String> supportedPaymentTypes;
     private FailureRecovery failureRecovery;
     @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull private final PaymentMethodsRepository paymentMethodsRepository;
 
-    public PaymentMethodsPresenter(@NonNull final UserSelectionRepository userSelectionRepository) {
+    public PaymentMethodsPresenter(@NonNull final UserSelectionRepository userSelectionRepository,
+        @NonNull final PaymentMethodsRepository paymentMethodsRepository) {
         this.userSelectionRepository = userSelectionRepository;
+        this.paymentMethodsRepository = paymentMethodsRepository;
     }
 
+    @Override
     public void setShowBankDeals(final boolean showBankDeals) {
         this.showBankDeals = showBankDeals;
     }
 
+    @Override
     public void setPaymentPreference(final PaymentPreference paymentPreference) {
         this.paymentPreference = paymentPreference;
     }
 
+    @Override
     public void setSupportedPaymentTypes(final List<String> supportedPaymentTypes) {
         this.supportedPaymentTypes = supportedPaymentTypes;
     }
 
+    @Override
     public void start() {
         definePaymentMethodsExclusions();
         retrievePaymentMethods();
@@ -48,8 +56,9 @@ public class PaymentMethodsPresenter extends MvpPresenter<PaymentMethodsView, Pa
 
     private void retrievePaymentMethods() {
         getView().showProgress();
-        getResourcesProvider()
-            .getPaymentMethods(new TaggedCallback<List<PaymentMethod>>(ApiUtil.RequestOrigin.GET_PAYMENT_METHODS) {
+        paymentMethodsRepository
+            .getPaymentMethods()
+            .enqueue(new TaggedCallback<List<PaymentMethod>>(ApiUtil.RequestOrigin.GET_PAYMENT_METHODS) {
                 @Override
                 public void onSuccess(final List<PaymentMethod> paymentMethods) {
                     if (isViewAttached()) {
@@ -59,7 +68,7 @@ public class PaymentMethodsPresenter extends MvpPresenter<PaymentMethodsView, Pa
                 }
 
                 @Override
-                public void onFailure(MercadoPagoError exception) {
+                public void onFailure(final MercadoPagoError exception) {
                     if (isViewAttached()) {
                         setFailureRecovery(() -> retrievePaymentMethods());
                         getView().showError(exception);
@@ -104,7 +113,8 @@ public class PaymentMethodsPresenter extends MvpPresenter<PaymentMethodsView, Pa
         return supportedPaymentMethods;
     }
 
-    private List<PaymentMethod> getPaymentMethodsOfType(final String paymentTypeId, final List<PaymentMethod> paymentMethodList) {
+    private List<PaymentMethod> getPaymentMethodsOfType(final String paymentTypeId,
+        final List<PaymentMethod> paymentMethodList) {
 
         List<PaymentMethod> validPaymentMethods = new ArrayList<>();
         if (paymentMethodList != null && paymentTypeId != null && !paymentTypeId.isEmpty()) {
@@ -119,10 +129,11 @@ public class PaymentMethodsPresenter extends MvpPresenter<PaymentMethodsView, Pa
         return validPaymentMethods;
     }
 
-    public void setFailureRecovery(final FailureRecovery failureRecovery) {
+    private void setFailureRecovery(final FailureRecovery failureRecovery) {
         this.failureRecovery = failureRecovery;
     }
 
+    @Override
     public void recoverFromFailure() {
         if (failureRecovery != null) {
             failureRecovery.recover();

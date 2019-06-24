@@ -6,14 +6,13 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.features.installments.InstallmentsActivity;
-import com.mercadopago.android.px.internal.features.providers.CardVaultProviderImpl;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
@@ -33,7 +32,7 @@ import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 
-public class CardVaultActivity extends AppCompatActivity implements CardVaultView {
+public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements CardVault.View {
 
     private static final int REQ_CODE_INSTALLMENTS = 2;
     private static final int REQ_CODE_ISSUERS = 3;
@@ -80,8 +79,8 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
         final PaymentSettingRepository paymentSettingRepository = session.getConfigurationModule().getPaymentSettings();
         presenter = new CardVaultPresenter(session.getConfigurationModule().getUserSelectionRepository(),
             paymentSettingRepository,
-            session.getMercadoPagoESC(), session.getAmountConfigurationRepository(), session.providePayerCostSolver());
-        presenter.attachResourcesProvider(new CardVaultProviderImpl(getApplicationContext()));
+            session.getMercadoPagoESC(), session.getAmountConfigurationRepository(), session.getCardTokenRepository(),
+            session.providePayerCostSolver());
         presenter.attachView(this);
         final Card card = session.getConfigurationModule().getUserSelectionRepository().getCard();
         presenter.setCard(card);
@@ -112,7 +111,6 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     @Override
     protected void onDestroy() {
         presenter.detachView();
-        presenter.detachResourceProvider();
         super.onDestroy();
     }
 
@@ -138,7 +136,7 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     @Override
-    public void askForSecurityCodeFromTokenRecovery(final Reason recoveryReason) {
+    public void askForSecurityCodeFromTokenRecovery(@NonNull final Reason recoveryReason) {
         startSecurityCodeActivity(recoveryReason);
         animateTransitionSlideInSlideOut();
     }
@@ -261,12 +259,6 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     }
 
     @Override
-    public void askForInstallments(final CardInfo cardInfo) {
-        InstallmentsActivity.start(this, REQ_CODE_INSTALLMENTS, cardInfo);
-        animateTransitionSlideInSlideOut();
-    }
-
-    @Override
     public void animateTransitionSlideInSlideOut() {
         overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
@@ -300,4 +292,11 @@ public class CardVaultActivity extends AppCompatActivity implements CardVaultVie
     public void showEmptyPayerCostScreen() {
         showError(new MercadoPagoError(getString(R.string.px_error_message_missing_payer_cost), false), TextUtil.EMPTY);
     }
+
+    @Override
+    public void askForInstallments(final CardInfo cardInfo) {
+        InstallmentsActivity.start(this, REQ_CODE_INSTALLMENTS, cardInfo);
+        animateTransitionSlideInSlideOut();
+    }
+
 }

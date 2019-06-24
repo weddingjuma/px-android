@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features;
+package com.mercadopago.android.px.internal.features.review_payment_methods;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.adapters.ReviewPaymentMethodsAdapter;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.features.providers.ReviewPaymentMethodsProviderImpl;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -22,7 +21,8 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class ReviewPaymentMethodsActivity extends PXActivity implements ReviewPaymentMethodsView {
+public class ReviewPaymentMethodsActivity extends PXActivity<ReviewPaymentMethodsPresenter>
+    implements ReviewPaymentMethods.View {
 
     private static final String EXTRA_PAYMENT_METHODS = "EXTRA_PAYMENT_METHODS";
     private ReviewPaymentMethodsPresenter presenter;
@@ -59,13 +59,12 @@ public class ReviewPaymentMethodsActivity extends PXActivity implements ReviewPa
             }.getType();
             supportedPaymentMethods = gson.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_METHODS), listType);
         } catch (final Exception ex) {
-            showError(new MercadoPagoError(presenter.getResourcesProvider().getStandardErrorMessage(), false), "");
+            showError(new MercadoPagoError(getString(R.string.px_standard_error_message), false), "");
         }
 
         if (supportedPaymentMethods != null && !supportedPaymentMethods.isEmpty()) {
             presenter = new ReviewPaymentMethodsPresenter(supportedPaymentMethods);
             presenter.attachView(this);
-            presenter.attachResourcesProvider(new ReviewPaymentMethodsProviderImpl(this));
             presenter.initialize();
         } else {
             //Invalid data.

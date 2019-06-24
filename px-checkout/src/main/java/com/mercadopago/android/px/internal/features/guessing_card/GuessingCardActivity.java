@@ -43,7 +43,7 @@ import com.mercadopago.android.px.internal.di.CardAssociationSession;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.PaymentTypesActivity;
-import com.mercadopago.android.px.internal.features.ReviewPaymentMethodsActivity;
+import com.mercadopago.android.px.internal.features.review_payment_methods.ReviewPaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
 import com.mercadopago.android.px.internal.features.card.CardExpiryDateTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardIdentificationNumberTextWatcher;
@@ -182,7 +182,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
      * @param paymentRecovery: payment recovery
      */
     public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
-        final PaymentRecovery paymentRecovery) {
+        @Nullable final PaymentRecovery paymentRecovery) {
         final Intent intent = new Intent(activity, GuessingCardActivity.class);
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));

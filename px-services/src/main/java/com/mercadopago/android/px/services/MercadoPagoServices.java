@@ -66,7 +66,7 @@ public class MercadoPagoServices {
 
     public void getCheckoutPreference(final String checkoutPreferenceId, final Callback<CheckoutPreference> callback) {
         final PreferenceService service = RetrofitUtil.getRetrofitClient(context).create(PreferenceService.class);
-        service.getPreference(API_ENVIRONMENT, checkoutPreferenceId, publicKey).enqueue(callback);
+        service.getPreference(checkoutPreferenceId, publicKey).enqueue(callback);
     }
 
     public void getInstructions(final Long paymentId, final String paymentTypeId,

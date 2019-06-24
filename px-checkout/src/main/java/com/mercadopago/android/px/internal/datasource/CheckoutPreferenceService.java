@@ -7,8 +7,6 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 
-import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
-
 public final class CheckoutPreferenceService implements CheckoutPreferenceRepository {
 
     @NonNull private final PreferenceService preferenceService;
@@ -25,11 +23,10 @@ public final class CheckoutPreferenceService implements CheckoutPreferenceReposi
      * Retrieve CheckoutPreference by Id.
      *
      * @param checkoutPreferenceId id to retrieve CheckoutPreference.
-     * @return
+     * @return Call
      */
     @Override
     public MPCall<CheckoutPreference> getCheckoutPreference(@NonNull final String checkoutPreferenceId) {
-        return preferenceService
-            .getPreference(API_ENVIRONMENT, checkoutPreferenceId, paymentSettingRepository.getPublicKey());
+        return preferenceService.getPreference(checkoutPreferenceId, paymentSettingRepository.getPublicKey());
     }
 }

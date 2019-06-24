@@ -54,6 +54,14 @@
                 android:text="@string/continue_label"/>
 
             <com.mercadopago.android.px.internal.view.MPButton
+                android:id="@+id/customInitializeButton"
+                style="@style/px_button_normal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/px_button_height"
+                android:layout_marginTop="25dp"
+                android:text="@string/custom_initialize_button"/>
+
+            <com.mercadopago.android.px.internal.view.MPButton
                 android:id="@+id/select_checkout"
                 style="@style/px_button_normal"
                 android:layout_width="match_parent"

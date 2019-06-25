@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.HashMap;

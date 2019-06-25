@@ -85,8 +85,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
         configuration = configurationModule.getPaymentSettings();
         presenter = new InstallmentsPresenter(session.getAmountRepository(), configuration,
             configurationModule.getUserSelectionRepository(), session.getDiscountRepository(),
-            session.getSummaryAmountRepository(), session.getAmountConfigurationRepository(),
-            session.providePayerCostSolver());
+            session.getSummaryAmountRepository(), session.getAmountConfigurationRepository());
 
         getActivityParameters();
         presenter.attachView(this);

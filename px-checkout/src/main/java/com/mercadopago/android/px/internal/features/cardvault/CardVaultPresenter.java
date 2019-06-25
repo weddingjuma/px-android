@@ -9,8 +9,6 @@ import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
-import com.mercadopago.android.px.internal.features.installments.PayerCostListener;
-import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -30,8 +28,7 @@ import com.mercadopago.android.px.tracking.internal.events.EscFrictionEventTrack
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
-/* default */ class CardVaultPresenter extends BasePresenter<CardVault.View>
-    implements PayerCostListener, CardVault.Actions {
+/* default */ class CardVaultPresenter extends BasePresenter<CardVault.View> implements CardVault.Actions {
 
     @NonNull private final IESCManager iESCManager;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
@@ -40,7 +37,6 @@ import java.util.List;
     @NonNull private final CardTokenRepository cardTokenRepository;
 
     private FailureRecovery failureRecovery;
-    @NonNull private final PayerCostSolver payerCostSolver;
     private String bin;
 
     //Activity parameters
@@ -64,14 +60,12 @@ import java.util.List;
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final IESCManager iESCManager,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
-        @NonNull final CardTokenRepository cardTokenRepository,
-        @NonNull final PayerCostSolver payerCostSolver) {
+        @NonNull final CardTokenRepository cardTokenRepository) {
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.iESCManager = iESCManager;
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.cardTokenRepository = cardTokenRepository;
-        this.payerCostSolver = payerCostSolver;
     }
 
     @Override
@@ -145,11 +139,7 @@ import java.util.List;
     @Override
     public void setCardInfo(final CardInfo cardInfo) {
         this.cardInfo = cardInfo;
-        if (this.cardInfo == null) {
-            bin = TextUtil.EMPTY;
-        } else {
-            bin = this.cardInfo.getFirstSixDigits();
-        }
+        bin = cardInfo == null ? TextUtil.EMPTY : cardInfo.getFirstSixDigits();
     }
 
     @Override
@@ -259,10 +249,10 @@ import java.util.List;
         setPaymentMethod(card.getPaymentMethod());
 
         if (userSelectionRepository.getPayerCost() == null) {
-            payerCostSolver.solve(this, amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
+            onPayerCosts(amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
         } else {
             // This could happen on one tap flows
-            onSelectedPayerCost();
+            startSecurityCodeFlowIfNeeded();
         }
     }
 
@@ -329,27 +319,18 @@ import java.util.List;
     private void recoverCreateESCToken(final MercadoPagoError error) {
         if (isViewAttached()) {
             getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
-            setFailureRecovery(new FailureRecovery() {
-                @Override
-                public void recover() {
-                    createESCToken();
-                }
-            });
+            setFailureRecovery(this::createESCToken);
         }
     }
 
-    @Override
-    public void onEmptyOptions() {
-        getView().showEmptyPayerCostScreen();
-    }
-
-    @Override
-    public void onSelectedPayerCost() {
-        startSecurityCodeFlowIfNeeded();
-    }
-
-    @Override
-    public void displayInstallments(final List<PayerCost> payerCosts) {
-        getView().askForInstallments(getCardInfo());
+    private void onPayerCosts(@NonNull final List<PayerCost> payerCosts) {
+        if (payerCosts.isEmpty()) {
+            getView().showEmptyPayerCostScreen();
+        } else if (payerCosts.size() == 1) {
+            userSelectionRepository.select(payerCosts.get(0));
+            startSecurityCodeFlowIfNeeded();
+        } else {
+            getView().askForInstallments(getCardInfo());
+        }
     }
 }

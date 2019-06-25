@@ -117,9 +117,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
             session.getIdentificationRepository(),
             session.getConfigurationModule().getPaymentSettings().getAdvancedConfiguration(),
             paymentRecovery,
-            session.getSummaryAmountRepository(),
-            session.provideIssuersSolver(),
-            session.providePayerCostSolver());
+            session.getSummaryAmountRepository());
     }
 
     public static GuessingCardPresenter buildGuessingCardStoragePresenter(final Session session,

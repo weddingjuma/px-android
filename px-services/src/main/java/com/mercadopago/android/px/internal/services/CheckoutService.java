@@ -30,6 +30,7 @@ public interface CheckoutService {
         @Query("cards_esc") String cardsWithEsc,
         @Nullable @Query("differential_pricing_id") Integer differentialPricingId,
         @Nullable @Query("default_installments") final Integer defaultInstallments,
+        @Nullable @Query("max_installments") final Integer maxInstallments,
         @Query("express_enabled") final boolean expressEnabled,
         @Query("split_payment_enabled") final boolean hasSplitPaymentProcessor,
         @Body Map<String, Object> body);

@@ -30,8 +30,18 @@ public class ApplicationModule implements PreferenceComponent {
     }
 
     @NonNull
-    public SessionIdProvider newSessionProvider(final String sessionId) {
+    public SessionIdProvider newSessionProvider(@NonNull final String sessionId) {
         return new SessionIdProvider(getSharedPreferences(), sessionId);
+    }
+
+    @NonNull
+    public ProductIdProvider getProductIdProvider() {
+        return new ProductIdProvider(getSharedPreferences());
+    }
+
+    @NonNull
+    public ProductIdProvider newProductIdProvider(@NonNull final String productId) {
+        return new ProductIdProvider(getSharedPreferences(), productId);
     }
 
     @Override

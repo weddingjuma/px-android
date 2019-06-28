@@ -23,7 +23,6 @@ import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
-import com.mercadopago.android.px.internal.datasource.MercadoPagoServicesAdapter;
 import com.mercadopago.android.px.internal.datasource.PaymentMethodsService;
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
@@ -62,6 +61,7 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
 import com.mercadopago.android.px.model.Device;
+import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
 public final class Session extends ApplicationModule implements AmountComponent {
@@ -209,9 +209,9 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     @NonNull
-    public MercadoPagoServicesAdapter getMercadoPagoServiceAdapter() {
+    public MercadoPagoServices getMercadoPagoServices() {
         final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-        return new MercadoPagoServicesAdapter(getApplicationContext(), paymentSettings.getPublicKey(),
+        return new MercadoPagoServices(getApplicationContext(), paymentSettings.getPublicKey(),
             paymentSettings.getPrivateKey());
     }
 

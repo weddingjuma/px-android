@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 
+@Deprecated
 public class PaymentBody {
 
     private String transactionId;

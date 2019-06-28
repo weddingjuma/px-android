@@ -9,8 +9,8 @@ public final class RetrofitUtil {
 
     private static final String MP_API_BASE_URL = "https://api.mercadopago.com";
 
+    public static final int DEFAULT_READ_TIMEOUT = 20;
     private static final int DEFAULT_CONNECT_TIMEOUT = 10;
-    private static final int DEFAULT_READ_TIMEOUT = 20;
     private static final int DEFAULT_WRITE_TIMEOUT = 20;
 
     private RetrofitUtil() {

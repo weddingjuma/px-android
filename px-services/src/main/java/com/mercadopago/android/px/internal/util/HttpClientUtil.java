@@ -99,7 +99,7 @@ public final class HttpClientUtil {
         }
 
         // Custom interceptors
-        okHttpClientBuilder.addInterceptor(new ProductIdInterceptor());
+        okHttpClientBuilder.addInterceptor(new ProductIdInterceptor(context));
         okHttpClientBuilder.addInterceptor(new RequestIdInterceptor());
         okHttpClientBuilder.addInterceptor(new UserAgentInterceptor(BuildConfig.USER_AGENT));
 

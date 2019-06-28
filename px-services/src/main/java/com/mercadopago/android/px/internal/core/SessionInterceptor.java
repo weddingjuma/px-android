@@ -9,9 +9,9 @@ import okhttp3.Response;
 
 public final class SessionInterceptor implements Interceptor {
 
-    @NonNull private final Context context;
-
     private static final String SESSION_ID_HEADER = "X-Session-Id";
+
+    @NonNull private final Context context;
 
     public SessionInterceptor(@NonNull final Context context) {
         this.context = context.getApplicationContext();

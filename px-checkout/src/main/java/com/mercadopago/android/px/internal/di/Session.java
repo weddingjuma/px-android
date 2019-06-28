@@ -123,6 +123,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         final SessionIdProvider sessionIdProvider =
             newSessionProvider(mercadoPagoCheckout.getTrackingConfiguration().getSessionId());
         MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
+        newProductIdProvider(mercadoPagoCheckout.getAdvancedConfiguration().getProductId());
 
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();

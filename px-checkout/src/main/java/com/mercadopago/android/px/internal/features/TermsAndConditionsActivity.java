@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.mercadopago.android.px.R;
@@ -16,28 +17,28 @@ import com.mercadopago.android.px.tracking.internal.views.TermsAndConditionsView
 
 public class TermsAndConditionsActivity extends PXActivity {
 
-    public static final String EXTRA_URL = "extra_url";
+    public static final String EXTRA_DATA = "extra_data";
 
-    public static void start(@NonNull final Context context, @NonNull final String url) {
+    public static void start(@NonNull final Context context, @Nullable final String data) {
         final Intent intent = new Intent(context, TermsAndConditionsActivity.class);
-        intent.putExtra(EXTRA_URL, url);
+        intent.putExtra(EXTRA_DATA, data);
         context.startActivity(intent);
     }
 
     private View mMPTermsAndConditionsView;
     private WebView mTermsAndConditionsWebView;
     private ViewGroup mProgressLayout;
-    private String url;
+    private String data;
 
     @Override
     protected void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.px_activity_terms_and_conditions);
 
-        url = getIntent().getStringExtra(EXTRA_URL);
+        data = getIntent().getStringExtra(EXTRA_DATA);
 
         if (savedInstanceState == null) {
-            new TermsAndConditionsViewTracker(url).track();
+            new TermsAndConditionsViewTracker(data).track();
         }
 
         mProgressLayout = findViewById(R.id.mpsdkProgressLayout);
@@ -62,12 +63,16 @@ public class TermsAndConditionsActivity extends PXActivity {
         mProgressLayout.setVisibility(View.VISIBLE);
         mTermsAndConditionsWebView.setWebViewClient(new WebViewClient() {
             @Override
-            public void onPageFinished(WebView view, String url) {
+            public void onPageFinished(final WebView view, final String url) {
                 mProgressLayout.setVisibility(View.GONE);
                 mMPTermsAndConditionsView.setVisibility(View.VISIBLE);
             }
         });
 
-        mTermsAndConditionsWebView.loadUrl(url);
+        if (URLUtil.isValidUrl(data)) {
+            mTermsAndConditionsWebView.loadUrl(data);
+        } else {
+            mTermsAndConditionsWebView.loadData(data, "text/html", "UTF-8");
+        }
     }
 }

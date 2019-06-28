@@ -73,11 +73,11 @@ public class Body extends Component<PaymentResultBodyProps, Void> {
         return props.paymentResultScreenConfiguration.hasBottomFragment();
     }
 
-    public ExternalFragment topFragment() {
+    /* default */ ExternalFragment topFragment() {
         return props.paymentResultScreenConfiguration.getTopFragment();
     }
 
-    public ExternalFragment bottomFragment() {
+    /* default */ ExternalFragment bottomFragment() {
         return props.paymentResultScreenConfiguration.getBottomFragment();
     }
 

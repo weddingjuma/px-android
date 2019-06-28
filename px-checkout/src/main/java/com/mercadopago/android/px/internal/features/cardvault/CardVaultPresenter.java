@@ -42,7 +42,6 @@ import java.util.List;
     //Activity parameters
     private PaymentRecovery paymentRecovery;
 
-    private boolean installmentsListShown;
     private boolean issuersListShown;
 
     //Activity result
@@ -70,7 +69,6 @@ import java.util.List;
 
     @Override
     public void initialize() {
-        installmentsListShown = false;
         issuersListShown = false;
 
         if (tokenRecoveryAvailable()) {
@@ -153,29 +151,16 @@ import java.util.List;
         return PaymentMethodGuessingController.getCardNumberLength(paymentMethod, bin);
     }
 
-    @Override
-    public boolean isInstallmentsListShown() {
-        return installmentsListShown;
-    }
-
-    @Override
     public boolean isIssuersListShown() {
         return issuersListShown;
     }
 
-    @Override
-    public void setInstallmentsListShown(final boolean installmentsListShown) {
-        this.installmentsListShown = installmentsListShown;
-    }
-
-    @Override
     public void setIssuersListShown(final boolean issuersListShown) {
         this.issuersListShown = issuersListShown;
     }
 
     private void checkStartInstallmentsActivity() {
         if (userSelectionRepository.getPayerCost() == null) {
-            installmentsListShown = true;
             getView().askForInstallments(getCardInfo());
         } else {
             getView().finishWithResult();
@@ -205,7 +190,6 @@ import java.util.List;
 
     @Override
     public void resolveInstallmentsRequest() {
-        installmentsListShown = true;
         if (getCard() == null) {
             getView().finishWithResult();
         } else {

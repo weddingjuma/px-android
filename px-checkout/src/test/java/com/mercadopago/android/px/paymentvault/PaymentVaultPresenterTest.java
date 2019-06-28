@@ -17,11 +17,12 @@ import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.CustomSearchOptionViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodSearchOptionViewModelMapper;
 import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
-import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
+import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -251,8 +252,7 @@ public class PaymentVaultPresenterTest {
         presenter.initialize();
         presenter.selectItem(paymentMethodSearch.getCustomSearchItems().get(1));
 
-        Assert.assertTrue(stubView.savedCardFlowStarted);
-        assertEquals(stubView.savedCardSelected.getId(), paymentMethodSearch.getCustomSearchItems().get(1).getId());
+        Assert.assertTrue(stubView.cardFlowStarted);
     }
 
     @Test
@@ -419,6 +419,57 @@ public class PaymentVaultPresenterTest {
         verify(view).finishPaymentMethodSelection(userSelectionRepository.getPaymentMethod());
     }
 
+    @Test
+    public void whenHasConsumerCreditsVerifyIsShown() {
+        final PaymentMethodSearch paymentMethodSearch =
+            PaymentMethodSearchs.getPaymentMethodSearchWithOnlyMercadoCredito();
+        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        presenter.initialize();
+
+        final List<PaymentMethodViewModel> models =
+            new CustomSearchOptionViewModelMapper(presenter, disabledPaymentMethodRepository)
+                .map(paymentMethodSearch.getCustomSearchItems());
+        models.addAll(new PaymentMethodSearchOptionViewModelMapper(presenter).map(paymentMethodSearch.getGroups()));
+
+        verify(view).showSearchItems(ReflectionArgumentMatchers.reflectionEquals(models));
+
+        verify(view).hideAmountRow();
+        verify(view).hideProgress();
+        verify(view).setTitle(any());
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenConsumerCreditsIsSelectedVerifyFlow() {
+        final PaymentMethodSearch paymentMethodSearch =
+            PaymentMethodSearchs.getPaymentMethodSearchWithOnlyMercadoCredito();
+        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        presenter.initialize();
+
+        final List<PaymentMethodViewModel> models =
+            new CustomSearchOptionViewModelMapper(presenter, disabledPaymentMethodRepository)
+                .map(paymentMethodSearch.getCustomSearchItems());
+        models.addAll(new PaymentMethodSearchOptionViewModelMapper(presenter).map(paymentMethodSearch.getGroups()));
+
+        verify(view).showSearchItems(ReflectionArgumentMatchers.reflectionEquals(models));
+
+        final CustomSearchItem consumerCreditsItem = paymentMethodSearch.getCustomSearchItems()
+            .stream()
+            .filter(item -> item.getPaymentMethodId().equals(PaymentMethods.CONSUMER_CREDITS))
+            .findAny().orElse(null);
+
+        Assert.assertNotNull(consumerCreditsItem);
+        presenter.selectItem(consumerCreditsItem);
+
+        Assert.assertTrue(PaymentTypes.isDigitalCurrency(consumerCreditsItem.getType()));
+
+        verify(view, times(1)).showInstallments();
+
+        verify(view).hideAmountRow();
+        verify(view).hideProgress();
+        verify(view).setTitle(any());
+        verifyNoMoreInteractions(view);
+    }
     // --------- Helper methods ----------- //
 
     private void verifyInitializeWithGroups() {
@@ -444,14 +495,11 @@ public class PaymentVaultPresenterTest {
         /* default */ List<PaymentMethodViewModel> searchItemsShown;
         /* default */ boolean cardFlowStarted = false;
         /* default */ PaymentMethod selectedPaymentMethod;
-        /* default */ boolean savedCardFlowStarted;
-        /* default */ Card savedCardSelected;
         /* default */ boolean paymentMethodSelectionStarted = false;
 
         @Override
-        public void startSavedCardFlow(final Card card) {
-            savedCardFlowStarted = true;
-            savedCardSelected = card;
+        public void showInstallments() {
+
         }
 
         @Override

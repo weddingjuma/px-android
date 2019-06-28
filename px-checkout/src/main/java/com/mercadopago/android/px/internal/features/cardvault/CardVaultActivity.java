@@ -43,7 +43,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     private static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
     private static final String EXTRA_TOKEN = "token";
     private static final String EXTRA_CARD_INFO = "cardInfo";
-    private static final String EXTRA_INSTALLMENTS_LIST_SHOWN = "installmentsListShown";
     private static final String EXTRA_ISSUERS_LIST_SHOWN = "issuersListShown";
 
     private CardVaultPresenter presenter;
@@ -119,7 +118,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         presenter.setPaymentMethod((PaymentMethod) savedInstanceState.getSerializable(EXTRA_PAYMENT_METHOD));
         presenter.setToken((Token) savedInstanceState.getSerializable(EXTRA_TOKEN));
         presenter.setCardInfo((CardInfo) savedInstanceState.getSerializable(EXTRA_CARD_INFO));
-        presenter.setInstallmentsListShown(savedInstanceState.getBoolean(EXTRA_INSTALLMENTS_LIST_SHOWN, false));
         presenter.setIssuersListShown(savedInstanceState.getBoolean(EXTRA_ISSUERS_LIST_SHOWN, false));
     }
 
@@ -180,7 +178,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         if (presenter != null) {
             outState.putSerializable(EXTRA_CARD, presenter.getCard());
             outState.putSerializable(EXTRA_PAYMENT_RECOVERY, presenter.getPaymentRecovery());
-            outState.putBoolean(EXTRA_INSTALLMENTS_LIST_SHOWN, presenter.isInstallmentsListShown());
             outState.putBoolean(EXTRA_ISSUERS_LIST_SHOWN, presenter.isIssuersListShown());
 
             if (presenter.getPaymentMethod() != null) {

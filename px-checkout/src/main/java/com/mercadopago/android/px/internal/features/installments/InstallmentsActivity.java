@@ -10,6 +10,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -44,35 +45,33 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     private static final int TOOLBAR_TEXT_SIZE = 19;
     private static final int TIMER_TEXT_SIZE = 17;
     private static final String EXTRA_CARD_INFO = "cardInfo";
-
-    private RecyclerView installmentsRecyclerView;
-
     //Local vars
-    protected boolean mActivityActive;
-
+    protected boolean activityActive;
     //ViewMode
-    protected boolean mLowResActive;
-
+    protected boolean lowResActive;
     //Low Res View
-    protected Toolbar mLowResToolbar;
-    protected MPTextView mLowResTitleToolbar;
-
+    protected Toolbar lowResToolbar;
+    protected MPTextView lowResTitleToolbar;
     //Normal View
-    protected CollapsingToolbarLayout mCollapsingToolbar;
-    protected AppBarLayout mAppBar;
-    protected FrameLayout mCardContainer;
-    protected Toolbar mNormalToolbar;
-    protected FrontCardView mFrontCardView;
-    protected MPTextView mTimerTextView;
-
-
-
+    protected CollapsingToolbarLayout collapsingToolbar;
+    protected AppBarLayout appBar;
+    protected FrameLayout cardContainer;
+    protected Toolbar normalToolbar;
+    protected FrontCardView frontCardView;
+    protected MPTextView timerTextView;
+    private RecyclerView installmentsRecyclerView;
     private AmountView amountView;
     private PaymentSettingRepository configuration;
 
-    public static void start(@NonNull final Activity activity, final int requestCode, @NonNull final CardInfo cardInfo) {
+    public static void start(@NonNull final Activity activity, final int requestCode,
+        @NonNull final CardInfo cardInfo) {
         final Intent intent = new Intent(activity, InstallmentsActivity.class);
         intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        activity.startActivityForResult(intent, requestCode);
+    }
+
+    public static void start(@NonNull final Activity activity, final int requestCode) {
+        final Intent intent = new Intent(activity, InstallmentsActivity.class);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -90,8 +89,8 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
         getActivityParameters();
         presenter.attachView(this);
 
-        mActivityActive = true;
-        mLowResActive = ScaleUtil.isLowRes(this);
+        activityActive = true;
+        lowResActive = ScaleUtil.isLowRes(this);
         setContentView();
         initializeControls();
         initializeView();
@@ -105,7 +104,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     public void setContentView() {
-        if (mLowResActive) {
+        if (lowResActive) {
             setContentViewLowRes();
         } else {
             setContentViewNormal();
@@ -126,10 +125,10 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
         installmentsRecyclerView.setLayoutManager(linearLayoutManager);
         installmentsRecyclerView
             .addItemDecoration(new DividerItemDecoration(this, linearLayoutManager.getOrientation()));
-        mTimerTextView = findViewById(R.id.mpsdkTimerTextView);
+        timerTextView = findViewById(R.id.mpsdkTimerTextView);
         amountView = findViewById(R.id.amount_view);
 
-        if (mLowResActive) {
+        if (lowResActive) {
             initializeLowResControls();
         } else {
             initializeNormalControls();
@@ -137,27 +136,27 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     private void initializeLowResControls() {
-        mLowResToolbar = findViewById(R.id.mpsdkRegularToolbar);
-        mLowResTitleToolbar = findViewById(R.id.mpsdkTitle);
+        lowResToolbar = findViewById(R.id.mpsdkRegularToolbar);
+        lowResTitleToolbar = findViewById(R.id.mpsdkTitle);
 
         if (CheckoutTimer.getInstance().isTimerEnabled()) {
             final Toolbar.LayoutParams marginParams =
                 new Toolbar.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
             marginParams.setMargins(0, 0, 0, 6);
-            mLowResTitleToolbar.setLayoutParams(marginParams);
-            mLowResTitleToolbar.setTextSize(TOOLBAR_TEXT_SIZE);
-            mTimerTextView.setTextSize(TIMER_TEXT_SIZE);
+            lowResTitleToolbar.setLayoutParams(marginParams);
+            lowResTitleToolbar.setTextSize(TOOLBAR_TEXT_SIZE);
+            timerTextView.setTextSize(TIMER_TEXT_SIZE);
         }
 
-        mLowResToolbar.setVisibility(View.VISIBLE);
+        lowResToolbar.setVisibility(View.VISIBLE);
     }
 
     private void initializeNormalControls() {
-        mCollapsingToolbar = findViewById(R.id.mpsdkCollapsingToolbar);
-        mAppBar = findViewById(R.id.mpsdkInstallmentesAppBar);
-        mCardContainer = findViewById(R.id.mpsdkActivityCardContainer);
-        mNormalToolbar = findViewById(R.id.mpsdkRegularToolbar);
-        mNormalToolbar.setVisibility(View.VISIBLE);
+        collapsingToolbar = findViewById(R.id.mpsdkCollapsingToolbar);
+        appBar = findViewById(R.id.mpsdkInstallmentesAppBar);
+        cardContainer = findViewById(R.id.mpsdkActivityCardContainer);
+        normalToolbar = findViewById(R.id.mpsdkRegularToolbar);
+        normalToolbar.setVisibility(View.VISIBLE);
     }
 
     private void initializeView() {
@@ -167,7 +166,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     public void loadViews() {
-        if (mLowResActive) {
+        if (lowResActive) {
             loadLowResViews();
         } else {
             loadNormalViews();
@@ -184,30 +183,30 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     public void loadLowResViews() {
-        loadToolbarArrow(mLowResToolbar);
-        mLowResTitleToolbar.setText(getString(R.string.px_card_installments_title));
+        loadToolbarArrow(lowResToolbar);
+        lowResTitleToolbar.setText(getString(R.string.px_card_installments_title));
 
         if (FontCache.hasTypeface(FontCache.CUSTOM_REGULAR_FONT)) {
-            mLowResTitleToolbar.setTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
+            lowResTitleToolbar.setTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
         }
     }
 
     public void loadNormalViews() {
-        loadToolbarArrow(mNormalToolbar);
-        mNormalToolbar.setTitle(getString(R.string.px_card_installments_title));
+        loadToolbarArrow(normalToolbar);
+        normalToolbar.setTitle(getString(R.string.px_card_installments_title));
         setCustomFontNormal();
 
-        mFrontCardView = new FrontCardView(this, CardRepresentationModes.SHOW_FULL_FRONT_ONLY);
-        mFrontCardView.setSize(CardRepresentationModes.MEDIUM_SIZE);
-        mFrontCardView.setPaymentMethod(presenter.getPaymentMethod());
+        frontCardView = new FrontCardView(this, CardRepresentationModes.SHOW_FULL_FRONT_ONLY);
+        frontCardView.setSize(CardRepresentationModes.MEDIUM_SIZE);
+        frontCardView.setPaymentMethod(presenter.getPaymentMethod());
         if (presenter.getCardInfo() != null) {
-            mFrontCardView.setCardNumberLength(presenter.getCardNumberLength());
-            mFrontCardView.setLastFourDigits(presenter.getCardInfo().getLastFourDigits());
+            frontCardView.setCardNumberLength(presenter.getCardNumberLength());
+            frontCardView.setLastFourDigits(presenter.getCardInfo().getLastFourDigits());
         }
-        mFrontCardView.inflateInParent(mCardContainer, true);
-        mFrontCardView.initializeControls();
-        mFrontCardView.draw();
-        mFrontCardView.enableEditingCardNumber();
+        frontCardView.inflateInParent(cardContainer, true);
+        frontCardView.initializeControls();
+        frontCardView.draw();
+        frontCardView.enableEditingCardNumber();
     }
 
     private void loadToolbarArrow(final Toolbar toolbar) {
@@ -224,31 +223,31 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     private void setCustomFontNormal() {
         if (FontCache.hasTypeface(FontCache.CUSTOM_REGULAR_FONT)) {
-            mCollapsingToolbar.setCollapsedTitleTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
-            mCollapsingToolbar.setExpandedTitleTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
+            collapsingToolbar.setCollapsedTitleTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
+            collapsingToolbar.setExpandedTitleTypeface(FontCache.getTypeface(FontCache.CUSTOM_REGULAR_FONT));
         }
     }
 
     private void hideHeader() {
-        if (mLowResActive) {
-            mLowResToolbar.setVisibility(View.GONE);
+        if (lowResActive) {
+            lowResToolbar.setVisibility(View.GONE);
         } else {
-            mNormalToolbar.setTitle("");
+            normalToolbar.setTitle("");
         }
     }
 
     private void showTimer() {
         if (CheckoutTimer.getInstance().isTimerEnabled()) {
-            mTimerTextView.setVisibility(View.VISIBLE);
-            mTimerTextView.setText(CheckoutTimer.getInstance().getCurrentTime());
+            timerTextView.setVisibility(View.VISIBLE);
+            timerTextView.setText(CheckoutTimer.getInstance().getCurrentTime());
         }
     }
 
     private void showHeader() {
-        if (mLowResActive) {
-            mLowResToolbar.setVisibility(View.VISIBLE);
+        if (lowResActive) {
+            lowResToolbar.setVisibility(View.VISIBLE);
         } else {
-            mNormalToolbar.setTitle(getString(R.string.px_card_installments_title));
+            normalToolbar.setTitle(getString(R.string.px_card_installments_title));
             setCustomFontNormal();
         }
     }
@@ -277,6 +276,18 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public void hideLoadingView() {
         installmentsRecyclerView.setVisibility(View.VISIBLE);
         ViewUtils.showRegularLayout(this);
+    }
+
+    @Override
+    public void hideCardContainer() {
+        cardContainer.setVisibility(View.GONE);
+        collapsingToolbar.setExpandedTitleTextAppearance(R.style.px_collapsing_toolbar_text_large);
+        final ViewGroup.LayoutParams params = appBar.getLayoutParams();
+        params.height = (int) (getResources().getDimension(R.dimen.px_appbar_height));
+        appBar.setLayoutParams(params);
+        collapsingToolbar.setExpandedTitleMarginBottom(0);
+        collapsingToolbar.setExpandedTitleMarginTop(0);
+        collapsingToolbar.setExpandedTitleGravity(Gravity.CENTER);
     }
 
     @Override

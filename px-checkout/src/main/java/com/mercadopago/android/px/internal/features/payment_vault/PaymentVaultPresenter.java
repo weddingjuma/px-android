@@ -26,6 +26,7 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
+import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -48,16 +49,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     private final DiscountRepository discountRepository;
     @NonNull
     private final GroupsRepository groupsRepository;
-
-    @NonNull private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
-
     @NonNull private final IESCManager IESCManager;
-
     @NonNull private final PaymentVaultTitleSolver titleSolver;
-
-    private PaymentMethodSearchItem selectedSearchItem;
-
     /* default */ PaymentMethodSearch paymentMethodSearch;
+    @NonNull private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
+    private PaymentMethodSearchItem selectedSearchItem;
     private FailureRecovery failureRecovery;
     private AmountRowController amountRowController;
 
@@ -232,13 +228,16 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     @Override
     public void selectItem(@NonNull final CustomSearchItem item) {
         if (PaymentTypes.isCardPaymentType(item.getType())) {
-            final Card card = getCardWithPaymentMethod(item);
-            userSelectionRepository.select(card, null);
-            getView().startSavedCardFlow(card);
+            userSelectionRepository.select(getCardWithPaymentMethod(item), null);
+            getView().startCardFlow();
         } else if (PaymentTypes.isAccountMoney(item.getType())) {
             final PaymentMethod paymentMethod = paymentMethodSearch.getPaymentMethodById(item.getPaymentMethodId());
             userSelectionRepository.select(paymentMethod, null);
             getView().finishPaymentMethodSelection(paymentMethod);
+        } else if (PaymentMethods.CONSUMER_CREDITS.equals(item.getPaymentMethodId())) {
+            final PaymentMethod paymentMethod = paymentMethodSearch.getPaymentMethodById(item.getPaymentMethodId());
+            userSelectionRepository.select(paymentMethod, null);
+            getView().showInstallments();
         }
     }
 

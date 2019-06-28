@@ -36,7 +36,7 @@ import java.util.Locale;
         setInstallmentsText(site, payerCost);
 
         if (!site.shouldWarnAboutBankInterests()) {
-            if (BigDecimal.ZERO.compareTo(payerCost.getInstallmentRate()) == 0) {
+            if (BigDecimal.ZERO.equals(payerCost.getInstallmentRate())) {
                 totalText.setVisibility(View.GONE);
                 zeroRateText.setVisibility(payerCost.getInstallments() > 1 ? View.VISIBLE : View.GONE);
             } else {
@@ -45,12 +45,7 @@ import java.util.Locale;
             }
         }
 
-        itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                itemListener.onClick(payerCost);
-            }
-        });
+        itemView.setOnClickListener(v -> itemListener.onClick(payerCost));
     }
 
     private void setAmountWithRateText(@NonNull final Site site, @NonNull final PayerCost payerCost) {

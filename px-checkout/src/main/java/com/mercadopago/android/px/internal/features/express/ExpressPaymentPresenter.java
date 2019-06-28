@@ -69,11 +69,6 @@ import java.util.Set;
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
     private static final String BUNDLE_STATE_AVAILABLE_PM_COUNT = "state_available_pm_count";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
-
-    private PayerCostSelection payerCostSelection;
-    private SplitSelectionState splitSelectionState;
-    private int availablePaymentMethodsCount = -1;
-
     @NonNull private final PaymentRepository paymentRepository;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final DiscountRepository discountRepository;
@@ -83,12 +78,13 @@ import java.util.Set;
     @NonNull private final ChargeRepository chargeRepository;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final IESCManager mercadoPagoESC;
-
-    //TODO remove.
-    /* default */ List<ExpressMetadata> expressMetadataList;
-
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
     private final PayButtonViewModel payButtonViewModel;
+    //TODO remove.
+    /* default */ List<ExpressMetadata> expressMetadataList;
+    private PayerCostSelection payerCostSelection;
+    private SplitSelectionState splitSelectionState;
+    private int availablePaymentMethodsCount = -1;
     private Set<String> cardsWithSplit;
     private int paymentMethodIndex;
 
@@ -245,21 +241,18 @@ import java.util.Set;
         final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
 
         PayerCost payerCost = null;
-        boolean splitPayment = false;
 
-        if (expressMetadata.isCard()) {
-            final AmountConfiguration amountConfiguration =
-                amountConfigurationRepository.getConfigurationFor(expressMetadata.getCard().getId());
-            splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
+        final String customOptionId = expressMetadata.isCard() ? expressMetadata.getCard().getId()
+            : expressMetadata.getPaymentMethodId();
+        final AmountConfiguration amountConfiguration =
+            amountConfigurationRepository.getConfigurationFor(customOptionId);
+
+        if (expressMetadata.isCard() || expressMetadata.isConsumerCredits()) {
             payerCost = amountConfiguration
-                .getCurrentPayerCost(
-                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex));
-        } else if (expressMetadata.isAccountMoney()) {
-            final AmountConfiguration amountConfiguration =
-                amountConfigurationRepository.getConfigurationFor(expressMetadata.getPaymentMethodId());
-            splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
+               .getCurrentPayerCost(splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex));
         }
 
+        final boolean splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
         ConfirmEvent.from(mercadoPagoESC.getESCCardIds(), expressMetadata, payerCost, splitPayment).track();
 
         paymentRepository.startExpressPayment(expressMetadata, payerCost, splitPayment);
@@ -338,19 +331,18 @@ import java.util.Set;
     @Override
     public void onInstallmentsRowPressed() {
         final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
-        final CardMetadata cardMetadata = expressMetadata.getCard();
+        final String customOptionId =
+            expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
+        final AmountConfiguration amountConfiguration =
+            amountConfigurationRepository.getConfigurationFor(customOptionId);
+        final List<PayerCost> payerCostList = amountConfiguration.getAppliedPayerCost(
+            splitSelectionState.userWantsToSplit());
+        final int index = payerCostList.indexOf(
+            amountConfiguration.getCurrentPayerCost(
+                splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex)));
 
-        if (paymentMethodIndex <= expressMetadataList.size() && cardMetadata != null) {
-            final AmountConfiguration amountConfiguration =
-                amountConfigurationRepository.getConfigurationFor(cardMetadata.getId());
-            final List<PayerCost> payerCostList = amountConfiguration.getAppliedPayerCost(
-                splitSelectionState.userWantsToSplit());
-            final int index = payerCostList.indexOf(
-                amountConfiguration.getCurrentPayerCost(
-                    splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex)));
-            getView().showInstallmentsList(payerCostList, index);
-            new InstallmentsEventTrack(expressMetadata, amountConfiguration).track();
-        }
+        getView().showInstallmentsList(payerCostList, index);
+        new InstallmentsEventTrack(expressMetadata, amountConfiguration).track();
     }
 
     /**
@@ -386,8 +378,9 @@ import java.util.Set;
      */
     @Override
     public void onPayerCostSelected(final PayerCost payerCostSelected) {
-        final CardMetadata cardMetadata = expressMetadataList.get(paymentMethodIndex).getCard();
-        final int selected = amountConfigurationRepository.getConfigurationFor(cardMetadata.getId())
+        final ExpressMetadata expressMetadata = expressMetadataList.get(paymentMethodIndex);
+        final String customOptionId = expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
+        final int selected = amountConfigurationRepository.getConfigurationFor(customOptionId)
             .getAppliedPayerCost(splitSelectionState.userWantsToSplit())
             .indexOf(payerCostSelected);
 

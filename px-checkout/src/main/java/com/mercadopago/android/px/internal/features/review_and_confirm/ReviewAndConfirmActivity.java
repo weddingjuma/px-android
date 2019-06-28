@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -16,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
+import android.widget.LinearLayout;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
@@ -48,6 +50,7 @@ import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.ComponentManager;
+import com.mercadopago.android.px.internal.view.LinkableTextComponent;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
@@ -57,6 +60,7 @@ import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.display_info.LinkableText;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
@@ -75,6 +79,8 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     private static final int REQ_CARD_VAULT = 0x01;
 
     private static final String EXTRA_TERMS_AND_CONDITIONS = "extra_terms_and_conditions";
+    private static final String EXTRA_DISPLAY_INFO_LINKABLE_TEXT =
+        "extra_digital_currency_terms_and_conditions";
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     private static final String EXTRA_SUMMARY_MODEL = "extra_summary_model";
     private static final String EXTRA_PUBLIC_KEY = "extra_public_key";
@@ -85,41 +91,30 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
 
     private MeliButton confirmButton;
-    private View floatingConfirmLayout;
+    private LinearLayout floatingLayout;
 
-    //TODO refactor.
-    public static Intent getIntent(@NonNull final Context context,
+    public static Intent getIntentForAction(@NonNull final Context context,
         @NonNull final String merchantPublicKey,
         @Nullable final TermsAndConditionsModel mercadoPagoTermsAndConditions,
+        @Nullable final LinkableText linkableText,
         @NonNull final PaymentModel paymentModel,
         @NonNull final SummaryModel summaryModel,
         @NonNull final ItemsModel itemsModel,
-        @Nullable final TermsAndConditionsModel discountTermsAndConditions) {
+        @Nullable final TermsAndConditionsModel discountTermsAndConditions,
+        @Nullable final PostPaymentAction postPaymentAction) {
 
         final Intent intent = new Intent(context, ReviewAndConfirmActivity.class);
         intent.putExtra(EXTRA_PUBLIC_KEY, merchantPublicKey);
         intent.putExtra(EXTRA_TERMS_AND_CONDITIONS, mercadoPagoTermsAndConditions);
+        intent.putExtra(EXTRA_DISPLAY_INFO_LINKABLE_TEXT, (Parcelable) linkableText);
         intent.putExtra(EXTRA_PAYMENT_MODEL, paymentModel);
         intent.putExtra(EXTRA_SUMMARY_MODEL, summaryModel);
         intent.putExtra(EXTRA_ITEMS, itemsModel);
         intent.putExtra(EXTRA_DISCOUNT_TERMS_AND_CONDITIONS, discountTermsAndConditions);
 
-        return intent;
-    }
-
-    public static Intent getIntentForAction(@NonNull final Context context,
-        @NonNull final String merchantPublicKey,
-        @Nullable final TermsAndConditionsModel mercadoPagoTermsAndConditions,
-        @NonNull final PaymentModel paymentModel,
-        @NonNull final SummaryModel summaryModel,
-        @NonNull final ItemsModel itemsModel,
-        @Nullable final TermsAndConditionsModel discountTermsAndConditions,
-        @NonNull final PostPaymentAction postPaymentAction) {
-        final Intent intent = getIntent(context, merchantPublicKey, mercadoPagoTermsAndConditions,
-            paymentModel, summaryModel, itemsModel,
-            discountTermsAndConditions);
-
-        postPaymentAction.addToIntent(intent);
+        if (postPaymentAction != null) {
+            postPaymentAction.addToIntent(intent);
+        }
 
         return intent;
     }
@@ -240,8 +235,9 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     private void initBody() {
         final ViewGroup mainContent = findViewById(R.id.scroll_view);
-        initContent(mainContent);
-        initFloatingButton(mainContent);
+        final ContainerProps props = getActivityParameters();
+        initContent(mainContent, props.reviewAndConfirmContainerProps);
+        initFloatingButton(mainContent, props.linkableText);
     }
 
     private void initToolbar() {
@@ -260,10 +256,16 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         }
     }
 
-    private void initFloatingButton(final ViewGroup scrollView) {
-        floatingConfirmLayout = findViewById(R.id.floating_confirm_layout);
+    private void initFloatingButton(final ViewGroup scrollView, @Nullable final LinkableText linkableText) {
+        floatingLayout = findViewById(R.id.floating_layout);
         confirmButton.setOnClickListener(v -> presenter.onPaymentConfirm());
-        configureFloatingBehaviour(scrollView, floatingConfirmLayout);
+
+        if (linkableText != null) {
+            final LinkableTextComponent linkableTextComponent = new LinkableTextComponent(linkableText);
+            floatingLayout.addView(linkableTextComponent.render(floatingLayout), 0);
+        }
+
+        configureFloatingBehaviour(scrollView, floatingLayout);
     }
 
     private void configureFloatingBehaviour(final ViewGroup scrollView, final View floatingConfirmLayout) {
@@ -303,12 +305,9 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         setFloatingElevationVisibility(floatingConfirmLayout, scrollView.getScrollY() < finalSize);
     }
 
-    private void initContent(final ViewGroup mainContent) {
-        final ReviewAndConfirmContainer.Props props = getActivityParameters();
+    private void initContent(final ViewGroup mainContent, final ReviewAndConfirmContainer.Props props) {
         final ComponentManager manager = new ComponentManager(this);
-
-        final ReviewAndConfirmContainer container =
-            new ReviewAndConfirmContainer(props, this);
+        final ReviewAndConfirmContainer container = new ReviewAndConfirmContainer(props, this);
 
         container.setDispatcher(this);
 
@@ -330,13 +329,14 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         finish();
     }
 
-    private ReviewAndConfirmContainer.Props getActivityParameters() {
+    private ContainerProps getActivityParameters() {
         final Intent intent = getIntent();
         final Bundle extras = intent.getExtras();
 
         if (extras != null) {
             final TermsAndConditionsModel termsAndConditionsModel = extras.getParcelable(EXTRA_TERMS_AND_CONDITIONS);
             final PaymentModel paymentModel = extras.getParcelable(EXTRA_PAYMENT_MODEL);
+
             final SummaryModel summaryModel = extras.getParcelable(EXTRA_SUMMARY_MODEL);
             final ItemsModel itemsModel = extras.getParcelable(EXTRA_ITEMS);
             final TermsAndConditionsModel discountTermsAndConditions =
@@ -351,14 +351,19 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             final ReviewAndConfirmConfiguration reviewAndConfirmConfiguration =
                 advancedConfiguration.getReviewAndConfirmConfiguration();
 
-            return new ReviewAndConfirmContainer.Props(termsAndConditionsModel,
-                paymentModel,
-                summaryModel,
-                reviewAndConfirmConfiguration,
-                advancedConfiguration.getDynamicFragmentConfiguration(),
-                itemsModel,
-                discountTermsAndConditions,
-                payer);
+            final LinkableText linkableText = extras.getParcelable(EXTRA_DISPLAY_INFO_LINKABLE_TEXT);
+
+            ReviewAndConfirmContainer.Props reviewAndConfirmContainerProps =
+                new ReviewAndConfirmContainer.Props(termsAndConditionsModel,
+                    paymentModel,
+                    summaryModel,
+                    reviewAndConfirmConfiguration,
+                    advancedConfiguration.getDynamicFragmentConfiguration(),
+                    itemsModel,
+                    discountTermsAndConditions,
+                    payer);
+
+            return new ContainerProps(reviewAndConfirmContainerProps, linkableText);
         }
 
         throw new IllegalStateException("Unsupported parameters for Review and confirm activity");
@@ -572,7 +577,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     @SuppressLint("Range")
     @Override
     public void showErrorSnackBar(@NonNull final MercadoPagoError error) {
-        MeliSnackbar.make(floatingConfirmLayout, error.getMessage(), Snackbar.LENGTH_LONG,
+        MeliSnackbar.make(floatingLayout, error.getMessage(), Snackbar.LENGTH_LONG,
             MeliSnackbar.SnackbarType.ERROR).show();
     }
 
@@ -598,5 +603,17 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     public void finishAndChangePaymentMethod() {
         setResult(RESULT_CHANGE_PAYMENT_METHOD);
         finish();
+    }
+
+    public static final class ContainerProps {
+        /* default */ ReviewAndConfirmContainer.Props reviewAndConfirmContainerProps;
+        /* default */ LinkableText linkableText;
+
+        /* default */ ContainerProps(
+            final ReviewAndConfirmContainer.Props reviewAndConfirmContainerProps,
+            final LinkableText linkableText) {
+            this.reviewAndConfirmContainerProps = reviewAndConfirmContainerProps;
+            this.linkableText = linkableText;
+        }
     }
 }

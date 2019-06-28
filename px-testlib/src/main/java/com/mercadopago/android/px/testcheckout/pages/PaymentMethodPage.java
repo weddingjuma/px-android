@@ -87,6 +87,21 @@ public class PaymentMethodPage extends PageObject<CheckoutValidator> {
         return new PayerInformationIdentificationPage(validator);
     }
 
+    public InstallmentsPage selectPaymentMethodToInstallments(@NonNull final String paymentMethod) {
+        clickViewWithTag(paymentMethod);
+        return new InstallmentsPage(validator);
+    }
+
+    public SecurityCodePage selectPaymentMethodToSecurityCode(@NonNull final String paymentMethod) {
+        clickViewWithTag(paymentMethod);
+        return new SecurityCodePage(validator);
+    }
+
+    public ReviewAndConfirmPage selectPaymentMethodToReviewAndConfirm(@NonNull final String paymentMethod) {
+        clickViewWithTag(paymentMethod);
+        return new ReviewAndConfirmPage(validator);
+    }
+
     public DiscountDetailPage pressOnDiscountDetail() {
         onView(withId(R.id.amount_view)).perform(click());
         return new DiscountDetailPage(validator);

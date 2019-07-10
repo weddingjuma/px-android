@@ -1,3 +1,8 @@
+## VERSION 4.16.1
+_10_07_2019_
+FIX - Handling context in http client interceptor
+FIX - Validating flow in onRestore validations in guessing card activity
+
 ## VERSION 4.16.0
 _01_07_2019_
 * Added support for max installments

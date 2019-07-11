@@ -290,7 +290,7 @@ public class CheckoutPreference implements Serializable {
 
     public static class Builder {
 
-        private static final String DEFAULT_MARKETPLACE = "none";
+        private static final String DEFAULT_MARKETPLACE = "NONE";
 
         //region mandatory params
         /* default */ final List<Item> items;

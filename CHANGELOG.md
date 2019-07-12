@@ -1,3 +1,7 @@
+## VERSION 4.16.2
+_11_07_2019_
+* FIX - Default marketplace to NONE
+
 ## VERSION 4.16.1
 _10_07_2019_
 * FIX - Handling context in http client interceptor

@@ -1,3 +1,7 @@
+## VERSION 4.15.2
+_15_07_2019_
+* FIX - Prevent library double initialization
+
 ## VERSION 4.15.1
 _19_06_2019_
 * FIX - Incorrect amount on congrats when discount and one installment

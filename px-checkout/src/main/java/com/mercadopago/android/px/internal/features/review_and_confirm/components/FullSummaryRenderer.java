@@ -90,6 +90,7 @@ public class FullSummaryRenderer extends Renderer<FullSummary> {
     @VisibleForTesting
     boolean shouldShowPayerCost(final SummaryModel props) {
         return PaymentTypes.isCreditCardPaymentType(props.getPaymentTypeId())
+            || PaymentTypes.isDigitalCurrency(props.getPaymentTypeId())
             && props.getInstallments() > 1;
     }
 

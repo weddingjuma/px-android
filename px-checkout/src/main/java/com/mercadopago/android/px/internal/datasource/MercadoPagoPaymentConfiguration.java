@@ -8,7 +8,7 @@ public final class MercadoPagoPaymentConfiguration {
     }
 
     public static PaymentConfiguration create() {
-        return new PaymentConfiguration.Builder(new MercadoPagoPaymentProcessor())
+        return new PaymentConfiguration.Builder(new DefaultPaymentProcessor())
             .build();
     }
 }

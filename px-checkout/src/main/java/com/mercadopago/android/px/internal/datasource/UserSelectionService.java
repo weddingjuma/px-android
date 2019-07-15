@@ -23,7 +23,7 @@ public class UserSelectionService implements UserSelectionRepository {
     @NonNull private final JsonUtil jsonUtil;
 
     //TODO persist local storage.
-    private Card card;
+    @Nullable private Card card;
 
     public UserSelectionService(@NonNull final SharedPreferences sharedPreferences,
         @NonNull final JsonUtil jsonUtil) {

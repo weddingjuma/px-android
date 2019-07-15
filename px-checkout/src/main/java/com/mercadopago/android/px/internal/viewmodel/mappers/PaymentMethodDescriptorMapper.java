@@ -9,7 +9,6 @@ import com.mercadopago.android.px.internal.viewmodel.AccountMoneyDescriptorModel
 import com.mercadopago.android.px.internal.viewmodel.CreditCardDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.DebitCardDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.EmptyInstallmentsDescriptorModel;
-import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PaymentTypes;
 import java.util.ArrayList;
@@ -45,22 +44,24 @@ public class PaymentMethodDescriptorMapper
 
     private PaymentMethodDescriptorView.Model createInstallmentsDescriptorModel(final ExpressMetadata expressMetadata) {
         final String paymentTypeId = expressMetadata.getPaymentTypeId();
-        final CardMetadata cardMetadata = expressMetadata.getCard();
+        final String customOptionId =
+            expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
 
-        if (PaymentTypes.isCreditCardPaymentType(paymentTypeId)) {
+        if (PaymentTypes.isCreditCardPaymentType(paymentTypeId) || expressMetadata.isConsumerCredits()) {
             //This model is useful for Credit Card only
+            // FIXME change model to represent more than just credit cards.
             return CreditCardDescriptorModel
                 .createFrom(paymentConfiguration.getCheckoutPreference().getSite().getCurrencyId(),
-                    amountConfigurationRepository.getConfigurationFor(cardMetadata.getId()),
-                    disabledPaymentMethodRepository.hasPaymentMethodId(cardMetadata.getId()));
+                    amountConfigurationRepository.getConfigurationFor(customOptionId),
+                    disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId));
         } else if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
             return DebitCardDescriptorModel
                 .createFrom(paymentConfiguration.getCheckoutPreference().getSite().getCurrencyId(),
-                    amountConfigurationRepository.getConfigurationFor(cardMetadata.getId()),
-                    disabledPaymentMethodRepository.hasPaymentMethodId(cardMetadata.getId()));
+                    amountConfigurationRepository.getConfigurationFor(customOptionId),
+                    disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId));
         } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
             return AccountMoneyDescriptorModel.createFrom(expressMetadata.getAccountMoney(),
-                disabledPaymentMethodRepository.hasPaymentMethodId(expressMetadata.getPaymentMethodId()));
+                disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId));
         } else {
             return EmptyInstallmentsDescriptorModel.create();
         }

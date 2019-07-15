@@ -9,6 +9,7 @@ public enum Reason {
     CALL_FOR_AUTH,
     DISABLED_CARD;
 
+    @NonNull
     public static Reason from(@NonNull final PaymentRecovery paymentRecovery) {
         if (paymentRecovery.isStatusDetailCallForAuthorize()) {
             return Reason.CALL_FOR_AUTH;

@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.configuration;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import java.io.Serializable;
 
 /**
@@ -23,6 +24,7 @@ public final class AdvancedConfiguration implements Serializable {
     @NonNull private final DynamicDialogConfiguration dynamicDialogConfiguration;
     @NonNull private final CustomStringConfiguration customStringConfiguration;
     @NonNull private final DiscountParamsConfiguration discountParamsConfiguration;
+    @NonNull private final String productId;
 
     /* default */ AdvancedConfiguration(final Builder builder) {
         bankDealsEnabled = builder.bankDealsEnabled;
@@ -35,6 +37,7 @@ public final class AdvancedConfiguration implements Serializable {
         dynamicDialogConfiguration = builder.dynamicDialogConfiguration;
         customStringConfiguration = builder.customStringConfiguration;
         discountParamsConfiguration = builder.discountParamsConfiguration;
+        productId = builder.productId;
     }
 
     public boolean isBankDealsEnabled() {
@@ -83,6 +86,11 @@ public final class AdvancedConfiguration implements Serializable {
         return discountParamsConfiguration;
     }
 
+    @NonNull
+    public String getProductId() {
+        return productId;
+    }
+
     @SuppressWarnings("unused")
     public static class Builder {
         /* default */ boolean bankDealsEnabled = true;
@@ -101,7 +109,7 @@ public final class AdvancedConfiguration implements Serializable {
             new CustomStringConfiguration.Builder().build();
         /* default */ @NonNull DiscountParamsConfiguration discountParamsConfiguration =
             new DiscountParamsConfiguration.Builder().build();
-
+        /* default */ @NonNull String productId = ProductIdProvider.DEFAULT_PRODUCT_ID;
 
         /**
          * Add the possibility to configure Bank's deals behaviour. If set as true, then the checkout will try to
@@ -224,6 +232,17 @@ public final class AdvancedConfiguration implements Serializable {
         public Builder setDiscountParamsConfiguration(
             @NonNull final DiscountParamsConfiguration discountParamsConfiguration) {
             this.discountParamsConfiguration = discountParamsConfiguration;
+            return this;
+        }
+
+        /**
+         * Set a custom productId header.
+         *
+         * @param productId custom productId
+         * @return builder to keep operating
+         */
+        public Builder setProductId(@NonNull final String productId) {
+            this.productId = productId;
             return this;
         }
 

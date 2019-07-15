@@ -3,6 +3,7 @@ package com.mercadopago.android.px.model;
 public class PaymentMethods {
 
     public static final String ACCOUNT_MONEY = "account_money";
+    public static final String CONSUMER_CREDITS = "consumer_credits";
 
     public class ARGENTINA {
         public static final String VISA = "visa";

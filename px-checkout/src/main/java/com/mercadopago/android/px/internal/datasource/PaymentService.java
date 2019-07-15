@@ -18,7 +18,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.internal.viewmodel.mappers.AccountMoneyMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Discount;
@@ -165,7 +165,11 @@ public class PaymentService implements PaymentRepository {
                     userSelectionRepository.select(payerCost);
                 } else if (PaymentTypes.isAccountMoney(paymentTypeId)) {
                     userSelectionRepository
-                        .select(new AccountMoneyMapper(paymentMethodSearch).map(expressMetadata), null);
+                        .select(new PaymentMethodMapper(paymentMethodSearch).map(expressMetadata), null);
+                } else if (expressMetadata.isConsumerCredits()) {
+                    userSelectionRepository
+                        .select(new PaymentMethodMapper(paymentMethodSearch).map(expressMetadata), null);
+                    userSelectionRepository.select(payerCost);
                 } else {
                     throw new IllegalStateException("payment method selected can not be used for express payment");
                 }

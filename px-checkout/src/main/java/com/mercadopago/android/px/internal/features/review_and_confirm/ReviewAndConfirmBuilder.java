@@ -24,6 +24,7 @@ import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
+import com.mercadopago.android.px.model.display_info.LinkableText;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
 
@@ -46,31 +47,23 @@ public class ReviewAndConfirmBuilder {
         final Resources resources = context.getResources();
         final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
-        final UserSelectionRepository userSelectionRepository =
-            configurationModule.getUserSelectionRepository();
-
+        final UserSelectionRepository userSelectionRepository = configurationModule.getUserSelectionRepository();
         final Issuer issuer = userSelectionRepository.getIssuer();
-
         final PaymentSettingRepository paymentSettings = configurationModule.getPaymentSettings();
         final String publicKey = paymentSettings.getPublicKey();
         final Token token = paymentSettings.getToken();
         final AmountRepository amountRepository = session.getAmountRepository();
-
         final PaymentMethod paymentMethod = userSelectionRepository.getPaymentMethod();
         final CheckoutPreference checkoutPreference = paymentSettings.getCheckoutPreference();
-
         final DiscountConfigurationModel discountModel = session.getDiscountRepository().getCurrentConfiguration();
-
         final List<Item> items = checkoutPreference.getItems();
 
         final Site site = checkoutPreference.getSite();
 
-        final String title = SummaryModel.resolveTitle(items,
-            resources.getString(R.string.px_review_summary_product),
+        final String title = SummaryModel.resolveTitle(items, resources.getString(R.string.px_review_summary_product),
             resources.getString(R.string.px_review_summary_products));
 
-        final boolean termsAndConditionsEnabled =
-            TextUtil.isEmpty(paymentSettings.getPrivateKey());
+        final boolean termsAndConditionsEnabled = TextUtil.isEmpty(paymentSettings.getPrivateKey());
 
         final TermsAndConditionsModel mercadoPagoTermsAndConditions =
             termsAndConditionsEnabled ? new TermsAndConditionsModel(site.getTermsAndConditionsUrl(),
@@ -85,8 +78,7 @@ public class ReviewAndConfirmBuilder {
                 resources.getString(R.string.px_discount_terms_and_conditions_linked_message),
                 LineSeparatorType.BOTTOM_LINE_SEPARATOR) : null;
 
-        final PaymentModel paymentModel =
-            new PaymentModel(paymentMethod, token, issuer, hasExtraPaymentMethods);
+        final PaymentModel paymentModel = new PaymentModel(paymentMethod, token, issuer, hasExtraPaymentMethods);
 
         final PayerCost payerCost = userSelectionRepository.getPayerCost();
         final SummaryModel summaryModel =
@@ -95,22 +87,20 @@ public class ReviewAndConfirmBuilder {
                 amountRepository.getAppliedCharges(paymentMethod.getPaymentTypeId(), payerCost));
 
         final ItemsModel itemsModel = new ItemsModel(site.getCurrencyId(), items);
-        if (postPaymentAction != null) {
-            return ReviewAndConfirmActivity.getIntentForAction(context,
-                publicKey,
-                mercadoPagoTermsAndConditions,
-                paymentModel,
-                summaryModel,
-                itemsModel,
-                discountTermsAndConditions,
-                postPaymentAction);
+
+        LinkableText linkableText = null;
+        if (paymentMethod.getDisplayInfo() != null) {
+            linkableText = paymentMethod.getDisplayInfo().getTermsAndConditions();
         }
-        return ReviewAndConfirmActivity.getIntent(context,
+
+        return ReviewAndConfirmActivity.getIntentForAction(context,
             publicKey,
             mercadoPagoTermsAndConditions,
+            linkableText,
             paymentModel,
             summaryModel,
             itemsModel,
-            discountTermsAndConditions);
+            discountTermsAndConditions,
+            postPaymentAction);
     }
 }

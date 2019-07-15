@@ -17,8 +17,6 @@ import java.util.List;
 
 public interface PaymentVaultView extends MvpView {
 
-    void startSavedCardFlow(Card card);
-
     void showSelectedItem(PaymentMethodSearchItem item);
 
     void showProgress();
@@ -58,4 +56,6 @@ public interface PaymentVaultView extends MvpView {
     void cancel(@Nullable final Intent data);
 
     void overrideTransitionInOut();
+
+    void showInstallments();
 }

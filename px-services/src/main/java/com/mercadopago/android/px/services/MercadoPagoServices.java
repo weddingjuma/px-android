@@ -34,6 +34,8 @@ import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.requests.SecurityCodeIntent;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,7 +68,7 @@ public class MercadoPagoServices {
 
     public void getCheckoutPreference(final String checkoutPreferenceId, final Callback<CheckoutPreference> callback) {
         final PreferenceService service = RetrofitUtil.getRetrofitClient(context).create(PreferenceService.class);
-        service.getPreference(API_ENVIRONMENT, checkoutPreferenceId, publicKey).enqueue(callback);
+        service.getPreference(checkoutPreferenceId, publicKey).enqueue(callback);
     }
 
     public void getInstructions(final Long paymentId, final String paymentTypeId,
@@ -214,11 +216,21 @@ public class MercadoPagoServices {
         service.getDiscount(publicKey, amount, payerEmail, couponCode).enqueue(callback);
     }
 
+    @Deprecated
     public void createPayment(final String transactionId, final Map<String, Object> paymentData,
-        @NonNull final Map<String, String> query,
+        @NonNull final Map<String, String> query, final Callback<Payment> callback) {
+        createPayment(transactionId, paymentData, callback);
+    }
+
+    public void createPayment(final String transactionId, final Map<String, Object> paymentData,
         final Callback<Payment> callback) {
-        final PaymentService customService = RetrofitUtil.getRetrofitClient(context).create(PaymentService.class);
-        customService.createPayment(transactionId, paymentData, query).enqueue(callback);
+        final Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("public_key", publicKey);
+        if (TextUtil.isNotEmpty(privateKey)) {
+            queryParams.put("access_token", privateKey);
+        }
+        final PaymentService paymentService = RetrofitUtil.getRetrofitClient(context).create(PaymentService.class);
+        paymentService.createPayment(API_ENVIRONMENT, transactionId, paymentData, queryParams).enqueue(callback);
     }
 
     private String getListAsString(final List<String> list, final String separator) {

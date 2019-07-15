@@ -10,6 +10,7 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.Button;
 import com.mercadopago.android.px.internal.view.ButtonLink;
 import com.mercadopago.android.px.internal.view.CompactComponent;
+import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 
 public class PaymentMethodComponent extends CompactComponent<PaymentModel, PaymentMethodComponent.Actions> {
@@ -24,9 +25,11 @@ public class PaymentMethodComponent extends CompactComponent<PaymentModel, Payme
 
     @VisibleForTesting()
     CompactComponent resolveComponent() {
+        // TODO we could infer what to render by props' fields instead of payment type and have just one renderer
         if (PaymentTypes.isCardPaymentType(props.getPaymentType())) {
             return new MethodCard(MethodCard.Props.createFrom(props));
-        } else if (PaymentTypes.isAccountMoney(props.getPaymentType())) {
+        } else if (PaymentTypes.isAccountMoney(props.getPaymentType()) ||
+            PaymentMethods.CONSUMER_CREDITS.equals(props.paymentMethodId)) {
             return new MethodAccountMoney(MethodAccountMoney.Props.createFrom(props));
         } else {
             return new MethodOff(MethodOff.Props.createFrom(props));

@@ -1,12 +1,11 @@
 package com.mercadopago.android.px.internal.repository;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.internal.base.ResourcesProvider;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.SummaryAmount;
 import javax.annotation.Nonnull;
 
-public interface DiscountRepository extends ResourcesProvider {
+public interface DiscountRepository {
 
     /**
      * Obtains the discount configuration that applies in a particular moment of the flow

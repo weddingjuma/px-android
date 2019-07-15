@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.HashMap;
@@ -56,6 +55,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         body.put("issuer_id", issuer.getId());
         body.put("labels", advancedConfiguration.getDiscountParamsConfiguration().getLabels());
         body.put("default_installments", checkoutPreference.getDefaultInstallments());
+        body.put("max_installments", checkoutPreference.getMaxInstallments());
         body.put("differential_pricing_id", differentialPricingId);
         body.put("processing_modes", paymentMethod.getProcessingModes());
         body.put("branch_id", checkoutPreference.getBranchId());

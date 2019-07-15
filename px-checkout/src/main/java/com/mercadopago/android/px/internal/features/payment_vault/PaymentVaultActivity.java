@@ -18,9 +18,10 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
 import com.mercadopago.android.px.internal.datasource.PaymentVaultTitleSolverImpl;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.PaymentMethodsActivity;
+import com.mercadopago.android.px.internal.features.payment_methods.PaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
+import com.mercadopago.android.px.internal.features.installments.InstallmentsActivity;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -55,32 +56,28 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     public static final int COLUMN_SPACING_DP_VALUE = 20;
     public static final int COLUMNS = 2;
-    private static final int PAYER_INFORMATION_REQUEST_CODE = 22;
+    private static final int REQ_CODE_PAYER_INFORMATION = 22;
+    private static final int REQ_CODE_INSTALLMENTS = 23;
     private static final int REQ_CODE_PAYMENT_METHODS = 666;
     private static final int REQ_CARD_VAULT = 102;
     private static final int REQ_CODE_MYSELF = 10;
     private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
     private static final String EXTRA_AUTOMATIC_SELECTION = "automaticSelection";
     private static final String MISMATCHING_PAYMENT_METHOD_ERROR = "Payment method in search not found";
-
+    private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     // Local vars
     protected boolean mActivityActive;
     protected Token mToken;
     protected Issuer mSelectedIssuer;
     protected Card mSelectedCard;
     protected Context mContext;
-
     // Controls
     protected RecyclerView mSearchItemsRecyclerView;
     protected AppBarLayout mAppBar;
-
     protected CollapsingToolbarLayout mAppBarLayout;
     protected MPTextView mTimerTextView;
-
     protected View mProgressLayout;
-
     private AmountView amountView;
-    private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     private boolean automaticSelection;
 
     public static void start(@NonNull final Activity from, final int requestCode) {
@@ -242,8 +239,10 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
             presenter.onPaymentMethodReturned();
         } else if (requestCode == REQ_CODE_MYSELF) {
             resolvePaymentVaultRequest(resultCode, data);
-        } else if (requestCode == PAYER_INFORMATION_REQUEST_CODE) {
+        } else if (requestCode == REQ_CODE_PAYER_INFORMATION) {
             resolvePayerInformationRequest(resultCode, data);
+        } else if (requestCode == REQ_CODE_INSTALLMENTS) {
+            resolveDigitalCurrency(resultCode, data);
         } else if (requestCode == ErrorUtil.ERROR_REQUEST_CODE) {
             resolveErrorRequest(resultCode, data);
             overrideTransitionOut();
@@ -304,6 +303,15 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         }
     }
 
+    protected void resolveDigitalCurrency(final int resultCode, final Intent data) {
+        if (resultCode == RESULT_OK) {
+            setResult(Activity.RESULT_OK, data);
+            finish();
+        } else {
+            presenter.onActivityResultNotOk(data);
+        }
+    }
+
     @Override
     public void finishPaymentMethodSelection(final PaymentMethod paymentMethod) {
         finishWith(paymentMethod);
@@ -355,8 +363,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     }
 
     @Override
-    public void startSavedCardFlow(final Card card) {
-        CardVaultActivity.startActivity(this, REQ_CARD_VAULT);
+    public void showInstallments() {
+        InstallmentsActivity.start(this, REQ_CODE_INSTALLMENTS);
         overrideTransitionIn();
     }
 
@@ -422,7 +430,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     public void collectPayerInformation() {
         overrideTransitionIn();
-        PayerInformationActivity.start(this, PAYER_INFORMATION_REQUEST_CODE);
+        PayerInformationActivity.start(this, REQ_CODE_PAYER_INFORMATION);
     }
 
     @Override

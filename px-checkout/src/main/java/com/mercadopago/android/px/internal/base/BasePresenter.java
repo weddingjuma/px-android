@@ -13,11 +13,11 @@ import java.lang.ref.WeakReference;
  * Base class for all <code>BasePresenter</code> implementations.
  */
 
-public class BasePresenter<V extends MvpView> {
+@SuppressWarnings("AbstractClassWithoutAbstractMethods")
+public abstract class BasePresenter<V extends MvpView> {
 
-    private transient WeakReference<V> mView;
-
-    @Nullable private transient ViewTracker viewTracker;
+    @Nullable private transient WeakReference<V> mView;
+    @Nullable /* default */ transient ViewTracker viewTracker;
 
     protected final void setCurrentViewTracker(@NonNull final ViewTracker viewTracker) {
         this.viewTracker = viewTracker;
@@ -66,7 +66,7 @@ public class BasePresenter<V extends MvpView> {
 
     @NonNull
     public V getView() {
-        if (mView == null) {
+        if (!isViewAttached()) {
             throw new IllegalStateException("view not attached");
         } else {
             return mView.get();

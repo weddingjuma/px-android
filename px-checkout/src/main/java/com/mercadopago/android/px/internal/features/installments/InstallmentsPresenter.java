@@ -21,6 +21,7 @@ import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
@@ -28,16 +29,14 @@ import com.mercadopago.android.px.tracking.internal.views.InstallmentsViewTrack;
 import java.util.List;
 
 public class InstallmentsPresenter extends BasePresenter<InstallmentsView> implements
-    AmountView.OnClick, InstallmentsAdapter.ItemListener, PayerCostListener, AmountRowController.AmountRowVisibilityBehaviour {
+    AmountView.OnClick, InstallmentsAdapter.ItemListener, AmountRowController.AmountRowVisibilityBehaviour {
 
-    @NonNull private final SummaryAmountRepository summaryAmountRepository;
-    @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
     @NonNull /* default */ final AmountRepository amountRepository;
     @NonNull /* default */ final PaymentSettingRepository configuration;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull /* default */ final PayerCostSolver payerCostSolver;
     @NonNull /* default */ final DiscountRepository discountRepository;
-
+    @NonNull private final SummaryAmountRepository summaryAmountRepository;
+    @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
     private FailureRecovery failureRecovery;
     private AmountRowController amountRowController;
 
@@ -51,15 +50,13 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final DiscountRepository discountRepository,
         @NonNull final SummaryAmountRepository summaryAmountRepository,
-        @NonNull final AmountConfigurationRepository amountConfigurationRepository,
-        @NonNull final PayerCostSolver payerCostSolver) {
+        @NonNull final AmountConfigurationRepository amountConfigurationRepository) {
         this.amountRepository = amountRepository;
         this.configuration = configuration;
         this.userSelectionRepository = userSelectionRepository;
         this.discountRepository = discountRepository;
         this.summaryAmountRepository = summaryAmountRepository;
         this.amountConfigurationRepository = amountConfigurationRepository;
-        this.payerCostSolver = payerCostSolver;
     }
 
     public void initialize() {
@@ -75,16 +72,21 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
 
     private void resolvePayerCosts() {
         if (userSelectionRepository.hasCardSelected()) {
-            resolvePayerCostsForSavedCard();
+            resolveGenericPayerCosts();
             initializeAmountRow();
+        } else if (
+            userSelectionRepository.getPaymentMethod().getPaymentTypeId().equals(PaymentTypes.DIGITAL_CURRENCY)) {
+            resolveGenericPayerCosts();
+            initializeAmountRow();
+            getView().hideCardContainer();
         } else {
             resolvePayerCostsForGuessedCard();
         }
     }
 
-    /* default */ void resolvePayerCostsForSavedCard() {
+    private void resolveGenericPayerCosts() {
         getView().hideLoadingView();
-        payerCostSolver.solve(this, amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
+        onPayerCosts(amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
     }
 
     /* default */ void resolvePayerCostsForGuessedCard() {
@@ -95,7 +97,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
                 final AmountConfiguration amountConfiguration =
                     summaryAmount.getAmountConfiguration(summaryAmount.getDefaultAmountConfiguration());
                 discountRepository.addConfigurations(summaryAmount);
-                payerCostSolver.solve(InstallmentsPresenter.this, amountConfiguration.getPayerCosts());
+                onPayerCosts(amountConfiguration.getPayerCosts());
 
                 if (isViewAttached()) {
                     initializeAmountRow();
@@ -114,7 +116,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         });
     }
 
-    private void initializeAmountRow() {
+    /* default */ void initializeAmountRow() {
         amountRowController = new AmountRowController(this, configuration.getAdvancedConfiguration());
         amountRowController.configure();
     }
@@ -131,6 +133,11 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         getView().hideAmountRow();
     }
 
+    @Nullable
+    public CardInfo getCardInfo() {
+        return cardInfo;
+    }
+
     public void setCardInfo(@Nullable final CardInfo cardInfo) {
         this.cardInfo = cardInfo;
         if (this.cardInfo != null) {
@@ -138,21 +145,16 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         }
     }
 
-    @Nullable
-    public CardInfo getCardInfo() {
-        return cardInfo;
-    }
-
     public int getCardNumberLength() {
         return PaymentMethodGuessingController.getCardNumberLength(userSelectionRepository.getPaymentMethod(), bin);
     }
 
-    public void setFailureRecovery(final FailureRecovery failureRecovery) {
-        this.failureRecovery = failureRecovery;
-    }
-
     public FailureRecovery getFailureRecovery() {
         return failureRecovery;
+    }
+
+    public void setFailureRecovery(final FailureRecovery failureRecovery) {
+        this.failureRecovery = failureRecovery;
     }
 
     @Nullable
@@ -181,20 +183,15 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         getView().finishWithResult();
     }
 
-    @Override
-    public void onEmptyOptions() {
-        getView().showErrorNoPayerCost();
-    }
-
-    @Override
-    public void onSelectedPayerCost() {
-        getView().finishWithResult();
-    }
-
-    @Override
-    public void displayInstallments(final List<PayerCost> payerCosts) {
-        new InstallmentsViewTrack(payerCosts, userSelectionRepository).track();
-        getView().showInstallments(payerCosts);
+    /* default */ void onPayerCosts(@NonNull final List<PayerCost> payerCosts) {
+        if (payerCosts.isEmpty()) {
+            getView().showErrorNoPayerCost();
+        } else if (payerCosts.size() == 1) {
+            onClick(payerCosts.get(0));
+        } else {
+            new InstallmentsViewTrack(payerCosts, userSelectionRepository).track();
+            getView().showInstallments(payerCosts);
+        }
     }
 
     public void removeUserSelection() {

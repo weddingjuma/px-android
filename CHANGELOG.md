@@ -2,6 +2,22 @@
 _15_07_2019_
 * FIX - Prevent library double initialization
 
+## VERSION 4.16.2
+_11_07_2019_
+* FIX - Default marketplace to NONE
+
+## VERSION 4.16.1
+_10_07_2019_
+* FIX - Handling context in http client interceptor
+* FIX - Validating flow in onRestore validations in guessing card activity
+
+## VERSION 4.16.0
+_01_07_2019_
+* Added support for max installments
+* Custom product id header
+* Default Payment Processor for black labeled payments
+* Added support for consumer credits payment method
+
 ## VERSION 4.15.1
 _19_06_2019_
 * FIX - Incorrect amount on congrats when discount and one installment

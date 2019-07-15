@@ -5,10 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
-import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
-import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
@@ -37,10 +35,10 @@ import com.mercadopago.android.px.services.Callback;
 import java.lang.reflect.Type;
 import java.util.List;
 
-public class GuessingCardPaymentPresenter extends GuessingCardPresenter implements SummaryAmountListener {
+public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
-    @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
     @NonNull private final GroupsRepository groupsRepository;
     @NonNull private final IssuersRepository issuersRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
@@ -48,8 +46,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
     @NonNull private final IdentificationRepository identificationRepository;
     @NonNull private final AdvancedConfiguration advancedConfiguration;
     @NonNull private final SummaryAmountRepository summaryAmountRepository;
-    @NonNull private final IssuersSolver issuersSolver;
-    @NonNull private final PayerCostSolver payerCostSolver;
     @Nullable private List<BankDeal> bankDealList;
 
     protected PaymentRecovery paymentRecovery;
@@ -63,9 +59,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
         @NonNull final IdentificationRepository identificationRepository,
         @NonNull final AdvancedConfiguration advancedConfiguration,
         @NonNull final PaymentRecovery paymentRecovery,
-        @NonNull final SummaryAmountRepository summaryAmountRepository,
-        @NonNull final IssuersSolver issuersSolver,
-        @NonNull final PayerCostSolver payerCostSolver) {
+        @NonNull final SummaryAmountRepository summaryAmountRepository) {
         super();
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -77,8 +71,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
         this.advancedConfiguration = advancedConfiguration;
         this.paymentRecovery = paymentRecovery;
         this.summaryAmountRepository = summaryAmountRepository;
-        this.issuersSolver = issuersSolver;
-        this.payerCostSolver = payerCostSolver;
     }
 
     @Override
@@ -152,12 +144,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
             public void failure(final ApiException apiException) {
                 if (isViewAttached()) {
                     getView().hideProgress();
-                    setFailureRecovery(new FailureRecovery() {
-                        @Override
-                        public void recover() {
-                            getPaymentMethods();
-                        }
-                    });
+                    setFailureRecovery(() -> getPaymentMethods());
                 }
             }
         });
@@ -268,14 +255,14 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
         getIssuers();
     }
 
-    private void getIssuers() {
+    /* default */ void getIssuers() {
         final PaymentMethod paymentMethod = getPaymentMethod();
         if (paymentMethod != null) {
             issuersRepository.getIssuers(paymentMethod.getId(), bin).enqueue(
                 new TaggedCallback<List<Issuer>>(ApiUtil.RequestOrigin.GET_ISSUERS) {
                     @Override
                     public void onSuccess(final List<Issuer> issuers) {
-                        issuersSolver.solve(GuessingCardPaymentPresenter.this, issuers);
+                        onIssuers(issuers);
                     }
 
                     @Override
@@ -289,7 +276,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
         }
     }
 
-    private void getInstallments() {
+    /* default */ void getInstallments() {
         // Fetch installments and save a default installment if it exists
         summaryAmountRepository.getSummaryAmount(bin).enqueue(new Callback<SummaryAmount>() {
             @Override
@@ -297,14 +284,10 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
                 final AmountConfiguration amountConfiguration =
                     summaryAmount.getAmountConfiguration(summaryAmount.getDefaultAmountConfiguration());
 
-                if (amountConfiguration == null) {
-                    getView().finishCardFlow();
-                    return;
+                if (amountConfiguration != null && amountConfiguration.getPayerCosts().size() == 1) {
+                    userSelectionRepository.select(amountConfiguration.getPayerCosts().get(0));
                 }
 
-                payerCostSolver.solveDefaultInstallment(amountConfiguration.getPayerCosts());
-
-                // All set -  card info - If payer cost is null, user must select installments
                 getView().finishCardFlow();
             }
 
@@ -353,21 +336,16 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter implemen
         });
     }
 
-    @Override
-    public void onDefaultInstallmentSet() {
-        getInstallments();
-    }
-
-    @Override
-    public void onIssuerWithoutDefaultInstallment() {
-        if (isViewAttached()) {
-            getView().finishCardFlow();
-        }
-    }
-
-    @Override
-    public void onMultipleIssuers(final List<Issuer> issuers) {
-        if (isViewAttached()) {
+    /* default */ void onIssuers(final List<Issuer> issuers) {
+        if (issuers.size() == 1) {
+            userSelectionRepository.select(issuers.get(0));
+            if (paymentSettingRepository.getCheckoutPreference().getDefaultInstallments() != null) {
+                //We can auto select the installments for sure
+                getInstallments();
+            } else if (isViewAttached()) {
+                getView().finishCardFlow();
+            }
+        } else if (isViewAttached()) {
             getView().finishCardFlow(issuers);
         }
     }

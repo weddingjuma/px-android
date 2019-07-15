@@ -16,4 +16,9 @@
     <!-- Second factor messages -->
     <string name="auth_error_password">Incorrect password.</string>
     <string name="auth_error_password_required">Password is required.</string>
+    <string name="custom_initialize_button">Custom initialize</string>
+    <string name="hint_public_key">Public Key</string>
+    <string name="hint_access_token">Access token</string>
+    <string name="hint_preference_id">Preference Id</string>
+    <string name="clear_label">clear</string>
 </resources>

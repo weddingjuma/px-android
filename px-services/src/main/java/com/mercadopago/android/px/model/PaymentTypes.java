@@ -36,6 +36,10 @@ public final class PaymentTypes {
         return PaymentTypes.ACCOUNT_MONEY.equals(type);
     }
 
+    public static boolean isDigitalCurrency(final String type) {
+        return PaymentTypes.DIGITAL_CURRENCY.equals(type);
+    }
+
     /**
      *  We don't support plugins since 4.5.0
      */

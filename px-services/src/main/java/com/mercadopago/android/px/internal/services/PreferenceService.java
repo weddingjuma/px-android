@@ -11,9 +11,8 @@ import retrofit2.http.Query;
 
 public interface PreferenceService {
 
-    @GET("/{version}/checkout/preferences/{preference_id}")
-    MPCall<CheckoutPreference> getPreference(@Path(value = "version", encoded = true) String version,
-        @Path(value = "preference_id", encoded = true) String checkoutPreferenceId,
+    @GET("/v1/checkout/preferences/{preference_id}")
+    MPCall<CheckoutPreference> getPreference(@Path(value = "preference_id", encoded = true) String checkoutPreferenceId,
         @Query("public_key") String publicKey);
 
     @POST("/checkout/preferences")

@@ -10,7 +10,6 @@ import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.model.ProcessingMode;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -99,6 +98,7 @@ public class GroupsService implements GroupsRepository {
                 .supportsSplitPayment(checkoutPreference);
 
         final Integer defaultInstallments = checkoutPreference.getPaymentPreference().getDefaultInstallments();
+        final Integer maxInstallments = checkoutPreference.getPaymentPreference().getMaxInstallments();
 
         final Collection<String> excludedPaymentTypesSet = new HashSet<>(checkoutPreference.getExcludedPaymentTypes());
         excludedPaymentTypesSet.addAll(getUnsupportedPaymentTypes(checkoutPreference.getSite()));
@@ -134,8 +134,8 @@ public class GroupsService implements GroupsRepository {
             .getPaymentMethodSearch(API_ENVIRONMENT,
                 language, paymentSettingRepository.getPublicKey(), checkoutPreference.getTotalAmount(),
                 excludedPaymentTypesAppended, excludedPaymentMethodsAppended, checkoutPreference.getSite().getId(),
-                cardsWithEscAppended, differentialPricingId, defaultInstallments, expressPaymentEnabled,
-                hasSplitPaymentProcessor, body);
+                cardsWithEscAppended, differentialPricingId, defaultInstallments, maxInstallments,
+                expressPaymentEnabled, hasSplitPaymentProcessor, body);
     }
 
     private Collection<String> getUnsupportedPaymentTypes(@NonNull final Site site) {

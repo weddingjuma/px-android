@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.util.ParcelableUtil;
+import com.mercadopago.android.px.model.display_info.DisplayInfo;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,10 +26,9 @@ public class PaymentMethod implements Parcelable, Serializable {
     private List<FinancialInstitution> financialInstitutions;
     private ProcessingMode[] processingModes;
 
-    @Nullable
-    private BigDecimal minAllowedAmount;
-    @Nullable
-    private BigDecimal maxAllowedAmount;
+    @Nullable private BigDecimal minAllowedAmount;
+    @Nullable private BigDecimal maxAllowedAmount;
+    @Nullable private DisplayInfo displayInfo;
 
     /**
      * Constructor for custom payment methods like plugin implementation
@@ -213,6 +213,7 @@ public class PaymentMethod implements Parcelable, Serializable {
         String maxString = in.readString();
         maxAllowedAmount = maxString != null ? new BigDecimal(maxString) : null;
         processingModes = in.createTypedArray(ProcessingMode.CREATOR);
+        in.readParcelable(DisplayInfo.class.getClassLoader());
     }
 
     public static final Creator<PaymentMethod> CREATOR = new Creator<PaymentMethod>() {
@@ -253,6 +254,7 @@ public class PaymentMethod implements Parcelable, Serializable {
         dest.writeString(minAllowedAmount != null ? minAllowedAmount.toString() : null);
         dest.writeString(maxAllowedAmount != null ? maxAllowedAmount.toString() : null);
         dest.writeTypedArray(processingModes, flags);
+        dest.writeParcelable(displayInfo,flags);
     }
 
     @NonNull
@@ -267,5 +269,10 @@ public class PaymentMethod implements Parcelable, Serializable {
             securityCode = settings.get(0).getSecurityCode();
         }
         return securityCode;
+    }
+
+    @Nullable
+    public DisplayInfo getDisplayInfo() {
+        return displayInfo;
     }
 }

@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.controllers.CheckoutErrorHandler;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -19,7 +19,7 @@ import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 
 public class ErrorActivity extends PXActivity {
 
-    private MercadoPagoError mMercadoPagoError;
+    private MercadoPagoError error;
     private TextView mErrorMessageTextView;
     private TextView titleMessageTextView;
     private View mRetryView;
@@ -30,20 +30,15 @@ public class ErrorActivity extends PXActivity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         animateErrorScreenLaunch();
-
-        if (CheckoutErrorHandler.getInstance().hasCustomErrorLayout()) {
-            setContentView(CheckoutErrorHandler.getInstance().getCustomErrorLayout());
-        } else {
-            setContentView(R.layout.px_activity_error);
-        }
-
-        getActivityParameters();
-        if (validParameters()) {
+        setContentView(R.layout.px_activity_error);
+        error = Session.getInstance().getJsonUtil()
+                .fromJson(getIntent().getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+        if (error != null) {
             initializeControls();
             fillData();
             track();
         } else {
-            Intent intent = new Intent();
+            final Intent intent = new Intent();
             setResult(RESULT_CANCELED, intent);
             finish();
         }
@@ -51,26 +46,17 @@ public class ErrorActivity extends PXActivity {
 
     private void track() {
         final String errorMessage = titleMessageTextView.getText() + " " + message;
-        final ErrorViewTracker errorViewTracker = new ErrorViewTracker(errorMessage, mMercadoPagoError);
+        final ErrorViewTracker errorViewTracker = new ErrorViewTracker(errorMessage, error);
         errorViewTracker.track();
 
         FrictionEventTracker.with(errorViewTracker.getViewPath(), FrictionEventTracker.Id.GENERIC,
             FrictionEventTracker.Style.SCREEN,
-            mMercadoPagoError)
+            error)
             .track();
     }
 
     private void animateErrorScreenLaunch() {
         overridePendingTransition(R.anim.px_fade_in_seamless, R.anim.px_fade_out_seamless);
-    }
-
-    private boolean validParameters() {
-        return mMercadoPagoError != null;
-    }
-
-    private void getActivityParameters() {
-        mMercadoPagoError = JsonUtil.getInstance()
-            .fromJson(getIntent().getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
     }
 
     private void initializeControls() {
@@ -83,15 +69,15 @@ public class ErrorActivity extends PXActivity {
     }
 
     private void fillData() {
-        if (mMercadoPagoError.getApiException() != null) {
-            message = getApiExceptionMessage(this, mMercadoPagoError.getApiException());
+        if (error.getApiException() != null) {
+            message = getApiExceptionMessage(this, error.getApiException());
         } else {
-            message = mMercadoPagoError.getMessage();
+            message = error.getMessage();
         }
 
         mErrorMessageTextView.setText(message);
 
-        if (mMercadoPagoError.isRecoverable()) {
+        if (error.isRecoverable()) {
             mRetryView.setOnClickListener(v -> {
                 Intent intent = new Intent();
                 setResult(RESULT_OK, intent);
@@ -105,7 +91,7 @@ public class ErrorActivity extends PXActivity {
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        intent.putExtra(EXTRA_ERROR, JsonUtil.getInstance().toJson(mMercadoPagoError));
+        intent.putExtra(EXTRA_ERROR, JsonUtil.getInstance().toJson(error));
         setResult(RESULT_CANCELED, intent);
         finish();
     }

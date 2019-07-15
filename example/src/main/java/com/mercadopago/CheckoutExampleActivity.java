@@ -52,6 +52,11 @@ public class CheckoutExampleActivity extends AppCompatActivity {
 
         continueSimpleCheckout = findViewById(R.id.continueButton);
 
+        View customInitializeButton = findViewById(R.id.customInitializeButton);
+        customInitializeButton.setOnClickListener(v -> {
+            startActivity(new Intent(CheckoutExampleActivity.this, CustomInitializationActivity.class));
+        });
+
         final View selectCheckoutButton = findViewById(R.id.select_checkout);
 
         selectCheckoutButton.setOnClickListener(

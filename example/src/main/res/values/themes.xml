@@ -1,18 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.AppTheme" parent="Theme.AppCompat.Light">
+    <style name="Theme.AppTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:textColorPrimary">@color/px_white</item>
         <item name="actionMenuTextColor">@color/px_white</item>
     </style>
-
-    <style name="Theme.AppTheme.Grey" parent="Theme.AppTheme">
-        <item name="background">@color/px_review_gray_background</item>
-    </style>
-
-    <style name="Theme.AppTheme.Amex" parent="Theme.AppTheme">
-        <item name="background">@color/px_amex</item>
-    </style>
-    `
 
 </resources>

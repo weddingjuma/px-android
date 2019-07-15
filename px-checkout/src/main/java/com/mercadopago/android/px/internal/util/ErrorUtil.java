@@ -76,7 +76,7 @@ public final class ErrorUtil {
         ErrorUtil.startErrorActivity(activity, mercadoPagoError);
     }
 
-    public static String getStacktraceMessage(Exception e) {
+    public static String getStacktraceMessage(final Exception e) {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         return errors.toString();

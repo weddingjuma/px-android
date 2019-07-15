@@ -16,10 +16,9 @@ import java.util.ArrayList;
 
 public class AmountConfigurationRepositoryImpl implements AmountConfigurationRepository {
 
-    /* default */ @Nullable ConfigurationSolver configurationSolver;
-
     @NonNull private final GroupsRepository groupsRepository;
     private final UserSelectionRepository userSelectionRepository;
+    /* default */ @Nullable ConfigurationSolver configurationSolver;
 
     public AmountConfigurationRepositoryImpl(@NonNull final GroupsRepository groupsRepository,
         @NonNull final UserSelectionRepository userSelectionRepository) {
@@ -34,11 +33,12 @@ public class AmountConfigurationRepositoryImpl implements AmountConfigurationRep
 
         if (userSelectionRepository.getCard() != null) { // Saved card
             return configurationSolver.getAmountConfigurationFor(userSelectionRepository.getCard().getId());
-        } else if (PaymentTypes.isAccountMoney(userSelectionRepository.getPaymentMethod().getPaymentTypeId())) {
+        } else if (PaymentTypes.isAccountMoney(userSelectionRepository.getPaymentMethod().getPaymentTypeId()) ||
+            PaymentTypes.isDigitalCurrency(userSelectionRepository.getPaymentMethod().getPaymentTypeId())) {
             return configurationSolver.getAmountConfigurationFor(userSelectionRepository.getPaymentMethod().getId());
         } else {
             throw new IllegalStateException(
-                "Payer costs shouldn't be requested without a selected card or account money");
+                "Payer costs shouldn't be requested without a selected card, credit or account money");
         }
     }
 
@@ -65,7 +65,7 @@ public class AmountConfigurationRepositoryImpl implements AmountConfigurationRep
 
             @Override
             public void failure(final ApiException apiException) {
-                configurationSolver = new ConfigurationSolverImpl(TextUtil.EMPTY, new ArrayList<CustomSearchItem>());
+                configurationSolver = new ConfigurationSolverImpl(TextUtil.EMPTY, new ArrayList<>());
             }
         });
     }

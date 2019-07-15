@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.internal.view;
 
-import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -12,6 +11,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.paymentresult.components.LineSeparator;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.PaymentData;
+import com.mercadopago.android.px.model.display_info.DisplayInfo;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -81,16 +81,21 @@ public class PaymentMethodBodyComponent
 
     @Override
     public View render(@NonNull final ViewGroup parent) {
-
-        final Context context = parent.getContext();
-        final LinearLayout linearContainer = ViewUtils.createLinearContainer(context);
+        final LinearLayout linearContainer = ViewUtils.createLinearContainer(parent.getContext());
         linearContainer.setGravity(Gravity.CENTER_VERTICAL);
-        PaymentMethodComponent paymentMethodComponent;
         final Iterator<PaymentMethodComponent.PaymentMethodProps> paymentMethodPropsIterator =
             props.paymentMethodProps.iterator();
+
         while (paymentMethodPropsIterator.hasNext()) {
-            paymentMethodComponent = new PaymentMethodComponent(paymentMethodPropsIterator.next());
+            final PaymentMethodComponent.PaymentMethodProps props = paymentMethodPropsIterator.next();
+            final PaymentMethodComponent paymentMethodComponent = new PaymentMethodComponent(props);
+            final DisplayInfo displayInfo = props.paymentMethod.getDisplayInfo();
+
             linearContainer.addView(paymentMethodComponent.render(linearContainer));
+            if (displayInfo != null && displayInfo.getResultInfo() != null) {
+                linearContainer.addView(new ResultInfoComponent(displayInfo.getResultInfo()).render(linearContainer));
+            }
+
             if (paymentMethodPropsIterator.hasNext()) {
                 addNewSeparator(linearContainer);
             }

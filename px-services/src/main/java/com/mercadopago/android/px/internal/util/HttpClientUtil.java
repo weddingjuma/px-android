@@ -87,6 +87,7 @@ public final class HttpClientUtil {
         if (context != null) {
             okHttpClientBuilder.addInterceptor(getConnectionInterceptor(context));
             okHttpClientBuilder.addInterceptor(new SessionInterceptor(context));
+            okHttpClientBuilder.addInterceptor(new ProductIdInterceptor(context));
 
             try {
                 final Cache cache =
@@ -99,7 +100,6 @@ public final class HttpClientUtil {
         }
 
         // Custom interceptors
-        okHttpClientBuilder.addInterceptor(new ProductIdInterceptor());
         okHttpClientBuilder.addInterceptor(new RequestIdInterceptor());
         okHttpClientBuilder.addInterceptor(new UserAgentInterceptor(BuildConfig.USER_AGENT));
 

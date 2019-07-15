@@ -3,16 +3,14 @@ package com.mercadopago.android.px.internal.features.cardvault;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.internal.base.MvpPresenter;
+import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
-import com.mercadopago.android.px.internal.features.installments.PayerCostListener;
-import com.mercadopago.android.px.internal.features.installments.PayerCostSolver;
-import com.mercadopago.android.px.internal.features.providers.CardVaultProvider;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
+import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
@@ -30,48 +28,47 @@ import com.mercadopago.android.px.tracking.internal.events.EscFrictionEventTrack
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
-public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultProvider> implements PayerCostListener {
+/* default */ class CardVaultPresenter extends BasePresenter<CardVault.View> implements CardVault.Actions {
 
-    @NonNull /* default */ final IESCManager IESCManager;
-    @NonNull /* default */ final AmountConfigurationRepository amountConfigurationRepository;
-    @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
+    @NonNull private final IESCManager iESCManager;
+    @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
+    @NonNull private final UserSelectionRepository userSelectionRepository;
+    @NonNull private final PaymentSettingRepository paymentSettingRepository;
+    @NonNull private final CardTokenRepository cardTokenRepository;
 
     private FailureRecovery failureRecovery;
-    @NonNull private final PayerCostSolver payerCostSolver;
     private String bin;
 
     //Activity parameters
     private PaymentRecovery paymentRecovery;
 
-    private boolean installmentsListShown;
     private boolean issuersListShown;
 
     //Activity result
     protected PaymentMethod paymentMethod;
 
     //Card Info
-    private CardInfo cardInfo;
+    @Nullable /* default */ CardInfo cardInfo;
     /* default */ Token token;
-    /* default */ Card card;
+    @Nullable /* default */ Card card;
 
     //Security Code
-    /* default */ @Nullable String esc;
+    @Nullable /* default */ String esc;
 
     public CardVaultPresenter(@NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
-        @NonNull final IESCManager IESCManager,
+        @NonNull final IESCManager iESCManager,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
-        @NonNull final PayerCostSolver payerCostSolver) {
+        @NonNull final CardTokenRepository cardTokenRepository) {
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
-        this.IESCManager = IESCManager;
+        this.iESCManager = iESCManager;
         this.amountConfigurationRepository = amountConfigurationRepository;
-        this.payerCostSolver = payerCostSolver;
+        this.cardTokenRepository = cardTokenRepository;
     }
 
+    @Override
     public void initialize() {
-        installmentsListShown = false;
         issuersListShown = false;
 
         if (tokenRecoveryAvailable()) {
@@ -83,74 +80,79 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
-    public void setPaymentRecovery(@Nullable final PaymentRecovery paymentRecovery) {
+    @Override
+    public void setPaymentRecovery(final PaymentRecovery paymentRecovery) {
         this.paymentRecovery = paymentRecovery;
     }
 
-    public void setCard(final Card card) {
+    @Override
+    public void setCard(@Nullable final Card card) {
         this.card = card;
     }
 
-    public void setFailureRecovery(final FailureRecovery failureRecovery) {
+    @Override
+    public void setFailureRecovery(@NonNull final FailureRecovery failureRecovery) {
         this.failureRecovery = failureRecovery;
     }
 
+    @Override
+    @Nullable
     public Token getToken() {
         return token;
     }
 
+    @Override
     public void setToken(final Token mToken) {
         token = mToken;
     }
 
+    @Override
+    @Nullable
     public PaymentMethod getPaymentMethod() {
         return paymentMethod;
     }
 
+    @Override
     public void setPaymentMethod(final PaymentMethod mPaymentMethod) {
         paymentMethod = mPaymentMethod;
     }
 
+    @Override
+    @Nullable
     public PaymentRecovery getPaymentRecovery() {
         return paymentRecovery;
     }
 
     // TODO: can we kill this and use the selected card on user selection repository?
+    @Override
+    @Nullable
     public Card getCard() {
         return card;
     }
 
-    public void setESC(final String esc) {
+    private void setESC(@NonNull final String esc) {
         this.esc = esc;
     }
 
+    @Override
     public void setCardInfo(final CardInfo cardInfo) {
         this.cardInfo = cardInfo;
-        if (this.cardInfo == null) {
-            bin = TextUtil.EMPTY;
-        } else {
-            bin = this.cardInfo.getFirstSixDigits();
-        }
+        bin = cardInfo == null ? TextUtil.EMPTY : cardInfo.getFirstSixDigits();
     }
 
+    @Override
+    @Nullable
     public CardInfo getCardInfo() {
         return cardInfo;
     }
 
+    @Override
     public int getCardNumberLength() {
         return PaymentMethodGuessingController.getCardNumberLength(paymentMethod, bin);
     }
 
-    public boolean isInstallmentsListShown() {
-        return installmentsListShown;
-    }
-
     public boolean isIssuersListShown() {
         return issuersListShown;
-    }
-
-    public void setInstallmentsListShown(final boolean installmentsListShown) {
-        this.installmentsListShown = installmentsListShown;
     }
 
     public void setIssuersListShown(final boolean issuersListShown) {
@@ -159,14 +161,13 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
 
     private void checkStartInstallmentsActivity() {
         if (userSelectionRepository.getPayerCost() == null) {
-            installmentsListShown = true;
             getView().askForInstallments(getCardInfo());
         } else {
             getView().finishWithResult();
         }
     }
 
-    private void checkStartIssuersActivity(final Intent data) {
+    private void checkStartIssuersActivity(@NonNull final Intent data) {
         if (userSelectionRepository.getIssuer() == null) {
             issuersListShown = true;
             getView().startIssuersActivity(GuessingCardActivity.extractIssuersFromIntent(data));
@@ -175,20 +176,20 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
+    @Override
     public void recoverFromFailure() {
         if (failureRecovery != null) {
             failureRecovery.recover();
         }
     }
 
-    public void resolveIssuersRequest() {
+    /* default */ void resolveIssuersRequest() {
         issuersListShown = true;
         checkStartInstallmentsActivity();
     }
 
+    @Override
     public void resolveInstallmentsRequest() {
-        installmentsListShown = true;
-
         if (getCard() == null) {
             getView().finishWithResult();
         } else {
@@ -196,24 +197,24 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         }
     }
 
+    @Override
     public void resolveSecurityCodeRequest() {
         setToken(paymentSettingRepository.getToken());
         getView().finishWithResult();
-        // esto esta raro
-        //if (tokenRecoveryAvailable()) {
-        //    getView().askForInstallments();
-        //}
     }
 
-    public void resolveNewCardRequest(final Intent data) {
+    @Override
+    public void resolveNewCardRequest(@NonNull final Intent data) {
         setCardInfo(new CardInfo(paymentSettingRepository.getToken()));
         checkStartIssuersActivity(data);
     }
 
+    @Override
     public void onResultCancel() {
         getView().cancelCardVault();
     }
 
+    @Override
     public void onResultFinishOnError() {
         getView().finishOnErrorResult();
     }
@@ -232,10 +233,10 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         setPaymentMethod(card.getPaymentMethod());
 
         if (userSelectionRepository.getPayerCost() == null) {
-            payerCostSolver.solve(this, amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
+            onPayerCosts(amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
         } else {
             // This could happen on one tap flows
-            onSelectedPayerCost();
+            startSecurityCodeFlowIfNeeded();
         }
     }
 
@@ -259,70 +260,61 @@ public class CardVaultPresenter extends MvpPresenter<CardVaultView, CardVaultPro
         if (!TextUtil.isEmpty(esc)) {
             return true;
         } else {
-            setESC(IESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()));
+            setESC(iESCManager.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits()));
             return !TextUtil.isEmpty(esc);
         }
     }
 
-    /* default */ void createESCToken() {
+    private void createESCToken() {
         getView().showProgressLayout();
 
         final SavedESCCardToken escCardToken = SavedESCCardToken.createWithEsc(card.getId(), esc);
-        getResourcesProvider()
-            .createESCTokenAsync(escCardToken, new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
-                @Override
-                public void onSuccess(final Token token) {
-                    CardVaultPresenter.this.token = token;
-                    CardVaultPresenter.this.token.setLastFourDigits(card.getLastFourDigits());
-                    paymentSettingRepository.configure(CardVaultPresenter.this.token);
-                    IESCManager.saveESCWith(token.getCardId(), token.getEsc());
-                    if (isViewAttached()) {
-                        getView().finishWithResult();
-                    }
+        cardTokenRepository
+            .createToken(escCardToken).enqueue(new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
+            @Override
+            public void onSuccess(final Token token) {
+                CardVaultPresenter.this.token = token;
+                CardVaultPresenter.this.token.setLastFourDigits(card.getLastFourDigits());
+                paymentSettingRepository.configure(CardVaultPresenter.this.token);
+                iESCManager.saveESCWith(token.getCardId(), token.getEsc());
+                if (isViewAttached()) {
+                    getView().finishWithResult();
                 }
+            }
 
-                @Override
-                public void onFailure(final MercadoPagoError error) {
-                    if (error.isApiException() && EscUtil.isInvalidEscForApiException(error.getApiException())) {
-                        EscFrictionEventTracker.create(escCardToken.getCardId(), esc, error.getApiException()).track();
-                        IESCManager.deleteESCWith(escCardToken.getCardId());
-                        esc = null;
-                        //Start CVV screen if fail
-                        if (isViewAttached()) {
-                            getView().startSecurityCodeActivity(Reason.SAVED_CARD);
-                        }
-                    } else {
-                        //Retry with error screen
-                        recoverCreateESCToken(error);
+            @Override
+            public void onFailure(final MercadoPagoError error) {
+                if (error.isApiException() && EscUtil.isInvalidEscForApiException(error.getApiException())) {
+                    EscFrictionEventTracker.create(escCardToken.getCardId(), esc, error.getApiException()).track();
+                    iESCManager.deleteESCWith(escCardToken.getCardId());
+                    esc = null;
+                    //Start CVV screen if fail
+                    if (isViewAttached()) {
+                        getView().startSecurityCodeActivity(Reason.SAVED_CARD);
                     }
+                } else {
+                    //Retry with error screen
+                    recoverCreateESCToken(error);
                 }
-            });
+            }
+        });
     }
 
-    /* default */ void recoverCreateESCToken(final MercadoPagoError error) {
+    private void recoverCreateESCToken(final MercadoPagoError error) {
         if (isViewAttached()) {
             getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
-            setFailureRecovery(new FailureRecovery() {
-                @Override
-                public void recover() {
-                    createESCToken();
-                }
-            });
+            setFailureRecovery(this::createESCToken);
         }
     }
 
-    @Override
-    public void onEmptyOptions() {
-        getView().showEmptyPayerCostScreen();
-    }
-
-    @Override
-    public void onSelectedPayerCost() {
-        startSecurityCodeFlowIfNeeded();
-    }
-
-    @Override
-    public void displayInstallments(final List<PayerCost> payerCosts) {
-        getView().askForInstallments(getCardInfo());
+    private void onPayerCosts(@NonNull final List<PayerCost> payerCosts) {
+        if (payerCosts.isEmpty()) {
+            getView().showEmptyPayerCostScreen();
+        } else if (payerCosts.size() == 1) {
+            userSelectionRepository.select(payerCosts.get(0));
+            startSecurityCodeFlowIfNeeded();
+        } else {
+            getView().askForInstallments(getCardInfo());
+        }
     }
 }

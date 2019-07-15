@@ -15,7 +15,7 @@
 
     <application android:allowBackup="true">
         <activity
-            android:name=".internal.features.PaymentMethodsActivity"
+            android:name=".internal.features.payment_methods.PaymentMethodsActivity"
             android:label="@string/px_title_activity_payment_methods"
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
@@ -64,7 +64,7 @@
             android:name=".internal.features.PaymentTypesActivity"
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
-            android:name=".internal.features.ReviewPaymentMethodsActivity"
+            android:name=".internal.features.review_payment_methods.ReviewPaymentMethodsActivity"
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.payer_information.PayerInformationActivity"

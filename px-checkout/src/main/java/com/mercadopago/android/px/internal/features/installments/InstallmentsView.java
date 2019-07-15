@@ -31,4 +31,6 @@ public interface InstallmentsView extends MvpView {
         @NonNull final Site site);
 
     void hideAmountRow();
+
+    void hideCardContainer();
 }

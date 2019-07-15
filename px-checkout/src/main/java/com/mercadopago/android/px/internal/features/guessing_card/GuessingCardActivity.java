@@ -43,7 +43,6 @@ import com.mercadopago.android.px.internal.di.CardAssociationSession;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.IssuersActivity;
 import com.mercadopago.android.px.internal.features.PaymentTypesActivity;
-import com.mercadopago.android.px.internal.features.ReviewPaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
 import com.mercadopago.android.px.internal.features.card.CardExpiryDateTextWatcher;
 import com.mercadopago.android.px.internal.features.card.CardIdentificationNumberTextWatcher;
@@ -52,6 +51,7 @@ import com.mercadopago.android.px.internal.features.card.CardSecurityCodeTextWat
 import com.mercadopago.android.px.internal.features.card.CardholderNameTextWatcher;
 import com.mercadopago.android.px.internal.features.guessing_card.card_association_result.CardAssociationResultErrorActivity;
 import com.mercadopago.android.px.internal.features.guessing_card.card_association_result.CardAssociationResultSuccessActivity;
+import com.mercadopago.android.px.internal.features.review_payment_methods.ReviewPaymentMethodsActivity;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.IdentificationCardView;
@@ -182,7 +182,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
      * @param paymentRecovery: payment recovery
      */
     public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
-        final PaymentRecovery paymentRecovery) {
+        @Nullable final PaymentRecovery paymentRecovery) {
         final Intent intent = new Intent(activity, GuessingCardActivity.class);
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
         intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
@@ -270,7 +270,9 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     protected void onRestoreInstanceState(final Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         presenter.onRestoreInstanceState(savedInstanceState);
-        validatePaymentConfiguration();
+        if (getIntent().getExtras().getBoolean(GuessingCardActivity.PARAM_INCLUDES_PAYMENT)) {
+            validatePaymentConfiguration();
+        }
     }
 
     //TODO remove method after session is persisted

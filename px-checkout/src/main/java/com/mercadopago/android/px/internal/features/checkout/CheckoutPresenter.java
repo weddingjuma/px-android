@@ -39,23 +39,14 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     PostPaymentAction.ActionController, Checkout.Actions {
 
     @NonNull /* default */ final CheckoutStateModel state;
-
-    @NonNull private final PluginRepository pluginRepository;
-
     @NonNull /* default */ final PaymentRepository paymentRepository;
-
-    @NonNull private final GroupsRepository groupsRepository;
-
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
-
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-
-    @NonNull private final InternalConfiguration internalConfiguration;
-
     @NonNull /* default */ final BusinessModelMapper businessModelMapper;
-
     @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
-
+    @NonNull private final PluginRepository pluginRepository;
+    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InternalConfiguration internalConfiguration;
     private transient FailureRecovery failureRecovery;
 
     public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,

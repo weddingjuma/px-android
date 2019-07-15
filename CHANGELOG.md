@@ -1,3 +1,7 @@
+## VERSION 4.15.2
+_15_07_2019_
+* FIX - Prevent library double initialization
+
 ## VERSION 4.16.2
 _11_07_2019_
 * FIX - Default marketplace to NONE

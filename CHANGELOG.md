@@ -1,3 +1,8 @@
+## VERSION 4.17.0
+_18_07_2019_
+* FEATURE - Changed preference mail validator to required if no private key is setted
+* ENHANCEMENT - Removed payer from init track for security reasons
+
 ## VERSION 4.16.3
 _16_07_2019_
 * FIX - Prevent library double initialization

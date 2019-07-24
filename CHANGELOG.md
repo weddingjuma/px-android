@@ -1,3 +1,8 @@
+## VERSION 4.17.1
+_24_07_2019_
+* FIX - Cancel exploding button loading on cvv comeback after payment recover
+* FIX - Prevent double lazy initialization of PX.
+
 ## VERSION 4.16.4
 _24_07_2019_
 * FIX - Cancel exploding button loading on cvv comeback after payment recover

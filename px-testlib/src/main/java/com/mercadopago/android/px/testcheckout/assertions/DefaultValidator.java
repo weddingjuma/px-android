@@ -5,6 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.testcheckout.idleresources.WaitForBusinessResult;
+import com.mercadopago.android.px.testcheckout.idleresources.WaitForPaymentResult;
+import com.mercadopago.android.px.testcheckout.pages.BusinessCongratsPage;
 import com.mercadopago.android.px.testcheckout.pages.CallForAuthPage;
 import com.mercadopago.android.px.testcheckout.pages.CardAssociationResultErrorPage;
 import com.mercadopago.android.px.testcheckout.pages.CardAssociationResultSuccessPage;
@@ -45,8 +48,12 @@ import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static com.mercadopago.android.testlib.matchers.CustomViewMatchers.withDigitsOnlyEqualsToTextView;
 import static com.mercadopago.android.testlib.matchers.CustomViewMatchers.withValueEqualToTextView;
 import static org.hamcrest.Matchers.anyOf;
+import static org.junit.Assert.assertTrue;
 
 public class DefaultValidator implements CheckoutValidator {
+
+    private final WaitForPaymentResult waitForPaymentResult = new WaitForPaymentResult();
+
     @Override
     public void validate(@NonNull final IssuerPage issuerPage) {
         //TODO implement default PX Validations
@@ -131,11 +138,6 @@ public class DefaultValidator implements CheckoutValidator {
     }
 
     @Override
-    public void validate(@NonNull final CongratsPage congratsPage) {
-        //TODO implement default PX Validations
-    }
-
-    @Override
     public void validate(@NonNull final CreditCardPage creditCardPage) {
         //TODO implement default PX Validations
     }
@@ -193,13 +195,31 @@ public class DefaultValidator implements CheckoutValidator {
     }
 
     @Override
-    public void validate(@NonNull final PendingPage pendingPage) {
-        //TODO implement default PX Validations
+    public void validate(@NonNull final CongratsPage congratsPage) {
+        waitForPaymentResult.start();
+        assertTrue(congratsPage.isSuccess());
+        waitForPaymentResult.stop();
+
+    }
+
+    public void validate(@NonNull final BusinessCongratsPage congratsPage) {
+        final WaitForBusinessResult result = new WaitForBusinessResult();
+        result.start();
+        assertTrue(congratsPage.isSuccess());
+        result.stop();
     }
 
     @Override
+    public void validate(@NonNull final PendingPage pendingPage) {
+        waitForPaymentResult.start();
+        assertTrue(pendingPage.isPending());
+        waitForPaymentResult.stop();    }
+
+    @Override
     public void validate(@NonNull final RejectedPage rejectedPage) {
-        //TODO implement default PX Validations
+        waitForPaymentResult.start();
+        assertTrue(rejectedPage.isError());
+        waitForPaymentResult.stop();
     }
 
     @Override

@@ -167,12 +167,6 @@ import java.util.Set;
 
     @Override
     public void onViewResumed() {
-        // If a payment was attempted, the exploding fragment is still visible when we go back to one tap fragment.
-        // Example: call for authorize, after asking for cvv and pressing back, we go back to one tap and need to
-        // remove the exploding fragment we had before.
-        if (paymentRepository.hasPayment()) {
-            cancelLoading();
-        }
         paymentRepository.attach(this);
         if (shouldReloadModel()) {
             loadViewModel();
@@ -460,6 +454,7 @@ import java.util.Set;
 
     @Override
     public void onChangePaymentMethod() {
+        cancelLoading();
         getView().resetPagerIndex();
     }
 

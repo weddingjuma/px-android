@@ -515,6 +515,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void hideConfirmButton() {
+        confirmButton.setClickable(false);
         confirmButton.clearAnimation();
         confirmButton.setVisibility(INVISIBLE);
     }
@@ -531,8 +532,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
+        hideConfirmButton();
         ViewUtils.runWhenViewIsFullyMeasured(getView(), () -> {
-            hideConfirmButton();
             final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
                 payButtonViewModel.getButtonProgressText(confirmButton.getContext()), paymentTimeout);
             final FragmentManager childFragmentManager = getChildFragmentManager();

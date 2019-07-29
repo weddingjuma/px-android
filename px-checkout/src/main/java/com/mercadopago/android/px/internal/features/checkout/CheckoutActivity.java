@@ -93,6 +93,10 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
+        // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter
+        if (presenter != null) {
+            presenter.detachView();
+        }
         initPresenter();
     }
 

@@ -183,8 +183,8 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
             .enqueue(new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
                 @Override
                 public void onSuccess(final CheckoutPreference checkoutPreference) {
-                    paymentSettingRepository.configure(checkoutPreference);
                     if (isViewAttached()) {
+                        paymentSettingRepository.configure(checkoutPreference);
                         startCheckoutForPreference();
                     }
                 }

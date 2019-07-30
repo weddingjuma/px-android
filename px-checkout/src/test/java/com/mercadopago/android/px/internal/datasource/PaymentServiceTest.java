@@ -9,7 +9,7 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
@@ -55,7 +55,7 @@ public class PaymentServiceTest {
     @Mock private EscPaymentManager escPaymentManager;
     @Mock private TokenRepository tokenRepository;
     @Mock private InstructionsRepository instructionsRepository;
-    @Mock private GroupsRepository groupsRepository;
+    @Mock private InitRepository initRepository;
     @Mock private PaymentMethodSearch paymentMethodSearch;
     @Mock private List<ExpressMetadata> expressMetadata;
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
@@ -83,7 +83,7 @@ public class PaymentServiceTest {
             escPaymentManager,
             tokenRepository,
             instructionsRepository,
-            groupsRepository,
+            initRepository,
             amountConfigurationRepository);
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));
@@ -183,7 +183,7 @@ public class PaymentServiceTest {
     }
 
     private Card creditCardPresetMock() {
-        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(expressMetadata.get(0)).thenReturn(node);
         when(node.getPaymentTypeId()).thenReturn(PaymentTypes.CREDIT_CARD);
         when(node.getCard()).thenReturn(cardMetadata);

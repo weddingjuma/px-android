@@ -9,7 +9,7 @@ import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -39,7 +39,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     @NonNull private final IssuersRepository issuersRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
     @NonNull private final BankDealsRepository bankDealsRepository;
@@ -52,7 +52,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     public GuessingCardPaymentPresenter(@NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final IssuersRepository issuersRepository,
         @NonNull final CardTokenRepository cardTokenRepository,
         @NonNull final BankDealsRepository bankDealsRepository,
@@ -63,7 +63,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         super();
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.issuersRepository = issuersRepository;
         this.cardTokenRepository = cardTokenRepository;
         this.bankDealsRepository = bankDealsRepository;
@@ -125,7 +125,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void getPaymentMethods() {
         getView().showProgress();
-        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 if (isViewAttached()) {

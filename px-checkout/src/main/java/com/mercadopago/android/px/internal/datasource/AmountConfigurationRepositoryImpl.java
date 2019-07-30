@@ -3,11 +3,10 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.AmountConfiguration;
-import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -16,13 +15,13 @@ import java.util.ArrayList;
 
 public class AmountConfigurationRepositoryImpl implements AmountConfigurationRepository {
 
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     private final UserSelectionRepository userSelectionRepository;
     /* default */ @Nullable ConfigurationSolver configurationSolver;
 
-    public AmountConfigurationRepositoryImpl(@NonNull final GroupsRepository groupsRepository,
+    public AmountConfigurationRepositoryImpl(@NonNull final InitRepository initRepository,
         @NonNull final UserSelectionRepository userSelectionRepository) {
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.userSelectionRepository = userSelectionRepository;
     }
 
@@ -55,7 +54,7 @@ public class AmountConfigurationRepositoryImpl implements AmountConfigurationRep
             return;
         }
 
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 configurationSolver =

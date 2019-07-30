@@ -11,7 +11,7 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -63,7 +63,7 @@ public class ExpressPaymentPresenterTest {
     private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
 
     @Mock
-    private GroupsRepository groupsRepository;
+    private InitRepository initRepository;
 
     @Mock
     private DiscountRepository discountRepository;
@@ -113,7 +113,7 @@ public class ExpressPaymentPresenterTest {
         when(configuration.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.getDynamicDialogConfiguration()).thenReturn(dynamicDialogConfiguration);
         when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
-        when(groupsRepository.getGroups())
+        when(initRepository.init())
             .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
@@ -126,7 +126,7 @@ public class ExpressPaymentPresenterTest {
         expressPaymentPresenter =
             new ExpressPaymentPresenter(paymentRepository, configuration, disabledPaymentMethodRepository,
                 discountRepository,
-                amountRepository, groupsRepository, amountConfigurationRepository, chargeRepository,
+                amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
                 escManager);
 
         verifyAttachView();

@@ -6,29 +6,29 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.core.FileManager;
 import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class GroupsDiskCache implements GroupsCache {
+public class InitDiskCache implements InitCache {
 
     @NonNull private final FileManager fileManager;
     @NonNull private final JsonUtil jsonUtil;
-    @NonNull private final File groupsFile;
+    @NonNull private final File initFile;
 
     private static final String DEF_FILE_NAME = "px_groups";
     /* default */ final ExecutorService executorService;
     /* default */ final Handler mainHandler;
 
-    public GroupsDiskCache(@NonNull final FileManager fileManager,
+    public InitDiskCache(@NonNull final FileManager fileManager,
         @NonNull final JsonUtil jsonUtil,
         @NonNull final File cacheDir) {
         this.fileManager = fileManager;
         this.jsonUtil = jsonUtil;
-        groupsFile = new File(createFileName(cacheDir));
+        initFile = new File(createFileName(cacheDir));
         executorService = Executors.newFixedThreadPool(1);
         mainHandler = new Handler(Looper.getMainLooper());
     }
@@ -44,26 +44,26 @@ public class GroupsDiskCache implements GroupsCache {
 
     @NonNull
     @Override
-    public MPCall<PaymentMethodSearch> get() {
-        return new MPCall<PaymentMethodSearch>() {
+    public MPCall<InitResponse> get() {
+        return new MPCall<InitResponse>() {
             @Override
-            public void enqueue(final Callback<PaymentMethodSearch> callback) {
+            public void enqueue(final Callback<InitResponse> callback) {
                 executorService.execute(() -> read(callback));
             }
 
             @Override
-            public void execute(final Callback<PaymentMethodSearch> callback) {
+            public void execute(final Callback<InitResponse> callback) {
                 readExec(callback);
             }
         };
     }
 
-    /* default */ void read(final Callback<PaymentMethodSearch> callback) {
+    /* default */ void read(final Callback<InitResponse> callback) {
         if (isCached()) {
-            final String fileContent = fileManager.readFileContent(groupsFile);
-            final PaymentMethodSearch paymentMethodSearch = jsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
-            if (paymentMethodSearch != null) {
-                mainHandler.post(() -> callback.success(paymentMethodSearch));
+            final String fileContent = fileManager.readFileContent(initFile);
+            final InitResponse initResponse = jsonUtil.fromJson(fileContent, InitResponse.class);
+            if (initResponse != null) {
+                mainHandler.post(() -> callback.success(initResponse));
             } else {
                 mainHandler.post(() -> callback.failure(new ApiException()));
             }
@@ -72,12 +72,12 @@ public class GroupsDiskCache implements GroupsCache {
         }
     }
 
-    /* default */ void readExec(final Callback<PaymentMethodSearch> callback) {
+    /* default */ void readExec(final Callback<InitResponse> callback) {
         if (isCached()) {
-            final String fileContent = fileManager.readFileContent(groupsFile);
-            final PaymentMethodSearch paymentMethodSearch = jsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
-            if (paymentMethodSearch != null) {
-                callback.success(paymentMethodSearch);
+            final String fileContent = fileManager.readFileContent(initFile);
+            final InitResponse initResponse = jsonUtil.fromJson(fileContent, InitResponse.class);
+            if (initResponse != null) {
+                callback.success(initResponse);
             } else {
                 callback.failure(new ApiException());
             }
@@ -87,21 +87,21 @@ public class GroupsDiskCache implements GroupsCache {
     }
 
     @Override
-    public void put(@NonNull final PaymentMethodSearch groups) {
+    public void put(@NonNull final InitResponse initResponse) {
         if (!isCached()) {
-            executorService.execute(new CacheWriter(fileManager, groupsFile, jsonUtil.toJson(groups)));
+            executorService.execute(new CacheWriter(fileManager, initFile, jsonUtil.toJson(initResponse)));
         }
     }
 
     @Override
     public void evict() {
         if (isCached()) {
-            new CacheEvict(fileManager, groupsFile).run();
+            new CacheEvict(fileManager, initFile).run();
         }
     }
 
     @Override
     public boolean isCached() {
-        return fileManager.exists(groupsFile);
+        return fileManager.exists(initFile);
     }
 }

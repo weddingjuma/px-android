@@ -8,7 +8,7 @@ import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardPa
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -27,7 +27,6 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cardholder;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
@@ -72,7 +71,7 @@ public class GuessingCardPaymentPresenterTest {
     private GuessingCardPaymentPresenter presenter;
 
     @Mock private UserSelectionRepository userSelectionRepository;
-    @Mock private GroupsRepository groupsRepository;
+    @Mock private InitRepository initRepository;
     @Mock private IssuersRepository issuersRepository;
     @Mock private PaymentSettingRepository paymentSettingRepository;
     @Mock private CardTokenRepository cardTokenRepository;
@@ -95,7 +94,7 @@ public class GuessingCardPaymentPresenterTest {
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getPaymentPreference()).thenReturn(paymentPreference);
         final List<PaymentMethod> pm = PaymentMethods.getPaymentMethodListMLA();
-        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(paymentMethodSearch.getPaymentMethods()).thenReturn(pm);
         when(advancedConfiguration.isBankDealsEnabled()).thenReturn(true);
         whenGetBankDealsAsync();
@@ -108,7 +107,7 @@ public class GuessingCardPaymentPresenterTest {
         final GuessingCard.View view) {
         final GuessingCardPaymentPresenter presenter =
             new GuessingCardPaymentPresenter(userSelectionRepository, paymentSettingRepository,
-                groupsRepository, issuersRepository, cardTokenRepository, bankDealsRepository,
+                initRepository, issuersRepository, cardTokenRepository, bankDealsRepository,
                 identificationRepository, advancedConfiguration,
                 new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE),
                 summaryAmountRepository);
@@ -316,7 +315,7 @@ public class GuessingCardPaymentPresenterTest {
     @Test
     public void whenGetPaymentMethodFailsThenHideProgress() {
         final ApiException apiException = mock(ApiException.class);
-        when(groupsRepository.getGroups()).thenReturn(new StubFailMpCall<PaymentMethodSearch>(apiException));
+        when(initRepository.init()).thenReturn(new StubFailMpCall<PaymentMethodSearch>(apiException));
 
         presenter.initialize();
 
@@ -627,7 +626,7 @@ public class GuessingCardPaymentPresenterTest {
         //We only have visa and master
         final List<PaymentMethod> paymentMethodList = PaymentMethods.getPaymentMethodListWithTwoOptions();
         final PaymentMethodSearch paymentMethodSearch = mock(PaymentMethodSearch.class);
-        when(groupsRepository.getGroups()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(paymentMethodSearch.getPaymentMethods()).thenReturn(paymentMethodList);
 
         //We exclude master

@@ -47,7 +47,7 @@ import com.mercadopago.android.px.services.Callback;
 
         // TODO: process this on PaymentMethodComponent to only render here.
         final Session session = Session.getInstance();
-        final MPCall<PaymentMethodSearch> groups = session.getGroupsRepository().getGroups();
+        final MPCall<PaymentMethodSearch> groups = session.getInitRepository().init();
         groups.execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {

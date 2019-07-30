@@ -3,7 +3,7 @@ package com.mercadopago.android.px.internal.features.express.add_new_card;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -14,15 +14,15 @@ public class AddNewCardPresenter extends BasePresenter<AddNewCard.View> implemen
 
     private static final String TYPE_TO_DRIVE = "cards";
 
-    private final GroupsRepository groupsRepository;
+    private final InitRepository initRepository;
 
-    public AddNewCardPresenter(@NonNull final GroupsRepository groupsRepository) {
-        this.groupsRepository = groupsRepository;
+    public AddNewCardPresenter(@NonNull final InitRepository initRepository) {
+        this.initRepository = initRepository;
     }
 
     @Override
     public void onAddNewCardSelected() {
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 final PaymentMethodSearchItem paymentMethodSearchItem = getCardsGroup(paymentMethodSearch.getGroups());

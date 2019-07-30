@@ -11,7 +11,7 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -52,7 +52,7 @@ public class PaymentService implements PaymentRepository {
     @NonNull private final SplitPaymentProcessor paymentProcessor;
     @NonNull private final Context context;
     @NonNull private final TokenRepository tokenRepository;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     @NonNull private final EscPaymentManager escPaymentManager;
 
     @NonNull /* default */ final PaymentServiceHandlerWrapper handlerWrapper;
@@ -73,7 +73,7 @@ public class PaymentService implements PaymentRepository {
         @NonNull final EscPaymentManager escPaymentManager,
         @NonNull final TokenRepository tokenRepository,
         @NonNull final InstructionsRepository instructionsRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository) {
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.escPaymentManager = escPaymentManager;
@@ -85,7 +85,7 @@ public class PaymentService implements PaymentRepository {
         this.paymentProcessor = paymentProcessor;
         this.context = context;
         this.tokenRepository = tokenRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
 
         handlerWrapper =
             new PaymentServiceHandlerWrapper(this, disabledPaymentMethodRepository, escPaymentManager,
@@ -142,7 +142,7 @@ public class PaymentService implements PaymentRepository {
         @Nullable final PayerCost payerCost,
         final boolean splitPayment) {
 
-        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 final String paymentTypeId = expressMetadata.getPaymentTypeId();

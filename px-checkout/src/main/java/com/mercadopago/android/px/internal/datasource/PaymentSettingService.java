@@ -8,6 +8,8 @@ import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
+import com.mercadopago.android.px.model.Site;
+import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -21,6 +23,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_CHECKOUT_PREF = "PREF_CHECKOUT_PREFERENCE";
     private static final String PREF_CHECKOUT_PREF_ID = "PREF_CHECKOUT_PREFERENCE_ID";
     private static final String PREF_PUBLIC_KEY = "PREF_PUBLIC_KEY";
+    private static final String PREF_SITE_ID = "PREF_SITE_ID";
     private static final String PREF_PRIVATE_KEY = "PREF_PRIVATE_KEY";
     private static final String PREF_TOKEN = "PREF_TOKEN";
     private static final String PREF_PRODUCT_ID = "PREF_PRODUCT_ID";
@@ -57,7 +60,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     }
 
     @Override
-    public void clearToken(){
+    public void clearToken() {
         sharedPreferences.edit().remove(PREF_TOKEN).apply();
     }
 
@@ -81,6 +84,13 @@ public class PaymentSettingService implements PaymentSettingRepository {
     public void configure(@NonNull final String publicKey) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
         edit.putString(PREF_PUBLIC_KEY, publicKey);
+        edit.apply();
+    }
+
+    @Override
+    public void configureSite(@NonNull final String siteId) {
+        final SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putString(PREF_SITE_ID, siteId);
         edit.apply();
     }
 
@@ -141,6 +151,12 @@ public class PaymentSettingService implements PaymentSettingRepository {
         return sharedPreferences.getString(PREF_PUBLIC_KEY, "");
     }
 
+    @NonNull
+    @Override
+    public Site getSite() {
+        return Sites.getById(sharedPreferences.getString(PREF_SITE_ID, Sites.ARGENTINA.getId()));
+    }
+
     @Nullable
     @Override
     public Token getToken() {
@@ -163,8 +179,8 @@ public class PaymentSettingService implements PaymentSettingRepository {
     public AdvancedConfiguration getAdvancedConfiguration() {
         if (advancedConfiguration == null) {
             return new AdvancedConfiguration.Builder()
-                    .setAmountRowEnabled(sharedPreferences.getBoolean(PREF_AMOUNT_ROW_ENABLED, true))
-                    .setDiscountParamsConfiguration(new DiscountParamsConfiguration.Builder()
+                .setAmountRowEnabled(sharedPreferences.getBoolean(PREF_AMOUNT_ROW_ENABLED, true))
+                .setDiscountParamsConfiguration(new DiscountParamsConfiguration.Builder()
                     .setProductId(sharedPreferences.getString(PREF_PRODUCT_ID, ""))
                     .setLabels(sharedPreferences.getStringSet(PREF_LABELS, Collections.<String>emptySet())).build())
                 .build();

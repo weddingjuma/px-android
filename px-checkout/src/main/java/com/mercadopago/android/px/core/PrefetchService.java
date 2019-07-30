@@ -65,7 +65,7 @@ import java.util.concurrent.Executors;
     }
 
     /* default */ void fetchGroups() {
-        session.getGroupsRepository().getGroups().execute(new Callback<PaymentMethodSearch>() {
+        session.getInitRepository().init().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 postSuccess();

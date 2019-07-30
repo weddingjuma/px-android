@@ -10,7 +10,7 @@ import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
@@ -46,14 +46,14 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @NonNull /* default */ final BusinessModelMapper businessModelMapper;
     @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
     @NonNull private final PluginRepository pluginRepository;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     @NonNull private final InternalConfiguration internalConfiguration;
     private transient FailureRecovery failureRecovery;
 
     public CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
         @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
@@ -62,7 +62,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
         this.checkoutPreferenceRepository = checkoutPreferenceRepository;
@@ -118,7 +118,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void retrievePaymentMethodSearch() {
         if (isViewAttached()) {
-            groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+            initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
                 @Override
                 public void success(final PaymentMethodSearch paymentMethodSearch) {
                     if (isViewAttached()) {
@@ -300,7 +300,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onCardFlowCancel() {
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 new DefaultPaymentMethodDriver(paymentMethodSearch,

@@ -11,7 +11,7 @@ import com.mercadopago.android.px.internal.features.uicontrollers.AmountRowContr
 import com.mercadopago.android.px.internal.navigation.DefaultPayerInformationDriver;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -48,7 +48,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     private final DiscountRepository discountRepository;
     @NonNull
-    private final GroupsRepository groupsRepository;
+    private final InitRepository initRepository;
     @NonNull private final IESCManager IESCManager;
     @NonNull private final PaymentVaultTitleSolver titleSolver;
     /* default */ PaymentMethodSearch paymentMethodSearch;
@@ -61,13 +61,13 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
         @NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final DiscountRepository discountRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final IESCManager IESCManager,
         @NonNull final PaymentVaultTitleSolver titleSolver) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
         this.discountRepository = discountRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         this.IESCManager = IESCManager;
         this.titleSolver = titleSolver;
@@ -86,7 +86,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     public void initPaymentVaultFlow() {
         initializeAmountRow();
 
-        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 if (isViewAttached()) {

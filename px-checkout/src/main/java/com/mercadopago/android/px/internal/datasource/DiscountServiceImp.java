@@ -3,7 +3,7 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -21,12 +21,12 @@ public class DiscountServiceImp implements DiscountRepository {
     /* default */ Map<String, DiscountConfigurationModel> discountsConfigurations;
 
     @Nullable private String defaultSelectedGuessingConfiguration;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     private final UserSelectionRepository userSelectionRepository;
 
-    public DiscountServiceImp(@NonNull final GroupsRepository groupsRepository,
+    public DiscountServiceImp(@NonNull final InitRepository initRepository,
         @NonNull final UserSelectionRepository userSelectionRepository) {
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.userSelectionRepository = userSelectionRepository;
     }
 
@@ -87,7 +87,7 @@ public class DiscountServiceImp implements DiscountRepository {
             return;
         }
 
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
             @Override
             public void success(final PaymentMethodSearch paymentMethodSearch) {
                 configurationSolver =

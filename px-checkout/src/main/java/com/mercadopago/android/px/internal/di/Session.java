@@ -18,7 +18,7 @@ import com.mercadopago.android.px.internal.datasource.CardTokenService;
 import com.mercadopago.android.px.internal.datasource.CheckoutPreferenceService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
-import com.mercadopago.android.px.internal.datasource.GroupsService;
+import com.mercadopago.android.px.internal.datasource.InitService;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
@@ -29,17 +29,17 @@ import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.ReflectiveESCManager;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
 import com.mercadopago.android.px.internal.datasource.TokenizeService;
-import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
-import com.mercadopago.android.px.internal.datasource.cache.GroupsCacheCoordinator;
-import com.mercadopago.android.px.internal.datasource.cache.GroupsDiskCache;
-import com.mercadopago.android.px.internal.datasource.cache.GroupsMemCache;
+import com.mercadopago.android.px.internal.datasource.cache.InitCache;
+import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
+import com.mercadopago.android.px.internal.datasource.cache.InitDiskCache;
+import com.mercadopago.android.px.internal.datasource.cache.InitMemCache;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
@@ -77,10 +77,10 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private ConfigurationModule configurationModule;
     private DiscountRepository discountRepository;
     private AmountRepository amountRepository;
-    private GroupsRepository groupsRepository;
+    private InitRepository initRepository;
     private PaymentRepository paymentRepository;
     private AmountConfigurationRepository amountConfigurationRepository;
-    private GroupsCache groupsCache;
+    private InitCache initCache;
     private PluginService pluginRepository;
     private InternalConfiguration internalConfiguration;
     private InstructionsService instructionsRepository;
@@ -152,13 +152,13 @@ public final class Session extends ApplicationModule implements AmountComponent 
 
     private void clear() {
         getConfigurationModule().reset();
-        getGroupsCache().evict();
+        getInitCache().evict();
         configurationModule = null;
         discountRepository = null;
         amountRepository = null;
-        groupsRepository = null;
+        initRepository = null;
         paymentRepository = null;
-        groupsCache = null;
+        initCache = null;
         pluginRepository = null;
         internalConfiguration = null;
         instructionsRepository = null;
@@ -170,15 +170,15 @@ public final class Session extends ApplicationModule implements AmountComponent 
         paymentMethodsRepository = null;
     }
 
-    public GroupsRepository getGroupsRepository() {
-        if (groupsRepository == null) {
+    public InitRepository getInitRepository() {
+        if (initRepository == null) {
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-            groupsRepository = new GroupsService(paymentSettings, getMercadoPagoESC(),
+            initRepository = new InitService(paymentSettings, getMercadoPagoESC(),
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
                 LocaleUtil.getLanguage(getApplicationContext()),
-                getGroupsCache());
+                getInitCache());
         }
-        return groupsRepository;
+        return initRepository;
     }
 
     public SummaryAmountRepository getSummaryAmountRepository() {
@@ -231,7 +231,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     public DiscountRepository getDiscountRepository() {
         if (discountRepository == null) {
             discountRepository =
-                new DiscountServiceImp(getGroupsRepository(), getConfigurationModule().getUserSelectionRepository());
+                new DiscountServiceImp(getInitRepository(), getConfigurationModule().getUserSelectionRepository());
         }
         return discountRepository;
     }
@@ -240,7 +240,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     public AmountConfigurationRepository getAmountConfigurationRepository() {
         if (amountConfigurationRepository == null) {
             amountConfigurationRepository =
-                new AmountConfigurationRepositoryImpl(getGroupsRepository(),
+                new AmountConfigurationRepositoryImpl(getInitRepository(),
                     getConfigurationModule().getUserSelectionRepository());
         }
         return amountConfigurationRepository;
@@ -261,13 +261,13 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     @NonNull
-    private GroupsCache getGroupsCache() {
-        if (groupsCache == null) {
-            groupsCache =
-                new GroupsCacheCoordinator(new GroupsDiskCache(getFileManager(), getJsonUtil(), getCacheDir()),
-                    new GroupsMemCache());
+    private InitCache getInitCache() {
+        if (initCache == null) {
+            initCache =
+                new InitCacheCoordinator(new InitDiskCache(getFileManager(), getJsonUtil(), getCacheDir()),
+                    new InitMemCache());
         }
-        return groupsCache;
+        return initCache;
     }
 
     @NonNull
@@ -295,7 +295,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 new EscPaymentManagerImp(getMercadoPagoESC()),
                 getTokenRepository(),
                 getInstructionsRepository(),
-                getGroupsRepository(),
+                getInitRepository(),
                 getAmountConfigurationRepository());
         }
 

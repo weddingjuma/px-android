@@ -5,7 +5,6 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
@@ -16,7 +15,6 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.PreferenceValidator;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.BusinessModelMapper;
@@ -30,9 +28,8 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
@@ -79,50 +76,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void initialize() {
         getView().showProgress();
-        configurePreference();
-    }
-
-    @Override
-    public void attachView(final Checkout.View view) {
-        super.attachView(view);
-    }
-
-    @Override
-    public void detachView() {
-        super.detachView();
-    }
-
-    private void configurePreference() {
-        if (paymentSettingRepository.getCheckoutPreference() != null) {
-            startCheckoutForPreference();
-        } else {
-            retrieveCheckoutPreference(paymentSettingRepository.getCheckoutPreferenceId());
-        }
-    }
-
-    /* default */ void startCheckoutForPreference() {
-        try {
-            PreferenceValidator.validate(paymentSettingRepository.getCheckoutPreference(),
-                paymentSettingRepository.getPrivateKey());
-            startCheckout();
-        } catch (final CheckoutPreferenceException e) {
-            getView().showCheckoutExceptionError(e);
-        }
-    }
-
-    private void startCheckout() {
-        getView().fetchFonts();
-        retrievePaymentMethodSearch();
-    }
-
-    @Override
-    public void retrievePaymentMethodSearch() {
         if (isViewAttached()) {
-            initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
+            initRepository.init().enqueue(new Callback<InitResponse>() {
                 @Override
-                public void success(final PaymentMethodSearch paymentMethodSearch) {
+                public void success(final InitResponse initResponse) {
                     if (isViewAttached()) {
-                        startFlow(paymentMethodSearch);
+                        startFlow(initResponse);
                     }
                 }
 
@@ -135,6 +94,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
                 }
             });
         }
+    }
+
+    @Override
+    public void attachView(final Checkout.View view) {
+        super.attachView(view);
+        getView().fetchFonts();
     }
 
     /* default */ void startFlow(final PaymentMethodSearch paymentMethodSearch) {
@@ -176,27 +141,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public boolean isESCEnabled() {
         return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
-    }
-
-    /* default */ void retrieveCheckoutPreference(final String checkoutPreferenceId) {
-        checkoutPreferenceRepository.getCheckoutPreference(checkoutPreferenceId)
-            .enqueue(new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
-                @Override
-                public void onSuccess(final CheckoutPreference checkoutPreference) {
-                    if (isViewAttached()) {
-                        paymentSettingRepository.configure(checkoutPreference);
-                        startCheckoutForPreference();
-                    }
-                }
-
-                @Override
-                public void onFailure(final MercadoPagoError error) {
-                    if (isViewAttached()) {
-                        getView().showError(error);
-                        setFailureRecovery(() -> retrieveCheckoutPreference(checkoutPreferenceId));
-                    }
-                }
-            });
     }
 
     @Override
@@ -300,10 +244,10 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onCardFlowCancel() {
-        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
-                new DefaultPaymentMethodDriver(paymentMethodSearch,
+            public void success(final InitResponse initResponse) {
+                new DefaultPaymentMethodDriver(initResponse,
                     paymentSettingRepository.getCheckoutPreference().getPaymentPreference()).drive(
                     new DefaultPaymentMethodDriver.PaymentMethodDriverCallback() {
                         @Override

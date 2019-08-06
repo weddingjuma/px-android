@@ -16,7 +16,9 @@ import retrofit2.http.Query;
 public interface InstallmentService {
 
     @POST("/{version}/px_mobile_api/summary_amount")
-    MPCall<SummaryAmount> createSummaryAmount(@Path(value = "version", encoded = true) String version,
+    MPCall<SummaryAmount> createSummaryAmount(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "version", encoded = true) String version,
         @Body Map<String, Object> body,
         @Query("public_key") String publicKey,
         @Nullable @Query("access_token") String privateKey);

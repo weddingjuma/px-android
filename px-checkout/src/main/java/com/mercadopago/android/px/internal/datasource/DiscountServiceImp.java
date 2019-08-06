@@ -8,10 +8,10 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.util.Map;
 
@@ -87,13 +87,12 @@ public class DiscountServiceImp implements DiscountRepository {
             return;
         }
 
-        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
-                configurationSolver =
-                    new ConfigurationSolverImpl(paymentMethodSearch.getDefaultAmountConfiguration(),
-                        paymentMethodSearch.getCustomSearchItems());
-                discountsConfigurations = paymentMethodSearch.getDiscountsConfigurations();
+            public void success(final InitResponse initResponse) {
+                configurationSolver = new ConfigurationSolverImpl(initResponse.getDefaultAmountConfiguration(),
+                    initResponse.getCustomSearchItems());
+                discountsConfigurations = initResponse.getDiscountsConfigurations();
             }
 
             @Override

@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
+import static com.mercadopago.android.px.services.BuildConfig.API_VERSION;
 
 public class SummaryAmountService implements SummaryAmountRepository {
 
@@ -45,7 +46,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         final Issuer issuer = userSelectionRepository.getIssuer();
 
         final Map<String, Object> body = new HashMap<>();
-        body.put("site_id", checkoutPreference.getSite().getId());
+        body.put("site_id", paymentSettingRepository.getSite().getId());
         body.put("transaction_amount", checkoutPreference.getTotalAmount());
         body.put("marketplace", checkoutPreference.getMarketplace());
         if (TextUtil.isNotEmpty(checkoutPreference.getPayer().getEmail())) {
@@ -64,7 +65,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         body.put("branch_id", checkoutPreference.getBranchId());
         body.put("charges", paymentSettingRepository.getPaymentConfiguration().getCharges());
 
-        return installmentService.createSummaryAmount(API_ENVIRONMENT, body,
+        return installmentService.createSummaryAmount(API_ENVIRONMENT, API_VERSION, body,
             paymentSettingRepository.getPublicKey(), paymentSettingRepository.getPrivateKey());
     }
 }

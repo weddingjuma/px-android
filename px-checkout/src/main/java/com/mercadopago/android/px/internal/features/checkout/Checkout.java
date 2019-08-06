@@ -78,11 +78,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
     /* default */ interface Actions {
         void initialize();
 
-        void retrievePaymentMethodSearch();
-
-        boolean isESCEnabled();
-
-        void onErrorCancel(@Nullable final  MercadoPagoError mercadoPagoError);
+        void onErrorCancel(@Nullable final MercadoPagoError mercadoPagoError);
 
         void onPaymentMethodSelectionError(final MercadoPagoError mercadoPagoError);
 

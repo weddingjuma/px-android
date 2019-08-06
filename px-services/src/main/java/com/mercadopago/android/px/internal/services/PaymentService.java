@@ -19,7 +19,9 @@ public interface PaymentService {
     String PAYMENTS_VERSION = "2.0";
 
     @GET("/{version}/px_mobile_api/payment_methods/cards")
-    MPCall<List<PaymentMethod>> getCardPaymentMethods(@Path(value = "version", encoded = true) String version,
+    MPCall<List<PaymentMethod>> getCardPaymentMethods(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "version", encoded = true) String version,
         @Query("access_token") String accessToken);
 
     @GET("/{version}/checkout/payment_methods/card_issuers")

@@ -29,7 +29,6 @@ import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
@@ -37,6 +36,7 @@ import com.mercadopago.android.px.model.Split;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.math.BigDecimal;
@@ -142,14 +142,14 @@ public class PaymentService implements PaymentRepository {
         @Nullable final PayerCost payerCost,
         final boolean splitPayment) {
 
-        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 final String paymentTypeId = expressMetadata.getPaymentTypeId();
 
                 if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
                     // Saved card.
-                    final Card card = paymentMethodSearch.getCardById(expressMetadata.getCard().getId());
+                    final Card card = initResponse.getCardById(expressMetadata.getCard().getId());
                     if (splitPayment) {
                         //TODO refactor
                         final String secondaryPaymentMethodId =
@@ -157,7 +157,7 @@ public class PaymentService implements PaymentRepository {
                                 .getConfigurationFor(card.getId())
                                 .getSplitConfiguration().secondaryPaymentMethod.paymentMethodId;
                         userSelectionRepository
-                            .select(card, paymentMethodSearch.getPaymentMethodById(secondaryPaymentMethodId));
+                            .select(card, initResponse.getPaymentMethodById(secondaryPaymentMethodId));
                     } else {
                         userSelectionRepository.select(card, null);
                     }
@@ -165,10 +165,10 @@ public class PaymentService implements PaymentRepository {
                     userSelectionRepository.select(payerCost);
                 } else if (PaymentTypes.isAccountMoney(paymentTypeId)) {
                     userSelectionRepository
-                        .select(new PaymentMethodMapper(paymentMethodSearch).map(expressMetadata), null);
+                        .select(new PaymentMethodMapper(initResponse).map(expressMetadata), null);
                 } else if (expressMetadata.isConsumerCredits()) {
                     userSelectionRepository
-                        .select(new PaymentMethodMapper(paymentMethodSearch).map(expressMetadata), null);
+                        .select(new PaymentMethodMapper(initResponse).map(expressMetadata), null);
                     userSelectionRepository.select(payerCost);
                 } else {
                     throw new IllegalStateException("payment method selected can not be used for express payment");

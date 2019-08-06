@@ -7,9 +7,9 @@ import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.AmountConfiguration;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.util.ArrayList;
 
@@ -54,12 +54,12 @@ public class AmountConfigurationRepositoryImpl implements AmountConfigurationRep
             return;
         }
 
-        initRepository.init().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 configurationSolver =
-                    new ConfigurationSolverImpl(paymentMethodSearch.getDefaultAmountConfiguration(),
-                        paymentMethodSearch.getCustomSearchItems());
+                    new ConfigurationSolverImpl(initResponse.getDefaultAmountConfiguration(),
+                        initResponse.getCustomSearchItems());
             }
 
             @Override

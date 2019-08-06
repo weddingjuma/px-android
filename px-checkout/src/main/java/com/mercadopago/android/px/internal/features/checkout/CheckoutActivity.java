@@ -142,7 +142,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                 presenter.attachView(this);
 
                 if (presenter.getState().isExpressCheckout) {
-                    presenter.retrievePaymentMethodSearch();
+                    presenter.initialize();
                 }
             } catch (final Exception e) {
                 FrictionEventTracker.with(FinishCheckoutEventTracker.PATH,

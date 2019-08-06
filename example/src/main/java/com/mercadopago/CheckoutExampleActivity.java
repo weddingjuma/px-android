@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import com.mercadopago.android.px.core.CheckoutLazyInit;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.core.WalletCheckout;
 import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.utils.ExamplesUtils;
 import com.mercadopago.example.R;
@@ -16,10 +17,11 @@ import static com.mercadopago.android.px.utils.ExamplesUtils.resolveCheckoutResu
 
 public class CheckoutExampleActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE = 1;
-    private View mRegularLayout;
-    private MPButton continueSimpleCheckout;
+    private static final String TEST_USER_458547105_PREFERENCE = "458547105-9a043623-1018-4db6-bb2a-ffd12cfea00b";
+
     private static final int REQ_CODE_CHECKOUT = 1;
+
+    private View regularLayout;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class CheckoutExampleActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_checkout_example);
 
-        mRegularLayout = findViewById(R.id.regularLayout);
+        regularLayout = findViewById(R.id.regularLayout);
 
         final View lazy = findViewById(R.id.lazy_init);
         final View progress = findViewById(R.id.progress_bar);
@@ -45,15 +47,14 @@ public class CheckoutExampleActivity extends AppCompatActivity {
                 @Override
                 public void success(@NonNull final MercadoPagoCheckout mercadoPagoCheckout) {
                     progress.setVisibility(View.GONE);
-                    mercadoPagoCheckout.startPayment(v.getContext(), REQUEST_CODE);
+                    mercadoPagoCheckout.startPayment(v.getContext(), REQ_CODE_CHECKOUT);
                 }
             }.fetch(v.getContext());
         });
 
-        continueSimpleCheckout = findViewById(R.id.continueButton);
+        final MPButton continueSimpleCheckout = findViewById(R.id.continueButton);
 
-        View customInitializeButton = findViewById(R.id.customInitializeButton);
-        customInitializeButton.setOnClickListener(v -> {
+        findViewById(R.id.customInitializeButton).setOnClickListener(v -> {
             startActivity(new Intent(CheckoutExampleActivity.this, CustomInitializationActivity.class));
         });
 
@@ -63,7 +64,13 @@ public class CheckoutExampleActivity extends AppCompatActivity {
             v -> startActivity(new Intent(CheckoutExampleActivity.this, SelectCheckoutActivity.class)));
 
         continueSimpleCheckout.setOnClickListener(
-            v -> ExamplesUtils.createBase().build().startPayment(CheckoutExampleActivity.this, REQUEST_CODE));
+            v -> ExamplesUtils.createBase().build().startPayment(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT));
+
+        findViewById(R.id.black_label).setOnClickListener(
+            view -> new WalletCheckout(TEST_USER_458547105_PREFERENCE).startWallet(
+                CheckoutExampleActivity.this,
+                () -> { // TODO do fallback not installed wallet.
+                }, REQ_CODE_CHECKOUT));
     }
 
     @Override
@@ -79,6 +86,6 @@ public class CheckoutExampleActivity extends AppCompatActivity {
     }
 
     private void showRegularLayout() {
-        mRegularLayout.setVisibility(View.VISIBLE);
+        regularLayout.setVisibility(View.VISIBLE);
     }
 }

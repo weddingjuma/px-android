@@ -59,7 +59,7 @@ public final class CheckoutParams {
         /* default */ Set<DialogLocation> dynamicDialogLocations = new HashSet<>();
         /* default */ Set<FragmentLocation> dynamicViewLocations = new HashSet<>();
 
-        public Builder setDiscountConfiguration(final DiscountParamsConfiguration discountParamsConfiguration) {
+        public Builder setDiscountParamsConfiguration(final DiscountParamsConfiguration discountParamsConfiguration) {
             this.discountParamsConfiguration = discountParamsConfiguration;
             return this;
         }

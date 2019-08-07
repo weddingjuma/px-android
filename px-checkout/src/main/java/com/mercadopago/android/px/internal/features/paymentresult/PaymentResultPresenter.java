@@ -44,16 +44,14 @@ import java.util.List;
         this.paymentResult = paymentResult;
 
         resultViewTrack =
-            new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult, paymentSettings.getCheckoutPreference());
+            new ResultViewTrack(ResultViewTrack.Style.GENERIC, paymentResult, paymentSettings);
     }
 
     @Override
     public void attachView(final PaymentResultContract.PaymentResultView view) {
         super.attachView(view);
 
-        getView().setPropPaymentResult(
-            paymentSettings.getCheckoutPreference().getSite().getCurrencyId(),
-            paymentResult,
+        getView().setPropPaymentResult(paymentSettings.getSite().getCurrencyId(), paymentResult,
             paymentResult.isOffPayment());
 
         getView().notifyPropsChanged();
@@ -73,7 +71,7 @@ import java.util.List;
         new AbortEvent(resultViewTrack).track();
     }
 
-    private void getInstructionsAsync() {
+    /* default */ void getInstructionsAsync() {
         instructionsRepository.getInstructions(paymentResult).enqueue(new Callback<List<Instruction>>() {
             @Override
             public void success(final List<Instruction> instructions) {

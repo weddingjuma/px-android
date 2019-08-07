@@ -65,7 +65,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     }
 
     private void showSiteRelatedInformation() {
-        if (configuration.getCheckoutPreference().getSite().shouldWarnAboutBankInterests()) {
+        if (configuration.getSite().shouldWarnAboutBankInterests()) {
             getView().warnAboutBankInterests();
         }
     }
@@ -125,7 +125,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     public void showAmountRow() {
         getView().showAmount(discountRepository.getCurrentConfiguration(),
             amountRepository.getItemsPlusCharges(userSelectionRepository.getPaymentMethod().getPaymentTypeId()),
-            configuration.getCheckoutPreference().getSite());
+            configuration.getSite());
     }
 
     @Override

@@ -49,15 +49,16 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
         this.payerCostSelected = payerCostSelected;
     }
 
+    @NonNull
     @Override
-    public InstallmentRowHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+    public InstallmentRowHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
         final View installmentView =
             LayoutInflater.from(parent.getContext()).inflate(R.layout.px_view_payer_cost_item, parent, false);
         return new InstallmentRowHolder(installmentView);
     }
 
     @Override
-    public void onBindViewHolder(final InstallmentRowHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final InstallmentRowHolder holder, final int position) {
         holder.populate(itemListener, site, payerCosts.get(position));
 
         if (position == payerCostSelected) {

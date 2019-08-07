@@ -260,9 +260,8 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     @Override
     public void showInstallments(final List<PayerCost> payerCostList) {
         showHeader();
-        final InstallmentsAdapter installmentsAdapter =
-            new InstallmentsAdapter(configuration.getCheckoutPreference().getSite(),
-                payerCostList, presenter);
+        final InstallmentsAdapter installmentsAdapter = new InstallmentsAdapter(configuration.getSite(),
+            payerCostList, presenter);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
     }
 

@@ -50,6 +50,7 @@ public class ReviewAndConfirmBuilder {
         final UserSelectionRepository userSelectionRepository = configurationModule.getUserSelectionRepository();
         final Issuer issuer = userSelectionRepository.getIssuer();
         final PaymentSettingRepository paymentSettings = configurationModule.getPaymentSettings();
+        final Site site = paymentSettings.getSite();
         final String publicKey = paymentSettings.getPublicKey();
         final Token token = paymentSettings.getToken();
         final AmountRepository amountRepository = session.getAmountRepository();
@@ -57,8 +58,6 @@ public class ReviewAndConfirmBuilder {
         final CheckoutPreference checkoutPreference = paymentSettings.getCheckoutPreference();
         final DiscountConfigurationModel discountModel = session.getDiscountRepository().getCurrentConfiguration();
         final List<Item> items = checkoutPreference.getItems();
-
-        final Site site = checkoutPreference.getSite();
 
         final String title = SummaryModel.resolveTitle(items, resources.getString(R.string.px_review_summary_product),
             resources.getString(R.string.px_review_summary_products));

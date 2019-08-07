@@ -9,8 +9,8 @@ import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
@@ -23,13 +23,13 @@ import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentType;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.lang.reflect.Type;
@@ -125,15 +125,15 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void getPaymentMethods() {
         getView().showProgress();
-        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
                     getView().hideProgress();
                     final PaymentPreference paymentPreference =
                         paymentSettingRepository.getCheckoutPreference().getPaymentPreference();
                     paymentMethodGuessingController = new PaymentMethodGuessingController(
-                        paymentPreference.getSupportedPaymentMethods(paymentMethodSearch.getPaymentMethods()),
+                        paymentPreference.getSupportedPaymentMethods(initResponse.getPaymentMethods()),
                         getPaymentTypeId(),
                         paymentPreference.getExcludedPaymentTypes());
                     startGuessingForm();
@@ -293,7 +293,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
             @Override
             public void failure(final ApiException apiException) {
-                if(isViewAttached()) {
+                if (isViewAttached()) {
                     final String origin = ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT;
                     getView().showApiExceptionError(apiException, origin);
                     setFailureRecovery(() -> getInstallments());

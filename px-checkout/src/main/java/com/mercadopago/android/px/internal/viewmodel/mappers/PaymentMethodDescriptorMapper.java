@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.viewmodel.mappers;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
-import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.AccountMoneyDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.CreditCardDescriptorModel;
@@ -17,14 +16,14 @@ import java.util.List;
 public class PaymentMethodDescriptorMapper
     extends Mapper<List<ExpressMetadata>, List<PaymentMethodDescriptorView.Model>> {
 
-    @NonNull private final PaymentSettingRepository paymentConfiguration;
+    @NonNull private final String currencyId;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
-    @NonNull private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
+    @NonNull private final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
 
-    public PaymentMethodDescriptorMapper(@NonNull final PaymentSettingRepository paymentConfiguration,
+    public PaymentMethodDescriptorMapper(@NonNull final String currencyId,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository) {
-        this.paymentConfiguration = paymentConfiguration;
+        this.currencyId = currencyId;
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
     }
@@ -51,13 +50,11 @@ public class PaymentMethodDescriptorMapper
             //This model is useful for Credit Card only
             // FIXME change model to represent more than just credit cards.
             return CreditCardDescriptorModel
-                .createFrom(paymentConfiguration.getCheckoutPreference().getSite().getCurrencyId(),
-                    amountConfigurationRepository.getConfigurationFor(customOptionId),
+                .createFrom(currencyId, amountConfigurationRepository.getConfigurationFor(customOptionId),
                     disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId));
         } else if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
             return DebitCardDescriptorModel
-                .createFrom(paymentConfiguration.getCheckoutPreference().getSite().getCurrencyId(),
-                    amountConfigurationRepository.getConfigurationFor(customOptionId),
+                .createFrom(currencyId, amountConfigurationRepository.getConfigurationFor(customOptionId),
                     disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId));
         } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
             return AccountMoneyDescriptorModel.createFrom(expressMetadata.getAccountMoney(),

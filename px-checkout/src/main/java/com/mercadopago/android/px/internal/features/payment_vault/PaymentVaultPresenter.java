@@ -30,6 +30,7 @@ import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodChildView;
@@ -51,7 +52,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     private final InitRepository initRepository;
     @NonNull private final IESCManager IESCManager;
     @NonNull private final PaymentVaultTitleSolver titleSolver;
-    /* default */ PaymentMethodSearch paymentMethodSearch;
+    /* default */ PaymentMethodSearch initResponse;
     @NonNull private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     private PaymentMethodSearchItem selectedSearchItem;
     private FailureRecovery failureRecovery;
@@ -86,11 +87,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     public void initPaymentVaultFlow() {
         initializeAmountRow();
 
-        initRepository.init().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
-                    PaymentVaultPresenter.this.paymentMethodSearch = paymentMethodSearch;
+                    PaymentVaultPresenter.this.initResponse = initResponse;
                     initPaymentMethodSearch();
                 }
             }
@@ -101,12 +102,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
                     .showError(MercadoPagoError
                             .createNotRecoverable(apiException, ApiException.ErrorCodes.PAYMENT_METHOD_NOT_FOUND),
                         ApiException.ErrorCodes.PAYMENT_METHOD_NOT_FOUND);
-                setFailureRecovery(new FailureRecovery() {
-                    @Override
-                    public void recover() {
-                        initPaymentVaultFlow();
-                    }
-                });
+                setFailureRecovery(() -> initPaymentVaultFlow());
             }
         });
     }
@@ -132,7 +128,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     public void showAmountRow() {
         getView().showAmount(discountRepository.getCurrentConfiguration(),
             paymentSettingRepository.getCheckoutPreference().getTotalAmount(),
-            paymentSettingRepository.getCheckoutPreference().getSite());
+            paymentSettingRepository.getSite());
     }
 
     @Override
@@ -190,12 +186,12 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
              * isOnlyOneItemAvailable counts both lists, groups and customSearchItems
              * We need to show discount
              */
-            if (!paymentMethodSearch.getGroups().isEmpty()) {
+            if (!initResponse.getGroups().isEmpty()) {
                 getView().saveAutomaticSelection(true);
-                selectItem(paymentMethodSearch.getGroups().get(0));
+                selectItem(initResponse.getGroups().get(0));
             } else {
                 getView().saveAutomaticSelection(true);
-                selectItem(paymentMethodSearch.getCustomSearchItems().get(0));
+                selectItem(initResponse.getCustomSearchItems().get(0));
             }
         } else {
             showAvailableOptions();
@@ -218,9 +214,9 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     private void showAvailableOptions() {
         final List<PaymentMethodViewModel> searchItemViewModels =
             new CustomSearchOptionViewModelMapper(this, disabledPaymentMethodRepository)
-                .map(paymentMethodSearch.getCustomSearchItems());
+                .map(initResponse.getCustomSearchItems());
         searchItemViewModels
-            .addAll(new PaymentMethodSearchOptionViewModelMapper(this).map(paymentMethodSearch.getGroups()));
+            .addAll(new PaymentMethodSearchOptionViewModelMapper(this).map(initResponse.getGroups()));
         getView().showSearchItems(searchItemViewModels);
         trackScreen();
     }
@@ -231,11 +227,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
             userSelectionRepository.select(getCardWithPaymentMethod(item), null);
             getView().startCardFlow();
         } else if (PaymentTypes.isAccountMoney(item.getType())) {
-            final PaymentMethod paymentMethod = paymentMethodSearch.getPaymentMethodById(item.getPaymentMethodId());
+            final PaymentMethod paymentMethod = initResponse.getPaymentMethodById(item.getPaymentMethodId());
             userSelectionRepository.select(paymentMethod, null);
             getView().finishPaymentMethodSelection(paymentMethod);
         } else if (PaymentMethods.CONSUMER_CREDITS.equals(item.getPaymentMethodId())) {
-            final PaymentMethod paymentMethod = paymentMethodSearch.getPaymentMethodById(item.getPaymentMethodId());
+            final PaymentMethod paymentMethod = initResponse.getPaymentMethodById(item.getPaymentMethodId());
             userSelectionRepository.select(paymentMethod, null);
             getView().showInstallments();
         }
@@ -247,7 +243,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private Card getCardWithPaymentMethod(final CustomSearchItem searchItem) {
-        final PaymentMethod paymentMethod = paymentMethodSearch.getPaymentMethodById(searchItem.getPaymentMethodId());
+        final PaymentMethod paymentMethod = initResponse.getPaymentMethodById(searchItem.getPaymentMethodId());
         final Card selectedCard = new CustomSearchItemToCardMapper().map(searchItem);
         if (paymentMethod != null) {
             selectedCard.setPaymentMethod(paymentMethod);
@@ -282,7 +278,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private void resolvePaymentMethodSelection(final PaymentMethodSearchItem item) {
-        final PaymentMethod selectedPaymentMethod = paymentMethodSearch.getPaymentMethodBySearchItem(item);
+        final PaymentMethod selectedPaymentMethod = initResponse.getPaymentMethodBySearchItem(item);
         userSelectionRepository.select(selectedPaymentMethod, null);
         setSelectedSearchItem(item);
         if (selectedPaymentMethod == null) {
@@ -308,11 +304,11 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private boolean isOnlyOneItemAvailable() {
-        return paymentMethodSearch.getGroups().size() + paymentMethodSearch.getCustomSearchItems().size() == 1;
+        return initResponse.getGroups().size() + initResponse.getCustomSearchItems().size() == 1;
     }
 
     private boolean noPaymentMethodsAvailable() {
-        return paymentMethodSearch.getGroups().isEmpty() && paymentMethodSearch.getCustomSearchItems().isEmpty();
+        return initResponse.getGroups().isEmpty() && initResponse.getCustomSearchItems().isEmpty();
     }
 
     public void setSelectedSearchItem(final PaymentMethodSearchItem mSelectedSearchItem) {
@@ -320,8 +316,8 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     private void trackScreen() {
-        // Do not remove check paymentMethodSearch, sometimes in recovery status is null.
-        if (paymentMethodSearch != null) {
+        // Do not remove check initResponse, sometimes in recovery status is null.
+        if (initResponse != null) {
             if (selectedSearchItem == null) {
                 trackInitialScreen();
             } else {
@@ -332,14 +328,14 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     private void trackInitialScreen() {
         final SelectMethodView selectMethodView =
-            new SelectMethodView(paymentMethodSearch, IESCManager.getESCCardIds(),
+            new SelectMethodView(initResponse, IESCManager.getESCCardIds(),
                 paymentSettingRepository.getCheckoutPreference());
         setCurrentViewTracker(selectMethodView);
     }
 
     private void trackChildScreen() {
         final SelectMethodChildView selectMethodChildView =
-            new SelectMethodChildView(paymentMethodSearch, selectedSearchItem,
+            new SelectMethodChildView(initResponse, selectedSearchItem,
                 paymentSettingRepository.getCheckoutPreference());
         setCurrentViewTracker(selectMethodChildView);
     }

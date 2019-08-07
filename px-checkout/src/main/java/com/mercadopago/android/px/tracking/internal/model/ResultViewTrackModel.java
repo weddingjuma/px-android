@@ -21,12 +21,12 @@ public final class ResultViewTrackModel extends TrackingMapModel {
     private final BigDecimal discountCouponAmount;
 
     public ResultViewTrackModel(@NonNull final ResultViewTrack.Style style, @NonNull final PaymentResult payment,
-        @NonNull final CheckoutPreference checkoutPreference) {
+        @NonNull final CheckoutPreference checkoutPreference, @NonNull final String currencyId) {
         this.style = style.value;
+        this.currencyId = currencyId;
         paymentId = payment.getPaymentId();
         paymentStatus = payment.getPaymentStatus();
         paymentStatusDetail = payment.getPaymentStatusDetail();
-        currencyId = checkoutPreference.getSite().getCurrencyId();
         hasSplitPayment = PaymentDataHelper.isSplitPayment(payment.getPaymentDataList());
         preferenceAmount = checkoutPreference.getTotalAmount();
         discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(payment.getPaymentDataList());

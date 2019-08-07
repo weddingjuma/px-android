@@ -94,7 +94,7 @@ public class InitService implements InitRepository {
                 .getDiscountParamsConfiguration();
 
         final CheckoutParams checkoutParams = new CheckoutParams.Builder()
-            .setDiscountConfiguration(discountParamsConfiguration)
+            .setDiscountParamsConfiguration(discountParamsConfiguration)
             .setCardWithEsc(new ArrayList<>(mercadoPagoESC.getESCCardIds()))
             .setCharges(paymentConfiguration.getCharges())
             .setSupportsSplit(paymentConfiguration.getPaymentProcessor().supportsSplitPayment(checkoutPreference))

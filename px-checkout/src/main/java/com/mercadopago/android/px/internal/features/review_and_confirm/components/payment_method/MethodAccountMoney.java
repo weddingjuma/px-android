@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.PaymentModel;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
@@ -14,8 +13,8 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.CompactComponent;
 import com.mercadopago.android.px.model.CustomSearchItem;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 
 /* default */ class MethodAccountMoney extends CompactComponent<MethodAccountMoney.Props, Void> {
@@ -46,16 +45,14 @@ import com.mercadopago.android.px.services.Callback;
         final View paymentView = ViewUtils.inflate(parent, R.layout.px_payment_method_account_money);
 
         // TODO: process this on PaymentMethodComponent to only render here.
-        final Session session = Session.getInstance();
-        final MPCall<PaymentMethodSearch> groups = session.getInitRepository().init();
-        groups.execute(new Callback<PaymentMethodSearch>() {
+        Session.getInstance().getInitRepository().init().execute(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
 
                 final TextView comment = paymentView.findViewById(R.id.comment);
 
                 final CustomSearchItem customOptionsAccountMoney =
-                    paymentMethodSearch.getCustomSearchItemByPaymentMethodId(props.paymentMethodId);
+                    initResponse.getCustomSearchItemByPaymentMethodId(props.paymentMethodId);
 
                 if (customOptionsAccountMoney != null && !TextUtil.isEmpty(customOptionsAccountMoney.getComment())) {
                     comment.setText(customOptionsAccountMoney.getComment());

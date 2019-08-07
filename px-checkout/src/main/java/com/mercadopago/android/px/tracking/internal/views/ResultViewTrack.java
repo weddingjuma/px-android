@@ -1,8 +1,8 @@
 package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.ResultViewTrackModel;
 import java.util.Locale;
 import java.util.Map;
@@ -31,9 +31,9 @@ public class ResultViewTrack extends ViewTracker {
     }
 
     public ResultViewTrack(@NonNull final Style style, @NonNull final PaymentResult payment,
-        @NonNull final CheckoutPreference checkoutPreference) {
-        resultViewTrackModel =
-            new ResultViewTrackModel(style, payment, checkoutPreference);
+        @NonNull final PaymentSettingRepository paymentSetting) {
+        resultViewTrackModel = new ResultViewTrackModel(style, payment, paymentSetting.getCheckoutPreference(),
+            paymentSetting.getSite().getCurrencyId());
         this.payment = payment;
     }
 

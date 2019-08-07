@@ -116,11 +116,9 @@ public final class WalletCheckout {
         return Uri.parse("https://s9p2q.app.goo.gl/")
             .buildUpon()
             .appendQueryParameter("apn", "com.mercadopago.wallet")
-            .appendQueryParameter("ibi", "com.mercadopago.MercadoPago")
-            .appendQueryParameter("ius", "mercadopago")
-            .appendQueryParameter("isi", "925436649")
             .appendQueryParameter("efr", "1") // removes one of the loadings.
-            .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId).build();
+            .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId)
+            .build();
     }
 
     private void startWalletIntent(@NonNull final AppCompatActivity activity, final int reqCode) {

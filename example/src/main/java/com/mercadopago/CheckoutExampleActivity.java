@@ -73,8 +73,8 @@ public class CheckoutExampleActivity extends AppCompatActivity {
     }
 
     private void handleWalletClick(final WalletCheckout walletCheckout) {
-        walletCheckout.startInWeb(this, REQ_CODE_CHECKOUT);
-//        walletCheckout.installAndStartCheckout(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT);
+//        walletCheckout.startInWeb(this, REQ_CODE_CHECKOUT);
+        walletCheckout.installAndStartCheckout(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT);
 //        walletCheckout.startWalletCheckout(
 //            CheckoutExampleActivity.this,
 //            () -> {

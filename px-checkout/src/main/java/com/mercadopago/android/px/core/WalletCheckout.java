@@ -116,7 +116,7 @@ public final class WalletCheckout {
         return Uri.parse("https://s9p2q.app.goo.gl/")
             .buildUpon()
             .appendQueryParameter("apn", "com.mercadopago.wallet")
-            .appendQueryParameter("efr", "1") // removes one of the loadings.
+            .appendQueryParameter("efr", "1") // removes one of the loadings - only available in iOS.
             .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId)
             .build();
     }

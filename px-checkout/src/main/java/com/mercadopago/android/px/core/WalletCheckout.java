@@ -34,12 +34,22 @@ public final class WalletCheckout {
 
     }
 
-    public interface ErrorHandler {
+    public interface Listener {
 
         /**
          * Callback to be called when the MercadoPago's application is not installed.
          */
         void checkoutFailedWalletIsNotInstalled();
+
+        /**
+         * Callback to be called when the MercadoPago's application has not supported version.
+         */
+        void checkoutFailedWalletNeedsUpdate();
+
+        /**
+         * Callback to be called when the MercadoPago's application is available to pay.
+         */
+        void walletAvailable();
     }
 
     /**
@@ -66,21 +76,44 @@ public final class WalletCheckout {
     }
 
     /**
-     * When this method is called it will try to start MercadoPago's app to start the payment. If it fails in the
-     * process then it will call {@link ErrorHandler#checkoutFailedWalletIsNotInstalled()}
+     * Resolves automatically with the best option available in which platform will perform the payment process.
+     */
+    public void startCheckout(@NonNull final AppCompatActivity activity, final int reqCode) {
+        checkWalletAvailability(activity, new Listener() {
+            @Override
+            public void checkoutFailedWalletIsNotInstalled() {
+                installAndStartWalletCheckout(activity, reqCode);
+            }
+
+            @Override
+            public void checkoutFailedWalletNeedsUpdate() {
+                startWebCheckout(activity, reqCode);
+            }
+
+            @Override
+            public void walletAvailable() {
+                startWalletCheckout(activity, reqCode);
+            }
+        });
+    }
+
+    /**
+     * When this method is called it will try to start MercadoPago's app to start the payment.
+     * If it fails in the process then it will call {@link Listener#checkoutFailedWalletIsNotInstalled()} , or {@link Listener#checkoutFailedWalletNeedsUpdate()}.
+     *
+     * If it succeed
      *
      * @param activity your activity. It won't be retained.
-     * @param errorHandler your error handler.
-     * @param reqCode request code to be handled when checkout closes.
+     * @param listener your error listener.
      */
-    public void startWalletCheckout(@NonNull final AppCompatActivity activity, @NonNull final ErrorHandler errorHandler,
-        final int reqCode) {
+    public void checkWalletAvailability(@NonNull final AppCompatActivity activity, @NonNull final Listener listener) {
         final PackageManager packageManager = activity.getPackageManager();
-        String packageName;
-        if (isPackageInstalled(packageManager)) {
-            startWalletIntent(activity, reqCode);
-        } else {
-            errorHandler.checkoutFailedWalletIsNotInstalled();
+        try {
+            final PackageInfo packageInfo = packageManager.getPackageInfo(WALLET_PACKAGE, 0);
+            //TODO add hack flag depending on version.
+            listener.walletAvailable();
+        } catch (final PackageManager.NameNotFoundException e) {
+            listener.checkoutFailedWalletIsNotInstalled();
         }
     }
 
@@ -92,9 +125,22 @@ public final class WalletCheckout {
      * @param activity your activity. It won't be retained.
      * @param reqCode request code to be handled when checkout closes.
      */
-    public void startInWeb(@NonNull final AppCompatActivity activity, final int reqCode) {
+    public void startWebCheckout(@NonNull final AppCompatActivity activity, final int reqCode) {
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(webLinkUri);
+        activity.startActivityForResult(intent, reqCode);
+    }
+
+    /**
+     * When this method is called it starts the native checkout experience inside MercadoPago's app.
+     *
+     * @param activity your activity. It won't be retained.
+     * @param reqCode request code to be handled when checkout closes.
+     */
+    public void startWalletCheckout(@NonNull final AppCompatActivity activity, final int reqCode) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(deepLinkUri);
+        intent.setPackage(WALLET_PACKAGE);
         activity.startActivityForResult(intent, reqCode);
     }
 
@@ -106,7 +152,7 @@ public final class WalletCheckout {
      * @param activity your activity. It won't be retained.
      * @param reqCode request code returned when checkout closes.
      */
-    public void installAndStartCheckout(@NonNull final AppCompatActivity activity, final int reqCode) {
+    public void installAndStartWalletCheckout(@NonNull final AppCompatActivity activity, final int reqCode) {
         final Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(installationUri);
         activity.startActivityForResult(intent, reqCode);
@@ -119,22 +165,5 @@ public final class WalletCheckout {
             .appendQueryParameter("efr", "1") // removes one of the loadings - only available in iOS.
             .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId)
             .build();
-    }
-
-    private void startWalletIntent(@NonNull final AppCompatActivity activity, final int reqCode) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(deepLinkUri);
-        intent.setPackage(WALLET_PACKAGE);
-        activity.startActivityForResult(intent, reqCode);
-    }
-
-    private boolean isPackageInstalled(@NonNull final PackageManager packageManager) {
-        //TODO add hack flag depending on version.
-        try {
-            final PackageInfo packageInfo = packageManager.getPackageInfo(WALLET_PACKAGE, 0);
-            return packageInfo != null;
-        } catch (final PackageManager.NameNotFoundException e) {
-            return false;
-        }
     }
 }

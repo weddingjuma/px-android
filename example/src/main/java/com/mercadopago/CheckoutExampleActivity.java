@@ -69,17 +69,7 @@ public class CheckoutExampleActivity extends AppCompatActivity {
         final WalletCheckout walletCheckout =
             WalletCheckout.configure(TEST_USER_458547105_PREFERENCE, WalletCheckout.Site.ARGENTINA);
         findViewById(R.id.black_label).setOnClickListener(
-            view -> handleWalletClick(walletCheckout));
-    }
-
-    private void handleWalletClick(final WalletCheckout walletCheckout) {
-//        walletCheckout.startInWeb(this, REQ_CODE_CHECKOUT);
-        walletCheckout.installAndStartCheckout(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT);
-//        walletCheckout.startWalletCheckout(
-//            CheckoutExampleActivity.this,
-//            () -> {
-//                walletCheckout.installAndStartCheckout(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT);
-//            }, REQ_CODE_CHECKOUT);
+            view -> walletCheckout.startCheckout(CheckoutExampleActivity.this, REQ_CODE_CHECKOUT));
     }
 
     @Override

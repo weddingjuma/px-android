@@ -77,7 +77,7 @@ public final class WalletCheckout {
         final int reqCode) {
         final PackageManager packageManager = activity.getPackageManager();
         String packageName;
-        if (isPackageInstalled(WALLET_PACKAGE, packageManager)) {
+        if (isPackageInstalled(packageManager)) {
             startWalletIntent(activity, reqCode);
         } else {
             errorHandler.checkoutFailedWalletIsNotInstalled();
@@ -112,10 +112,10 @@ public final class WalletCheckout {
         activity.startActivityForResult(intent, reqCode);
     }
 
-    private Uri getDynamicInstallationUri(final String preferenceId) {
+    private Uri getDynamicInstallationUri(@NonNull final String preferenceId) {
         return Uri.parse("https://s9p2q.app.goo.gl/")
             .buildUpon()
-            .appendQueryParameter("apn", "com.mercadopago.wallet")
+            .appendQueryParameter("apn", WALLET_PACKAGE)
             .appendQueryParameter("efr", "1") // removes one of the loadings - only available in iOS.
             .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId)
             .build();
@@ -128,10 +128,10 @@ public final class WalletCheckout {
         activity.startActivityForResult(intent, reqCode);
     }
 
-    private boolean isPackageInstalled(@NonNull final String packageName, final PackageManager packageManager) {
+    private boolean isPackageInstalled(@NonNull final PackageManager packageManager) {
         //TODO add hack flag depending on version.
         try {
-            final PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+            final PackageInfo packageInfo = packageManager.getPackageInfo(WALLET_PACKAGE, 0);
             return packageInfo != null;
         } catch (final PackageManager.NameNotFoundException e) {
             return false;

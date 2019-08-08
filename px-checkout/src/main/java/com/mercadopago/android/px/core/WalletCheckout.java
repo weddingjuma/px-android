@@ -163,7 +163,7 @@ public final class WalletCheckout {
             .buildUpon()
             .appendQueryParameter("apn", WALLET_PACKAGE)
             .appendQueryParameter("efr", "1") // removes one of the loadings - only available in iOS.
-            .appendQueryParameter("link", "https://www.mercadopago.com/checkout?pref_id=" + preferenceId)
+            .appendQueryParameter("link", "https://www.mercadopago.com/m/checkout?pref_id=" + preferenceId)
             .build();
     }
 }

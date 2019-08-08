@@ -18,7 +18,7 @@ public interface PaymentService {
 
     String PAYMENTS_VERSION = "2.0";
 
-    @GET("/{version}/px_mobile_api/payment_methods/cards")
+    @GET("{environment}/{version}/px_mobile_api/payment_methods/cards")
     MPCall<List<PaymentMethod>> getCardPaymentMethods(
         @Path(value = "environment", encoded = true) String environment,
         @Path(value = "version", encoded = true) String version,
@@ -30,8 +30,10 @@ public interface PaymentService {
         @Query("payment_method_id") String paymentMethodId, @Query("bin") String bin,
         @Query("processing_mode") String processingMode);
 
-    @POST("/{version}/px_mobile/payments?api_version=" + PAYMENTS_VERSION)
-    MPCall<Payment> createPayment(@Path(value = "version", encoded = true) String version,
+    @POST("{environment}/{version}/px_mobile/payments?api_version=" + PAYMENTS_VERSION)
+    MPCall<Payment> createPayment(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "version", encoded = true) String version,
         @Header("X-Idempotency-Key") String transactionId, @Body Map<String, Object> additionalInfo,
         @QueryMap Map<String, String> query);
 }

@@ -15,7 +15,7 @@ import retrofit2.http.Query;
 
 public interface InstallmentService {
 
-    @POST("/{version}/px_mobile_api/summary_amount")
+    @POST("{environment}/{version}/px_mobile_api/summary_amount")
     MPCall<SummaryAmount> createSummaryAmount(
         @Path(value = "environment", encoded = true) String environment,
         @Path(value = "version", encoded = true) String version,
@@ -23,8 +23,10 @@ public interface InstallmentService {
         @Query("public_key") String publicKey,
         @Nullable @Query("access_token") String privateKey);
 
-    @GET("/{version}/checkout/payment_methods/installments")
-    MPCall<List<Installment>> getInstallments(@Path(value = "version", encoded = true) String version,
+    @GET("{environment}/{version}/checkout/payment_methods/installments")
+    MPCall<List<Installment>> getInstallments(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "version", encoded = true) String version,
         @Query("public_key") String publicKey, @Query("access_token") String privateKey, @Query("bin") String bin,
         @Query("amount") BigDecimal amount, @Query("issuer.id") Long issuerId,
         @Query("payment_method_id") String paymentMethodId,

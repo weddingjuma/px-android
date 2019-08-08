@@ -18,7 +18,7 @@ import retrofit2.http.Query;
 public interface CheckoutService {
 
     //TODO modify RESPONSE to support backend driven on/off features + merchant order + pref retrieved.
-    @POST("{environment}/{version}/px_mobile_api/init")
+    @POST("{environment}/{version}/px_mobile_api/init/checkout")
     MPCall<InitResponse> init(
         @Path(value = "environment", encoded = true) String environment,
         @Path(value = "version", encoded = true) String version,

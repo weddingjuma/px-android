@@ -8,6 +8,9 @@ import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.model.PaymentMethod;
 import java.util.List;
 
+import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
+import static com.mercadopago.android.px.services.BuildConfig.API_VERSION;
+
 public class PaymentMethodsService implements PaymentMethodsRepository {
 
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
@@ -22,7 +25,7 @@ public class PaymentMethodsService implements PaymentMethodsRepository {
 
     @Override
     public MPCall<List<PaymentMethod>> getPaymentMethods() {
-        return checkoutService
-            .getPaymentMethods(paymentSettingRepository.getPublicKey(), paymentSettingRepository.getPrivateKey());
+        return checkoutService.getPaymentMethods(API_ENVIRONMENT, API_VERSION, paymentSettingRepository.getPublicKey(),
+            paymentSettingRepository.getPrivateKey());
     }
 }

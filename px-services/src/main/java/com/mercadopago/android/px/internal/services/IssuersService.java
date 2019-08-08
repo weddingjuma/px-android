@@ -9,7 +9,7 @@ import retrofit2.http.Query;
 
 public interface IssuersService {
 
-    @GET("/{version}/checkout/payment_methods/card_issuers")
+    @GET("{environment}/{version}/checkout/payment_methods/card_issuers")
     MPCall<List<Issuer>> getIssuers(
         @Path(value = "environment", encoded = true) String environment,
         @Path(value = "version", encoded = true) String version,

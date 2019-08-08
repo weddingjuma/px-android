@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
-import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -41,7 +40,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
     @NonNull /* default */ final BusinessModelMapper businessModelMapper;
-    @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
     @NonNull private final PluginRepository pluginRepository;
     @NonNull private final InitRepository initRepository;
     @NonNull private final InternalConfiguration internalConfiguration;
@@ -53,7 +51,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
         @NonNull final InitRepository initRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
-        @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
         @NonNull final InternalConfiguration internalConfiguration,
         @NonNull final BusinessModelMapper businessModelMapper) {
 
@@ -62,7 +59,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
         this.initRepository = initRepository;
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
-        this.checkoutPreferenceRepository = checkoutPreferenceRepository;
         this.internalConfiguration = internalConfiguration;
         this.businessModelMapper = businessModelMapper;
         state = persistentData;
@@ -89,7 +85,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
                 public void failure(final ApiException apiException) {
                     if (isViewAttached()) {
                         getView().showError(
-                            new MercadoPagoError(apiException, ApiUtil.RequestOrigin.GET_PAYMENT_METHODS));
+                            new MercadoPagoError(apiException, ApiUtil.RequestOrigin.POST_INIT));
                     }
                 }
             });
@@ -136,11 +132,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
         } else {
             getView().showPaymentMethodSelection();
         }
-    }
-
-    @Override
-    public boolean isESCEnabled() {
-        return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
     }
 
     @Override

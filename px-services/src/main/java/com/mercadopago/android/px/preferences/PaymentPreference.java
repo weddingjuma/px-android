@@ -9,7 +9,6 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentType;
-import com.mercadopago.android.px.model.PaymentTypes;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,21 +109,36 @@ public class PaymentPreference implements Serializable, Parcelable {
         }
     }
 
+    /**
+     * @deprecated validation is made backend side
+     */
+    @Deprecated
     public boolean installmentPreferencesValid() {
-        return validDefaultInstallments() && validMaxInstallments();
+        return true;
     }
 
+    /**
+     * @deprecated validation is made backend side
+     */
+    @Deprecated
     public boolean excludedPaymentTypesValid() {
-        return excludedPaymentTypes == null
-            || excludedPaymentTypes.size() < PaymentTypes.getAllPaymentTypes().size();
+        return true;
     }
 
+    /**
+     * @deprecated validation is made backend side
+     */
+    @Deprecated
     public boolean validDefaultInstallments() {
-        return defaultInstallments == null || defaultInstallments > 0;
+        return true;
     }
 
+    /**
+     * @deprecated validation is made backend side
+     */
+    @Deprecated
     public boolean validMaxInstallments() {
-        return maxInstallments == null || maxInstallments > 0;
+        return true;
     }
 
     @Deprecated

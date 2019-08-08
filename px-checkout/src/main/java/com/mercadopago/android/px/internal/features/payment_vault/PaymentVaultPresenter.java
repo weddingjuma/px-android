@@ -31,7 +31,6 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
-import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodChildView;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
@@ -76,7 +75,6 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     public void initialize() {
         try {
-            validateParameters();
             initPaymentVaultFlow();
             getView().setTitle(titleSolver.solveTitle());
         } catch (final IllegalStateException exception) {
@@ -138,20 +136,6 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     public void onPayerInformationReceived() {
         getView().finishPaymentMethodSelection(userSelectionRepository.getPaymentMethod());
-    }
-
-    private void validateParameters() throws IllegalStateException {
-        final PaymentPreference paymentPreference =
-            paymentSettingRepository.getCheckoutPreference().getPaymentPreference();
-        if (!paymentPreference.validMaxInstallments()) {
-            throw new IllegalStateException("Invalid max installments number");
-        }
-        if (!paymentPreference.validDefaultInstallments()) {
-            throw new IllegalStateException("Invalid installments number by default");
-        }
-        if (!paymentPreference.excludedPaymentTypesValid()) {
-            throw new IllegalStateException("All payments types excluded");
-        }
     }
 
     public boolean isItemSelected() {

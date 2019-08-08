@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.services;
 
 import com.mercadopago.android.px.internal.callbacks.MPCall;
-import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentMethod;
 import java.util.List;
@@ -23,12 +22,6 @@ public interface PaymentService {
         @Path(value = "environment", encoded = true) String environment,
         @Path(value = "version", encoded = true) String version,
         @Query("access_token") String accessToken);
-
-    @GET("/{version}/checkout/payment_methods/card_issuers")
-    MPCall<List<Issuer>> getIssuers(@Path(value = "version", encoded = true) String version,
-        @Query("public_key") String publicKey, @Query("access_token") String privateKey,
-        @Query("payment_method_id") String paymentMethodId, @Query("bin") String bin,
-        @Query("processing_mode") String processingMode);
 
     @POST("{environment}/{version}/px_mobile/payments?api_version=" + PAYMENTS_VERSION)
     MPCall<Payment> createPayment(

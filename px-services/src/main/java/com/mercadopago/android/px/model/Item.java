@@ -97,20 +97,28 @@ public class Item implements Serializable, Parcelable {
         return quantity > 1;
     }
 
+    /**
+     * @deprecated items are validated backend side
+     */
+    @Deprecated
     public static boolean areItemsValid(@NonNull final Collection<Item> items) {
-        return !items.isEmpty() && isEachItemValid(items) && BigDecimal.ZERO.compareTo(getTotalAmountWith(items)) < 0;
+        return true;
     }
 
+    /**
+     * @deprecated items are validated backend side
+     */
+    @Deprecated
     private static boolean isEachItemValid(@NonNull final Iterable<Item> items) {
-        boolean areAllValid = true;
-        for (final Item item : items) {
-            areAllValid = areAllValid && item.isItemValid();
-        }
-        return areAllValid;
+        return true;
     }
 
+    /**
+     * @deprecated items are validated backend side
+     */
+    @Deprecated
     private boolean isItemValid() {
-        return getQuantity() > 0;
+        return true;
     }
 
     public static BigDecimal getTotalAmountWith(@NonNull final Iterable<Item> items) {
@@ -174,9 +182,8 @@ public class Item implements Serializable, Parcelable {
         /* default */ @Nullable String pictureUrl;
 
         /**
-         * Builder for item construction.
-         * It should be used when checkout initialize without a preference id and
-         * it is initialize with a preference created programmatically.
+         * Builder for item construction. It should be used when checkout initialize without a preference id and it is
+         * initialize with a preference created programmatically.
          *
          * @param title item title
          * @param quantity item quantity
@@ -190,8 +197,8 @@ public class Item implements Serializable, Parcelable {
         }
 
         /**
-         * Item identification is an optional value.
-         * You could use this value when you want to send an item identification to the backend.
+         * Item identification is an optional value. You could use this value when you want to send an item
+         * identification to the backend.
          *
          * @param id item identification.
          * @return builder
@@ -202,8 +209,8 @@ public class Item implements Serializable, Parcelable {
         }
 
         /**
-         * You can add an item description with more information.
-         * Item description will be shown along the payment process.
+         * You can add an item description with more information. Item description will be shown along the payment
+         * process.
          *
          * @param description item description.
          * @return builder
@@ -214,8 +221,8 @@ public class Item implements Serializable, Parcelable {
         }
 
         /**
-         * Item category id is an optional value.
-         * You could use this value when you want to send an item category identification to the backend.
+         * Item category id is an optional value. You could use this value when you want to send an item category
+         * identification to the backend.
          *
          * @param categoryId item category identification.
          * @return builder
@@ -226,8 +233,7 @@ public class Item implements Serializable, Parcelable {
         }
 
         /**
-         * This value represents the URL of the item picture.
-         * Item picture will be shown along the payment process.
+         * This value represents the URL of the item picture. Item picture will be shown along the payment process.
          *
          * @param pictureUrl item picture URL.
          * @return builder

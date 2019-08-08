@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.preferences;
 
-import com.mercadopago.android.px.internal.util.PreferenceValidator;
 import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import org.junit.Test;
 

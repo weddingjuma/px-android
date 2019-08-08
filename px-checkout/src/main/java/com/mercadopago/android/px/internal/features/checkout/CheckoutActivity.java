@@ -133,7 +133,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                         session.getInitRepository(),
                         session.getPluginRepository(),
                         session.getPaymentRepository(),
-                        session.getCheckoutPreferenceRepository(),
                         session.getInternalConfiguration(),
                         session.getBusinessModelMapper());
 
@@ -180,7 +179,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             session.getInitRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
-            session.getCheckoutPreferenceRepository(),
             session.getInternalConfiguration(),
             session.getBusinessModelMapper());
     }

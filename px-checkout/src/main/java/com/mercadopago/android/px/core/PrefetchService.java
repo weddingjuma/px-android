@@ -4,14 +4,17 @@ import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
+import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker.Id.GENERIC;
+import static com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker.Style.NON_SCREEN;
 
 /* default */ class PrefetchService {
 
@@ -34,47 +37,21 @@ import java.util.concurrent.Executors;
     public void prefetch() {
         EXECUTOR_QUEUE.execute(() -> {
             session.init(checkout);
-            final String checkoutPreferenceId =
-                session.getConfigurationModule().getPaymentSettings().getCheckoutPreferenceId();
-            if (!TextUtil.isEmpty(checkoutPreferenceId)) {
-                fetchPreference();
-            } else {
-                fetchGroups();
-            }
+            initCall();
         });
     }
 
-    /* default */ void fetchPreference() {
-        final PaymentSettingRepository paymentSettings =
-            session.getConfigurationModule().getPaymentSettings();
-        session.getCheckoutPreferenceRepository().getCheckoutPreference(paymentSettings.getCheckoutPreferenceId())
-            .execute(
-                new Callback<CheckoutPreference>() {
-                    @Override
-                    public void success(final CheckoutPreference checkoutPreference) {
-                        paymentSettings.configure(checkoutPreference);
-                        fetchGroups();
-                    }
+    /* default */ void initCall() {
+        session.getInitRepository().init().execute(new Callback<InitResponse>() {
 
-                    @Override
-                    public void failure(final ApiException apiException) {
-                        //TODO Track
-                        postError();
-                    }
-                });
-    }
-
-    /* default */ void fetchGroups() {
-        session.getInitRepository().init().execute(new Callback<PaymentMethodSearch>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 postSuccess();
             }
 
             @Override
             public void failure(final ApiException apiException) {
-                //TODO Track
-                postError();
+                postError(apiException);
             }
         });
     }
@@ -86,8 +63,12 @@ import java.util.concurrent.Executors;
         });
     }
 
-    /* default */ void postError() {
-        mainHandler.post(() -> internalCallback.failure());
+    /* default */ void postError(final ApiException apiException) {
+        mainHandler.post(() -> {
+            FrictionEventTracker.with("/px_checkout/lazy_init", GENERIC, NON_SCREEN,
+                new MercadoPagoError(apiException, ApiUtil.RequestOrigin.POST_INIT));
+            internalCallback.failure();
+        });
     }
 
     public void cancel() {

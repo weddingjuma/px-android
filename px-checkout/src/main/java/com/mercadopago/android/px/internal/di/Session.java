@@ -15,12 +15,11 @@ import com.mercadopago.android.px.internal.datasource.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.datasource.AmountService;
 import com.mercadopago.android.px.internal.datasource.BankDealsService;
 import com.mercadopago.android.px.internal.datasource.CardTokenService;
-import com.mercadopago.android.px.internal.datasource.CheckoutPreferenceService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
-import com.mercadopago.android.px.internal.datasource.InitService;
 import com.mercadopago.android.px.internal.datasource.IESCManager;
 import com.mercadopago.android.px.internal.datasource.IdentificationService;
+import com.mercadopago.android.px.internal.datasource.InitService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
 import com.mercadopago.android.px.internal.datasource.PaymentMethodsService;
@@ -37,10 +36,9 @@ import com.mercadopago.android.px.internal.repository.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodsRepository;
@@ -55,7 +53,6 @@ import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
-import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -89,7 +86,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private CardTokenRepository cardTokenRepository;
     private BankDealsRepository bankDealsRepository;
     private IdentificationRepository identificationRepository;
-    private CheckoutPreferenceRepository checkoutPreferenceRepository;
     private PaymentMethodsRepository paymentMethodsRepository;
 
     private Session(@NonNull final Context context) {
@@ -166,7 +162,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
         amountConfigurationRepository = null;
         issuersRepository = null;
         cardTokenRepository = null;
-        checkoutPreferenceRepository = null;
         paymentMethodsRepository = null;
     }
 
@@ -386,16 +381,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 new IdentificationService(identificationService, getConfigurationModule().getPaymentSettings());
         }
         return identificationRepository;
-    }
-
-    public CheckoutPreferenceRepository getCheckoutPreferenceRepository() {
-        if (checkoutPreferenceRepository == null) {
-            final PreferenceService preferenceService =
-                RetrofitUtil.getRetrofitClient(getApplicationContext()).create(PreferenceService.class);
-            checkoutPreferenceRepository =
-                new CheckoutPreferenceService(preferenceService, getConfigurationModule().getPaymentSettings());
-        }
-        return checkoutPreferenceRepository;
     }
 
     public PaymentMethodsRepository getPaymentMethodsRepository() {

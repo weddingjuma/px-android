@@ -25,6 +25,7 @@ import com.mercadopago.android.px.testcheckout.pages.PayerInformationIdentificat
 import com.mercadopago.android.px.testcheckout.pages.PayerInformationLastNamePage;
 import com.mercadopago.android.px.testcheckout.pages.PayerInformationPage;
 import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
+import com.mercadopago.android.px.testcheckout.pages.PaymentTypesPage;
 import com.mercadopago.android.px.testcheckout.pages.PendingPage;
 import com.mercadopago.android.px.testcheckout.pages.RejectedPage;
 import com.mercadopago.android.px.testcheckout.pages.ReviewAndConfirmPage;
@@ -97,9 +98,12 @@ public interface CheckoutValidator extends Validator {
 
     void validate(@NonNull final CardAssociationResultErrorPage cardAssociationResultSuccessPage);
 
+    void validate(@NonNull final PaymentTypesPage paymentTypesPage);
+
     /**
      * @deprecated this page does not exists anymore.
      */
     @Deprecated
     void validate(@NonNull final OneTapPage oneTapPage);
+
 }

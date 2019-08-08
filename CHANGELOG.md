@@ -1,3 +1,10 @@
+## VERSION 4.18.0
+_01_08_2019_
+* FIX - Prevent double click on Confirm Payment.
+* FIX - Changed launch mode to singleTop to prevent double initialization.
+* ENHANCEMENT - Migrated deploying to Bitrise.
+* ENHANCEMENT - Updated Card Association ETEs.
+
 ## VERSION 4.17.1
 _24_07_2019_
 * FIX - Cancel exploding button loading on cvv comeback after payment recover

@@ -473,7 +473,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     @Override
     public void startPaymentRecoveryFlow(final PaymentRecovery paymentRecovery) {
-        CardVaultActivity.startActivity(this, REQ_CARD_VAULT, paymentRecovery);
+        CardVaultActivity.startActivityForRecovery(this, REQ_CARD_VAULT, paymentRecovery);
         overrideTransitionIn();
     }
 

@@ -31,6 +31,7 @@ import com.mercadopago.android.px.testcheckout.pages.PayerInformationIdentificat
 import com.mercadopago.android.px.testcheckout.pages.PayerInformationLastNamePage;
 import com.mercadopago.android.px.testcheckout.pages.PayerInformationPage;
 import com.mercadopago.android.px.testcheckout.pages.PaymentMethodPage;
+import com.mercadopago.android.px.testcheckout.pages.PaymentTypesPage;
 import com.mercadopago.android.px.testcheckout.pages.PendingPage;
 import com.mercadopago.android.px.testcheckout.pages.RejectedPage;
 import com.mercadopago.android.px.testcheckout.pages.ReviewAndConfirmPage;
@@ -42,6 +43,7 @@ import org.hamcrest.Matcher;
 import static android.support.test.InstrumentationRegistry.getInstrumentation;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.ViewMatchers.hasMinimumChildCount;
 import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
@@ -227,14 +229,23 @@ public class DefaultValidator implements CheckoutValidator {
         //TODO implement default PX Validations
     }
 
+    @CallSuper
     @Override
     public void validate(@NonNull final CardAssociationResultSuccessPage cardAssociationResultSuccessPage) {
-        //TODO implement default PX Validations
+        onView(ViewMatchers.withId(com.mercadopago.android.px.R.id.mpsdkCardAssociationResultSuccessBadge))
+            .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
     }
 
     @Override
-    public void validate(@NonNull final CardAssociationResultErrorPage cardAssociationResultSuccessPage) {
+    public void validate(@NonNull final CardAssociationResultErrorPage cardAssociationResultErrorPage) {
         //TODO implement default PX Validations
+    }
+
+    @CallSuper
+    @Override
+    public void validate(@NonNull final PaymentTypesPage paymentTypesPage) {
+        onView(withId(com.mercadopago.android.px.R.id.mpsdkActivityPaymentTypesRecyclerView))
+            .check(matches(hasMinimumChildCount(2)));
     }
 
     private void validateAmountView() {

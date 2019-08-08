@@ -304,7 +304,7 @@ import java.util.Set;
     @Override
     public void onCvvRequired(@NonNull final Card card) {
         cancelLoading();
-        getView().showCardFlow(card);
+        getView().showSecurityCodeScreen(card);
     }
 
     @Override

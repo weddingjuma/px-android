@@ -34,11 +34,15 @@ task androidSourcesJar(type:Jar) {
     from android.sourceSets.main.java.sourceFiles
 }
 
-task publishAar {
-    finalizedBy 'bintrayUpload'
-
+task publishAar(dependsOn: bintrayUpload) {
     doLast {
-        println 'Deploying ' + project.name + ' version: ' + versionToDeploy
+        println "Deployed ${project.name} version: ${versionToDeploy}"
+    }
+}
+
+task publishLocal(dependsOn: publishToMavenLocal) {
+    doLast {
+        println "Deployed ${project.name} version: ${versionToDeploy}"
     }
 }
 

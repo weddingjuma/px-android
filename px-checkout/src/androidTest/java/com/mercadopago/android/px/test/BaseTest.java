@@ -72,7 +72,7 @@ public class BaseTest<T extends Activity> {
     protected static <T> void putListExtra(final Intent intent, final String listName, final List<T> list) {
         if (list != null) {
             final Gson gson = new Gson();
-            final Type listType = new TypeToken<List<T>>() {}.getType();
+            final Type listType = new TypeToken<List<T>>() { }.getType();
             intent.putExtra(listName, gson.toJson(list, listType));
         }
     }

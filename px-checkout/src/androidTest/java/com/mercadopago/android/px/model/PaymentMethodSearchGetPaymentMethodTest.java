@@ -21,6 +21,13 @@ public class PaymentMethodSearchGetPaymentMethodTest {
     private String mPaymentMethodId;
     private String mPaymentTypeId;
 
+    public PaymentMethodSearchGetPaymentMethodTest(String itemId, String paymentMethodId, String paymentTypeId) {
+        paymentMethodSearch = getPaymentMethodSearch();
+        mItemId = itemId;
+        mPaymentMethodId = paymentMethodId;
+        mPaymentTypeId = paymentTypeId;
+    }
+
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
@@ -33,13 +40,6 @@ public class PaymentMethodSearchGetPaymentMethodTest {
             { "serfin.ticket", "serfin", "ticket" },
             { "invalid_item", "invalid_item", "" }
         });
-    }
-
-    public PaymentMethodSearchGetPaymentMethodTest(String itemId, String paymentMethodId, String paymentTypeId) {
-        paymentMethodSearch = getPaymentMethodSearch();
-        mItemId = itemId;
-        mPaymentMethodId = paymentMethodId;
-        mPaymentTypeId = paymentTypeId;
     }
 
     @Test

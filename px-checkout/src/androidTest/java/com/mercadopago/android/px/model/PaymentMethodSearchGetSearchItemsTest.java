@@ -15,6 +15,19 @@ import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class PaymentMethodSearchGetSearchItemsTest {
+
+    public PaymentMethodSearch paymentMethodSearch;
+    public String mItemId;
+    public String mPaymentMethodId;
+    public String mPaymentTypeId;
+
+    public PaymentMethodSearchGetSearchItemsTest(String paymentMethodId, String paymentTypeId, String itemId) {
+        this.paymentMethodSearch = getPaymentMethodSearch();
+        this.mItemId = itemId;
+        this.mPaymentMethodId = paymentMethodId;
+        this.mPaymentTypeId = paymentTypeId;
+    }
+
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {
@@ -27,21 +40,6 @@ public class PaymentMethodSearchGetSearchItemsTest {
             { "serfin", "ticket", "serfin_ticket" },
             { "invalid_pm", "", "null" }
         });
-    }
-
-    public PaymentMethodSearch paymentMethodSearch;
-
-    public String mItemId;
-
-    public String mPaymentMethodId;
-
-    public String mPaymentTypeId;
-
-    public PaymentMethodSearchGetSearchItemsTest(String paymentMethodId, String paymentTypeId, String itemId) {
-        this.paymentMethodSearch = getPaymentMethodSearch();
-        this.mItemId = itemId;
-        this.mPaymentMethodId = paymentMethodId;
-        this.mPaymentTypeId = paymentTypeId;
     }
 
     @Test

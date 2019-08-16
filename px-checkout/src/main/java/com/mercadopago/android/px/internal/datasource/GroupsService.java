@@ -3,7 +3,9 @@ package com.mercadopago.android.px.internal.datasource;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
+import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
@@ -32,15 +34,18 @@ public class GroupsService implements GroupsRepository {
     @NonNull private final IESCManager escManager;
     @NonNull private final CheckoutService checkoutService;
     @NonNull private final String language;
+    @NonNull private final ProductIdProvider productIdProvider;
     @NonNull /* default */ final GroupsCache groupsCache;
 
     public GroupsService(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final IESCManager escManager, @NonNull final CheckoutService checkoutService,
-        @NonNull final String language, @NonNull final GroupsCache groupsCache) {
+        @NonNull final String language, @NonNull final ProductIdProvider productIdProvider,
+        @NonNull final GroupsCache groupsCache) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.escManager = escManager;
         this.checkoutService = checkoutService;
         this.language = language;
+        this.productIdProvider = productIdProvider;
         this.groupsCache = groupsCache;
     }
 
@@ -121,7 +126,7 @@ public class GroupsService implements GroupsRepository {
             .setPrivateKey(paymentSettingRepository.getPrivateKey())
             .setPayerEmail(checkoutPreference.getPayer().getEmail())
             .setMarketplace(checkoutPreference.getMarketplace())
-            .setProductId(discountParamsConfiguration.getProductId())
+            .setProductId(productIdProvider.getProductId())
             .setLabels(discountParamsConfiguration.getLabels())
             .setCharges(paymentSettingRepository.getPaymentConfiguration().getCharges())
             .setProcessingModes(checkoutPreference.getProcessingModes())

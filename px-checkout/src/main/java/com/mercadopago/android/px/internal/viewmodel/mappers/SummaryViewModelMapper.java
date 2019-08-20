@@ -86,7 +86,7 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
 
         final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
             new TotalLocalized(),
-            new AmountLocalized(amountRepository.getAmountToPay(paymentTypeId, null), currencyId),
+            new AmountLocalized(amountRepository.getAmountToPay(paymentTypeId, discountModel), currencyId),
             new SummaryViewDefaultColor());
 
         return new SummaryView.Model(elementDescriptorModel, summaryDetailList, totalRow);

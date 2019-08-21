@@ -50,7 +50,7 @@
                     android:src="@drawable/px_consumer_credits_onetap"/>
 
 
-                <com.mercadopago.android.px.internal.view.MPTextView
+                <com.mercadopago.android.px.internal.view.LinkableTextView
                     android:id="@+id/bottom_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

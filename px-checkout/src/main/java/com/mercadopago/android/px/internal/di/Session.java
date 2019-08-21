@@ -123,7 +123,12 @@ public final class Session extends ApplicationModule implements AmountComponent 
         final SessionIdProvider sessionIdProvider =
             newSessionProvider(mercadoPagoCheckout.getTrackingConfiguration().getSessionId());
         MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
-        newProductIdProvider(mercadoPagoCheckout.getAdvancedConfiguration().getProductId());
+
+        //Favoring product id in discount params because that one is surely custom if exists
+        final String deprecatedProductId =
+            mercadoPagoCheckout.getAdvancedConfiguration().getDiscountParamsConfiguration().getProductId();
+        newProductIdProvider(TextUtil.isNotEmpty(deprecatedProductId) ? deprecatedProductId :
+            mercadoPagoCheckout.getAdvancedConfiguration().getProductId());
 
         // Store persistent paymentSetting
         final ConfigurationModule configurationModule = getConfigurationModule();
@@ -175,7 +180,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
             groupsRepository = new GroupsService(paymentSettings, getMercadoPagoESC(),
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
-                LocaleUtil.getLanguage(getApplicationContext()),
+                LocaleUtil.getLanguage(getApplicationContext()), getProductIdProvider(),
                 getGroupsCache());
         }
         return groupsRepository;
@@ -191,7 +196,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(InstallmentService.class);
 
             summaryAmountRepository = new SummaryAmountService(paymentService, paymentSettings,
-                advancedConfiguration, userSelectionRepository);
+                advancedConfiguration, userSelectionRepository, getProductIdProvider());
         }
         return summaryAmountRepository;
     }

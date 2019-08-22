@@ -1,3 +1,7 @@
+## VERSION 4.19.0
+_22_08_2019_
+* FEATURE Added tracking of payment method selected index and available methods quantity.
+
 ## VERSION 4.18.0
 _01_08_2019_
 * FIX - Prevent double click on Confirm Payment.

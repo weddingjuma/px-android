@@ -1,6 +1,11 @@
 ## VERSION 4.19.0
 _22_08_2019_
-* FEATURE Added tracking of payment method selected index and available methods quantity.
+* FEATURE - Added tracking of payment method selected index and available methods quantity.
+* FEATURE - Unified product id setters.
+* FIX - Consumer credits crash on low res.
+* FIX - Payment method discount on one tap.
+* ENHANCEMENT - Gradle task for local builds.
+* ENHANCEMENT - Security Code screen refactor.
 
 ## VERSION 4.18.0
 _01_08_2019_

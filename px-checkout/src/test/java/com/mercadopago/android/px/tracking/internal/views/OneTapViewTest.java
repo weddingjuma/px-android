@@ -51,6 +51,7 @@ public class OneTapViewTest {
         final Map<String, Object> data = new HashMap<>();
         data.put("discount", JsonUtil.getInstance().fromJson("{}", DiscountInfo.class).toMap());
         data.put("available_methods", Collections.EMPTY_LIST);
+        data.put("available_methods_quantity", 0.0);
         data.put("items", Collections.EMPTY_LIST);
         data.put("flow", null);
         data.put("preference_amount", null);

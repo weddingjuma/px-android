@@ -247,7 +247,7 @@ import java.util.Set;
         }
 
         final boolean splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
-        ConfirmEvent.from(mercadoPagoESC.getESCCardIds(), expressMetadata, payerCost, splitPayment).track();
+        ConfirmEvent.from(mercadoPagoESC.getESCCardIds(), expressMetadata, payerCost, splitPayment, paymentMethodIndex).track();
 
         paymentRepository.startExpressPayment(expressMetadata, payerCost, splitPayment);
     }

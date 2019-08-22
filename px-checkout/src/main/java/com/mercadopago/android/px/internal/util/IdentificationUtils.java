@@ -108,6 +108,8 @@ public final class IdentificationUtils {
                 if (leftover != numbers[CPF_ALGORITHM_LAST_INDEX]) {
                     throw InvalidFieldException.createInvalidCpfException();
                 }
+            } else {
+                throw InvalidFieldException.createInvalidCpfException();
             }
         } else {
             throw InvalidFieldException.createInvalidCpfException();

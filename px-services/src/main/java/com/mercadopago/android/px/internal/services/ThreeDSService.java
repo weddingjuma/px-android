@@ -8,8 +8,6 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 
 public interface ThreeDSService {
-    @POST("/cardholder_authenticator/trxAuthentication/a051484a404a56bc4c8b23e2d4d8ceae")
-    MPCall<ThreeDSChallenge> getChallengeRequest(
-        @Header("X-Auth-Token") String token,
-        @Body Map<String,Object> body);
+    @POST("/cardholder_authenticator/trxAuthentication/f11daf8d30af46ec62e1a1bc4b3d8f5d")
+    MPCall<ThreeDSChallenge> getChallengeRequest( @Header("X-Auth-Token") String token, @Body Map<String,Object> body);
 }

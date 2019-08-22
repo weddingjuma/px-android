@@ -132,7 +132,7 @@ public final class Security {
         body.put("UserID", 417995560);
         body.put("data", data);
 
-        return data;
+        return body;
     }
 
     public void askForChallenge(final Activity activity) {
@@ -146,7 +146,7 @@ public final class Security {
         service.getChallengeRequest(FURY_TOKEN, makeBody(params)).enqueue(new Callback<ThreeDSChallenge>() {
             @Override
             public void success(final ThreeDSChallenge threeDSChallenge) {
-                challengeParameters.setAcsSignedContent(threeDSChallenge.acsReferenceNumber);
+                challengeParameters.setAcsSignedContent(threeDSChallenge.ascSignedContent);
                 challengeParameters.setAcsTransactionID(threeDSChallenge.acsTransID);
                 challengeParameters.setAcsRefNumber(threeDSChallenge.acsReferenceNumber);
                 challengeParameters.set3DSServerTransactionID(threeDSChallenge.threeDSServerTransID);

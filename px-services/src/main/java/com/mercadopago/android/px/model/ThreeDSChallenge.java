@@ -1,13 +1,19 @@
 package com.mercadopago.android.px.model;
 
-public class ThreeDSChallenge {
-    public String response;
-    public String cryptogram;
-    public String threeDSServerTransID;
-    public String acsReferenceNumber;
-    public String sdkTransID;
-    public String eci;
-    public String dsTransID;
+import com.google.gson.annotations.SerializedName;
+import java.io.Serializable;
+
+public class ThreeDSChallenge implements Serializable {
+    @SerializedName("ascSignedContent")
     public String ascSignedContent;
+    public String response;
+    @SerializedName("threeDSServerTransID")
+    public String threeDSServerTransID;
+    @SerializedName("acsReferenceNumber")
+    public String acsReferenceNumber;
+    public String eci;
+    @SerializedName("dsTransID")
+    public String dsTransID;
+    @SerializedName("acsTransID")
     public String acsTransID;
 }

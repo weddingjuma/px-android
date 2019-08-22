@@ -7,11 +7,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
+import com.mercadopago.android.px.internal.di.Security;
 import com.mercadopago.example.R;
 import java.util.List;
 
@@ -76,12 +78,11 @@ public class SelectCheckoutActivity extends AppCompatActivity {
 
             void setOption(final Pair<String, MercadoPagoCheckout.Builder> pair) {
                 text.setText(pair.first);
-                text.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(final View v) {
-                        assert pair.second != null;
-                        pair.second.build().startPayment(SelectCheckoutActivity.this, REQ_CODE_CHECKOUT);
-                    }
+                text.setOnClickListener(v -> {
+                    assert pair.second != null;
+                    //pair.second.build().startPayment(SelectCheckoutActivity.this, REQ_CODE_CHECKOUT);
+                    Security.getInstance().askForChallenge(SelectCheckoutActivity.this);
+                    Log.d("3DS", Security.getInstance().getSDKVersion());
                 });
             }
         }

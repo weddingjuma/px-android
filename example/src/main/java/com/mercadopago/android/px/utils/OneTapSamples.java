@@ -2,12 +2,14 @@ package com.mercadopago.android.px.utils;
 
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
+import android.util.Log;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.SamplePaymentProcessorNoView;
+import com.mercadopago.android.px.internal.di.Security;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.Payment;
@@ -55,6 +57,7 @@ public final class OneTapSamples {
 
     public static void addAll(final Collection<Pair<String, MercadoPagoCheckout.Builder>> options) {
         int i = 1;
+        options.add(new Pair<>("3DS", start3DS()));
         options.add(new Pair<>("Saved cards with default installments", startSavedCardsDefaultInstallments()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest account money (no cards)",
             startOneTapWithAccountMoneyNoCards()));
@@ -202,6 +205,15 @@ public final class OneTapSamples {
             PaymentConfigurationUtils
                 .create(
                     samplePaymentProcessor))
+            .setPrivateKey(ONE_TAP_PAYER_5_ACCESS_TOKEN)
+            .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
+    }
+
+    private static MercadoPagoCheckout.Builder start3DS() {
+        final PaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(getBusinessPaymentApproved());
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, getCheckoutPreferenceWithPayerEmail(120),
+            PaymentConfigurationUtils
+                .create(samplePaymentProcessor))
             .setPrivateKey(ONE_TAP_PAYER_5_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }

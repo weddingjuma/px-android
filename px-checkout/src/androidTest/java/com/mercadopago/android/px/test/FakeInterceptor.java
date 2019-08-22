@@ -38,7 +38,7 @@ public class FakeInterceptor implements Interceptor {
                 .request(chain.request())
                 .protocol(Protocol.HTTP_1_0)
                 .body(ResponseBody.create(MediaType.parse("application/json"), responseString.getBytes()))
-                .addHeader("content-type", "application/json")
+                .addHeader("content-type", "Çapplication/json")
                 .build();
         } else {
             response = chain.proceed(chain.request());

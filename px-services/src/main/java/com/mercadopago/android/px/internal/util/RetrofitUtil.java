@@ -21,6 +21,10 @@ public final class RetrofitUtil {
             DEFAULT_WRITE_TIMEOUT);
     }
 
+    public static Retrofit getRetrofitClient(final Context context, final String baseUrl) {
+        return getRetrofit(context, baseUrl, DEFAULT_CONNECT_TIMEOUT, DEFAULT_READ_TIMEOUT,
+            DEFAULT_WRITE_TIMEOUT);
+    }
     private static Retrofit getRetrofit(final Context context,
         final String baseUrl,
         final int connectTimeout,

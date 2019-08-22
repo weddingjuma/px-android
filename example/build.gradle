@@ -13,6 +13,7 @@ android {
         targetSdkVersion api_level as int
         versionCode 1
         versionName version_to_deploy as String
+        multiDexEnabled true
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         // only on development

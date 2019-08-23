@@ -4,8 +4,8 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class ThreeDSChallenge implements Serializable {
-    @SerializedName("ascSignedContent")
-    public String ascSignedContent;
+    @SerializedName("acsSignedContent")
+    public String acsSignedContent;
     public String response;
     @SerializedName("threeDSServerTransID")
     public String threeDSServerTransID;

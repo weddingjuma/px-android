@@ -22,7 +22,7 @@ public class PxCheckoutInitProvider extends ContentProvider {
             Log.i(TAG, "Session initialization successful");
         }
 
-        Security.getInstance().initialize();
+        Security.initialize();
         return false;
     }
 

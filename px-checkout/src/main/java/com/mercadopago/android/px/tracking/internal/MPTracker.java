@@ -2,13 +2,17 @@ package com.mercadopago.android.px.tracking.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.model.CheckoutTypes;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public final class MPTracker {
 
@@ -16,6 +20,8 @@ public final class MPTracker {
     private static final String ATTR_FLOW_DETAIL = "flow_detail";
     private static final String ATTR_FLOW_NAME = "flow";
     private static final String ATTR_SESSION_ID = "session_id";
+    private static final String ATTR_SESSION_TIME = "session_time";
+    private static final String ATTR_CHECKOUT_TYPE = "checkout_type";
 
     private static MPTracker trackerInstance;
 
@@ -34,6 +40,10 @@ public final class MPTracker {
     @Nullable private String flowName;
 
     @Nullable private String sessionId;
+
+    @Nullable private String checkoutType;
+
+    @Nullable private Date initSession;
 
     private MPTracker() {
         // do nothing
@@ -134,7 +144,6 @@ public final class MPTracker {
     }
 
     public void trackEvent(@NonNull final String path, @NonNull final Map<String, Object> data) {
-
         if (pxTrackingListener != null) {
             // Event friction case needs to add flow detail in a different way. We ignore this case for now.
             if (!FrictionEventTracker.PATH.equals(path)) {
@@ -153,6 +162,8 @@ public final class MPTracker {
                 final Map<String, Object> value = (Map<String, Object>) o;
                 value.put(ATTR_FLOW_NAME, flowName);
                 value.put(ATTR_SESSION_ID, sessionId);
+                value.put(ATTR_SESSION_TIME, getSecondsAfterInit());
+                data.put(ATTR_CHECKOUT_TYPE, checkoutType);
             } catch (final ClassCastException e) {
                 // do nothing.
             }
@@ -163,5 +174,24 @@ public final class MPTracker {
         data.put(ATTR_FLOW_DETAIL, flowDetail);
         data.put(ATTR_FLOW_NAME, flowName);
         data.put(ATTR_SESSION_ID, sessionId);
+        data.put(ATTR_SESSION_TIME, getSecondsAfterInit());
+        data.put(ATTR_CHECKOUT_TYPE, checkoutType);
+    }
+
+    private long getSecondsAfterInit() {
+        final long milliseconds = Calendar.getInstance().getTime().getTime() - initSession.getTime();
+        return TimeUnit.MILLISECONDS.toSeconds(milliseconds);
+    }
+
+    public void initializeSessionTime() {
+        initSession = Calendar.getInstance().getTime();
+    }
+
+    public void hasExpressCheckout(final boolean hasExpressCheckout) {
+        if (hasExpressCheckout) {
+            checkoutType = CheckoutTypes.ONE_TAP;
+        } else {
+            checkoutType = CheckoutTypes.TRADITIONAL;
+        }
     }
 }

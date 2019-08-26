@@ -2,6 +2,7 @@ package com.mercadopago.android.px.tracking.internal.events;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.model.InitData;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ public final class InitEvent extends EventTracker {
 
     public InitEvent(@NonNull final PaymentSettingRepository paymentSettingRepository) {
         initData = InitData.from(paymentSettingRepository);
+        MPTracker.getInstance().initializeSessionTime();
     }
 
     @NonNull

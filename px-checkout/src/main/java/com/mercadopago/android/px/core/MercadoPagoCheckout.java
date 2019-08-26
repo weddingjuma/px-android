@@ -88,8 +88,7 @@ public final class MercadoPagoCheckout {
             session.init(this);
         }
 
-        new InitEvent(session.getConfigurationModule().getPaymentSettings())
-            .track();
+        new InitEvent(session.getConfigurationModule().getPaymentSettings()).track();
 
         if (context instanceof Activity) {
             ((Activity) context).startActivityForResult(checkoutIntent, requestCode);

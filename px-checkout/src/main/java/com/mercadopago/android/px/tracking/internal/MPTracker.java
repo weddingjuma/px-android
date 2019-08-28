@@ -2,17 +2,21 @@ package com.mercadopago.android.px.tracking.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import com.mercadopago.android.px.model.CheckoutTypes;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import java.lang.annotation.Retention;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public final class MPTracker {
 
@@ -41,7 +45,7 @@ public final class MPTracker {
 
     @Nullable private String sessionId;
 
-    @Nullable private String checkoutType;
+    @CheckoutTypes @Nullable private String checkoutType;
 
     @Nullable private Date initSession;
 

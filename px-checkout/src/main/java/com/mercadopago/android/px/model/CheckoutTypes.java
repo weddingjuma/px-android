@@ -1,11 +1,15 @@
 package com.mercadopago.android.px.model;
 
-public class CheckoutTypes {
+import android.support.annotation.StringDef;
+import java.lang.annotation.Retention;
 
-    public static String ONE_TAP = "one_tap";
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
-    public static String TRADITIONAL = "traditional";
+@Retention(SOURCE)
+@StringDef({ CheckoutTypes.ONE_TAP, CheckoutTypes.TRADITIONAL })
 
-    private CheckoutTypes() {
-    }
+public @interface CheckoutTypes {
+    String ONE_TAP = "one_tap";
+    String TRADITIONAL = "traditional";
 }
+

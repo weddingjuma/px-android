@@ -34,7 +34,6 @@ import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
-import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.List;
 
 public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
@@ -163,8 +162,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     }
 
     /* default */ void noDefaultPaymentMethods(final PaymentMethodSearch paymentMethodSearch) {
-        MPTracker.getInstance().hasExpressCheckout(paymentMethodSearch.hasExpressCheckoutMetadata());
-
         saveIsExpressCheckout(paymentMethodSearch);
         savePaymentMethodQuantity(paymentMethodSearch);
 

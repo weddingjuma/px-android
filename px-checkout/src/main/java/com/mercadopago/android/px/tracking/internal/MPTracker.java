@@ -2,7 +2,7 @@ package com.mercadopago.android.px.tracking.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.model.CheckoutTypes;
+import com.mercadopago.android.px.model.CheckoutType;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
@@ -40,7 +40,7 @@ public final class MPTracker {
 
     @Nullable private String sessionId;
 
-    @CheckoutTypes @Nullable private String checkoutType;
+    @CheckoutType @Nullable private String checkoutType;
 
     private long initSessionTimestamp;
 
@@ -191,9 +191,9 @@ public final class MPTracker {
 
     public void hasExpressCheckout(final boolean hasExpressCheckout) {
         if (hasExpressCheckout) {
-            checkoutType = CheckoutTypes.ONE_TAP;
+            checkoutType = CheckoutType.ONE_TAP;
         } else {
-            checkoutType = CheckoutTypes.TRADITIONAL;
+            checkoutType = CheckoutType.TRADITIONAL;
         }
     }
 }

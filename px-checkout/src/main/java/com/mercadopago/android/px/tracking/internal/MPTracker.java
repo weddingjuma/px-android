@@ -2,21 +2,16 @@ package com.mercadopago.android.px.tracking.internal;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import com.mercadopago.android.px.model.CheckoutTypes;
 import com.mercadopago.android.px.model.Event;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
-import java.lang.annotation.Retention;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-
-import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public final class MPTracker {
 
@@ -47,7 +42,7 @@ public final class MPTracker {
 
     @CheckoutTypes @Nullable private String checkoutType;
 
-    @Nullable private Date initSession;
+    private long initSessionTimestamp;
 
     private MPTracker() {
         // do nothing
@@ -183,12 +178,15 @@ public final class MPTracker {
     }
 
     private long getSecondsAfterInit() {
-        final long milliseconds = Calendar.getInstance().getTime().getTime() - initSession.getTime();
+        if (initSessionTimestamp == 0) {
+            initializeSessionTime();
+        }
+        final long milliseconds = Calendar.getInstance().getTime().getTime() - initSessionTimestamp;
         return TimeUnit.MILLISECONDS.toSeconds(milliseconds);
     }
 
     public void initializeSessionTime() {
-        initSession = Calendar.getInstance().getTime();
+        initSessionTimestamp = Calendar.getInstance().getTime().getTime();
     }
 
     public void hasExpressCheckout(final boolean hasExpressCheckout) {

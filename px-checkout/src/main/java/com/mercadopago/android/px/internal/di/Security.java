@@ -24,6 +24,7 @@ import org.emvco.threeds.core.ChallengeParameters;
 import org.emvco.threeds.core.ChallengeStatusReceiver;
 import org.emvco.threeds.core.CompletionEvent;
 import org.emvco.threeds.core.ConfigParameters;
+import org.emvco.threeds.core.DirectoryServer;
 import org.emvco.threeds.core.ProtocolErrorEvent;
 import org.emvco.threeds.core.RuntimeErrorEvent;
 import org.emvco.threeds.core.ThreeDS2Service;
@@ -36,7 +37,7 @@ import retrofit2.Retrofit;
 
 public final class Security {
 
-    private static final String FURY_TOKEN = "d2b9bc6fd0f1f3d518d5e4da8a0a0f212322eb4829abe7fe2c7d6100dfc095ac";
+    private static final String FURY_TOKEN = "3e612a1eed443c3d17d733cf0a39e0d125b10ca0abbf57210a9599e677c808ca";
     private static final String CARD_TOKEN_APPROVED = "69861bf13b7f898b71833d9de40bb05b";
     private static final String CARD_TOKEN_CHALLENGE = "f11daf8d30af46ec62e1a1bc4b3d8f5d";
     private static final String CARD_TOKEN_NON_AUTHORIZED = "f703a046a52e8a2eb1ebe6857d206e8b";
@@ -60,18 +61,6 @@ public final class Security {
     public static void initialize() {
         instance = new Security();
         instance.threeDS2Service = new NdsThreeDS2ServiceImpl();
-
-        ((NdsThreeDS2ServiceImpl) instance.threeDS2Service).a(new NdsThreeDSServiceInitializationCallback() {
-            @Override
-            public void onSuccess() {
-                Log.d("3ds", "init ok");
-            }
-
-            @Override
-            public void onError(final Exception e) {
-                Log.d("3ds", "init error");
-            }
-        });
 
         final ConfigParameters configParameters = new ConfigParameters();
         final UiCustomization uiCustomization = new UiCustomization();
@@ -174,7 +163,7 @@ public final class Security {
                         @Override
                         public void timedout() {
                             Toast.makeText(activity, "timedout", Toast.LENGTH_SHORT).show();
-                        }
+                        1}
 
                         @Override
                         public void protocolError(final ProtocolErrorEvent protocolErrorEvent) {

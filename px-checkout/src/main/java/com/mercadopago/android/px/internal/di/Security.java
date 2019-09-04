@@ -35,10 +35,8 @@ import retrofit2.Retrofit;
 public final class Security {
 
     private static final String FURY_TOKEN =
-        "3e612a1eed443c3d17d733cf0a39e0d125b10ca0abbf57210a9599e677c808ca";
-    private static final String CARD_TOKEN_APPROVED = "69861bf13b7f898b71833d9de40bb05b";
-    private static final String CARD_TOKEN_CHALLENGE = "f11daf8d30af46ec62e1a1bc4b3d8f5d";
-    private static final String CARD_TOKEN_NON_AUTHORIZED = "f703a046a52e8a2eb1ebe6857d206e8b";
+        "692493d1bc4324ca568b1b201f369058f69fde6d60ded4400240953bd0f1ab28";
+    private static final String CARD_TOKEN_TEST = "59b9c8be158b95e21177ff2d74f44da4";
     private static final String BASE_URL =
         "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
     private Retrofit client;
@@ -63,7 +61,8 @@ public final class Security {
 
         final ConfigParameters configParameters = new ConfigParameters();
         final UiCustomization uiCustomization = new UiCustomization();
-        final String locale = "en_US";
+
+        final String locale = "es_AR";
 
         try {
             instance.threeDS2Service.initialize(
@@ -140,7 +139,7 @@ public final class Security {
         final ProgressDialog progress = transaction.getProgressView(activity);
         progress.show();
 
-        service.getChallengeRequest(FURY_TOKEN, makeBody(params), CARD_TOKEN_CHALLENGE)
+        service.getChallengeRequest(FURY_TOKEN, makeBody(params), CARD_TOKEN_TEST)
             .enqueue(new Callback<ThreeDSChallenge>() {
                 @Override
                 public void success(final ThreeDSChallenge threeDSChallenge) {
@@ -168,7 +167,6 @@ public final class Security {
                             @Override
                             public void timedout() {
                                 Toast.makeText(activity, "timedout", Toast.LENGTH_SHORT).show();
-                                1
                             }
 
                             @Override

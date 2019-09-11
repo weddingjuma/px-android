@@ -9,6 +9,7 @@ import com.mercadopago.android.px.internal.core.ConnectivityStateInterceptor;
 import com.mercadopago.android.px.internal.core.ProductIdInterceptor;
 import com.mercadopago.android.px.internal.core.RequestIdInterceptor;
 import com.mercadopago.android.px.internal.core.SessionInterceptor;
+import com.mercadopago.android.px.internal.core.StrictModeInterceptor;
 import com.mercadopago.android.px.internal.core.TLSSocketFactory;
 import com.mercadopago.android.px.internal.core.UserAgentInterceptor;
 import com.mercadopago.android.px.services.BuildConfig;
@@ -83,7 +84,8 @@ public final class HttpClientUtil {
             .cache(new Cache(cacheFile, CACHE_SIZE));
 
         if (context != null) {
-            baseClient.addInterceptor(getConnectionInterceptor(context));
+            baseClient.addInterceptor(new ConnectivityStateInterceptor(context));
+            baseClient.addInterceptor(new StrictModeInterceptor(context));
             baseClient.addInterceptor(new SessionInterceptor(context));
             baseClient.addInterceptor(new ProductIdInterceptor(context));
         }
@@ -152,11 +154,6 @@ public final class HttpClientUtil {
         connectionSpecsList.add(connectionSpec.CLEARTEXT);
 
         return connectionSpecsList;
-    }
-
-    @NonNull
-    private static Interceptor getConnectionInterceptor(@NonNull final Context context) {
-        return new ConnectivityStateInterceptor(context);
     }
 
     private static File getCacheDir(@Nullable final Context context) {

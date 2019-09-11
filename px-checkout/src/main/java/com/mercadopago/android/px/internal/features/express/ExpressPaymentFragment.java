@@ -414,8 +414,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showPaymentProcessor() {
-        final Intent intent = PaymentProcessorActivity.getIntent(getContext());
-        startActivityForResult(intent, REQ_CODE_PAYMENT_PROCESSOR);
+        PaymentProcessorActivity.start(this, REQ_CODE_PAYMENT_PROCESSOR);
     }
 
     @Override

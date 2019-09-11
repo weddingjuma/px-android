@@ -477,9 +477,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     @Override
     public void showPaymentProcessor() {
         overrideTransitionWithNoAnimation();
-        final Intent intent = PaymentProcessorActivity.getIntent(this);
-        intent.addFlags(FLAG_ACTIVITY_FORWARD_RESULT);
-        startActivity(intent);
+        PaymentProcessorActivity.startWithForwardResult(this);
         finish();
     }
 

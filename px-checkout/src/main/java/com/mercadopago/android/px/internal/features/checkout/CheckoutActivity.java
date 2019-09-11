@@ -508,14 +508,14 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     public void showPaymentProcessor() {
         overrideTransitionWithNoAnimation();
-        startActivityForResult(PaymentProcessorActivity.getIntent(this), REQ_PAYMENT_PROCESSOR);
+        PaymentProcessorActivity.start(this, REQ_PAYMENT_PROCESSOR);
     }
 
     @Override
     public void showPaymentProcessorWithAnimation() {
         overrideTransitionOut();
         overrideTransitionIn();
-        startActivityForResult(PaymentProcessorActivity.getIntent(this), REQ_PAYMENT_PROCESSOR);
+        PaymentProcessorActivity.start(this, REQ_PAYMENT_PROCESSOR);
     }
 
     @Override

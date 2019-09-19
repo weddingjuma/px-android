@@ -28,6 +28,7 @@ import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.internal.di.Security;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
@@ -186,11 +187,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         confirmButton.setOnClickListener(v -> {
             if (ApiUtil.checkConnection(getContext())) {
-                presenter.confirmPayment();
+                //presenter.confirmPayment();
+                Security.getInstance().askForChallenge(getActivity());
             } else {
                 presenter.manageNoConnection();
             }
         });
+
+        if(getActivity().getIntent().getBooleanExtra("completed",false)){
+            presenter.confirmPayment();
+        }
 
         paymentMethodPager.addOnPageChangeListener(this);
     }

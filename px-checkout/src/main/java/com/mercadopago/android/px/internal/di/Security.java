@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.di;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 import com.mercadopago.android.px.internal.services.ThreeDSService;
@@ -35,7 +36,7 @@ import retrofit2.Retrofit;
 public final class Security {
 
     private static final String FURY_TOKEN =
-        "692493d1bc4324ca568b1b201f369058f69fde6d60ded4400240953bd0f1ab28";
+        "8a2b40c45f66335d8c43e1044785c8fd1885621716cbc6821eeac8d1ce0b7b35";
     private static final String CARD_TOKEN_TEST = "59b9c8be158b95e21177ff2d74f44da4";
     private static final String BASE_URL =
         "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
@@ -153,15 +154,19 @@ public final class Security {
                         .doChallenge(activity, challengeParameters, new ChallengeStatusReceiver() {
                             @Override
                             public void completed(final CompletionEvent completionEvent) {
-                                Toast.makeText(activity,
-                                    "completed: " + completionEvent.getTransactionStatus(),
-                                    Toast.LENGTH_SHORT)
-                                    .show();
+                                Intent intent = new Intent(activity, activity.getClass());
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.putExtra("completed",true);
+                                activity.startActivity(intent);
                             }
 
                             @Override
                             public void cancelled() {
-                                Toast.makeText(activity, "cancelled", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(activity, activity.getClass());
+                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.putExtra("completed",false);
+                                activity.startActivity(intent);
+
                             }
 
                             @Override

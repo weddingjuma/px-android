@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.plugins;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,7 @@ import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
 
+import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_FAIL_ESC;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYMENT;
 import static com.mercadopago.android.px.internal.util.ErrorUtil.ERROR_REQUEST_CODE;
@@ -50,7 +52,22 @@ public final class PaymentProcessorActivity extends AppCompatActivity
     private PaymentServiceHandlerWrapper paymentServiceHandlerWrapper;
     private PaymentServiceHandler wrapper;
 
-    public static Intent getIntent(@NonNull final Context context) {
+    public static void start(@NonNull final Activity activity, final int requestCode) {
+        activity.startActivityForResult(getIntent(activity), requestCode);
+    }
+
+    public static void start(@NonNull final Fragment fragment, final int requestCode) {
+        fragment.startActivityForResult(getIntent(fragment.getContext()), requestCode);
+    }
+
+    public static void startWithForwardResult(@NonNull final Activity context) {
+        final Intent intent = getIntent(context);
+        intent.setFlags(FLAG_ACTIVITY_FORWARD_RESULT);
+        context.startActivity(intent);
+    }
+
+    @NonNull
+    private static Intent getIntent(final Context context) {
         return new Intent(context, PaymentProcessorActivity.class);
     }
 
@@ -233,7 +250,7 @@ public final class PaymentProcessorActivity extends AppCompatActivity
     public void onBackPressed() {
         final Fragment fragment = getFragmentByTag();
         if (isBackHandlerFragment(fragment)) {
-            if (((SplitPaymentProcessor.BackHandler)fragment).isBackEnabled()) {
+            if (((SplitPaymentProcessor.BackHandler) fragment).isBackEnabled()) {
                 finishWithCanceledResult();
             } else {
                 //TODO: maybe can track this scenario

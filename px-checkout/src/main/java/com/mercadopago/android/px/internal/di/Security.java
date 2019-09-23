@@ -1,11 +1,11 @@
 package com.mercadopago.android.px.internal.di;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
-import com.mercadopago.android.px.internal.services.ThreeDSService;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
+import com.mercadopago.android.px.internal.services.SecurityService;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.model.ThreeDS.SDKEphemeralPublicKey;
 import com.mercadopago.android.px.model.ThreeDSChallenge;
@@ -35,13 +35,11 @@ import retrofit2.Retrofit;
 
 public final class Security {
 
-    private static final String FURY_TOKEN =
-        "da32929c742dff044b705c0691d7e4fed09c0d50a6cb4e41aad67ae0e85219b7";
+    private static final String FURY_TOKEN = "da32929c742dff044b705c0691d7e4fed09c0d50a6cb4e41aad67ae0e85219b7";
     private static final String CARD_TOKEN_TEST = "59b9c8be158b95e21177ff2d74f44da4";
-    private static final String BASE_URL =
-        "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
+    private static final String BASE_URL = "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
     private Retrofit client;
-    private ThreeDSService service;
+    private SecurityService service;
     private static Security instance;
     private ThreeDS2Service threeDS2Service;
 
@@ -53,7 +51,7 @@ public final class Security {
             throw new IllegalStateException(
                 "Session is not initialized. Make sure to call Security.initialize(Context) first.");
         }
-        return instance;º
+        return instance;
     }
 
     public static void initialize() {
@@ -61,14 +59,15 @@ public final class Security {
         instance.threeDS2Service = new NdsThreeDS2ServiceImpl();
 
         final ConfigParameters configParameters = new ConfigParameters();
+
         final UiCustomization uiCustomization = new UiCustomization();
 
-        final String locale = "es_AR";
+        final String locale = "en_US";
 
         try {
-            instance.threeDS2Service.initialize(
-                Session.getInstance().getApplicationContext(), configParameters, locale,
-                uiCustomization);
+            instance.threeDS2Service
+                .initialize(Session.getInstance().getApplicationContext(), configParameters, locale,
+                    uiCustomization);
         } catch (final InvalidInputException e) {
             Log.e("3DS", e.getMessage());
         } catch (final SDKAlreadyInitializedException e) {
@@ -79,11 +78,7 @@ public final class Security {
 
         instance.client =
             RetrofitUtil.getRetrofitClient(Session.getInstance().getApplicationContext(), BASE_URL);
-        instance.service = instance.client.create(ThreeDSService.class);
-    }
-
-    public String getSDKVersion() {
-        return threeDS2Service.getSDKVersion();
+        instance.service = instance.client.create(SecurityService.class);
     }
 
     private String getDate() {
@@ -135,38 +130,33 @@ public final class Security {
         final Transaction transaction = threeDS2Service.createTransaction("A000000004", "2.1.0");
         final AuthenticationRequestParameters params =
             transaction.getAuthenticationRequestParameters();
-        final ChallengeParameters challengeParameters = new ChallengeParameters();
-
-        final ProgressDialog progress = transaction.getProgressView(activity);
-        progress.show();
 
         service.getChallengeRequest(FURY_TOKEN, makeBody(params), CARD_TOKEN_TEST)
             .enqueue(new Callback<ThreeDSChallenge>() {
                 @Override
-                public void success(final ThreeDSChallenge threeDSChallenge) {
-                    challengeParameters.setAcsSignedContent(threeDSChallenge.acsSignedContent);
-                    challengeParameters.setAcsTransactionID(threeDSChallenge.acsTransID);
-                    challengeParameters.setAcsRefNumber(threeDSChallenge.acsReferenceNumber);
-                    challengeParameters
-                        .set3DSServerTransactionID(threeDSChallenge.threeDSServerTransID);
+                public void success(final ThreeDSChallenge cReq) {
+                    final ChallengeParameters challengeParameters = new ChallengeParameters();
+                    challengeParameters.setAcsSignedContent(cReq.acsSignedContent);
+                    challengeParameters.setAcsTransactionID(cReq.acsTransID);
+                    challengeParameters.setAcsRefNumber(cReq.acsReferenceNumber);
+                    challengeParameters.set3DSServerTransactionID(cReq.threeDSServerTransID);
 
-                    transaction
-                        .doChallenge(activity, challengeParameters, new ChallengeStatusReceiver() {
+                    transaction.doChallenge(activity, challengeParameters,
+                        new ChallengeStatusReceiver() {
+
                             @Override
                             public void completed(final CompletionEvent completionEvent) {
-                                Intent intent = new Intent(activity, activity.getClass());
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.putExtra("completed",true);
+                                Intent intent = new Intent(activity, CheckoutActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.putExtra("completed", true);
                                 activity.startActivity(intent);
                             }
 
                             @Override
                             public void cancelled() {
-                                Intent intent = new Intent(activity, activity.getClass());
-                                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                intent.putExtra("completed",false);
+                                Intent intent = new Intent(activity, CheckoutActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                 activity.startActivity(intent);
-
                             }
 
                             @Override
@@ -176,16 +166,12 @@ public final class Security {
 
                             @Override
                             public void protocolError(final ProtocolErrorEvent protocolErrorEvent) {
-                                Toast.makeText(activity,
-                                    protocolErrorEvent.getErrorMessage().getErrorDetails(),
-                                    Toast.LENGTH_SHORT)
-                                    .show();
+
                             }
 
                             @Override
                             public void runtimeError(final RuntimeErrorEvent runtimeErrorEvent) {
-                                Toast.makeText(activity, runtimeErrorEvent.getErrorMessage(),
-                                    Toast.LENGTH_SHORT).show();
+
                             }
                         }, 5);
                 }

@@ -36,7 +36,7 @@ import retrofit2.Retrofit;
 public final class Security {
 
     private static final String FURY_TOKEN =
-        "8a2b40c45f66335d8c43e1044785c8fd1885621716cbc6821eeac8d1ce0b7b35";
+        "da32929c742dff044b705c0691d7e4fed09c0d50a6cb4e41aad67ae0e85219b7";
     private static final String CARD_TOKEN_TEST = "59b9c8be158b95e21177ff2d74f44da4";
     private static final String BASE_URL =
         "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
@@ -53,7 +53,7 @@ public final class Security {
             throw new IllegalStateException(
                 "Session is not initialized. Make sure to call Security.initialize(Context) first.");
         }
-        return instance;
+        return instance;º
     }
 
     public static void initialize() {

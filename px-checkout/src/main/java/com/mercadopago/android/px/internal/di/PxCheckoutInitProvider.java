@@ -14,6 +14,7 @@ public class PxCheckoutInitProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Session.initialize(getContext());
+        Security.initialize();
         return false;
     }
 

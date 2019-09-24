@@ -174,7 +174,7 @@ public final class MPTracker {
                 value.put(ATTR_FLOW_NAME, flowName);
                 value.put(ATTR_SESSION_ID, sessionId);
                 value.put(ATTR_SESSION_TIME, getSecondsAfterInit());
-                data.put(ATTR_CHECKOUT_TYPE, checkoutType);
+                value.put(ATTR_CHECKOUT_TYPE, checkoutType);
                 value.put(ATTR_SECURITY_ENABLED, securityEnabled);
             } catch (final ClassCastException e) {
                 // do nothing.

@@ -6,7 +6,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
 
-public class GroupsMemCache implements GroupsCache {
+public class GroupsMemCache implements Cache<PaymentMethodSearch> {
 
     private PaymentMethodSearch groups;
 

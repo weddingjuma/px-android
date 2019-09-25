@@ -35,7 +35,7 @@ import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
-import com.mercadopago.android.px.internal.features.paymentresult.PaymentResultActivity;
+import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.ReviewAndConfirmContainer;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.CancelPaymentAction;
@@ -60,7 +60,6 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.display_info.LinkableText;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
@@ -135,10 +134,10 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         //TODO remove try/catch after session is persisted
         try {
             presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
-                session.getBusinessModelMapper(),
                 session.getDiscountRepository(),
                 session.getConfigurationModule().getPaymentSettings(),
                 session.getConfigurationModule().getUserSelectionRepository(),
+                session.getPaymentRewardRepository(),
                 session.getMercadoPagoESC(),
                 session.getProductIdProvider(),
                 PXApplicationBehaviourProvider.getSecurityBehaviour());
@@ -499,9 +498,9 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
      * be transferred.
      */
     @Override
-    public void showResult(@NonNull final PaymentResult paymentResult) {
+    public void showResult(@NonNull final com.mercadopago.android.px.internal.viewmodel.PaymentModel paymentModel) {
         overrideTransitionFadeInFadeOut();
-        final Intent intent = PaymentResultActivity.getIntent(this, paymentResult);
+        final Intent intent = PaymentResultActivity.getIntent(this, paymentModel);
         intent.addFlags(FLAG_ACTIVITY_FORWARD_RESULT);
         startActivity(intent);
         finish();

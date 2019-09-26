@@ -10,30 +10,33 @@
         android:id="@+id/loyaltyView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/ui_3m"
-        android:layout_marginRight="@dimen/ui_4m"
-        android:layout_marginEnd="@dimen/ui_4m"
-        android:layout_marginStart="@dimen/ui_4m"/>
+        android:layout_marginTop="@dimen/px_m_margin"
+        android:layout_marginRight="@dimen/px_l_margin"
+        android:layout_marginEnd="@dimen/px_l_margin"
+        android:layout_marginLeft="@dimen/px_l_margin"
+        android:layout_marginStart="@dimen/px_l_margin"/>
 
     <com.mercadolibre.android.mlbusinesscomponents.components.common.dividingline.MLBusinessDividingLineView
         android:id="@+id/dividingLineView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:hasTriangle="true"
-        android:layout_marginTop="@dimen/ui_3m"
-        android:layout_marginRight="@dimen/ui_4m"
-        android:layout_marginEnd="@dimen/ui_4m"
-        android:layout_marginStart="@dimen/ui_4m"/>
+        android:layout_marginTop="@dimen/px_m_margin"
+        android:layout_marginRight="@dimen/px_l_margin"
+        android:layout_marginEnd="@dimen/px_l_margin"
+        android:layout_marginLeft="@dimen/px_l_margin"
+        android:layout_marginStart="@dimen/px_l_margin"/>
 
     <com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxView
         android:id="@+id/discountView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="@dimen/ui_2m"
-        android:layout_marginRight="@dimen/ui_4m"
-        android:layout_marginEnd="@dimen/ui_4m"
-        android:layout_marginStart="@dimen/ui_4m"/>
+        android:layout_marginTop="@dimen/px_s_margin"
+        android:layout_marginRight="@dimen/px_l_margin"
+        android:layout_marginEnd="@dimen/px_l_margin"
+        android:layout_marginLeft="@dimen/px_l_margin"
+        android:layout_marginStart="@dimen/px_l_margin"/>
 
     <com.mercadolibre.android.ui.widgets.MeliButton
         android:id="@+id/showAllDiscounts"
@@ -41,18 +44,22 @@
         android:layout_height="match_parent"
         app:type="actionSecondary"
         tools:text="Ver todos los descuentos"
-        android:layout_marginTop="@dimen/ui_3m"
-        android:layout_marginRight="@dimen/ui_4m"
-        android:layout_marginEnd="@dimen/ui_4m"
-        android:layout_marginStart="@dimen/ui_4m" />
+        android:layout_marginTop="@dimen/px_m_margin"
+        android:layout_marginBottom="@dimen/px_m_margin"
+        android:layout_marginRight="@dimen/px_l_margin"
+        android:layout_marginEnd="@dimen/px_l_margin"
+        android:layout_marginLeft="@dimen/px_l_margin"
+        android:layout_marginStart="@dimen/px_l_margin"/>
 
     <com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppView
         android:id="@+id/downloadView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/ui_3m"
-        android:layout_marginRight="@dimen/ui_2m"
-        android:layout_marginEnd="@dimen/ui_2m"
-        android:layout_marginStart="@dimen/ui_2m"/>
+        android:layout_marginTop="@dimen/px_m_margin"
+        android:layout_marginBottom="@dimen/px_m_margin"
+        android:layout_marginRight="@dimen/px_s_margin"
+        android:layout_marginEnd="@dimen/px_s_margin"
+        android:layout_marginLeft="@dimen/px_s_margin"
+        android:layout_marginStart="@dimen/px_s_margin"/>
 
 </LinearLayout>

@@ -128,6 +128,7 @@
     <color name="px_red_status_bar">#E5464C</color>
     <color name="px_orange_status_bar">#E5953D</color>
     <color name="px_badge_success">#008744</color>
+    <color name="px_badge_orange">#f28f23</color>
 
     <color name="px_white">@color/ui_components_white_color</color>
     <color name="px_med_light_gray">@color/ui_components_light_grey_color</color>
@@ -180,6 +181,7 @@
     <!-- Payment result -->
     <color name="px_payment_result_component_title">#cc000000</color>
     <color name="px_payment_result_component_subtitle">#73000000</color>
+    <color name="px_payment_result_header_ring">#11000000</color>
     <color name="px_payment_result_method_detail">#999999</color>
     <color name="px_payment_result_method_ring">#ededed</color>
 </resources>

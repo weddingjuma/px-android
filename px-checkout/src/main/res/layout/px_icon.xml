@@ -19,7 +19,7 @@
         app:layout_constraintHorizontal_bias="0"
         tools:src="@drawable/px_icon_product"/>
 
-    <ImageView
+    <android.support.v7.widget.AppCompatImageView
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="@id/icon"
@@ -27,7 +27,8 @@
         app:layout_constraintStart_toStartOf="@id/icon"
         app:layout_constraintEnd_toEndOf="@id/icon"
         android:src="@drawable/px_ring_shape"
-        android:tint="@color/px_payment_result_header_ring"/>
+        android:tint="@color/px_payment_result_header_ring"
+        app:tintMode="src_in"/>
 
     <ImageView
         android:id="@+id/badge"

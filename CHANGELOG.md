@@ -1,3 +1,10 @@
+## VERSION 4.22.0
+_26_09_2019_
+* FEATURE - New congrats design
+* FEATURE - Business components in congrats
+* FIX - Friction events
+* FIX - Animation on detached view
+
 ## VERSION 4.21.0
 _04_09_2019_
 * FEATURE - Added secure payments behaviour

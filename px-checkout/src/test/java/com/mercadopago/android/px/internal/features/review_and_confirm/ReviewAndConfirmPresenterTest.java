@@ -114,6 +114,7 @@ public class ReviewAndConfirmPresenterTest {
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();
 
         verify(paymentRepository).getPayment();
+        verify(paymentRepository).createPaymentResult(payment);
         verifyNoMoreInteractions(view);
         verifyNoMoreInteractions(paymentRepository);
     }
@@ -359,11 +360,12 @@ public class ReviewAndConfirmPresenterTest {
     private void whenIPaymentAndAnimationIsFinishedThenShowResult(final IPaymentDescriptor payment) {
         final PaymentResult paymentResult = mock(PaymentResult.class);
         final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
+        when(paymentResult.getPaymentData()).thenReturn(mock(PaymentData.class));
         when(paymentRepository.getPayment()).thenReturn(payment);
         when(paymentRepository.createPaymentResult(payment)).thenReturn(paymentResult);
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
-        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(),any());
+        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(), any());
 
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();
 

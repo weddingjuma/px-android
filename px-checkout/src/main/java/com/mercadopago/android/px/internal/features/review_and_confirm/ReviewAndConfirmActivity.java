@@ -52,6 +52,7 @@ import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.ComponentManager;
 import com.mercadopago.android.px.internal.view.LinkableTextComponent;
+import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
@@ -272,7 +273,12 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     private void initFloatingButton(final ViewGroup scrollView, @Nullable final LinkableText linkableText) {
         floatingLayout = findViewById(R.id.floating_layout);
-        confirmButton.setOnClickListener(v -> presenter.startSecuredPayment());
+        confirmButton.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(final View view) {
+                presenter.startSecuredPayment();
+            }
+        });
 
         if (linkableText != null) {
             final LinkableTextComponent linkableTextComponent = new LinkableTextComponent(linkableText);

@@ -58,6 +58,7 @@ import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
+import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
@@ -179,11 +180,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
         toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
 
-        confirmButton.setOnClickListener(v -> {
-            if (ApiUtil.checkConnection(getContext())) {
-                presenter.startSecuredPayment();
-            } else {
-                presenter.manageNoConnection();
+        confirmButton.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(final View view) {
+                if (ApiUtil.checkConnection(getContext())) {
+                    presenter.startSecuredPayment();
+                } else {
+                    presenter.manageNoConnection();
+                }
             }
         });
 
@@ -516,7 +520,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void hideConfirmButton() {
-        confirmButton.setClickable(false);
         confirmButton.clearAnimation();
         confirmButton.setVisibility(INVISIBLE);
     }

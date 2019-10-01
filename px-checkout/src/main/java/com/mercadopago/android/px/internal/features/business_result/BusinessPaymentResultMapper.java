@@ -39,7 +39,7 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
             .setRewardViewModel(new PaymentRewardMapper().map(model.getPaymentReward()))
-            .setReceiptId(type == PaymentResultType.APPROVED ? payment.getReceipt() : null)
+            .setReceiptId((type == PaymentResultType.APPROVED && payment.shouldShowReceipt()) ? payment.getReceipt() : null)
             .setHelp(payment.getHelp())
             .setStatement(payment.getStatementDescription())
             .setTopFragment(payment.getTopFragment())

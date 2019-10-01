@@ -7,10 +7,12 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import com.mercadopago.android.px.internal.util.ParcelableUtil;
+import com.mercadopago.android.px.internal.util.ListUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
 import com.mercadopago.android.px.model.internal.SecondaryExitAction;
+import java.util.Collections;
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class BusinessPayment implements IPaymentDescriptor, Parcelable {
@@ -27,15 +29,18 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
     @Nullable private final ExitAction exitActionSecondary;
     @Nullable private final String statementDescription;
     @Nullable private final String receiptId;
+
     @Nullable private final String imageUrl;
     @Nullable private final ExternalFragment topFragment;
     @Nullable private final ExternalFragment bottomFragment;
     @Nullable private final ExternalFragment importantFragment;
 
     @Nullable private final String subtitle;
-
     @Nullable private final String paymentTypeId;
     @Nullable private final String paymentMethodId;
+
+    @Nullable private final List<String> receiptIdList;
+    private final boolean shouldShowReceipt;
 
     /* default */ BusinessPayment(final Builder builder) {
         help = builder.help;
@@ -56,6 +61,8 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         subtitle = builder.subtitle;
         paymentMethodId = builder.paymentMethodId;
         paymentTypeId = builder.paymentTypeId;
+        receiptIdList = builder.receiptIdList;
+        shouldShowReceipt = builder.shouldShowReceipt;
     }
 
     protected BusinessPayment(final Parcel in) {
@@ -74,9 +81,11 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         importantFragment = in.readParcelable(ExternalFragment.class.getClassLoader());
         paymentStatus = in.readString();
         paymentStatusDetail = in.readString();
-        subtitle = ParcelableUtil.getOptionalString(in);
-        paymentMethodId = ParcelableUtil.getOptionalString(in);
-        paymentTypeId = ParcelableUtil.getOptionalString(in);
+        subtitle = in.readString();
+        paymentMethodId = in.readString();
+        paymentTypeId = in.readString();
+        receiptIdList = in.createStringArrayList();
+        shouldShowReceipt = in.readByte() != 0;
     }
 
     public static final Creator<BusinessPayment> CREATOR = new Creator<BusinessPayment>() {
@@ -113,13 +122,15 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         dest.writeParcelable(importantFragment, 0);
         dest.writeString(paymentStatus);
         dest.writeString(paymentStatusDetail);
-        ParcelableUtil.writeOptional(dest, subtitle);
-        ParcelableUtil.writeOptional(dest, paymentMethodId);
-        ParcelableUtil.writeOptional(dest, paymentTypeId);
+        dest.writeString(subtitle);
+        dest.writeString(paymentMethodId);
+        dest.writeString(paymentTypeId);
+        dest.writeStringList(receiptIdList);
+        dest.writeByte((byte) (shouldShowReceipt ? 1 : 0));
     }
 
     public boolean hasReceipt() {
-        return receiptId != null;
+        return getReceipt() != null;
     }
 
     public boolean hasTopFragment() {
@@ -174,7 +185,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
     @Nullable
     @Override
     public Long getId() {
-        return Long.getLong(receiptId);
+        return Long.getLong(getReceipt());
     }
 
     @Override
@@ -185,7 +196,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
 
     @Nullable
     public String getReceipt() {
-        return receiptId;
+        return ListUtil.isNotEmpty(receiptIdList) ? receiptIdList.get(0) : receiptId;
     }
 
     @Nullable
@@ -237,6 +248,17 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         return paymentMethodId;
     }
 
+    @Nullable
+    @Override
+    public List<String> getPaymentIds() {
+        return ListUtil.isNotEmpty(receiptIdList) ? receiptIdList :
+            (TextUtil.isNotEmpty(receiptId) ? Collections.singletonList(receiptId) : null);
+    }
+
+    public boolean shouldShowReceipt() {
+        return shouldShowReceipt;
+    }
+
     @Override
     public void process(@NonNull final IPaymentDescriptorHandler handler) {
         handler.visit(this);
@@ -283,6 +305,8 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
         /* default */ @Nullable String help;
         /* default */ @Nullable String receiptId;
         /* default */ @Nullable String subtitle;
+        /* default */ @Nullable List<String> receiptIdList;
+        /* default */ boolean shouldShowReceipt = true;
 
         /* default */ ExternalFragment topFragment;
         /* default */ ExternalFragment bottomFragment;
@@ -452,6 +476,26 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
          */
         public Builder setSubtitle(@Nullable final String subtitle) {
             this.subtitle = subtitle;
+            return this;
+        }
+
+        /**
+         * @param receiptIdList The list of receipt ids
+         * @return builder
+         */
+        public Builder setReceiptIdList(@NonNull final List<String> receiptIdList) {
+            this.receiptIdList = receiptIdList;
+            return this;
+        }
+
+        /**
+         * Override the receipt drawing, without depending on the receipt id
+         *
+         * @param shouldShowReceipt if the receipt should be drawn
+         * @return builder
+         */
+        public Builder setShouldShowReceipt(final boolean shouldShowReceipt) {
+            this.shouldShowReceipt = shouldShowReceipt;
             return this;
         }
     }

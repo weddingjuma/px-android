@@ -34,7 +34,6 @@ import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEv
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
-import java.util.Collections;
 import java.util.Set;
 
 /* default */ final class ReviewAndConfirmPresenter extends BasePresenter<ReviewAndConfirm.View>
@@ -91,7 +90,8 @@ import java.util.Set;
     @Override
     public void hasFinishPaymentAnimation() {
         final IPaymentDescriptor payment = paymentRepository.getPayment();
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(payment, paymentRepository.createPaymentResult(payment),
+            this::handleResult);
     }
 
     private void handleResult(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,

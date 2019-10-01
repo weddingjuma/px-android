@@ -29,7 +29,8 @@ public final class TextUtil {
         return text != null && DIGIT_PATTERN.matcher(text).matches();
     }
 
-    public static String join(@NonNull final Iterable<String> values) {
-        return TextUtils.join(CSV_DELIMITER, values);
+    @NonNull
+    public static String join(@Nullable final Iterable<String> values) {
+        return values != null ? TextUtils.join(CSV_DELIMITER, values) : "";
     }
 }

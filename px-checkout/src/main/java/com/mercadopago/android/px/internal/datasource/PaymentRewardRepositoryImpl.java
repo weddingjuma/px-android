@@ -12,10 +12,8 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.PaymentReward;
-import com.mercadopago.android.px.model.internal.mappers.PaymentIdMapper;
 import com.mercadopago.android.px.services.BuildConfig;
 import com.mercadopago.android.px.services.Callback;
-import java.util.List;
 
 public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
 
@@ -36,46 +34,45 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
     }
 
     @Override
-    public void getPaymentReward(@NonNull final List<IPaymentDescriptor> payments,
-        @NonNull final PaymentResult paymentResult, @NonNull final PaymentRewardCallback paymentRewardCallback) {
+    public void getPaymentReward(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
+        @NonNull final PaymentRewardCallback paymentRewardCallback) {
         final Callback<PaymentReward> serviceCallback =
-            getServiceCallback(payments, paymentResult, paymentRewardCallback);
+            getServiceCallback(payment, paymentResult, paymentRewardCallback);
         final boolean hasAccessToken = TextUtil.isNotEmpty(privateKey);
-        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payments);
+        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payment);
         final Campaign campaign = paymentResult.getPaymentData().getCampaign();
         final String campaignId = campaign != null ? campaign.getId() : "";
 
         if (hasToReturnEmptyResponse) {
-            paymentRewardCallback.handleResult(payments.get(0), paymentResult, PaymentReward.EMPTY);
+            paymentRewardCallback.handleResult(payment, paymentResult, PaymentReward.EMPTY);
         } else if (paymentRewardCache.isCached()) {
             paymentRewardCache.get().enqueue(serviceCallback);
         } else {
-            newCall(payments, campaignId, serviceCallback);
+            newCall(payment, campaignId, serviceCallback);
         }
     }
 
-    private void newCall(@NonNull final Iterable<IPaymentDescriptor> payments, @NonNull final String campaignId,
+    private void newCall(@NonNull final IPaymentDescriptor payment, @NonNull final String campaignId,
         @NonNull final Callback<PaymentReward> serviceCallback) {
-        final List<String> paymentsIds = new PaymentIdMapper().map(payments);
-        final String joinedPaymentIds = TextUtil.join(paymentsIds);
+        final String joinedPaymentIds = TextUtil.join(payment.getPaymentIds());
         paymentRewardService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, privateKey,
             joinedPaymentIds, platform, campaignId).enqueue(serviceCallback);
     }
 
-    private Callback<PaymentReward> getServiceCallback(@NonNull final List<IPaymentDescriptor> paymentIds,
+    private Callback<PaymentReward> getServiceCallback(@NonNull final IPaymentDescriptor payment,
         @NonNull final PaymentResult paymentResult, @NonNull final PaymentRewardCallback paymentRewardCallback) {
         return new Callback<PaymentReward>() {
             @Override
             public void success(final PaymentReward paymentReward) {
                 paymentRewardCache.put(paymentReward);
-                paymentRewardCallback.handleResult(paymentIds.get(0), paymentResult, paymentReward);
+                paymentRewardCallback.handleResult(payment, paymentResult, paymentReward);
             }
 
             @Override
             public void failure(final ApiException apiException) {
                 final PaymentReward paymentReward = PaymentReward.EMPTY;
                 paymentRewardCache.put(paymentReward);
-                paymentRewardCallback.handleResult(paymentIds.get(0), paymentResult, paymentReward);
+                paymentRewardCallback.handleResult(payment, paymentResult, paymentReward);
             }
         };
     }

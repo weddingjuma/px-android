@@ -63,7 +63,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
         final Intent intent = new Intent(activity, PaymentTypesActivity.class);
         intent.putParcelableArrayListExtra(EXTRA_PAYMENT_METHODS, new ArrayList<>(paymentMethods));
         intent.putParcelableArrayListExtra(EXTRA_PAYMENT_TYPES, new ArrayList<>(paymentTypes));
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(cardInfo));
         activity.startActivityForResult(intent, requestCode);
         activity.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
@@ -87,7 +87,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
         final List<PaymentMethod> paymentMethods = getIntent().getParcelableArrayListExtra(EXTRA_PAYMENT_METHODS);
         final List<PaymentType> paymentTypes = getIntent().getParcelableArrayListExtra(EXTRA_PAYMENT_TYPES);
         final CardInfo cardInfo =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
+            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
         mPresenter.setPaymentMethodList(paymentMethods);
         mPresenter.setPaymentTypesList(paymentTypes);
         mPresenter.setCardInfo(cardInfo);
@@ -272,7 +272,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     @Override
     public void finishWithResult(PaymentType paymentType) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentType", JsonUtil.getInstance().toJson(paymentType));
+        returnIntent.putExtra("paymentType", JsonUtil.toJson(paymentType));
         setResult(RESULT_OK, returnIntent);
         finish();
         overridePendingTransition(R.anim.px_hold, R.anim.px_hold);

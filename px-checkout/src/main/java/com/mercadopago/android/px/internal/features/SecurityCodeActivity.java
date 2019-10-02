@@ -88,9 +88,9 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     private static Intent createIntent(@NonNull final Context context, @NonNull final Card card) {
         // TODO remove serialization as Json.
         final Intent intent = new Intent(context, SecurityCodeActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(new CardInfo(card)));
-        intent.putExtra(EXTRA_CARD, JsonUtil.getInstance().toJson(card));
-        intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.getInstance().toJson(card.getPaymentMethod()));
+        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(new CardInfo(card)));
+        intent.putExtra(EXTRA_CARD, JsonUtil.toJson(card));
+        intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.toJson(card.getPaymentMethod()));
         intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
         return intent;
     }
@@ -144,13 +144,13 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     private void getActivityParameters() {
         final CardInfo cardInfo =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
-        final Card card = JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_CARD), Card.class);
-        final Token token = JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_TOKEN), Token.class);
+            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
+        final Card card = JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_CARD), Card.class);
+        final Token token = JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_TOKEN), Token.class);
         final PaymentMethod paymentMethod =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_METHOD), PaymentMethod.class);
+            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_METHOD), PaymentMethod.class);
         final PaymentRecovery paymentRecovery =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_RECOVERY), PaymentRecovery.class);
+            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_RECOVERY), PaymentRecovery.class);
         final Reason reason =
             Reason.valueOf(getIntent().getStringExtra(EXTRA_REASON));
 
@@ -471,11 +471,11 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
         private void startSecurityCodeActivity(@NonNull final Activity activity, final int requestCode) {
             final Intent intent = new Intent(activity, SecurityCodeActivity.class);
-            intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.getInstance().toJson(paymentMethod));
-            intent.putExtra(EXTRA_TOKEN, JsonUtil.getInstance().toJson(token));
-            intent.putExtra(EXTRA_CARD, JsonUtil.getInstance().toJson(card));
-            intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInformation));
-            intent.putExtra(EXTRA_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
+            intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.toJson(paymentMethod));
+            intent.putExtra(EXTRA_TOKEN, JsonUtil.toJson(token));
+            intent.putExtra(EXTRA_CARD, JsonUtil.toJson(card));
+            intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(cardInformation));
+            intent.putExtra(EXTRA_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
             intent.putExtra(EXTRA_REASON, reason.name());
             activity.startActivityForResult(intent, requestCode);
         }

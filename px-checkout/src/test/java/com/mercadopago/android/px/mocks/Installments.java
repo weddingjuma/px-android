@@ -18,7 +18,7 @@ public class Installments {
 
     public static Installment getInstallments() {
         String json = ResourcesUtil.getStringResource("installments.json");
-        return JsonUtil.getInstance().fromJson(json, Installment.class);
+        return JsonUtil.fromJson(json, Installment.class);
     }
 
     public static List<Installment> getInstallmentsList() {
@@ -28,7 +28,7 @@ public class Installments {
         try {
             Type listType = new TypeToken<List<Installment>>() {
             }.getType();
-            installmentList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            installmentList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             installmentList = null;
         }
@@ -42,7 +42,7 @@ public class Installments {
         try {
             Type listType = new TypeToken<List<Installment>>() {
             }.getType();
-            installmentList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            installmentList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             installmentList = null;
         }
@@ -56,7 +56,7 @@ public class Installments {
         try {
             Type listType = new TypeToken<List<Installment>>() {
             }.getType();
-            installmentList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            installmentList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             installmentList = null;
         }
@@ -70,7 +70,7 @@ public class Installments {
         try {
             Type listType = new TypeToken<List<Installment>>() {
             }.getType();
-            installmentList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            installmentList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             installmentList = null;
         }
@@ -78,6 +78,6 @@ public class Installments {
     }
 
     public static ApiException getDoNotFindInstallmentsException() {
-        return JsonUtil.getInstance().fromJson(doNotFindInstallmentsException, ApiException.class);
+        return JsonUtil.fromJson(doNotFindInstallmentsException, ApiException.class);
     }
 }

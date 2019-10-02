@@ -138,7 +138,7 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
             // Return to parent
             final Intent returnIntent = new Intent();
             final PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
-            returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+            returnIntent.putExtra("paymentMethod", JsonUtil.toJson(selectedPaymentMethod));
             setResult(RESULT_OK, returnIntent);
             finish();
         }));

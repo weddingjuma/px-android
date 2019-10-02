@@ -31,7 +31,7 @@ public class ReviewPaymentMethodsActivity extends PXActivity<ReviewPaymentMethod
     public static void start(final Activity activity, final List<PaymentMethod> paymentMethods,
         final int reqCode) {
         final Intent intent = new Intent(activity, ReviewPaymentMethodsActivity.class);
-        intent.putExtra(EXTRA_PAYMENT_METHODS, JsonUtil.getInstance().toJson(paymentMethods));
+        intent.putExtra(EXTRA_PAYMENT_METHODS, JsonUtil.toJson(paymentMethods));
         activity.startActivityForResult(intent, reqCode);
     }
 

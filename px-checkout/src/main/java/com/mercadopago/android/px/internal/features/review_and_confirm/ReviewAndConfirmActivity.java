@@ -522,7 +522,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             presenter.recoverFromFailure();
         } else {
             final MercadoPagoError mercadoPagoError = data.getStringExtra(EXTRA_ERROR) == null ? null :
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                JsonUtil.fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             presenter.onError(mercadoPagoError);
         }
     }
@@ -534,7 +534,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         } else {
             final MercadoPagoError mercadoPagoError =
                 (data == null || data.getStringExtra(EXTRA_ERROR) == null) ? null :
-                    JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                    JsonUtil.fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             if (mercadoPagoError == null) {
                 presenter.onCardFlowCancel();
             } else {

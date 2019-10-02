@@ -19,7 +19,7 @@ public class Cards {
 
     public static Card getCard() {
         String json = ResourcesUtil.getStringResource("card.json");
-        return JsonUtil.getInstance().fromJson(json, Card.class);
+        return JsonUtil.fromJson(json, Card.class);
     }
 
     public static List<Card> getCardsMLA() {
@@ -29,7 +29,7 @@ public class Cards {
         try {
             Type listType = new TypeToken<List<Card>>() {
             }.getType();
-            cards = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            cards = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             cards = null;
         }
@@ -38,6 +38,6 @@ public class Cards {
 
     public static Card getCardWithoutSecurityCodeSettings() {
         String json = ResourcesUtil.getStringResource("card_without_security_code_settings.json");
-        return JsonUtil.getInstance().fromJson(json, Card.class);
+        return JsonUtil.fromJson(json, Card.class);
     }
 }

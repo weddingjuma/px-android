@@ -19,14 +19,14 @@ public class Discounts {
     }
 
     public static Discount getDiscountWithPercentOffMLA() {
-        return JsonUtil.getInstance().fromJson(discountWithPercentOffMLA, Discount.class);
+        return JsonUtil.fromJson(discountWithPercentOffMLA, Discount.class);
     }
 
     public static Discount getDiscountWithAmountOffMLA() {
-        return JsonUtil.getInstance().fromJson(discountWithAmountOffMLA, Discount.class);
+        return JsonUtil.fromJson(discountWithAmountOffMLA, Discount.class);
     }
 
     public static ApiException getDoNotFindCampaignApiException() {
-        return JsonUtil.getInstance().fromJson(doNotFindCampaignApiExeption, ApiException.class);
+        return JsonUtil.fromJson(doNotFindCampaignApiExeption, ApiException.class);
     }
 }

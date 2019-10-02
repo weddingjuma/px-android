@@ -379,7 +379,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         } else {
             MercadoPagoError mercadoPagoError = null;
             if (data != null && data.getStringExtra(EXTRA_ERROR) != null) {
-                mercadoPagoError = JsonUtil.getInstance()
+                mercadoPagoError = JsonUtil
                     .fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             }
             if (mercadoPagoError == null) {
@@ -397,7 +397,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             //TODO CHECK WHEN IT HAPPENS.
             final MercadoPagoError mercadoPagoError =
                 (data == null || data.getStringExtra(EXTRA_ERROR) == null) ? null :
-                    JsonUtil.getInstance()
+                    JsonUtil
                         .fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             if (mercadoPagoError == null) {
                 presenter.onCardFlowCancel();
@@ -415,7 +415,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         } else if (isErrorResult(data)) {
             //TODO check when it happens.
             final MercadoPagoError mercadoPagoError =
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                JsonUtil.fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             presenter.onPaymentMethodSelectionError(mercadoPagoError);
         } else {
             presenter.onPaymentMethodSelectionCancel();
@@ -472,7 +472,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             presenter.recoverFromFailure();
         } else {
             final MercadoPagoError mercadoPagoError = data.getStringExtra(EXTRA_ERROR) == null ? null :
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                JsonUtil.fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
             presenter.onErrorCancel(mercadoPagoError);
         }
     }

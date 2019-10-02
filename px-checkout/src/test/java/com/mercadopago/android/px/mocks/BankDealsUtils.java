@@ -20,7 +20,7 @@ public final class BankDealsUtils {
         try {
             Type listType = new TypeToken<List<BankDeal>>() {
             }.getType();
-            bankDealsList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            bankDealsList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             bankDealsList = null;
         }

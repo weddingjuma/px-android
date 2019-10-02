@@ -55,7 +55,7 @@ public final class ErrorUtil {
                 .getPublicKey();
 
         final Intent intent = new Intent(launcherActivity, ErrorActivity.class);
-        intent.putExtra(EXTRA_ERROR, JsonUtil.getInstance().toJson(mercadoPagoError));
+        intent.putExtra(EXTRA_ERROR, JsonUtil.toJson(mercadoPagoError));
         intent.putExtra(PUBLIC_KEY_EXTRA, publicKey);
         launcherActivity.startActivityForResult(intent, ERROR_REQUEST_CODE);
     }

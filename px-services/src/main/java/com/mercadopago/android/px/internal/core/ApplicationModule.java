@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.core;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import java.io.File;
 import retrofit2.Retrofit;
@@ -47,10 +46,6 @@ public class ApplicationModule implements PreferenceComponent {
     @Override
     public SharedPreferences getSharedPreferences() {
         return applicationContext.getSharedPreferences(SHARED_PREFERENCE_NAME, Context.MODE_PRIVATE);
-    }
-
-    public JsonUtil getJsonUtil() {
-        return JsonUtil.getInstance();
     }
 
     public FileManager getFileManager() {

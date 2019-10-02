@@ -33,7 +33,7 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter> implements
         @Nullable final List<BankDeal> bankDeals) {
         final Intent intent = new Intent(activity, BankDealsActivity.class);
         if (bankDeals != null) {
-            intent.putExtra("bankDeals", JsonUtil.getInstance().toJson(bankDeals));
+            intent.putExtra("bankDeals", JsonUtil.toJson(bankDeals));
         }
         activity.startActivityForResult(intent, requestCode);
     }

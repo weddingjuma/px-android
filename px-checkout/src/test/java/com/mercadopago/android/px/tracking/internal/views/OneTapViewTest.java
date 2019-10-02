@@ -39,7 +39,6 @@ public class OneTapViewTest {
     }
 
     @Test
-    @Ignore
     public void verifyListenerCalled() {
         MPTracker.getInstance().hasExpressCheckout(true);
 
@@ -54,7 +53,7 @@ public class OneTapViewTest {
     @NonNull
     private Map<String, Object> emptyOneTapData() {
         final Map<String, Object> data = new HashMap<>();
-        data.put("discount", JsonUtil.getInstance().fromJson("{}", DiscountInfo.class).toMap());
+        data.put("discount", JsonUtil.fromJson("{}", DiscountInfo.class).toMap());
         data.put("available_methods", Collections.EMPTY_LIST);
         data.put("available_methods_quantity", 0.0);
         data.put("items", Collections.EMPTY_LIST);

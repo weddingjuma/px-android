@@ -23,7 +23,7 @@ public class PayerCosts {
         try {
             Type listType = new TypeToken<List<PayerCost>>() {
             }.getType();
-            payerCosts = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            payerCosts = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             payerCosts = null;
         }
@@ -37,7 +37,7 @@ public class PayerCosts {
         try {
             Type listType = new TypeToken<List<PayerCost>>() {
             }.getType();
-            payerCostList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            payerCostList = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             payerCostList = null;
         }
@@ -51,7 +51,7 @@ public class PayerCosts {
         try {
             Type listType = new TypeToken<List<PayerCost>>() {
             }.getType();
-            payerCosts = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            payerCosts = JsonUtil.getGson().fromJson(json, listType);
         } catch (Exception ex) {
             payerCosts = null;
         }
@@ -60,11 +60,11 @@ public class PayerCosts {
 
     public static PayerCost getPayerCost() {
         String json = ResourcesUtil.getStringResource("payer_cost.json");
-        return JsonUtil.getInstance().fromJson(json, PayerCost.class);
+        return JsonUtil.fromJson(json, PayerCost.class);
     }
 
     public static PayerCost getPayerCostWithoutInstallments() {
         String json = ResourcesUtil.getStringResource("payer_cost_one_installment.json");
-        return JsonUtil.getInstance().fromJson(json, PayerCost.class);
+        return JsonUtil.fromJson(json, PayerCost.class);
     }
 }

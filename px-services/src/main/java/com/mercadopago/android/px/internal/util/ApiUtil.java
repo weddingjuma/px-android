@@ -18,7 +18,7 @@ public final class ApiUtil {
         ApiException apiException = null;
         try {
             final String errorString = response.errorBody().string();
-            apiException = JsonUtil.getInstance().fromJson(errorString, ApiException.class);
+            apiException = JsonUtil.fromJson(errorString, ApiException.class);
         } catch (Exception ex) {
             //Do nothing
         } finally {

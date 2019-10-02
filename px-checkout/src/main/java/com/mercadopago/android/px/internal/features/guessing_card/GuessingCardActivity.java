@@ -184,8 +184,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
         @Nullable final PaymentRecovery paymentRecovery) {
         final Intent intent = new Intent(activity, GuessingCardActivity.class);
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
+        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
+        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, true);
         activity.startActivityForResult(intent, requestCode);
     }
@@ -236,7 +236,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
         if (includesPayment) {
             final PaymentRecovery paymentRecovery =
-                JsonUtil.getInstance().fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
+                JsonUtil.fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
             presenter =
                 GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getInstance(), paymentRecovery);
         } else {
@@ -1417,7 +1417,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
                 final String paymentTypeJson = bundle.getString("paymentType");
                 if (!TextUtils.isEmpty(paymentTypeJson)) {
                     final PaymentType paymentType =
-                        JsonUtil.getInstance().fromJson(paymentTypeJson, PaymentType.class);
+                        JsonUtil.fromJson(paymentTypeJson, PaymentType.class);
                     presenter.setSelectedPaymentType(paymentType);
                     showFinishCardFlow();
                 }

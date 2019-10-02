@@ -285,7 +285,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private Cache<PaymentMethodSearch> getGroupsCache() {
         if (groupsCache == null) {
             groupsCache =
-                new GroupsCacheCoordinator(new GroupsDiskCache(getFileManager(), getJsonUtil(), getCacheDir()),
+                new GroupsCacheCoordinator(new GroupsDiskCache(getFileManager(), getCacheDir()),
                     new GroupsMemCache());
         }
         return groupsCache;

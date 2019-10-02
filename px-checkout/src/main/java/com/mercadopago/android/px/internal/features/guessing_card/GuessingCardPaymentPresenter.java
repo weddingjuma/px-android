@@ -183,8 +183,8 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     public void onSaveInstanceState(final Bundle outState, final String cardSideState, final boolean lowResActive) {
         if (getPaymentMethod() != null) {
             super.onSaveInstanceState(outState, cardSideState, lowResActive);
-            outState.putString(BANK_DEALS_LIST_BUNDLE, JsonUtil.getInstance().toJson(getBankDealsList()));
-            outState.putString(PAYMENT_TYPES_LIST_BUNDLE, JsonUtil.getInstance().toJson(getPaymentTypes()));
+            outState.putString(BANK_DEALS_LIST_BUNDLE, JsonUtil.toJson(getBankDealsList()));
+            outState.putString(PAYMENT_TYPES_LIST_BUNDLE, JsonUtil.toJson(getPaymentTypes()));
         }
     }
 
@@ -197,7 +197,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
                 try {
                     final Type listType = new TypeToken<List<PaymentType>>() {
                     }.getType();
-                    paymentTypesList = JsonUtil.getInstance().getGson().fromJson(
+                    paymentTypesList = JsonUtil.getGson().fromJson(
                         savedInstanceState.getString(PAYMENT_TYPES_LIST_BUNDLE), listType);
                 } catch (final Exception ex) {
                     paymentTypesList = null;
@@ -207,13 +207,13 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
                 try {
                     final Type listType = new TypeToken<List<BankDeal>>() {
                     }.getType();
-                    bankDealsList = JsonUtil.getInstance().getGson().fromJson(
+                    bankDealsList = JsonUtil.getGson().fromJson(
                         savedInstanceState.getString(BANK_DEALS_LIST_BUNDLE), listType);
                 } catch (final Exception ex) {
                     bankDealsList = null;
                 }
                 setBankDealsList(bankDealsList);
-                setPaymentRecovery(JsonUtil.getInstance()
+                setPaymentRecovery(JsonUtil
                     .fromJson(savedInstanceState.getString(PAYMENT_RECOVERY_BUNDLE), PaymentRecovery.class));
                 super.onRestoreInstanceState(savedInstanceState);
             }

@@ -66,7 +66,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public static void start(@NonNull final Activity activity, final int requestCode,
         @NonNull final CardInfo cardInfo) {
         final Intent intent = new Intent(activity, InstallmentsActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(cardInfo));
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -100,7 +100,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     private void getActivityParameters() {
         final Intent intent = getIntent();
-        presenter.setCardInfo(JsonUtil.getInstance().fromJson(intent.getStringExtra(EXTRA_CARD_INFO), CardInfo.class));
+        presenter.setCardInfo(JsonUtil.fromJson(intent.getStringExtra(EXTRA_CARD_INFO), CardInfo.class));
     }
 
     public void setContentView() {

@@ -824,39 +824,39 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
     public void onSaveInstanceState(final Bundle outState, final String cardSideState,
         final boolean lowResActive) {
         outState.putString(CARD_SIDE_STATE_BUNDLE, cardSideState);
-        outState.putString(PAYMENT_METHOD_BUNDLE, JsonUtil.getInstance().toJson(getPaymentMethod()));
+        outState.putString(PAYMENT_METHOD_BUNDLE, JsonUtil.toJson(getPaymentMethod()));
         outState.putBoolean(ID_REQUIRED_BUNDLE, isIdentificationNumberRequired());
         outState.putBoolean(SEC_CODE_REQUIRED_BUNDLE, isSecurityCodeRequired());
         outState.putInt(SEC_CODE_LENGTH_BUNDLE, getSecurityCodeLength());
         outState.putInt(CARD_NUMBER_LENGTH_BUNDLE, getCardNumberLength());
         outState.putString(SEC_CODE_LOCATION_BUNDLE, getSecurityCodeLocation());
-        outState.putString(CARD_TOKEN_BUNDLE, JsonUtil.getInstance().toJson(getCardToken()));
+        outState.putString(CARD_TOKEN_BUNDLE, JsonUtil.toJson(getCardToken()));
         outState.putString(CARD_INFO_BIN_BUNDLE, getSavedBin());
         outState.putString(CARD_NUMBER_BUNDLE, getCardNumber());
         outState.putString(CARD_NAME_BUNDLE, getCardholderName());
         outState.putString(EXPIRY_MONTH_BUNDLE, getExpiryMonth());
         outState.putString(EXPIRY_YEAR_BUNDLE, getExpiryYear());
-        outState.putString(IDENTIFICATION_BUNDLE, JsonUtil.getInstance().toJson(getIdentification()));
+        outState.putString(IDENTIFICATION_BUNDLE, JsonUtil.toJson(getIdentification()));
         outState.putString(IDENTIFICATION_NUMBER_BUNDLE, getIdentificationNumber());
         outState.putString(IDENTIFICATION_TYPE_BUNDLE,
-            JsonUtil.getInstance().toJson(getIdentificationType()));
+            JsonUtil.toJson(getIdentificationType()));
         outState.putString(IDENTIFICATION_TYPES_LIST_BUNDLE,
-            JsonUtil.getInstance().toJson(getIdentificationTypes()));
+            JsonUtil.toJson(getIdentificationTypes()));
         outState.putBoolean(LOW_RES_BUNDLE, lowResActive);
-        outState.putString(TOKEN_BUNDLE, JsonUtil.getInstance().toJson(getToken()));
+        outState.putString(TOKEN_BUNDLE, JsonUtil.toJson(getToken()));
         getView().clearSecurityCodeEditText();
     }
 
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         final String paymentMethodBundleJson = savedInstanceState.getString(PAYMENT_METHOD_BUNDLE);
         if (!TextUtil.isEmpty(paymentMethodBundleJson)) {
-            final PaymentMethod pm = JsonUtil.getInstance()
+            final PaymentMethod pm = JsonUtil
                 .fromJson(paymentMethodBundleJson, PaymentMethod.class);
             if (pm != null) {
                 try {
                     final Type listType = new TypeToken<List<IdentificationType>>() {
                     }.getType();
-                    identificationTypes = JsonUtil.getInstance().getGson().fromJson(
+                    identificationTypes = JsonUtil.getGson().fromJson(
                         savedInstanceState.getString(IDENTIFICATION_TYPES_LIST_BUNDLE), listType);
                 } catch (final Exception ex) {
                     identificationTypes = null;
@@ -868,20 +868,20 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
                 setCardholderName(savedInstanceState.getString(CARD_NAME_BUNDLE));
                 setExpiryMonth(savedInstanceState.getString(EXPIRY_MONTH_BUNDLE));
                 setExpiryYear(savedInstanceState.getString(EXPIRY_YEAR_BUNDLE));
-                final Token token = JsonUtil.getInstance()
+                final Token token = JsonUtil
                     .fromJson(savedInstanceState.getString(TOKEN_BUNDLE), Token.class);
                 setToken(token);
                 final String idNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
                 setIdentificationNumber(idNumber);
-                final Identification identification = JsonUtil.getInstance()
+                final Identification identification = JsonUtil
                     .fromJson(savedInstanceState.getString(IDENTIFICATION_BUNDLE), Identification.class);
                 identification.setNumber(idNumber);
                 setIdentification(identification);
                 setSecurityCodeLocation(savedInstanceState.getString(SEC_CODE_LOCATION_BUNDLE));
-                final CardToken cardToken = JsonUtil.getInstance()
+                final CardToken cardToken = JsonUtil
                     .fromJson(savedInstanceState.getString(CARD_TOKEN_BUNDLE), CardToken.class);
                 cardToken.getCardholder().setIdentification(identification);
-                final IdentificationType identificationType = JsonUtil.getInstance()
+                final IdentificationType identificationType = JsonUtil
                     .fromJson(savedInstanceState.getString(IDENTIFICATION_TYPE_BUNDLE),
                         IdentificationType.class);
                 setCardToken(cardToken);

@@ -89,7 +89,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     public static void startWithPaymentMethodSelected(@NonNull final Activity from, final int requestCode,
         @NonNull final PaymentMethodSearchItem item) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);
-        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.getInstance().toJson(item));
+        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.toJson(item));
         from.startActivityForResult(intent, requestCode);
         from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
@@ -166,10 +166,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     protected void getActivityParameters() {
         final Intent intent = getIntent();
 
-        final JsonUtil instance = JsonUtil.getInstance();
-
         if (intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM) != null) {
-            presenter.setSelectedSearchItem(instance
+            presenter.setSelectedSearchItem(JsonUtil
                 .fromJson(intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM), PaymentMethodSearchItem.class));
         }
     }
@@ -283,9 +281,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     protected void resolveCardRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             showProgress();
-            mToken = JsonUtil.getInstance().fromJson(data.getStringExtra("token"), Token.class);
-            mSelectedIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-            mSelectedCard = JsonUtil.getInstance().fromJson(data.getStringExtra("card"), Card.class);
+            mToken = JsonUtil.fromJson(data.getStringExtra("token"), Token.class);
+            mSelectedIssuer = JsonUtil.fromJson(data.getStringExtra("issuer"), Issuer.class);
+            mSelectedCard = JsonUtil.fromJson(data.getStringExtra("card"), Card.class);
             finishWithCardResult();
         } else if (resultCode == RESULT_SILENT_ERROR) {
             setResult(RESULT_SILENT_ERROR);
@@ -319,17 +317,17 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     private void finishWith(final PaymentMethod paymentMethod) {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+        returnIntent.putExtra("paymentMethod", JsonUtil.toJson(paymentMethod));
         finishWithResult(returnIntent);
     }
 
     protected void finishWithCardResult() {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("token", JsonUtil.getInstance().toJson(mToken));
+        returnIntent.putExtra("token", JsonUtil.toJson(mToken));
         if (mSelectedIssuer != null) {
-            returnIntent.putExtra("issuer", JsonUtil.getInstance().toJson(mSelectedIssuer));
+            returnIntent.putExtra("issuer", JsonUtil.toJson(mSelectedIssuer));
         }
-        returnIntent.putExtra("card", JsonUtil.getInstance().toJson(mSelectedCard));
+        returnIntent.putExtra("card", JsonUtil.toJson(mSelectedCard));
         finishWithResult(returnIntent);
     }
 

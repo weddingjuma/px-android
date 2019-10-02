@@ -20,15 +20,12 @@ public class UserSelectionService implements UserSelectionRepository {
     private static final String PREF_PAYMENT_TYPE = "PREF_SELECTED_PAYMENT_TYPE";
 
     @NonNull private final SharedPreferences sharedPreferences;
-    @NonNull private final JsonUtil jsonUtil;
 
     //TODO persist local storage.
     @Nullable private Card card;
 
-    public UserSelectionService(@NonNull final SharedPreferences sharedPreferences,
-        @NonNull final JsonUtil jsonUtil) {
+    public UserSelectionService(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
-        this.jsonUtil = jsonUtil;
     }
 
     @Override
@@ -76,10 +73,10 @@ public class UserSelectionService implements UserSelectionRepository {
         if (primary == null) {
             removePaymentMethodSelection();
         } else {
-            sharedPreferences.edit().putString(PREF_PRIMARY_SELECTED_PM, jsonUtil.toJson(primary)).apply();
+            sharedPreferences.edit().putString(PREF_PRIMARY_SELECTED_PM, JsonUtil.toJson(primary)).apply();
 
             if (secondary != null) {
-                sharedPreferences.edit().putString(PREF_SECONDARY_SELECTED_PM, jsonUtil.toJson(secondary)).apply();
+                sharedPreferences.edit().putString(PREF_SECONDARY_SELECTED_PM, JsonUtil.toJson(secondary)).apply();
             }
 
             removePayerCostSelection();
@@ -88,12 +85,12 @@ public class UserSelectionService implements UserSelectionRepository {
 
     @Override
     public void select(@NonNull final PayerCost payerCost) {
-        sharedPreferences.edit().putString(PREF_SELECTED_PAYER_COST, jsonUtil.toJson(payerCost)).apply();
+        sharedPreferences.edit().putString(PREF_SELECTED_PAYER_COST, JsonUtil.toJson(payerCost)).apply();
     }
 
     @Override
     public void select(@NonNull final Issuer issuer) {
-        sharedPreferences.edit().putString(PREF_SELECTED_ISSUER, jsonUtil.toJson(issuer)).apply();
+        sharedPreferences.edit().putString(PREF_SELECTED_ISSUER, JsonUtil.toJson(issuer)).apply();
     }
 
     @Override
@@ -115,28 +112,28 @@ public class UserSelectionService implements UserSelectionRepository {
     @Override
     @Nullable
     public PaymentMethod getPaymentMethod() {
-        return jsonUtil.fromJson(sharedPreferences.getString(PREF_PRIMARY_SELECTED_PM, TextUtil.EMPTY),
+        return JsonUtil.fromJson(sharedPreferences.getString(PREF_PRIMARY_SELECTED_PM, TextUtil.EMPTY),
             PaymentMethod.class);
     }
 
     @Nullable
     @Override
     public PaymentMethod getSecondaryPaymentMethod() {
-        return jsonUtil.fromJson(sharedPreferences.getString(PREF_SECONDARY_SELECTED_PM, TextUtil.EMPTY),
+        return JsonUtil.fromJson(sharedPreferences.getString(PREF_SECONDARY_SELECTED_PM, TextUtil.EMPTY),
             PaymentMethod.class);
     }
 
     @Override
     @Nullable
     public PayerCost getPayerCost() {
-        return jsonUtil.fromJson(
+        return JsonUtil.fromJson(
             sharedPreferences.getString(PREF_SELECTED_PAYER_COST, TextUtil.EMPTY), PayerCost.class);
     }
 
     @Nullable
     @Override
     public Issuer getIssuer() {
-        return jsonUtil.fromJson(sharedPreferences.getString(PREF_SELECTED_ISSUER, TextUtil.EMPTY), Issuer.class);
+        return JsonUtil.fromJson(sharedPreferences.getString(PREF_SELECTED_ISSUER, TextUtil.EMPTY), Issuer.class);
     }
 
     @Nullable

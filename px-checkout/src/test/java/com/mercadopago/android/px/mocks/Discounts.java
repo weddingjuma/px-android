@@ -15,6 +15,6 @@ public class Discounts {
         String json = ResourcesUtil.getStringResource("complete_campaigns.json");
         Type listType = new TypeToken<List<Campaign>>() {
         }.getType();
-        return JsonUtil.getInstance().getGson().fromJson(json, listType);
+        return JsonUtil.getGson().fromJson(json, listType);
     }
 }

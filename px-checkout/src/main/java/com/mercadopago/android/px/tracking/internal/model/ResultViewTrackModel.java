@@ -28,7 +28,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
     private final BigDecimal discountCouponAmount;
     private final String paymentMethodId;
     private final String paymentMethodType;
-    private final int scoreLevel;
+    private final Integer scoreLevel;
     private final int discountsCount;
     private final String campaignsIds;
     private final String campaignId;
@@ -81,7 +81,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
         hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentResult.getPaymentDataList());
         preferenceAmount = checkoutPreference.getTotalAmount();
         discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentResult.getPaymentDataList());
-        scoreLevel = paymentReward.getScore() != null ? paymentReward.getScore().getProgress().getLevel() : 0;
+        scoreLevel = paymentReward.getScore() != null ? paymentReward.getScore().getProgress().getLevel() : null;
         discountsCount = discount != null ? discount.getItems().size() : 0;
         campaignsIds = discount != null ? TextUtil.join(new FromDiscountItemToItemId().map(discount.getItems())) : null;
         campaignId = campaign != null ? campaign.getId() : null;

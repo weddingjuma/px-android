@@ -34,6 +34,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
+import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getSafeIntent;
 
 public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> implements
     PaymentResultContract.View {
@@ -201,6 +202,15 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void processBusinessAction(@NonNull final String deepLink) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void processCrossSellingBusinessAction(@NonNull final String deepLink) {
+        try {
+            startActivity(getSafeIntent(this, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {
             e.printStackTrace();
         }

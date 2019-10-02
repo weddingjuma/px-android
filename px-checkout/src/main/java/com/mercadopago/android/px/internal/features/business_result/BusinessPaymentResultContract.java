@@ -19,6 +19,7 @@ import com.mercadopago.android.px.model.ExitAction;
         void setStatusBarColor(@ColorRes int color);
 
         void processBusinessAction(@NonNull final String deepLink);
+        void processCrossSellingBusinessAction(@NonNull final String deepLink);
     }
 
     /* default */ interface Presenter {

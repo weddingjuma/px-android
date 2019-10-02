@@ -81,7 +81,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
     @Override
     public void OnClickCrossSellingButton(@NonNull final String deepLink) {
         new CrossSellingEvent(viewTracker).track();
-        getView().processBusinessAction(deepLink);
+        getView().processCrossSellingBusinessAction(deepLink);
     }
 
     @Override

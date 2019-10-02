@@ -1,7 +1,10 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.support.annotation.NonNull;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.model.Bin;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -15,6 +18,7 @@ public class MercadoPagoUtil {
     private static final String PACKAGE_NAME_MP = "com.mercadopago.wallet";
     private static final String PLATFORM_MP = "MP";
     private static final String PLATFORM_ML = "ML";
+    private static final String INTERNAL = "INTERNAL";
 
     public static int getPaymentMethodIcon(Context context, String paymentMethodId) {
 
@@ -117,5 +121,13 @@ public class MercadoPagoUtil {
     public static String getPlatform(final Context context) {
         String packageName = context.getApplicationInfo().packageName;
         return packageName.contains("com.mercadolibre") ? PLATFORM_ML : PLATFORM_MP;
+    }
+
+    public static Intent getSafeIntent(@NonNull final Context context, @NonNull final Uri uri) {
+        return getSafeIntent(context).setData(uri);
+    }
+
+    public static Intent getSafeIntent(@NonNull final Context context) {
+        return new Intent(Intent.ACTION_VIEW).setPackage(context.getPackageName()).putExtra(INTERNAL, true);
     }
 }

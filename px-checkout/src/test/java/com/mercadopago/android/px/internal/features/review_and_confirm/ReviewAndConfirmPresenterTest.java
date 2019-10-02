@@ -82,8 +82,7 @@ public class ReviewAndConfirmPresenterTest {
         when(userSelectionRepository.getPaymentMethod()).thenReturn(paymentMethod);
         reviewAndConfirmPresenter =
             new ReviewAndConfirmPresenter(paymentRepository, discountRepository, paymentSettingRepository,
-                userSelectionRepository, paymentRewardRepository, escManagerBehaviour, productIdProvider,
-                securityBehaviour);
+                userSelectionRepository, paymentRewardRepository, escManagerBehaviour, productIdProvider);
 
         verifyAttachView();
     }

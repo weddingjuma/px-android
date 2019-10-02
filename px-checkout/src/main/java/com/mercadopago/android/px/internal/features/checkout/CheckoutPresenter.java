@@ -37,7 +37,6 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
-import java.util.Collections;
 import java.util.List;
 
 public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
@@ -441,7 +440,8 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        paymentRewardRepository.getPaymentReward(Collections.singletonList(payment), paymentRepository.createPaymentResult(payment), this::handleResult);
+        paymentRewardRepository.getPaymentReward(payment, paymentRepository.createPaymentResult(payment),
+            this::handleResult);
     }
 
     private void handleResult(@NonNull final IPaymentDescriptor payment,

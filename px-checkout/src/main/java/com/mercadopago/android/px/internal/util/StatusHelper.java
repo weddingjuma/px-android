@@ -18,12 +18,4 @@ public final class StatusHelper {
     public static boolean isSuccess(@NonNull final IPaymentDescriptor payment) {
         return isSuccess(payment.getPaymentStatus(), payment.getPaymentStatusDetail());
     }
-
-    public static boolean isSuccess(@NonNull final Iterable<IPaymentDescriptor> payments) {
-        boolean isSuccess = true;
-        for (final IPaymentDescriptor payment : payments) {
-            isSuccess &= isSuccess(payment);
-        }
-        return isSuccess;
-    }
 }

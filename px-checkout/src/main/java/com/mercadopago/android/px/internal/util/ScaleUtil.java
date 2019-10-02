@@ -21,26 +21,4 @@ public final class ScaleUtil {
         final boolean heightLowRes = metrics.heightPixels < 800;
         return dpiLowRes || heightLowRes;
     }
-
-    public static String getDensityName(@NonNull final Context context) {
-        final float densityScale = 1.0f / DisplayMetrics.DENSITY_DEFAULT;
-        final float density = context.getResources().getDisplayMetrics().density / densityScale;
-
-        if (density >= DisplayMetrics.DENSITY_XXXHIGH) {
-            return "xxxhdpi";
-        }
-        if (density >= DisplayMetrics.DENSITY_XXHIGH) {
-            return "xxhdpi";
-        }
-        if (density >= DisplayMetrics.DENSITY_XHIGH) {
-            return "xhdpi";
-        }
-        if (density >= DisplayMetrics.DENSITY_HIGH) {
-            return "hdpi";
-        }
-        if (density >= DisplayMetrics.DENSITY_MEDIUM) {
-            return "mdpi";
-        }
-        return "ldpi";
-    }
 }

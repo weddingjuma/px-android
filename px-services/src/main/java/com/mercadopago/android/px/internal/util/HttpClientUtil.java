@@ -4,10 +4,10 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.core.ConnectivityStateInterceptor;
 import com.mercadopago.android.px.internal.core.ProductIdInterceptor;
 import com.mercadopago.android.px.internal.core.RequestIdInterceptor;
+import com.mercadopago.android.px.internal.core.ScreenDensityInterceptor;
 import com.mercadopago.android.px.internal.core.SessionInterceptor;
 import com.mercadopago.android.px.internal.core.StrictModeInterceptor;
 import com.mercadopago.android.px.internal.core.TLSSocketFactory;
@@ -28,7 +28,6 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -88,6 +87,7 @@ public final class HttpClientUtil {
             baseClient.addInterceptor(new StrictModeInterceptor(context));
             baseClient.addInterceptor(new SessionInterceptor(context));
             baseClient.addInterceptor(new ProductIdInterceptor(context));
+            baseClient.addInterceptor(new ScreenDensityInterceptor(context));
         }
 
         baseClient.addInterceptor(new RequestIdInterceptor());

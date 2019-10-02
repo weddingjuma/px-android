@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.google.gson.Gson;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.services.PaymentRewardService;
@@ -25,23 +24,22 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
     private final String privateKey;
     private final String platform;
     private final String locale;
-    private final String screenDensity;
 
     public PaymentRewardRepositoryImpl(@NonNull final Cache<PaymentReward> paymentRewardCache,
         @NonNull final PaymentRewardService paymentRewardService, @Nullable final String privateKey,
-        @NonNull final String platform, @NonNull final String locale, @NonNull final String screenDensity) {
+        @NonNull final String platform, @NonNull final String locale) {
         this.paymentRewardCache = paymentRewardCache;
         this.paymentRewardService = paymentRewardService;
         this.privateKey = privateKey;
         this.platform = platform;
         this.locale = locale;
-        this.screenDensity = screenDensity;
     }
 
     @Override
-    public void getPaymentReward(@NonNull final List<IPaymentDescriptor> payments, @NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentRewardCallback paymentRewardCallback) {
-        final Callback<PaymentReward> serviceCallback = getServiceCallback(payments, paymentResult, paymentRewardCallback);
+    public void getPaymentReward(@NonNull final List<IPaymentDescriptor> payments,
+        @NonNull final PaymentResult paymentResult, @NonNull final PaymentRewardCallback paymentRewardCallback) {
+        final Callback<PaymentReward> serviceCallback =
+            getServiceCallback(payments, paymentResult, paymentRewardCallback);
         final boolean hasAccessToken = TextUtil.isNotEmpty(privateKey);
         final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payments);
         final Campaign campaign = paymentResult.getPaymentData().getCampaign();
@@ -60,12 +58,12 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final List<String> paymentsIds = new PaymentIdMapper().map(payments);
         final String joinedPaymentIds = TextUtil.join(paymentsIds);
-        paymentRewardService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, screenDensity, privateKey,
+        paymentRewardService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, privateKey,
             joinedPaymentIds, platform, campaignId).enqueue(serviceCallback);
     }
 
-    private Callback<PaymentReward> getServiceCallback(@NonNull final List<IPaymentDescriptor> paymentIds,@NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentRewardCallback paymentRewardCallback) {
+    private Callback<PaymentReward> getServiceCallback(@NonNull final List<IPaymentDescriptor> paymentIds,
+        @NonNull final PaymentResult paymentResult, @NonNull final PaymentRewardCallback paymentRewardCallback) {
         return new Callback<PaymentReward>() {
             @Override
             public void success(final PaymentReward paymentReward) {

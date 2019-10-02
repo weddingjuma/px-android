@@ -1,3 +1,9 @@
+## VERSION 4.23.1
+_02_10_2019_
+* FEATURE - Added receiptIdList in BusinessPayment
+* ENHANCEMENT - Using safe intent for cross selling actions
+* ENHANCEMENT - Fixed inconsistent empty tracking values
+
 ## VERSION 4.23.0
 _02_10_2019_
 * FEATURE - Added rules sets to validate when to ask for biometrics or not

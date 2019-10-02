@@ -7,6 +7,6 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 public class PaymentIdMapper extends Mapper<IPaymentDescriptor, String> {
     @Override
     public String map(@NonNull final IPaymentDescriptor payment) {
-        return String.valueOf(payment.getId());
+        return payment.getId() == null ? "" : String.valueOf(payment.getId());
     }
 }

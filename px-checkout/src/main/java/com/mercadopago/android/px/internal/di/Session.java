@@ -63,7 +63,6 @@ import com.mercadopago.android.px.internal.services.PaymentRewardService;
 import com.mercadopago.android.px.internal.services.PreferenceService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
-import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
@@ -441,7 +440,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
             paymentRewardRepository =
                 new PaymentRewardRepositoryImpl(getPaymentRewardCache(), paymentRewardService,
                     paymentSettings.getPrivateKey(), getPlatform(applicationContext),
-                    LocaleUtil.getLanguage(getApplicationContext()), ScaleUtil.getDensityName(getApplicationContext()));
+                    LocaleUtil.getLanguage(getApplicationContext()));
         }
         return paymentRewardRepository;
     }

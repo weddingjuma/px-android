@@ -6,13 +6,9 @@ import java.util.Map;
 
 public class TrackingMapModel {
 
-    public static Map<String, Object> toMap(final Object object) {
-        return JsonUtil.getMapFromObject(object);
-    }
-
     @NonNull
     public Map<String, Object> toMap() {
-        return toMap(this);
+        return JsonUtil.getMapFromObject(this);
     }
 
     @NonNull

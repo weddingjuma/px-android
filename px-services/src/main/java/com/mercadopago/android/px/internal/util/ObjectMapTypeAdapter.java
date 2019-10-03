@@ -1,15 +1,16 @@
 package com.mercadopago.android.px.internal.util;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
+import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -18,7 +19,7 @@ import java.util.Map;
 
 public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
-    public static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
+    static final TypeAdapterFactory FACTORY = new TypeAdapterFactory() {
         @SuppressWarnings("unchecked")
         @Override public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
             if (type.getRawType() == HashMap.class) {
@@ -30,15 +31,15 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
 
     private final Gson gson;
 
-    public ObjectMapTypeAdapter(Gson gson) {
+    private ObjectMapTypeAdapter(Gson gson) {
         this.gson = gson;
     }
 
-    @Override public Object read(@NonNull final JsonReader in) throws IOException {
+    @Override public Object read(final JsonReader in) throws IOException {
         JsonToken token = in.peek();
         switch (token) {
         case BEGIN_ARRAY:
-            List<Object> list = new ArrayList<Object>();
+            List<Object> list = new ArrayList<>();
             in.beginArray();
             while (in.hasNext()) {
                 list.add(read(in));
@@ -47,7 +48,7 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
             return list;
 
         case BEGIN_OBJECT:
-            Map<String, Object> map = new LinkedHashMap<>();
+            Map<String, Object> map = new LinkedTreeMap<>();
             in.beginObject();
             while (in.hasNext()) {
                 map.put(in.nextName(), read(in));
@@ -93,7 +94,7 @@ public final class ObjectMapTypeAdapter extends TypeAdapter<Object> {
             return;
         }
 
-        TypeAdapter<Object> typeAdapter = (TypeAdapter) gson.getAdapter(value.getClass());
+        TypeAdapter<Object> typeAdapter = gson.getAdapter((Class<Object>) value.getClass());
         if (typeAdapter instanceof ObjectMapTypeAdapter) {
             out.beginObject();
             out.endObject();

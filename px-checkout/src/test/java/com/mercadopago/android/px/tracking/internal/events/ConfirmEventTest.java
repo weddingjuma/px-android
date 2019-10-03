@@ -21,9 +21,9 @@ public class ConfirmEventTest {
 
     private static final String EXPECTED_PATH = "/px_checkout/review/confirm";
     private static final String EXPECTED_JUST_CARD =
-        "{payment_method_type=credit_card, payment_method_id=visa, extra_info={issuer_id=0, has_split=false, card_id=123, selected_installment={quantity=1, installment_amount=10, visible_total_price=10, interest_rate=10}, has_esc=false}, payment_method_selected_index=2, review_type=one_tap}";
+        "{review_type=one_tap, payment_method_selected_index=2, payment_method_id=visa, payment_method_type=credit_card, extra_info={has_split=false, card_id=123, selected_installment={quantity=1, installment_amount=10, visible_total_price=10, interest_rate=10}, issuer_id=0, has_esc=false}}";
     private static final String EXPECTED_JUST_AM =
-        "{payment_method_type=account_money, payment_method_id=account_money, extra_info={balance=10.0, invested=true}, payment_method_selected_index=2.0, review_type=one_tap}";
+        "{review_type=one_tap, payment_method_selected_index=2, payment_method_id=account_money, payment_method_type=account_money, extra_info={balance=10, invested=true}}";
     private static final int PAYMENT_METHOD_SELECTED_INDEX = 2;
 
     @Mock private ExpressMetadata expressMetadata;

@@ -53,7 +53,7 @@ public final class HttpClientUtil {
 
         OkHttpClient.Builder baseClient;
         if (client == null) {
-            baseClient = createBaseClient(context, connectTimeout, readTimeout, writeTimeout);
+            baseClient = createBaseClient(context.getApplicationContext(), connectTimeout, readTimeout, writeTimeout);
             client = enableTLS12(baseClient).build();
         }
         return client;

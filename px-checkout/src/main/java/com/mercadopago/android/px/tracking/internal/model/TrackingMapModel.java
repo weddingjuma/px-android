@@ -10,9 +10,4 @@ public class TrackingMapModel {
     public Map<String, Object> toMap() {
         return JsonUtil.getMapFromObject(this);
     }
-
-    @NonNull
-    protected Map<String, Object> sanitizeMap(@NonNull final Map<String, Object> map) {
-        return map;
-    }
 }

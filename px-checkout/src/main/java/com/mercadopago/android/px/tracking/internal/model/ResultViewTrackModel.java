@@ -88,11 +88,4 @@ public final class ResultViewTrackModel extends TrackingMapModel {
         paymentMethodId = paymentMethod != null ? paymentMethod.getId() : null;
         paymentMethodType = paymentMethod != null ? paymentMethod.getPaymentTypeId() : null;
     }
-
-    @NonNull
-    @Override
-    protected Map<String, Object> sanitizeMap(@NonNull final Map<String, Object> map) {
-        map.put("payment_id", paymentId);
-        return map;
-    }
 }

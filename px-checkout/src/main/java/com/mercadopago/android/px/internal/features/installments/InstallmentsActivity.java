@@ -25,7 +25,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepre
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.AmountView;
@@ -66,7 +65,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public static void start(@NonNull final Activity activity, final int requestCode,
         @NonNull final CardInfo cardInfo) {
         final Intent intent = new Intent(activity, InstallmentsActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(cardInfo));
+        intent.putExtra(EXTRA_CARD_INFO, cardInfo);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -100,7 +99,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     private void getActivityParameters() {
         final Intent intent = getIntent();
-        presenter.setCardInfo(JsonUtil.fromJson(intent.getStringExtra(EXTRA_CARD_INFO), CardInfo.class));
+        presenter.setCardInfo((CardInfo) intent.getSerializableExtra(EXTRA_CARD_INFO));
     }
 
     public void setContentView() {

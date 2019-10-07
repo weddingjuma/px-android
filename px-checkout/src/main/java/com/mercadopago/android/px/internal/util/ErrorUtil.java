@@ -55,7 +55,7 @@ public final class ErrorUtil {
                 .getPublicKey();
 
         final Intent intent = new Intent(launcherActivity, ErrorActivity.class);
-        intent.putExtra(EXTRA_ERROR, JsonUtil.toJson(mercadoPagoError));
+        intent.putExtra(EXTRA_ERROR, mercadoPagoError);
         intent.putExtra(PUBLIC_KEY_EXTRA, publicKey);
         launcherActivity.startActivityForResult(intent, ERROR_REQUEST_CODE);
     }
@@ -80,5 +80,9 @@ public final class ErrorUtil {
         StringWriter errors = new StringWriter();
         e.printStackTrace(new PrintWriter(errors));
         return errors.toString();
+    }
+
+    public static boolean isErrorResult(final Intent data) {
+        return data != null && data.getSerializableExtra(EXTRA_ERROR) != null;
     }
 }

@@ -1,7 +1,5 @@
 package com.mercadopago.android.px.internal.util;
 
-import android.content.Intent;
-import android.os.Build;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.TypeAdapter;
@@ -13,12 +11,8 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 

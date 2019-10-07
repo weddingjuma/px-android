@@ -25,6 +25,27 @@ public class CardInfo implements Serializable {
         this.securityCodeLength = securityCodeLength;
     }
 
+    private CardInfo(
+        final String lastFourDigits,
+        final String firstSixDigits,
+        final int securityCodeLength,
+        final String securityCodeLocation) {
+
+        this.lastFourDigits = lastFourDigits;
+        this.firstSixDigits = firstSixDigits;
+        this.securityCodeLength = securityCodeLength;
+        this.securityCodeLocation = securityCodeLocation;
+    }
+
+    public static CardInfo create(final Card card) {
+        return new CardInfo(
+            card.getLastFourDigits(),
+            card.getFirstSixDigits(),
+            card.getSecurityCodeLength(),
+            card.getSecurityCodeLocation()
+        );
+    }
+
     public static CardInfo create(final CardToken cardToken) {
         final int length = cardToken.getCardNumber().length();
         return new CardInfo(cardToken.getCardNumber().substring(0, 6),
@@ -42,18 +63,6 @@ public class CardInfo implements Serializable {
         cardNumberLength = token.getCardNumberLength();
         lastFourDigits = token.getLastFourDigits();
         firstSixDigits = token.getFirstSixDigits();
-    }
-
-    /**
-     * @param card
-     * @deprecated To be replaced with factory method.
-     */
-    @Deprecated
-    public CardInfo(final Card card) {
-        lastFourDigits = card.getLastFourDigits();
-        firstSixDigits = card.getFirstSixDigits();
-        securityCodeLength = card.getSecurityCodeLength();
-        securityCodeLocation = card.getSecurityCodeLocation();
     }
 
     @Deprecated

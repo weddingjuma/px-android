@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -46,6 +47,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -64,6 +66,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
     private static final String EXTRA_AUTOMATIC_SELECTION = "automaticSelection";
     private static final String MISMATCHING_PAYMENT_METHOD_ERROR = "Payment method in search not found";
+    private static final String TOKEN = "token";
+    private static final String ISSUER = "issuer";
+    private static final String CARD = "card";
     private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     // Local vars
     protected boolean mActivityActive;
@@ -89,7 +94,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     public static void startWithPaymentMethodSelected(@NonNull final Activity from, final int requestCode,
         @NonNull final PaymentMethodSearchItem item) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);
-        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.toJson(item));
+        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, item);
         from.startActivityForResult(intent, requestCode);
         from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
@@ -165,10 +170,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void getActivityParameters() {
         final Intent intent = getIntent();
-
-        if (intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM) != null) {
-            presenter.setSelectedSearchItem(JsonUtil
-                .fromJson(intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM), PaymentMethodSearchItem.class));
+        PaymentMethodSearchItem item = (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
+        if (item != null) {
+            presenter.setSelectedSearchItem(item);
         }
     }
 
@@ -278,12 +282,17 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         }
     }
 
+    @Nullable
+    private Serializable getSerializeData(@NonNull final Intent intent, @NonNull final String key) {
+        return intent.hasExtra(key) ? intent.getSerializableExtra(key) : null;
+    }
+
     protected void resolveCardRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             showProgress();
-            mToken = JsonUtil.fromJson(data.getStringExtra("token"), Token.class);
-            mSelectedIssuer = JsonUtil.fromJson(data.getStringExtra("issuer"), Issuer.class);
-            mSelectedCard = JsonUtil.fromJson(data.getStringExtra("card"), Card.class);
+            mToken = (Token) getSerializeData(data, TOKEN);
+            mSelectedIssuer = (Issuer) getSerializeData(data, ISSUER);
+            mSelectedCard = (Card) getSerializeData(data, CARD);
             finishWithCardResult();
         } else if (resultCode == RESULT_SILENT_ERROR) {
             setResult(RESULT_SILENT_ERROR);
@@ -323,11 +332,11 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void finishWithCardResult() {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("token", JsonUtil.toJson(mToken));
+        returnIntent.putExtra(TOKEN, mToken);
         if (mSelectedIssuer != null) {
-            returnIntent.putExtra("issuer", JsonUtil.toJson(mSelectedIssuer));
+            returnIntent.putExtra(ISSUER, (Serializable) mSelectedIssuer);
         }
-        returnIntent.putExtra("card", JsonUtil.toJson(mSelectedCard));
+        returnIntent.putExtra(CARD, mSelectedCard);
         finishWithResult(returnIntent);
     }
 

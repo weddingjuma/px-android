@@ -31,8 +31,8 @@ public class ErrorActivity extends PXActivity {
         super.onCreate(savedInstanceState);
         animateErrorScreenLaunch();
         setContentView(R.layout.px_activity_error);
-        error = JsonUtil
-                .fromJson(getIntent().getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+        error = (MercadoPagoError) getIntent().getSerializableExtra(EXTRA_ERROR);
+
         if (error != null) {
             initializeControls();
             fillData();
@@ -91,7 +91,7 @@ public class ErrorActivity extends PXActivity {
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        intent.putExtra(EXTRA_ERROR, JsonUtil.toJson(error));
+        intent.putExtra(EXTRA_ERROR, error);
         setResult(RESULT_CANCELED, intent);
         finish();
     }

@@ -184,8 +184,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
         @Nullable final PaymentRecovery paymentRecovery) {
         final Intent intent = new Intent(activity, GuessingCardActivity.class);
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
+        intent.putExtra(PARAM_PAYMENT_RECOVERY, paymentRecovery);
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, true);
         activity.startActivityForResult(intent, requestCode);
     }
@@ -236,7 +235,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
         if (includesPayment) {
             final PaymentRecovery paymentRecovery =
-                JsonUtil.fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
+                (PaymentRecovery) intent.getSerializableExtra(PARAM_PAYMENT_RECOVERY);
             presenter =
                 GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getInstance(), paymentRecovery);
         } else {

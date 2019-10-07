@@ -356,7 +356,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     @Override
     public void onActivityResultNotOk(@Nullable final Intent data) {
         trackScreen();
-        final boolean hasError = data != null && data.getStringExtra(EXTRA_ERROR) != null;
+        final boolean hasError = data != null && data.getSerializableExtra(EXTRA_ERROR) != null;
         final boolean shouldFinishOnBack =
             hasError || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
                 selectedSearchItem.getChildren().size() == 1;

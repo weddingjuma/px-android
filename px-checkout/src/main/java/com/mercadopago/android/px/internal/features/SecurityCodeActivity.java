@@ -27,7 +27,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepre
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -43,6 +42,7 @@ import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
+import java.io.Serializable;
 
 public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> implements SecurityCodeActivityView {
 
@@ -86,11 +86,10 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     }
 
     private static Intent createIntent(@NonNull final Context context, @NonNull final Card card) {
-        // TODO remove serialization as Json.
         final Intent intent = new Intent(context, SecurityCodeActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(new CardInfo(card)));
-        intent.putExtra(EXTRA_CARD, JsonUtil.toJson(card));
-        intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.toJson(card.getPaymentMethod()));
+        intent.putExtra(EXTRA_CARD_INFO, CardInfo.create(card));
+        intent.putExtra(EXTRA_CARD, card);
+        intent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) card.getPaymentMethod());
         intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
         return intent;
     }
@@ -143,14 +142,11 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     }
 
     private void getActivityParameters() {
-        final CardInfo cardInfo =
-            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
-        final Card card = JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_CARD), Card.class);
-        final Token token = JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_TOKEN), Token.class);
-        final PaymentMethod paymentMethod =
-            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_METHOD), PaymentMethod.class);
-        final PaymentRecovery paymentRecovery =
-            JsonUtil.fromJson(getIntent().getStringExtra(EXTRA_PAYMENT_RECOVERY), PaymentRecovery.class);
+        final CardInfo cardInfo = (CardInfo) getIntent().getSerializableExtra(EXTRA_CARD_INFO);
+        final Card card = (Card) getIntent().getSerializableExtra(EXTRA_CARD);
+        final Token token = (Token) getIntent().getSerializableExtra(EXTRA_TOKEN);
+        final PaymentMethod paymentMethod = (PaymentMethod) getIntent().getSerializableExtra(EXTRA_PAYMENT_METHOD);
+        final PaymentRecovery paymentRecovery = (PaymentRecovery) getIntent().getSerializableExtra(EXTRA_PAYMENT_RECOVERY);
         final Reason reason =
             Reason.valueOf(getIntent().getStringExtra(EXTRA_REASON));
 
@@ -471,11 +467,11 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
         private void startSecurityCodeActivity(@NonNull final Activity activity, final int requestCode) {
             final Intent intent = new Intent(activity, SecurityCodeActivity.class);
-            intent.putExtra(EXTRA_PAYMENT_METHOD, JsonUtil.toJson(paymentMethod));
-            intent.putExtra(EXTRA_TOKEN, JsonUtil.toJson(token));
-            intent.putExtra(EXTRA_CARD, JsonUtil.toJson(card));
-            intent.putExtra(EXTRA_CARD_INFO, JsonUtil.toJson(cardInformation));
-            intent.putExtra(EXTRA_PAYMENT_RECOVERY, JsonUtil.toJson(paymentRecovery));
+            intent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) paymentMethod);
+            intent.putExtra(EXTRA_TOKEN, token);
+            intent.putExtra(EXTRA_CARD, card);
+            intent.putExtra(EXTRA_CARD_INFO, cardInformation);
+            intent.putExtra(EXTRA_PAYMENT_RECOVERY, paymentRecovery);
             intent.putExtra(EXTRA_REASON, reason.name());
             activity.startActivityForResult(intent, requestCode);
         }

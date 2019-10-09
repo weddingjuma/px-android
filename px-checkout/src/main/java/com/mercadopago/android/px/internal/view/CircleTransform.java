@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.util;
+package com.mercadopago.android.px.internal.view;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import com.squareup.picasso.Transformation;
 
-public class CircleTransform implements Transformation {
+public final class CircleTransform implements Transformation {
+
+    private static final String KEY_CIRCLE = "circle";
 
     @Override
     public Bitmap transform(@NonNull final Bitmap source) {
@@ -39,6 +41,6 @@ public class CircleTransform implements Transformation {
 
     @Override
     public String key() {
-        return "circle";
+        return KEY_CIRCLE;
     }
 }

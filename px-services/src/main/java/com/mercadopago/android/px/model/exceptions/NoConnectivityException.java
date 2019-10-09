@@ -1,9 +1,8 @@
-package com.mercadopago.android.px.internal.util;
+package com.mercadopago.android.px.model.exceptions;
 
 import java.io.IOException;
 
-public class NoConnectivityException extends IOException {
-
+public final class NoConnectivityException extends IOException {
     private static final String NO_CONNECTION_AVAILABLE = "No connection available";
 
     public NoConnectivityException() {

@@ -15,7 +15,7 @@ public final class ScreenDensityInterceptor implements Interceptor {
     @NonNull private final Context context;
 
     public ScreenDensityInterceptor(@NonNull final Context context) {
-        this.context = context;
+        this.context = context.getApplicationContext();
     }
 
     @Override

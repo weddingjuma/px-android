@@ -7,7 +7,6 @@ public final class PaymentResultDecorator {
     private final int primaryDarkColor;
     private final int statusIconResId;
 
-
     PaymentResultDecorator(@NonNull final Builder builder) {
         primaryColor = builder.primaryColor;
         primaryDarkColor = builder.primaryDarkColor;

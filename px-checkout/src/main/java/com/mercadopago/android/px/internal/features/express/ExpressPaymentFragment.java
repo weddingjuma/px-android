@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,7 +52,6 @@ import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActi
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
@@ -489,9 +489,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void restoreStatusBar() {
-        if (getActivity() != null) {
-            new StatusBarDecorator(getActivity().getWindow())
-                .setupStatusBarColor(ContextCompat.getColor(getActivity(), R.color.px_colorPrimaryDark));
+        final Activity activity = getActivity();
+
+        if (activity != null) {
+            ViewUtils.setStatusBarColor(ContextCompat.getColor(activity, R.color.px_colorPrimaryDark),
+                activity.getWindow());
         }
     }
 

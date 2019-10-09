@@ -30,8 +30,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 
 public class ExplodingFragment extends Fragment {
 
@@ -347,7 +347,7 @@ public class ExplodingFragment extends Fragment {
     }
 
     /* default */ void tintStatusBar(final int color) {
-        new StatusBarDecorator(getActivity().getWindow()).setupStatusBarColor(color);
+        ViewUtils.setStatusBarColor(color, getActivity().getWindow());
     }
 
     @Override

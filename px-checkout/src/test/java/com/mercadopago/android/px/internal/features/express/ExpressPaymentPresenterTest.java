@@ -1,10 +1,11 @@
 package com.mercadopago.android.px.internal.features.express;
 
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
-import com.mercadopago.android.px.internal.datasource.IESCManager;
+import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
@@ -20,6 +21,7 @@ import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.CardDisplayInfo;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -99,7 +101,10 @@ public class ExpressPaymentPresenterTest {
     private ChargeRepository chargeRepository;
 
     @Mock
-    private IESCManager escManager;
+    private ESCManagerBehaviour escManagerBehaviour;
+
+    @Mock
+    private ProductIdProvider productIdProvider;
 
     private ExpressPaymentPresenter expressPaymentPresenter;
 
@@ -118,7 +123,9 @@ public class ExpressPaymentPresenterTest {
         when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
         when(expressMetadata.isCard()).thenReturn(true);
+        when(expressMetadata.getCustomOptionId()).thenReturn("123");
         when(cardMetadata.getId()).thenReturn("123");
+        when(cardMetadata.getDisplayInfo()).thenReturn(mock(CardDisplayInfo.class));
         when(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel);
         when(discountRepository.getConfigurationFor(TextUtil.EMPTY)).thenReturn(discountConfigurationModel);
         when(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration);
@@ -127,7 +134,7 @@ public class ExpressPaymentPresenterTest {
             new ExpressPaymentPresenter(paymentRepository, configuration, disabledPaymentMethodRepository,
                 discountRepository,
                 amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
-                escManager);
+                escManagerBehaviour, productIdProvider);
 
         verifyAttachView();
     }
@@ -201,16 +208,28 @@ public class ExpressPaymentPresenterTest {
     @Test
     public void whenPayerCostSelectedThenItsReflectedOnView() {
         final int paymentMethodIndex = 0;
+        final int selectedPayerCostIndex = mockPayerCosts();
+
+        verify(view).updateViewForPosition(eq(paymentMethodIndex), eq(selectedPayerCostIndex), any());
+        verify(view).collapseInstallmentsSelection();
+        verifyNoMoreInteractions(view);
+    }
+
+    @Test
+    public void whenConfirmPaymentWithSecurityThenStartSecurityValidation() {
+        expressPaymentPresenter.startSecuredPayment();
+        verify(view).startSecurityValidation(any());
+        verifyNoMoreInteractions(view);
+    }
+
+    private int mockPayerCosts() {
         final int selectedPayerCostIndex = 1;
         final PayerCost firstPayerCost = mock(PayerCost.class);
         final List<PayerCost> payerCostList =
             Arrays.asList(mock(PayerCost.class), firstPayerCost, mock(PayerCost.class));
         when(amountConfiguration.getAppliedPayerCost(false)).thenReturn(payerCostList);
         expressPaymentPresenter.onPayerCostSelected(payerCostList.get(selectedPayerCostIndex));
-
-        verify(view).updateViewForPosition(eq(paymentMethodIndex), eq(selectedPayerCostIndex), any());
-        verify(view).collapseInstallmentsSelection();
-        verifyNoMoreInteractions(view);
+        return selectedPayerCostIndex;
     }
 
     private void verifyAttachView() {

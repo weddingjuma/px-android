@@ -5,21 +5,20 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
 import retrofit2.Response;
 
 public final class ApiUtil {
 
     private ApiUtil() {
-
     }
 
-    public static <T> ApiException getApiException(Response<T> response) {
-
+    public static <T> ApiException getApiException(final Response<T> response) {
         ApiException apiException = null;
         try {
             final String errorString = response.errorBody().string();
             apiException = JsonUtil.getInstance().fromJson(errorString, ApiException.class);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             //Do nothing
         } finally {
             if (apiException == null) {
@@ -31,7 +30,7 @@ public final class ApiUtil {
         return apiException;
     }
 
-    public static ApiException getApiException(Throwable throwable) {
+    public static ApiException getApiException(final Throwable throwable) {
         final ApiException apiException = new ApiException();
         if (throwable instanceof NoConnectivityException) {
             apiException.setStatus(StatusCodes.NO_CONNECTIVITY_ERROR);
@@ -39,7 +38,7 @@ public final class ApiUtil {
 
         try {
             apiException.setMessage(throwable.getMessage());
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             // do nothing
         }
 
@@ -47,29 +46,28 @@ public final class ApiUtil {
     }
 
     public static boolean checkConnection(@NonNull final Context context) {
-
         if (context != null) {
             try {
                 boolean haveConnectedWifi = false;
                 boolean haveConnectedMobile = false;
                 final ConnectivityManager cm =
                     (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                final NetworkInfo ni = cm.getActiveNetworkInfo();
-                if (ni != null && ni.isConnected()) {
-                    if (ni.getType() == ConnectivityManager.TYPE_WIFI) {
-                        if (ni.isConnectedOrConnecting()) {
+                final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+                if (networkInfo != null && networkInfo.isConnected()) {
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        if (networkInfo.isConnectedOrConnecting()) {
                             haveConnectedWifi = true;
                         }
                     }
-                    if (ni.getType() == ConnectivityManager.TYPE_MOBILE) {
-                        if (ni.isConnectedOrConnecting()) {
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                        if (networkInfo.isConnectedOrConnecting()) {
                             haveConnectedMobile = true;
                         }
                     }
                 }
 
                 return haveConnectedWifi || haveConnectedMobile;
-            } catch (Exception ex) {
+            } catch (final Exception ex) {
                 return false;
             }
         } else {
@@ -80,7 +78,6 @@ public final class ApiUtil {
     public static final class StatusCodes {
 
         private StatusCodes() {
-
         }
 
         public static final int INTERNAL_SERVER_ERROR = 500;
@@ -94,7 +91,6 @@ public final class ApiUtil {
     public static final class RequestOrigin {
 
         private RequestOrigin() {
-
         }
 
         public static final String GET_PREFERENCE = "GET_PREFERENCE";

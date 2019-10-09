@@ -14,7 +14,6 @@ public final class ScaleUtil {
         return (int) (dpValue * scale + 0.5f);
     }
 
-    //falta landscape? pensar para android tv
     public static boolean isLowRes(final Context context) {
         final DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         final boolean dpiLowRes = metrics.densityDpi < DisplayMetrics.DENSITY_HIGH;

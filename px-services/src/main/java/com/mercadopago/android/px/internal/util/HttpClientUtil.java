@@ -51,7 +51,7 @@ public final class HttpClientUtil {
         final int readTimeout,
         final int writeTimeout) {
 
-        OkHttpClient.Builder baseClient;
+        final OkHttpClient.Builder baseClient;
         if (client == null) {
             baseClient = createBaseClient(context, connectTimeout, readTimeout, writeTimeout);
             client = enableTLS12(baseClient).build();
@@ -76,7 +76,7 @@ public final class HttpClientUtil {
         final HttpLoggingInterceptor loginInterceptor = new HttpLoggingInterceptor();
         loginInterceptor.setLevel(LOGGING_INTERCEPTOR);
 
-        OkHttpClient.Builder baseClient = new OkHttpClient.Builder()
+        final OkHttpClient.Builder baseClient = new OkHttpClient.Builder()
             .connectTimeout(connectTimeout, TimeUnit.SECONDS)
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
             .readTimeout(readTimeout, TimeUnit.SECONDS)
@@ -130,7 +130,7 @@ public final class HttpClientUtil {
     private static OkHttpClient.Builder configureProtocol(final OkHttpClient.Builder client,
         final X509TrustManager trustManager) {
         try {
-            SSLContext sslContext = SSLContext.getInstance(TLS_1_2);
+            final SSLContext sslContext = SSLContext.getInstance(TLS_1_2);
             sslContext.init(null, new TrustManager[] { trustManager }, new SecureRandom());
             client.sslSocketFactory(new TLSSocketFactory(sslContext.getSocketFactory()), trustManager);
             return client.connectionSpecs(availableConnectionSpecs());
@@ -150,9 +150,7 @@ public final class HttpClientUtil {
 
         final List<ConnectionSpec> connectionSpecsList = new ArrayList<>();
         connectionSpecsList.add(connectionSpec);
-
         connectionSpecsList.add(connectionSpec.CLEARTEXT);
-
         return connectionSpecsList;
     }
 

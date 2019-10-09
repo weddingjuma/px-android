@@ -1,8 +1,9 @@
 package com.mercadopago.android.px.model;
 
 import android.content.Context;
+import java.io.Serializable;
 
-public class Device {
+public class Device implements Serializable {
 
     public Fingerprint fingerprint;
 

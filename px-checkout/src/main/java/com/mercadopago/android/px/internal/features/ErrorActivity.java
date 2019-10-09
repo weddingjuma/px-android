@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;

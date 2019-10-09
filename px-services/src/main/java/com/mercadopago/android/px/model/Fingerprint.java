@@ -27,6 +27,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressLint("MissingPermission")
-public class Fingerprint {
+public class Fingerprint implements Serializable {
     private static final String TAG = "Fingerprint";
     private static final String SHARED_PREFS_FINGERPRINT_LOCATION = "FINGERPRINT_LOCATION";
     public static final String PLATFORM_PROPERTY = "ro.product.cpu.abi";
@@ -333,7 +334,7 @@ public class Fingerprint {
         }
     }
 
-    private class VendorId {
+    private class VendorId implements Serializable{
         private final String name;
         private final String value;
 

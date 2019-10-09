@@ -15,7 +15,6 @@ import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardAc
 import com.mercadopago.android.px.internal.features.installments.InstallmentsActivity;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Card;

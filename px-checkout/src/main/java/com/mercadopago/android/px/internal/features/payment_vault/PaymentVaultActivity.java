@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
@@ -27,7 +28,6 @@ import com.mercadopago.android.px.internal.features.payer_information.PayerInfor
 import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
@@ -53,6 +53,7 @@ import java.util.List;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+import static com.mercadopago.android.px.internal.features.payment_methods.PaymentMethodsActivity.EXTRA_PAYMENT_METHOD;
 
 public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> implements PaymentVaultView {
 
@@ -326,7 +327,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     private void finishWith(final PaymentMethod paymentMethod) {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentMethod", JsonUtil.toJson(paymentMethod));
+        returnIntent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod);
         finishWithResult(returnIntent);
     }
 

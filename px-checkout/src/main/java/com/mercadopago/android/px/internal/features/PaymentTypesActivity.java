@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.features;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -22,7 +23,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.FontCache;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
@@ -37,6 +37,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     private static final String EXTRA_PAYMENT_METHODS = "paymentMethods";
     private static final String EXTRA_PAYMENT_TYPES = "paymentTypes";
     private static final String EXTRA_CARD_INFO = "cardInfo";
+    public static final String EXTRA_PAYMENT_TYPE = "paymentType";
 
     protected PaymentTypesPresenter mPresenter;
     //ViewMode
@@ -271,7 +272,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     @Override
     public void finishWithResult(PaymentType paymentType) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentType", JsonUtil.toJson(paymentType));
+        returnIntent.putExtra(EXTRA_PAYMENT_TYPE, (Parcelable) paymentType);
         setResult(RESULT_OK, returnIntent);
         finish();
         overridePendingTransition(R.anim.px_hold, R.anim.px_hold);

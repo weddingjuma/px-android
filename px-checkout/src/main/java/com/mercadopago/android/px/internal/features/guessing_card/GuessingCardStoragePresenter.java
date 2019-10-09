@@ -261,12 +261,6 @@ public class GuessingCardStoragePresenter extends GuessingCardPresenter {
             });
     }
 
-    @Nullable
-    @Override
-    public List<BankDeal> getBankDealsList() {
-        return null;
-    }
-
     @Override
     public void onIssuerSelected(final Long issuerId) {
         associateCardToUser(issuerId);
@@ -281,7 +275,7 @@ public class GuessingCardStoragePresenter extends GuessingCardPresenter {
 
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.getString(PAYMENT_METHOD_BUNDLE) != null) {
+        if (savedInstanceState != null && savedInstanceState.getParcelable(PAYMENT_METHOD_BUNDLE) != null) {
             super.onRestoreInstanceState(savedInstanceState);
         }
     }

@@ -1,9 +1,9 @@
 package com.mercadopago.android.px.internal.features.guessing_card;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
@@ -16,23 +16,19 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.AmountConfiguration;
-import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
-import com.mercadopago.android.px.model.PaymentType;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
@@ -46,7 +42,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @NonNull private final IdentificationRepository identificationRepository;
     @NonNull private final AdvancedConfiguration advancedConfiguration;
     @NonNull private final SummaryAmountRepository summaryAmountRepository;
-    @Nullable private List<BankDeal> bankDealList;
 
     protected PaymentRecovery paymentRecovery;
 
@@ -158,21 +153,12 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     private void resolveBankDeals() {
         if (advancedConfiguration.isBankDealsEnabled()) {
-            getBankDealsAsync();
+            getView().showBankDeals();
         } else {
             getView().hideBankDeals();
         }
     }
 
-    @Nullable
-    @Override
-    public List<BankDeal> getBankDealsList() {
-        return bankDealList;
-    }
-
-    private void setBankDealsList(@Nullable final List<BankDeal> bankDealsList) {
-        bankDealList = bankDealsList;
-    }
 
     @Override
     public void onIssuerSelected(final Long issuerId) {
@@ -183,69 +169,18 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     public void onSaveInstanceState(final Bundle outState, final String cardSideState, final boolean lowResActive) {
         if (getPaymentMethod() != null) {
             super.onSaveInstanceState(outState, cardSideState, lowResActive);
-            outState.putString(BANK_DEALS_LIST_BUNDLE, JsonUtil.toJson(getBankDealsList()));
-            outState.putString(PAYMENT_TYPES_LIST_BUNDLE, JsonUtil.toJson(getPaymentTypes()));
+            outState.putParcelableArrayList(PAYMENT_TYPES_LIST_BUNDLE,
+                (ArrayList<? extends Parcelable>) getPaymentTypes());
         }
     }
 
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
-        if (savedInstanceState != null && savedInstanceState.getString(PAYMENT_METHOD_BUNDLE) != null) {
-            final String paymentMethodBundleJson = savedInstanceState.getString(PAYMENT_METHOD_BUNDLE);
-            if (!TextUtil.isEmpty(paymentMethodBundleJson)) {
-                List<PaymentType> paymentTypesList;
-                try {
-                    final Type listType = new TypeToken<List<PaymentType>>() {
-                    }.getType();
-                    paymentTypesList = JsonUtil.getGson().fromJson(
-                        savedInstanceState.getString(PAYMENT_TYPES_LIST_BUNDLE), listType);
-                } catch (final Exception ex) {
-                    paymentTypesList = null;
-                }
-                setPaymentTypesList(paymentTypesList);
-                List<BankDeal> bankDealsList;
-                try {
-                    final Type listType = new TypeToken<List<BankDeal>>() {
-                    }.getType();
-                    bankDealsList = JsonUtil.getGson().fromJson(
-                        savedInstanceState.getString(BANK_DEALS_LIST_BUNDLE), listType);
-                } catch (final Exception ex) {
-                    bankDealsList = null;
-                }
-                setBankDealsList(bankDealsList);
-                setPaymentRecovery(JsonUtil
-                    .fromJson(savedInstanceState.getString(PAYMENT_RECOVERY_BUNDLE), PaymentRecovery.class));
+        if (savedInstanceState != null && savedInstanceState.getParcelable(PAYMENT_METHOD_BUNDLE) != null) {
+                setPaymentTypesList(savedInstanceState.getParcelableArrayList(PAYMENT_TYPES_LIST_BUNDLE));
+                setPaymentRecovery((PaymentRecovery)savedInstanceState.getSerializable(PAYMENT_RECOVERY_BUNDLE));
                 super.onRestoreInstanceState(savedInstanceState);
             }
-        }
-    }
-
-    /* default */ void getBankDealsAsync() {
-        bankDealsRepository
-            .getBankDealsAsync().enqueue(new TaggedCallback<List<BankDeal>>(ApiUtil.RequestOrigin.GET_BANK_DEALS) {
-            @Override
-            public void onSuccess(final List<BankDeal> bankDeals) {
-                resolveBankDeals(bankDeals);
-            }
-
-            @Override
-            public void onFailure(final MercadoPagoError error) {
-                if (isViewAttached()) {
-                    setFailureRecovery(() -> getBankDealsAsync());
-                }
-            }
-        });
-    }
-
-    /* default */ void resolveBankDeals(final List<BankDeal> bankDeals) {
-        if (isViewAttached()) {
-            if (bankDeals == null || bankDeals.isEmpty()) {
-                getView().hideBankDeals();
-            } else {
-                bankDealList = bankDeals;
-                getView().showBankDeals();
-            }
-        }
     }
 
     @Override

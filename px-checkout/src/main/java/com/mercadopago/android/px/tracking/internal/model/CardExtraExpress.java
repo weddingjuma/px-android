@@ -3,15 +3,8 @@ package com.mercadopago.android.px.tracking.internal.model;
 import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.google.gson.JsonPrimitive;
-import com.google.gson.TypeAdapter;
-import com.google.gson.reflect.TypeToken;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.PayerCost;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.Map;
 
 @SuppressWarnings("unused")
 @Keep

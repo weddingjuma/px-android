@@ -114,7 +114,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     }
 
     private void startCheckout() {
-        getView().fetchFonts();
         retrievePaymentMethodSearch();
     }
 

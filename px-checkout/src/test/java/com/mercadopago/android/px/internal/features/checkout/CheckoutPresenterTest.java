@@ -102,7 +102,6 @@ public class CheckoutPresenterTest {
 
         presenter.retrieveCheckoutPreference(anyString());
 
-        verify(checkoutView).fetchFonts();
         verify(checkoutView).showPaymentMethodSelection();
         verifyNoMoreInteractions(checkoutView);
     }
@@ -124,7 +123,6 @@ public class CheckoutPresenterTest {
         presenter.recoverFromFailure();
 
         verify(checkoutView).showError(any(MercadoPagoError.class));
-        verify(checkoutView).fetchFonts();
         verify(checkoutView).showPaymentMethodSelection();
         verifyNoMoreInteractions(checkoutView);
     }
@@ -139,7 +137,6 @@ public class CheckoutPresenterTest {
         presenter.initialize();
 
         verify(checkoutView).showProgress();
-        verify(checkoutView).fetchFonts();
         verify(checkoutView).showError(any(MercadoPagoError.class));
         verifyNoMoreInteractions(checkoutView);
     }
@@ -734,7 +731,6 @@ public class CheckoutPresenterTest {
 
     private void verifyInitializeWithPreference() {
         verify(checkoutView).showProgress();
-        verify(checkoutView).fetchFonts();
         verify(checkoutView, atLeastOnce()).showPaymentMethodSelection();
     }
 

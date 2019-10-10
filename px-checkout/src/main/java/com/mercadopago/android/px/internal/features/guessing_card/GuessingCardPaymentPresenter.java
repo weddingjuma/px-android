@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
-import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
@@ -38,7 +37,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @NonNull private final GroupsRepository groupsRepository;
     @NonNull private final IssuersRepository issuersRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
-    @NonNull private final BankDealsRepository bankDealsRepository;
     @NonNull private final IdentificationRepository identificationRepository;
     @NonNull private final AdvancedConfiguration advancedConfiguration;
     @NonNull private final SummaryAmountRepository summaryAmountRepository;
@@ -50,7 +48,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         @NonNull final GroupsRepository groupsRepository,
         @NonNull final IssuersRepository issuersRepository,
         @NonNull final CardTokenRepository cardTokenRepository,
-        @NonNull final BankDealsRepository bankDealsRepository,
         @NonNull final IdentificationRepository identificationRepository,
         @NonNull final AdvancedConfiguration advancedConfiguration,
         @NonNull final PaymentRecovery paymentRecovery,
@@ -61,7 +58,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         this.groupsRepository = groupsRepository;
         this.issuersRepository = issuersRepository;
         this.cardTokenRepository = cardTokenRepository;
-        this.bankDealsRepository = bankDealsRepository;
         this.identificationRepository = identificationRepository;
         this.advancedConfiguration = advancedConfiguration;
         this.paymentRecovery = paymentRecovery;

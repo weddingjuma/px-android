@@ -63,7 +63,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -77,7 +77,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -91,7 +91,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            cardPaymentMethods = JsonUtil.getGson().fromJson(json, listType);
+            cardPaymentMethods = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             cardPaymentMethods = null;
         }
@@ -105,7 +105,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -119,7 +119,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }

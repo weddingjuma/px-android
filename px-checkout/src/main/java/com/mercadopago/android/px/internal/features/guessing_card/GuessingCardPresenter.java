@@ -110,7 +110,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
             session.getConfigurationModule().getUserSelectionRepository(),
             session.getConfigurationModule().getPaymentSettings(), session.getGroupsRepository(),
             session.getIssuersRepository(),
-            session.getCardTokenRepository(), session.getBankDealsRepository(),
+            session.getCardTokenRepository(),
             session.getIdentificationRepository(),
             session.getConfigurationModule().getPaymentSettings().getAdvancedConfiguration(),
             paymentRecovery,

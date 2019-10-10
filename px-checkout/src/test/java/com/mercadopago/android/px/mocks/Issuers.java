@@ -15,7 +15,7 @@ public class Issuers {
         String json = ResourcesUtil.getStringResource("issuers.json");
         Type listType = new TypeToken<List<Issuer>>() {
         }.getType();
-        return JsonUtil.getGson().fromJson(json, listType);
+        return JsonUtil.fromJson(json, listType);
     }
 
     public static Issuer getIssuerMLA() {
@@ -30,7 +30,7 @@ public class Issuers {
         try {
             Type listType = new TypeToken<List<Issuer>>() {
             }.getType();
-            issuerList = JsonUtil.getGson().fromJson(json, listType);
+            issuerList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             issuerList = null;
         }
@@ -44,7 +44,7 @@ public class Issuers {
         try {
             Type listType = new TypeToken<List<Issuer>>() {
             }.getType();
-            issuerList = JsonUtil.getGson().fromJson(json, listType);
+            issuerList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             issuerList = null;
         }

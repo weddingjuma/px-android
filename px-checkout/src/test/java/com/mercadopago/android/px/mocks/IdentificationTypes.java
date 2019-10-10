@@ -48,7 +48,7 @@ public class IdentificationTypes {
         try {
             Type listType = new TypeToken<List<IdentificationType>>() {
             }.getType();
-            identificationTypesList = JsonUtil.getGson().fromJson(json, listType);
+            identificationTypesList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             identificationTypesList = null;
         }
@@ -62,7 +62,7 @@ public class IdentificationTypes {
         try {
             Type listType = new TypeToken<List<IdentificationType>>() {
             }.getType();
-            identificationTypesList = JsonUtil.getGson().fromJson(json, listType);
+            identificationTypesList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             identificationTypesList = null;
         }

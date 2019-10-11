@@ -16,7 +16,6 @@ import java.util.concurrent.Executors;
 public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
 
     @NonNull private final FileManager fileManager;
-    @NonNull private final JsonUtil jsonUtil;
     @NonNull private final File groupsFile;
 
     private static final String DEF_FILE_NAME = "px_groups";
@@ -24,10 +23,8 @@ public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
     /* default */ final Handler mainHandler;
 
     public GroupsDiskCache(@NonNull final FileManager fileManager,
-        @NonNull final JsonUtil jsonUtil,
         @NonNull final File cacheDir) {
         this.fileManager = fileManager;
-        this.jsonUtil = jsonUtil;
         groupsFile = new File(createFileName(cacheDir));
         executorService = Executors.newFixedThreadPool(1);
         mainHandler = new Handler(Looper.getMainLooper());
@@ -61,7 +58,7 @@ public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
     /* default */ void read(final Callback<PaymentMethodSearch> callback) {
         if (isCached()) {
             final String fileContent = fileManager.readFileContent(groupsFile);
-            final PaymentMethodSearch paymentMethodSearch = jsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
+            final PaymentMethodSearch paymentMethodSearch = JsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
             if (paymentMethodSearch != null) {
                 mainHandler.post(() -> callback.success(paymentMethodSearch));
             } else {
@@ -75,7 +72,7 @@ public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
     /* default */ void readExec(final Callback<PaymentMethodSearch> callback) {
         if (isCached()) {
             final String fileContent = fileManager.readFileContent(groupsFile);
-            final PaymentMethodSearch paymentMethodSearch = jsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
+            final PaymentMethodSearch paymentMethodSearch = JsonUtil.fromJson(fileContent, PaymentMethodSearch.class);
             if (paymentMethodSearch != null) {
                 callback.success(paymentMethodSearch);
             } else {
@@ -89,7 +86,7 @@ public class GroupsDiskCache implements Cache<PaymentMethodSearch> {
     @Override
     public void put(@NonNull final PaymentMethodSearch groups) {
         if (!isCached()) {
-            executorService.execute(new CacheWriter(fileManager, groupsFile, jsonUtil.toJson(groups)));
+            executorService.execute(new CacheWriter(fileManager, groupsFile, JsonUtil.toJson(groups)));
         }
     }
 

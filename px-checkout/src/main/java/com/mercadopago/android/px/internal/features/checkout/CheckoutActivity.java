@@ -21,8 +21,6 @@ import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAnd
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
@@ -50,6 +48,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_FAIL
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYMENT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 import static com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity.EXTRA_RESULT_CODE;
+import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
 
 public class CheckoutActivity extends PXActivity<CheckoutPresenter>
@@ -296,8 +295,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         case RESULT_ERROR:
             //TODO crash when intent is null
             // TODO verify scenario.
-            if (data != null && data.hasExtra(EXTRA_ERROR)) {
-                cancelCheckout((MercadoPagoError) data.getExtras().get(EXTRA_ERROR));
+            if (isErrorResult(data)) {
+                cancelCheckout((MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR));
             } else {
                 cancelCheckout();
             }
@@ -372,9 +371,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             presenter.onCustomReviewAndConfirmResponse(customResultCode);
         } else {
             MercadoPagoError mercadoPagoError = null;
-            if (data != null && data.getStringExtra(EXTRA_ERROR) != null) {
-                mercadoPagoError = JsonUtil.getInstance()
-                    .fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+            if (isErrorResult(data)) {
+                mercadoPagoError = (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR);
             }
             if (mercadoPagoError == null) {
                 presenter.cancelCheckout();
@@ -390,9 +388,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         } else {
             //TODO CHECK WHEN IT HAPPENS.
             final MercadoPagoError mercadoPagoError =
-                (data == null || data.getStringExtra(EXTRA_ERROR) == null) ? null :
-                    JsonUtil.getInstance()
-                        .fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                isErrorResult(data) ?
+                    (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR) : null;
             if (mercadoPagoError == null) {
                 presenter.onCardFlowCancel();
             } else {
@@ -408,16 +405,11 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             cancelCheckout();
         } else if (isErrorResult(data)) {
             //TODO check when it happens.
-            final MercadoPagoError mercadoPagoError =
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+            final MercadoPagoError mercadoPagoError = (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR);
             presenter.onPaymentMethodSelectionError(mercadoPagoError);
         } else {
             presenter.onPaymentMethodSelectionCancel();
         }
-    }
-
-    private boolean isErrorResult(final Intent data) {
-        return data != null && !TextUtil.isEmpty(data.getStringExtra(EXTRA_ERROR));
     }
 
     @Override
@@ -465,8 +457,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         if (resultCode == RESULT_OK) {
             presenter.recoverFromFailure();
         } else {
-            final MercadoPagoError mercadoPagoError = data.getStringExtra(EXTRA_ERROR) == null ? null :
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+            final MercadoPagoError mercadoPagoError =
+                isErrorResult(data) ? (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR) : null;
             presenter.onErrorCancel(mercadoPagoError);
         }
     }

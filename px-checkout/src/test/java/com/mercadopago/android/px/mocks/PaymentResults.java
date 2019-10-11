@@ -59,7 +59,7 @@ public final class PaymentResults {
 
     private static PaymentData getMockedPaymentData(@Nullable final String jsonPath) {
         final String json = ResourcesUtil.getStringResource(jsonPath == null ? "payment_data.json" : jsonPath);
-        return JsonUtil.getInstance().fromJson(json, PaymentData.class);
+        return JsonUtil.fromJson(json, PaymentData.class);
     }
 
     public static PaymentResult getStatusApprovedPaymentResult() {

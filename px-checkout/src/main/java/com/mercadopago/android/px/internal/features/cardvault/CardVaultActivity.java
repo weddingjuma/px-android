@@ -15,7 +15,6 @@ import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardAc
 import com.mercadopago.android.px.internal.features.installments.InstallmentsActivity;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Card;
@@ -259,8 +258,8 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         overridePendingTransition(R.anim.px_slide_left_to_right_in, R.anim.px_slide_left_to_right_out);
         final Intent returnIntent = new Intent();
         // TODO: can we kill this and use user selection repository?
-        returnIntent.putExtra(EXTRA_TOKEN, JsonUtil.getInstance().toJson(presenter.getToken()));
-        returnIntent.putExtra(EXTRA_CARD, JsonUtil.getInstance().toJson(presenter.getCard()));
+        returnIntent.putExtra(EXTRA_TOKEN, presenter.getToken());
+        returnIntent.putExtra(EXTRA_CARD, presenter.getCard());
         setResult(RESULT_OK, returnIntent);
         finish();
     }

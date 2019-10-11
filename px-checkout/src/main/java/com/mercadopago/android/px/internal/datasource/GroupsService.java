@@ -135,7 +135,7 @@ public class GroupsService implements GroupsRepository {
             .setBranchId(checkoutPreference.getBranchId())
             .build();
 
-        final Map<String, Object> body = JsonUtil.getInstance().getMapFromObject(paymentMethodSearchBody);
+        final Map<String, Object> body = JsonUtil.getMapFromObject(paymentMethodSearchBody);
 
         return checkoutService
             .getPaymentMethodSearch(API_ENVIRONMENT,

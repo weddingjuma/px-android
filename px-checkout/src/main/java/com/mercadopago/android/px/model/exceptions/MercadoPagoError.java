@@ -27,7 +27,7 @@ public class MercadoPagoError implements Serializable {
     public MercadoPagoError(@NonNull final ApiException apiException, final String requestOrigin) {
         this.apiException = apiException;
         this.requestOrigin = requestOrigin;
-        recoverable = apiException != null && apiException.isRecoverable();
+        recoverable = apiException.isRecoverable();
     }
 
     @NonNull

@@ -1,10 +1,10 @@
 package com.mercadopago.android.px.internal.features.guessing_card;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
-import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
@@ -18,7 +18,6 @@ import com.mercadopago.android.px.internal.util.IdentificationUtils;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
-import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.Bin;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
@@ -42,7 +41,6 @@ import com.mercadopago.android.px.tracking.internal.views.CardNumberViewTracker;
 import com.mercadopago.android.px.tracking.internal.views.CvvGuessingViewTracker;
 import com.mercadopago.android.px.tracking.internal.views.ExpirationDateViewTracker;
 import com.mercadopago.android.px.tracking.internal.views.IdentificationViewTracker;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -69,7 +67,6 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
     protected static final String IDENTIFICATION_NUMBER_BUNDLE = "identificationNumber";
     protected static final String IDENTIFICATION_TYPE_BUNDLE = "identificationType";
     protected static final String PAYMENT_TYPES_LIST_BUNDLE = "paymentTypeList";
-    protected static final String BANK_DEALS_LIST_BUNDLE = "bankDealsList";
     protected static final String IDENTIFICATION_TYPES_LIST_BUNDLE = "idTypesList";
     protected static final String PAYMENT_RECOVERY_BUNDLE = "paymentRecovery";
     protected static final String LOW_RES_BUNDLE = "lowRes";
@@ -113,7 +110,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
             session.getConfigurationModule().getUserSelectionRepository(),
             session.getConfigurationModule().getPaymentSettings(), session.getGroupsRepository(),
             session.getIssuersRepository(),
-            session.getCardTokenRepository(), session.getBankDealsRepository(),
+            session.getCardTokenRepository(),
             session.getIdentificationRepository(),
             session.getConfigurationModule().getPaymentSettings().getAdvancedConfiguration(),
             paymentRecovery,
@@ -817,50 +814,36 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
 
     public abstract void resolveTokenRequest(final Token token);
 
-    public abstract List<BankDeal> getBankDealsList();
-
     public abstract void onIssuerSelected(Long issuerId);
 
     public void onSaveInstanceState(final Bundle outState, final String cardSideState,
         final boolean lowResActive) {
         outState.putString(CARD_SIDE_STATE_BUNDLE, cardSideState);
-        outState.putString(PAYMENT_METHOD_BUNDLE, JsonUtil.getInstance().toJson(getPaymentMethod()));
+        outState.putParcelable(PAYMENT_METHOD_BUNDLE, getPaymentMethod());
         outState.putBoolean(ID_REQUIRED_BUNDLE, isIdentificationNumberRequired());
         outState.putBoolean(SEC_CODE_REQUIRED_BUNDLE, isSecurityCodeRequired());
         outState.putInt(SEC_CODE_LENGTH_BUNDLE, getSecurityCodeLength());
         outState.putInt(CARD_NUMBER_LENGTH_BUNDLE, getCardNumberLength());
         outState.putString(SEC_CODE_LOCATION_BUNDLE, getSecurityCodeLocation());
-        outState.putString(CARD_TOKEN_BUNDLE, JsonUtil.getInstance().toJson(getCardToken()));
+        outState.putString(CARD_TOKEN_BUNDLE, JsonUtil.toJson(getCardToken()));
         outState.putString(CARD_INFO_BIN_BUNDLE, getSavedBin());
         outState.putString(CARD_NUMBER_BUNDLE, getCardNumber());
         outState.putString(CARD_NAME_BUNDLE, getCardholderName());
         outState.putString(EXPIRY_MONTH_BUNDLE, getExpiryMonth());
         outState.putString(EXPIRY_YEAR_BUNDLE, getExpiryYear());
-        outState.putString(IDENTIFICATION_BUNDLE, JsonUtil.getInstance().toJson(getIdentification()));
+        outState.putParcelable(IDENTIFICATION_BUNDLE, getIdentification());
         outState.putString(IDENTIFICATION_NUMBER_BUNDLE, getIdentificationNumber());
-        outState.putString(IDENTIFICATION_TYPE_BUNDLE,
-            JsonUtil.getInstance().toJson(getIdentificationType()));
-        outState.putString(IDENTIFICATION_TYPES_LIST_BUNDLE,
-            JsonUtil.getInstance().toJson(getIdentificationTypes()));
+        outState.putParcelable(IDENTIFICATION_TYPE_BUNDLE, getIdentificationType());
+        outState.putParcelableArrayList(IDENTIFICATION_TYPES_LIST_BUNDLE, (ArrayList<? extends Parcelable>) getIdentificationTypes());
         outState.putBoolean(LOW_RES_BUNDLE, lowResActive);
-        outState.putString(TOKEN_BUNDLE, JsonUtil.getInstance().toJson(getToken()));
+        outState.putSerializable(TOKEN_BUNDLE, getToken());
         getView().clearSecurityCodeEditText();
     }
 
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
-        final String paymentMethodBundleJson = savedInstanceState.getString(PAYMENT_METHOD_BUNDLE);
-        if (!TextUtil.isEmpty(paymentMethodBundleJson)) {
-            final PaymentMethod pm = JsonUtil.getInstance()
-                .fromJson(paymentMethodBundleJson, PaymentMethod.class);
+        final PaymentMethod pm = savedInstanceState.getParcelable(PAYMENT_METHOD_BUNDLE);
             if (pm != null) {
-                try {
-                    final Type listType = new TypeToken<List<IdentificationType>>() {
-                    }.getType();
-                    identificationTypes = JsonUtil.getInstance().getGson().fromJson(
-                        savedInstanceState.getString(IDENTIFICATION_TYPES_LIST_BUNDLE), listType);
-                } catch (final Exception ex) {
-                    identificationTypes = null;
-                }
+                identificationTypes = savedInstanceState.getParcelableArrayList(IDENTIFICATION_TYPES_LIST_BUNDLE);
                 saveBin(savedInstanceState.getString(CARD_INFO_BIN_BUNDLE));
                 setIdentificationNumberRequired(savedInstanceState.getBoolean(ID_REQUIRED_BUNDLE));
                 setSecurityCodeRequired(savedInstanceState.getBoolean(SEC_CODE_REQUIRED_BUNDLE));
@@ -868,22 +851,18 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
                 setCardholderName(savedInstanceState.getString(CARD_NAME_BUNDLE));
                 setExpiryMonth(savedInstanceState.getString(EXPIRY_MONTH_BUNDLE));
                 setExpiryYear(savedInstanceState.getString(EXPIRY_YEAR_BUNDLE));
-                final Token token = JsonUtil.getInstance()
-                    .fromJson(savedInstanceState.getString(TOKEN_BUNDLE), Token.class);
+                final Token token = (Token) savedInstanceState.getSerializable(TOKEN_BUNDLE);
                 setToken(token);
                 final String idNumber = savedInstanceState.getString(IDENTIFICATION_NUMBER_BUNDLE);
                 setIdentificationNumber(idNumber);
-                final Identification identification = JsonUtil.getInstance()
-                    .fromJson(savedInstanceState.getString(IDENTIFICATION_BUNDLE), Identification.class);
+                final Identification identification = savedInstanceState.getParcelable(IDENTIFICATION_BUNDLE);
                 identification.setNumber(idNumber);
                 setIdentification(identification);
                 setSecurityCodeLocation(savedInstanceState.getString(SEC_CODE_LOCATION_BUNDLE));
-                final CardToken cardToken = JsonUtil.getInstance()
+                final CardToken cardToken = JsonUtil
                     .fromJson(savedInstanceState.getString(CARD_TOKEN_BUNDLE), CardToken.class);
                 cardToken.getCardholder().setIdentification(identification);
-                final IdentificationType identificationType = JsonUtil.getInstance()
-                    .fromJson(savedInstanceState.getString(IDENTIFICATION_TYPE_BUNDLE),
-                        IdentificationType.class);
+                final IdentificationType identificationType = savedInstanceState.getParcelable(IDENTIFICATION_TYPE_BUNDLE);
                 setCardToken(cardToken);
                 setIdentificationType(identificationType);
                 final boolean lowResActive = savedInstanceState.getBoolean(LOW_RES_BUNDLE);
@@ -891,7 +870,6 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
                     getExpiryYear(), idNumber, identificationType);
                 onPaymentMethodSet(pm);
             }
-        }
     }
 
     @Override

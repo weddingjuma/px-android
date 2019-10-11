@@ -49,7 +49,6 @@ import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.ComponentManager;
 import com.mercadopago.android.px.internal.view.LinkableTextComponent;
@@ -74,6 +73,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANC
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHANGE_PAYMENT_METHOD;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERROR;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 
 public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmPresenter> implements
     ReviewAndConfirm.View, ActionDispatcher, ExplodingFragment.ExplodingAnimationListener {
@@ -524,8 +524,9 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         if (resultCode == RESULT_OK) {
             presenter.recoverFromFailure();
         } else {
-            final MercadoPagoError mercadoPagoError = data.getStringExtra(EXTRA_ERROR) == null ? null :
-                JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+            final MercadoPagoError mercadoPagoError =
+                isErrorResult(data) ? (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR) :
+                    null;
             presenter.onError(mercadoPagoError);
         }
     }
@@ -536,8 +537,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             presenter.onCardFlowResponse();
         } else {
             final MercadoPagoError mercadoPagoError =
-                (data == null || data.getStringExtra(EXTRA_ERROR) == null) ? null :
-                    JsonUtil.getInstance().fromJson(data.getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+                isErrorResult(data) ? (MercadoPagoError) data.getSerializableExtra(EXTRA_ERROR) : null;
             if (mercadoPagoError == null) {
                 presenter.onCardFlowCancel();
             } else {

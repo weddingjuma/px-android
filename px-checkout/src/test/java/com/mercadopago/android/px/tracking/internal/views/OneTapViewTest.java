@@ -39,30 +39,30 @@ public class OneTapViewTest {
     }
 
     @Test
-    @Ignore
     public void verifyListenerCalled() {
         MPTracker.getInstance().hasExpressCheckout(true);
 
         final PXTrackingListener listener = mock(PXTrackingListener.class);
         PXTracker.setListener(listener);
-        final Map<String, Object> data = emptyOneTapData();
-        new OneTapViewTracker(Collections.EMPTY_LIST, checkoutPreference, discountModel, Collections.emptySet(),
-            Collections.emptySet()).track();
+        OneTapViewTracker tracker = new OneTapViewTracker(Collections.EMPTY_LIST, checkoutPreference, discountModel, Collections.emptySet(),
+            Collections.emptySet());
+        tracker.track();
+        final Map<String, Object> data = emptyOneTapData((long)tracker.getData().get("session_time"));
         verify(listener).onView(EXPECTED_PATH, data);
     }
 
     @NonNull
-    private Map<String, Object> emptyOneTapData() {
+    private Map<String, Object> emptyOneTapData(final long sessionTime) {
         final Map<String, Object> data = new HashMap<>();
-        data.put("discount", JsonUtil.getInstance().fromJson("{}", DiscountInfo.class).toMap());
+        data.put("discount", JsonUtil.fromJson("{}", DiscountInfo.class).toMap());
         data.put("available_methods", Collections.EMPTY_LIST);
-        data.put("available_methods_quantity", 0.0);
+        data.put("available_methods_quantity", 0);
         data.put("items", Collections.EMPTY_LIST);
         data.put("flow", null);
         data.put("preference_amount", null);
         data.put("session_id", null);
         data.put("flow_detail", Collections.EMPTY_MAP);
-        data.put("session_time", 0L);
+        data.put("session_time", sessionTime);
         data.put("checkout_type", "one_tap");
         data.put("security_enabled", false);
         return data;

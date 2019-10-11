@@ -33,7 +33,7 @@ public class IdentificationTypes {
     }
 
     public static ApiException getDoNotFindIdentificationTypesException() {
-        return JsonUtil.getInstance().fromJson(doNotFindIdentificationTypesException, ApiException.class);
+        return JsonUtil.fromJson(doNotFindIdentificationTypesException, ApiException.class);
     }
 
     public static IdentificationType getIdentificationType() {
@@ -48,7 +48,7 @@ public class IdentificationTypes {
         try {
             Type listType = new TypeToken<List<IdentificationType>>() {
             }.getType();
-            identificationTypesList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            identificationTypesList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             identificationTypesList = null;
         }
@@ -62,7 +62,7 @@ public class IdentificationTypes {
         try {
             Type listType = new TypeToken<List<IdentificationType>>() {
             }.getType();
-            identificationTypesList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            identificationTypesList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             identificationTypesList = null;
         }

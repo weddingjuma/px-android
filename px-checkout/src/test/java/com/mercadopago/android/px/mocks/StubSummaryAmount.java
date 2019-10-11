@@ -21,7 +21,7 @@ public final class StubSummaryAmount {
     }
 
     private static SummaryAmount getFromFile(final String s) {
-        return JsonUtil.getInstance()
+        return JsonUtil
             .fromJson(ResourcesUtil.getStringResource(s),
                 SummaryAmount.class);
     }

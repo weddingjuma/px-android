@@ -4,10 +4,10 @@ import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.core.ConnectivityStateInterceptor;
 import com.mercadopago.android.px.internal.core.ProductIdInterceptor;
 import com.mercadopago.android.px.internal.core.RequestIdInterceptor;
+import com.mercadopago.android.px.internal.core.ScreenDensityInterceptor;
 import com.mercadopago.android.px.internal.core.SessionInterceptor;
 import com.mercadopago.android.px.internal.core.StrictModeInterceptor;
 import com.mercadopago.android.px.internal.core.TLSSocketFactory;
@@ -28,7 +28,6 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Cache;
 import okhttp3.CipherSuite;
 import okhttp3.ConnectionSpec;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.TlsVersion;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -52,9 +51,9 @@ public final class HttpClientUtil {
         final int readTimeout,
         final int writeTimeout) {
 
-        OkHttpClient.Builder baseClient;
+        final OkHttpClient.Builder baseClient;
         if (client == null) {
-            baseClient = createBaseClient(context, connectTimeout, readTimeout, writeTimeout);
+            baseClient = createBaseClient(context.getApplicationContext(), connectTimeout, readTimeout, writeTimeout);
             client = enableTLS12(baseClient).build();
         }
         return client;
@@ -77,7 +76,7 @@ public final class HttpClientUtil {
         final HttpLoggingInterceptor loginInterceptor = new HttpLoggingInterceptor();
         loginInterceptor.setLevel(LOGGING_INTERCEPTOR);
 
-        OkHttpClient.Builder baseClient = new OkHttpClient.Builder()
+        final OkHttpClient.Builder baseClient = new OkHttpClient.Builder()
             .connectTimeout(connectTimeout, TimeUnit.SECONDS)
             .writeTimeout(writeTimeout, TimeUnit.SECONDS)
             .readTimeout(readTimeout, TimeUnit.SECONDS)
@@ -88,6 +87,7 @@ public final class HttpClientUtil {
             baseClient.addInterceptor(new StrictModeInterceptor(context));
             baseClient.addInterceptor(new SessionInterceptor(context));
             baseClient.addInterceptor(new ProductIdInterceptor(context));
+            baseClient.addInterceptor(new ScreenDensityInterceptor(context));
         }
 
         baseClient.addInterceptor(new RequestIdInterceptor());
@@ -130,7 +130,7 @@ public final class HttpClientUtil {
     private static OkHttpClient.Builder configureProtocol(final OkHttpClient.Builder client,
         final X509TrustManager trustManager) {
         try {
-            SSLContext sslContext = SSLContext.getInstance(TLS_1_2);
+            final SSLContext sslContext = SSLContext.getInstance(TLS_1_2);
             sslContext.init(null, new TrustManager[] { trustManager }, new SecureRandom());
             client.sslSocketFactory(new TLSSocketFactory(sslContext.getSocketFactory()), trustManager);
             return client.connectionSpecs(availableConnectionSpecs());
@@ -150,9 +150,7 @@ public final class HttpClientUtil {
 
         final List<ConnectionSpec> connectionSpecsList = new ArrayList<>();
         connectionSpecsList.add(connectionSpec);
-
         connectionSpecsList.add(connectionSpec.CLEARTEXT);
-
         return connectionSpecsList;
     }
 

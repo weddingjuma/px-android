@@ -170,7 +170,7 @@ import java.util.List;
     @Override
     public void OnClickCrossSellingButton(@NonNull final String deepLink) {
         new CrossSellingEvent(resultViewTrack).track();
-        getView().processBusinessAction(deepLink);
+        getView().processCrossSellingBusinessAction(deepLink);
     }
 
     @Override

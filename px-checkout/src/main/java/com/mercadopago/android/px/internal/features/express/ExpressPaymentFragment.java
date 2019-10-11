@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -25,7 +26,7 @@ import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.addons.internal.PXApplicationBehaviourProvider;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
@@ -51,13 +52,13 @@ import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActi
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
-import com.mercadopago.android.px.internal.util.StatusBarDecorator;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
+import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
@@ -179,11 +180,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
         toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
 
-        confirmButton.setOnClickListener(v -> {
-            if (ApiUtil.checkConnection(getContext())) {
-                presenter.startSecuredPayment();
-            } else {
-                presenter.manageNoConnection();
+        confirmButton.setOnClickListener(new OnSingleClickListener() {
+            @Override
+            public void onSingleClick(final View view) {
+                if (ApiUtil.checkConnection(getContext())) {
+                    presenter.startSecuredPayment();
+                } else {
+                    presenter.manageNoConnection();
+                }
             }
         });
 
@@ -243,8 +247,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getAmountConfigurationRepository(),
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
-            session.getProductIdProvider(),
-            PXApplicationBehaviourProvider.getSecurityBehaviour());
+            session.getProductIdProvider());
     }
 
     @Override
@@ -450,7 +453,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
-        PXApplicationBehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
+        BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 
     //FIXME Used to start payment from activity
@@ -486,9 +489,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void restoreStatusBar() {
-        if (getActivity() != null) {
-            new StatusBarDecorator(getActivity().getWindow())
-                .setupStatusBarColor(ContextCompat.getColor(getActivity(), R.color.px_colorPrimaryDark));
+        final Activity activity = getActivity();
+
+        if (activity != null) {
+            ViewUtils.setStatusBarColor(ContextCompat.getColor(activity, R.color.px_colorPrimaryDark),
+                activity.getWindow());
         }
     }
 
@@ -516,7 +521,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void hideConfirmButton() {
-        confirmButton.setClickable(false);
         confirmButton.clearAnimation();
         confirmButton.setVisibility(INVISIBLE);
     }

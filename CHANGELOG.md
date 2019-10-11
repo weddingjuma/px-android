@@ -1,3 +1,21 @@
+## VERSION 4.24.0
+_10_10_2019_
+* ENHANCEMENT - Refactored fonts usage
+* ENHANCEMENT - refactored utils
+* FIX - Fixed margins in congrats components
+
+## VERSION 4.23.1
+_02_10_2019_
+* FEATURE - Added receiptIdList in BusinessPayment
+* ENHANCEMENT - Using safe intent for cross selling actions
+* ENHANCEMENT - Fixed inconsistent empty tracking values
+
+## VERSION 4.23.0
+_02_10_2019_
+* FEATURE - Added rules sets to validate when to ask for biometrics or not
+* ENHANCEMENT - Added screen density interceptor to add headers in api calls
+* FIX - Added single click listener to prevent fast double clicks in views
+
 ## VERSION 4.22.0
 _26_09_2019_
 * FEATURE - New congrats design

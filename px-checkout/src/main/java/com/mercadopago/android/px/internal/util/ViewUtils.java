@@ -1,21 +1,21 @@
 package com.mercadopago.android.px.internal.util;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Typeface;
-import android.support.annotation.ColorRes;
+import android.os.Build;
+import android.support.annotation.ColorInt;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
@@ -23,19 +23,25 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.mercadolibre.android.ui.font.Font;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.font.FontHelper;
+import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.view.MPEditText;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-import uk.co.chrisjenx.calligraphy.TypefaceUtils;
 
 public final class ViewUtils {
+
+    private static final float DARKEN_FACTOR = 0.04f;
+    private static final int HSV_LENGTH = 3;
+    private static final float[] hsv = new float[HSV_LENGTH];
 
     private ViewUtils() {
     }
@@ -155,44 +161,26 @@ public final class ViewUtils {
         }
     }
 
-    //TODO refactor
-    public static void setFontInSpannable(final int indexStart, final int indexEnd,
-        @NonNull final Spannable spannable, @Nullable final String fontStylePath, @NonNull final Context context) {
-
-        if (TextUtil.isEmpty(fontStylePath)) {
-            return;
-        }
-
-        final Typeface typeface = TypefaceUtils.load(context.getAssets(), fontStylePath);
-
-        if (typeface == null) {
-            return;
-        }
-
-        final StyleSpan styleSpan = new StyleSpan(typeface.getStyle());
-        setFontInSpannable(indexStart, indexEnd, spannable, styleSpan);
+    public static void setFontInSpannable(@NonNull final Context context, @NonNull final PxFont font,
+        @NonNull final Spannable spannable) {
+        setFontInSpannable(context, font, spannable, 0, spannable.length());
     }
 
-    //TODO refactor
-    private static void setFontInSpannable(final int indexStart, final int indexEnd,
-        @NonNull final Spannable spannable, @NonNull final StyleSpan styleSpan) {
-        spannable.setSpan(styleSpan, indexStart, indexEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-    }
-
-    //TODO refactor
-    public static void setSemiBoldFontInSpannable(final int indexStart, final int indexEnd,
-        @NonNull final Spannable spannable, @NonNull final Context context) {
-
-        if (TextUtil.isEmpty(Font.SEMI_BOLD.getFontPath())) {
-            setFontInSpannable(indexStart, indexEnd, spannable, new StyleSpan(Typeface.BOLD));
-        } else {
-            final Typeface semiBold = TypefaceUtils.load(context.getAssets(), Font.SEMI_BOLD.getFontPath());
-            if (semiBold == null) {
-                setFontInSpannable(indexStart, indexEnd, spannable, new StyleSpan(Typeface.BOLD));
-                return;
+    public static void setFontInSpannable(@NonNull final Context context, @NonNull final PxFont font,
+        @NonNull final Spannable spannable, final int indexStart, final int indexEnd) {
+        FontHelper.getFont(context, font, new ResourcesCompat.FontCallback() {
+            @Override
+            public void onFontRetrieved(@NonNull final Typeface typeface) {
+                spannable.setSpan(new StyleSpan(typeface.getStyle()), indexStart, indexEnd,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
             }
-            setFontInSpannable(indexStart, indexEnd, spannable, new StyleSpan(semiBold.getStyle()));
-        }
+
+            @Override
+            public void onFontRetrievalFailed(final int i) {
+                spannable.setSpan(new StyleSpan(font.fallbackStyle), indexStart, indexEnd,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            }
+        });
     }
 
     public static void stretchHeight(@NonNull final View view) {
@@ -269,6 +257,22 @@ public final class ViewUtils {
                     runnable.run();
                 }
             });
+        }
+    }
+
+    /**
+     * Paint the status bar
+     *
+     * @param color the color to use. The color will be darkened by {@link #DARKEN_FACTOR} percent
+     */
+    @SuppressLint({ "InlinedApi" })
+    public static void setStatusBarColor(@ColorInt final int color, @NonNull final Window window) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            Color.RGBToHSV(Color.red(color), Color.green(color), Color.blue(color), hsv);
+            hsv[2] = Math.max(hsv[2] * (1 - DARKEN_FACTOR), 0);
+            window.setStatusBarColor(Color.HSVToColor(hsv));
         }
     }
 }

@@ -30,6 +30,7 @@ public interface PaymentResultContract {
         void setStatusBarColor(@ColorRes final int color);
 
         void processBusinessAction(@NonNull final String deepLink);
+        void processCrossSellingBusinessAction(@NonNull final String deepLink);
     }
 
     interface Presenter {

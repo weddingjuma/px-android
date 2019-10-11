@@ -37,7 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 @SuppressLint("MissingPermission")
-public class Fingerprint implements Serializable {
+public class Fingerprint {
     private static final String TAG = "Fingerprint";
     private static final String SHARED_PREFS_FINGERPRINT_LOCATION = "FINGERPRINT_LOCATION";
     public static final String PLATFORM_PROPERTY = "ro.product.cpu.abi";
@@ -334,7 +334,7 @@ public class Fingerprint implements Serializable {
         }
     }
 
-    private class VendorId implements Serializable{
+    private class VendorId {
         private final String name;
         private final String value;
 

@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
@@ -356,9 +357,8 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     @Override
     public void onActivityResultNotOk(@Nullable final Intent data) {
         trackScreen();
-        final boolean hasError = data != null && data.getSerializableExtra(EXTRA_ERROR) != null;
         final boolean shouldFinishOnBack =
-            hasError || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
+            ErrorUtil.isErrorResult(data) || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
                 selectedSearchItem.getChildren().size() == 1;
         if (shouldFinishOnBack) {
             getView().cancel(data);

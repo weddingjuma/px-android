@@ -65,6 +65,18 @@ public class CardInfo implements Serializable {
         firstSixDigits = token.getFirstSixDigits();
     }
 
+    /**
+     * @param card
+     * @deprecated To be replaced with factory method.
+     */
+    @Deprecated
+    public CardInfo(final Card card) {
+        lastFourDigits = card.getLastFourDigits();
+        firstSixDigits = card.getFirstSixDigits();
+        securityCodeLength = card.getSecurityCodeLength();
+        securityCodeLocation = card.getSecurityCodeLocation();
+    }
+
     @Deprecated
     public static boolean canCreateCardInfo(final Token token) {
         return token.getCardNumberLength() != null && token.getLastFourDigits() != null

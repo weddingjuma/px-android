@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -89,7 +90,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         final Intent intent = new Intent(context, SecurityCodeActivity.class);
         intent.putExtra(EXTRA_CARD_INFO, CardInfo.create(card));
         intent.putExtra(EXTRA_CARD, card);
-        intent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) card.getPaymentMethod());
+        intent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) card.getPaymentMethod());
         intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
         return intent;
     }
@@ -145,7 +146,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         final CardInfo cardInfo = (CardInfo) getIntent().getSerializableExtra(EXTRA_CARD_INFO);
         final Card card = (Card) getIntent().getSerializableExtra(EXTRA_CARD);
         final Token token = (Token) getIntent().getSerializableExtra(EXTRA_TOKEN);
-        final PaymentMethod paymentMethod = (PaymentMethod) getIntent().getSerializableExtra(EXTRA_PAYMENT_METHOD);
+        final PaymentMethod paymentMethod = getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD);
         final PaymentRecovery paymentRecovery = (PaymentRecovery) getIntent().getSerializableExtra(EXTRA_PAYMENT_RECOVERY);
         final Reason reason =
             Reason.valueOf(getIntent().getStringExtra(EXTRA_REASON));
@@ -467,7 +468,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
         private void startSecurityCodeActivity(@NonNull final Activity activity, final int requestCode) {
             final Intent intent = new Intent(activity, SecurityCodeActivity.class);
-            intent.putExtra(EXTRA_PAYMENT_METHOD, (Serializable) paymentMethod);
+            intent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod);
             intent.putExtra(EXTRA_TOKEN, token);
             intent.putExtra(EXTRA_CARD, card);
             intent.putExtra(EXTRA_CARD_INFO, cardInformation);

@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.ActionBar;
@@ -68,9 +67,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
     private static final String EXTRA_AUTOMATIC_SELECTION = "automaticSelection";
     private static final String MISMATCHING_PAYMENT_METHOD_ERROR = "Payment method in search not found";
-    private static final String TOKEN = "token";
-    private static final String ISSUER = "issuer";
-    private static final String CARD = "card";
+    private static final String EXTRA_TOKEN = "token";
+    private static final String EXTRA_ISSUER = "issuer";
+    private static final String EXTRA_CARD = "card";
     private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     // Local vars
     protected boolean mActivityActive;
@@ -281,17 +280,12 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
         }
     }
 
-    @Nullable
-    private Serializable getSerializeData(@NonNull final Intent intent, @NonNull final String key) {
-        return intent.hasExtra(key) ? intent.getSerializableExtra(key) : null;
-    }
-
     protected void resolveCardRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             showProgress();
-            mToken = (Token) getSerializeData(data, TOKEN);
-            mSelectedIssuer = (Issuer) getSerializeData(data, ISSUER);
-            mSelectedCard = (Card) getSerializeData(data, CARD);
+            mToken = (Token) data.getSerializableExtra(EXTRA_TOKEN);
+            mSelectedIssuer = (Issuer) data.getSerializableExtra(EXTRA_ISSUER);
+            mSelectedCard = (Card) data.getSerializableExtra(EXTRA_CARD);
             finishWithCardResult();
         } else if (resultCode == RESULT_SILENT_ERROR) {
             setResult(RESULT_SILENT_ERROR);
@@ -331,11 +325,11 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void finishWithCardResult() {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra(TOKEN, mToken);
+        returnIntent.putExtra(EXTRA_TOKEN, mToken);
         if (mSelectedIssuer != null) {
-            returnIntent.putExtra(ISSUER, (Serializable) mSelectedIssuer);
+            returnIntent.putExtra(EXTRA_ISSUER, (Serializable) mSelectedIssuer);
         }
-        returnIntent.putExtra(CARD, mSelectedCard);
+        returnIntent.putExtra(EXTRA_CARD, mSelectedCard);
         finishWithResult(returnIntent);
     }
 

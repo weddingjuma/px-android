@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -26,7 +25,7 @@ public final class JsonUtil {
         return gson.fromJson(json, classOfT);
     }
 
-    public static <T> T fromJson(@Nullable final String json, @NonNull final Type classOfT) {
+    public static <T> T fromJson(@NonNull final String json, @NonNull final Type classOfT) {
         return gson.fromJson(json, classOfT);
     }
 

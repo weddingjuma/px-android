@@ -38,6 +38,7 @@ import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
 import java.util.List;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
+import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 
 public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> implements AmountView.OnClick,
     PaymentVault.Actions, AmountRowController.AmountRowVisibilityBehaviour, SearchItemOnClickListenerHandler {
@@ -358,7 +359,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     public void onActivityResultNotOk(@Nullable final Intent data) {
         trackScreen();
         final boolean shouldFinishOnBack =
-            ErrorUtil.isErrorResult(data) || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
+            isErrorResult(data) || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
                 selectedSearchItem.getChildren().size() == 1;
         if (shouldFinishOnBack) {
             getView().cancel(data);

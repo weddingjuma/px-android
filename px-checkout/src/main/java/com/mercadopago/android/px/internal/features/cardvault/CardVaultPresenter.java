@@ -229,7 +229,7 @@ import java.util.List;
     private void startSavedCardFlow() {
         // here is a saved card selected
         final Card card = getCard();
-        setCardInfo(CardInfo.create(card));
+        setCardInfo(new CardInfo(card));
         setPaymentMethod(card.getPaymentMethod());
 
         if (userSelectionRepository.getPayerCost() == null) {

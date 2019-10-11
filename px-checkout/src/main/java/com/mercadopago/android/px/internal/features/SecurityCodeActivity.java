@@ -88,7 +88,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     private static Intent createIntent(@NonNull final Context context, @NonNull final Card card) {
         final Intent intent = new Intent(context, SecurityCodeActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, CardInfo.create(card));
+        intent.putExtra(EXTRA_CARD_INFO, new CardInfo(card));
         intent.putExtra(EXTRA_CARD, card);
         intent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) card.getPaymentMethod());
         intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());

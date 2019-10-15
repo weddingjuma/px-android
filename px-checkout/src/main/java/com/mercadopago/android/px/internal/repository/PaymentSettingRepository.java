@@ -30,7 +30,7 @@ public interface PaymentSettingRepository {
     void configurePrivateKey(@Nullable final String privateKey);
 
     @NonNull
-    List<PaymentTypeChargeRule> chargeRules();
+    List<PaymentTypeChargeRule> getChargeRules();
 
     @NonNull
     PaymentConfiguration getPaymentConfiguration();

@@ -3,14 +3,17 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +29,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_PRODUCT_ID = "PREF_PRODUCT_ID";
     private static final String PREF_LABELS = "PREF_LABELS";
     private static final String PREF_AMOUNT_ROW_ENABLED = "PREF_AMOUNT_ROW_ENABLED";
+    private static final String PREF_CHARGE_RULES = "PREF_CHARGE_RULES";
 
     @NonNull private final SharedPreferences sharedPreferences;
 
@@ -55,7 +59,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     }
 
     @Override
-    public void clearToken(){
+    public void clearToken() {
         sharedPreferences.edit().remove(PREF_TOKEN).apply();
     }
 
@@ -91,6 +95,11 @@ public class PaymentSettingService implements PaymentSettingRepository {
 
     @Override
     public void configure(@Nullable final PaymentConfiguration paymentConfiguration) {
+        //TODO we have to save payment processor for save the hole payment configuration in shared preference
+        if (paymentConfiguration != null) {
+            sharedPreferences.edit().putString(PREF_CHARGE_RULES, JsonUtil.toJson(paymentConfiguration.getCharges()))
+                .apply();
+        }
         this.paymentConfiguration = paymentConfiguration;
     }
 
@@ -108,8 +117,14 @@ public class PaymentSettingService implements PaymentSettingRepository {
 
     @NonNull
     @Override
-    public List<PaymentTypeChargeRule> chargeRules() {
-        return getPaymentConfiguration().getCharges();
+    public List<PaymentTypeChargeRule> getChargeRules() {
+        if (paymentConfiguration == null) {
+            return JsonUtil.fromJson(sharedPreferences.getString(PREF_CHARGE_RULES, TextUtil.EMPTY),
+                new TypeToken<ArrayList<PaymentTypeChargeRule>>() {
+                }.getType());
+        } else {
+            return getPaymentConfiguration().getCharges();
+        }
     }
 
     @NonNull
@@ -161,8 +176,8 @@ public class PaymentSettingService implements PaymentSettingRepository {
     public AdvancedConfiguration getAdvancedConfiguration() {
         if (advancedConfiguration == null) {
             return new AdvancedConfiguration.Builder()
-                    .setAmountRowEnabled(sharedPreferences.getBoolean(PREF_AMOUNT_ROW_ENABLED, true))
-                    .setDiscountParamsConfiguration(new DiscountParamsConfiguration.Builder()
+                .setAmountRowEnabled(sharedPreferences.getBoolean(PREF_AMOUNT_ROW_ENABLED, true))
+                .setDiscountParamsConfiguration(new DiscountParamsConfiguration.Builder()
                     .setProductId(sharedPreferences.getString(PREF_PRODUCT_ID, ""))
                     .setLabels(sharedPreferences.getStringSet(PREF_LABELS, Collections.<String>emptySet())).build())
                 .build();

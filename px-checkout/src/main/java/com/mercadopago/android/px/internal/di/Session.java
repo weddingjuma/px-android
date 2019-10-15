@@ -69,7 +69,6 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
-import java.util.HashMap;
 
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getPlatform;
 

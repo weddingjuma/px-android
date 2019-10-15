@@ -75,18 +75,6 @@ public class PaymentConfiguration {
             charges = new ArrayList<>();
         }
 
-//        /**
-//         * Add extra charges that will apply to total amount.
-//         *
-//         * @param charges the list of charges that could apply.
-//         * @return builder to keep operating
-//         */
-//        @Deprecated
-//        public Builder addChargeRules(@NonNull final Collection<ChargeRule> charges) {
-//            this.charges.addAll(charges);
-//            return this;
-//        }
-
         /**
          * Add extra charges that will apply to total amount.
          *

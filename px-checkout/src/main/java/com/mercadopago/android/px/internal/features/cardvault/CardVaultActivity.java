@@ -79,8 +79,8 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     }
 
     @Override
-    protected void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(@Nullable final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_card_vault);
         configure();
 
@@ -98,12 +98,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         } else {
             restoreInstanceState(savedInstanceState);
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
     }
 
     public void restoreInstanceState(final Bundle savedInstanceState) {

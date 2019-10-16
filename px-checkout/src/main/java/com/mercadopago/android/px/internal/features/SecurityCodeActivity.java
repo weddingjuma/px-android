@@ -96,8 +96,8 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();
@@ -129,12 +129,6 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         presenter.storeInBundle(outState);
 
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.detachView();
     }
 
     @Override

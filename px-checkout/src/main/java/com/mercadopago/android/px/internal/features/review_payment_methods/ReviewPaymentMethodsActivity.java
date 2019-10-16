@@ -32,8 +32,8 @@ public class ReviewPaymentMethodsActivity extends PXActivity<ReviewPaymentMethod
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstance) {
-        super.onCreate(savedInstance);
+    protected void onPostCreate(final Bundle savedInstance) {
+        super.onPostCreate(savedInstance);
         setContentView(R.layout.px_activity_review_payment_methods);
         recyclerView = findViewById(R.id.mpsdkReviewPaymentMethodsView);
         final FrameLayout mTryOtherCardButton = findViewById(R.id.tryOtherCardButton);

@@ -35,7 +35,7 @@ public class CardAssociationResultErrorActivity extends PXActivity {
         accessToken = intent.getStringExtra(PARAM_ACCESS_TOKEN);
 
         setContentView(R.layout.px_card_association_result_error);
-        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.px_orange_status_bar), getWindow());
+        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.ui_components_warning_color), getWindow());
 
         final MeliButton retryButton = findViewById(R.id.mpsdkCardAssociationResultRetryButton);
         retryButton.setOnClickListener(v -> {

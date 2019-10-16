@@ -20,7 +20,6 @@ public final class PaymentResultViewModel {
     private final boolean isPendingSuccess;
     private final int descriptionResId;
     private final int backgroundResId;
-    private final int statusBarResId;
     private final int badgeResId;
     private final String descriptionParam;
 
@@ -30,7 +29,7 @@ public final class PaymentResultViewModel {
     @Nullable private final Action linkAction;
     private final int linkActionTitle;
 
-    private PaymentResultViewModel(final Builder builder) {
+    /* default */ PaymentResultViewModel(final Builder builder) {
         titleResId = builder.titleResId;
         labelResId = builder.labelResId;
         hasDetail = builder.hasDetail;
@@ -46,7 +45,6 @@ public final class PaymentResultViewModel {
         bodyTitleResId = builder.bodyTitleResId;
         titleDescriptionResId = builder.titleDescriptionResId;
         backgroundResId = builder.backgroundResId;
-        statusBarResId = builder.statusBarResId;
         badgeResId = builder.badgeResId;
         descriptionParam = builder.descriptionParam;
     }
@@ -122,10 +120,6 @@ public final class PaymentResultViewModel {
         return backgroundResId;
     }
 
-    public int getStatusBarResId() {
-        return statusBarResId;
-    }
-
     public int getBadgeResId() {
         return badgeResId;
     }
@@ -146,7 +140,6 @@ public final class PaymentResultViewModel {
         boolean isPendingWarning;
         boolean isPendingSuccess;
         int backgroundResId;
-        int statusBarResId;
         int badgeResId;
         String descriptionParam;
 
@@ -229,11 +222,6 @@ public final class PaymentResultViewModel {
 
         public Builder setBackgroundColor(final int backgroundColor) {
             backgroundResId = backgroundColor;
-            return this;
-        }
-
-        public Builder setStatusBarResId(final int statusBarResId) {
-            this.statusBarResId = statusBarResId;
             return this;
         }
 

@@ -25,7 +25,7 @@ public class CardAssociationResultSuccessActivity extends PXActivity {
 
         setContentView(R.layout.px_card_association_result_success);
 
-        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.px_green_status_bar), getWindow());
+        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.ui_components_success_color), getWindow());
 
         final MeliButton exitButton = findViewById(R.id.mpsdkCardAssociationResultExitButton);
         exitButton.setOnClickListener(v -> {

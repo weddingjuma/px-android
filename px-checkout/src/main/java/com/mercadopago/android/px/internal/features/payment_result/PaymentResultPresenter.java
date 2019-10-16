@@ -137,7 +137,7 @@ import java.util.List;
         final PaymentResultViewModel viewModel = new PaymentResultViewModelMapper(screenConfiguration, instruction)
             .map(paymentModel);
         getView().configureViews(viewModel, this);
-        getView().setStatusBarColor(viewModel.headerModel.getStatusBarColor());
+        getView().setStatusBarColor(viewModel.headerModel.getBackgroundColor());
     }
 
     @Override

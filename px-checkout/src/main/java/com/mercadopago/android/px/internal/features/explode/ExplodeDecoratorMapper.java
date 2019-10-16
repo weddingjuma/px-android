@@ -11,7 +11,6 @@ public class ExplodeDecoratorMapper extends Mapper<IPayment, ExplodeDecorator> {
     @Override
     public ExplodeDecorator map(@NonNull final IPayment val) {
         final PaymentResultDecorator decorator = PaymentResultViewModelFactory.createPaymentResultDecorator(val);
-        return new ExplodeDecorator(decorator.getPrimaryColor(), decorator.getPrimaryDarkColor(),
-            decorator.getStatusIcon());
+        return new ExplodeDecorator(decorator.getPrimaryColor(), decorator.getStatusIcon());
     }
 }

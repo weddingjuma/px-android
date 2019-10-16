@@ -1,27 +1,27 @@
 package com.mercadopago.android.px.internal.features.explode;
 
+import android.content.Context;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 
 public final class ExplodeDecorator implements Parcelable {
 
     private final int primaryColor;
-    private final int darkPrimaryColor;
     private final int statusIcon;
 
-    public ExplodeDecorator(@ColorRes final int primaryColor,
-        @ColorRes final int darkPrimaryColor,
-        @DrawableRes final int statusIcon) {
+    /* default */ ExplodeDecorator(@ColorRes final int primaryColor, @DrawableRes final int statusIcon) {
         this.primaryColor = primaryColor;
-        this.darkPrimaryColor = darkPrimaryColor;
         this.statusIcon = statusIcon;
     }
 
-    protected ExplodeDecorator(final Parcel in) {
+    /* default */ ExplodeDecorator(final Parcel in) {
         primaryColor = in.readInt();
-        darkPrimaryColor = in.readInt();
         statusIcon = in.readInt();
     }
 
@@ -37,14 +37,14 @@ public final class ExplodeDecorator implements Parcelable {
         }
     };
 
-    @ColorRes
-    public int getPrimaryColor() {
-        return primaryColor;
+    @ColorInt
+    public int getPrimaryColor(@NonNull final Context context) {
+        return ContextCompat.getColor(context, primaryColor);
     }
 
-    @ColorRes
-    public int getDarkPrimaryColor() {
-        return darkPrimaryColor;
+    @ColorInt
+    public int getDarkPrimaryColor(@NonNull final Context context) {
+        return ViewUtils.getDarkPrimaryColor(getPrimaryColor(context));
     }
 
     @DrawableRes
@@ -60,7 +60,6 @@ public final class ExplodeDecorator implements Parcelable {
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeInt(primaryColor);
-        dest.writeInt(darkPrimaryColor);
         dest.writeInt(statusIcon);
     }
 }

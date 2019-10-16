@@ -194,8 +194,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         mActivityActive = true;
         mButtonContainerMustBeShown = true;
         analizeLowRes();
@@ -212,7 +212,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     @Override
     protected void onDestroy() {
         mActivityActive = false;
-        presenter.detachView();
         super.onDestroy();
     }
 

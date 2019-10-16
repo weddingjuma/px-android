@@ -45,8 +45,8 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final Session session = Session.getInstance();
         mPresenter =

@@ -78,8 +78,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_checkout);
         if (savedInstanceState == null) {
             initPresenter();
@@ -484,15 +484,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         overrideTransitionOut();
         overrideTransitionIn();
         PaymentProcessorActivity.start(this, REQ_PAYMENT_PROCESSOR);
-    }
-
-    @Override
-    protected void onDestroy() {
-        //TODO remove null check after session is persisted
-        if (presenter != null) {
-            presenter.detachView();
-        }
-        super.onDestroy();
     }
 
     @Override

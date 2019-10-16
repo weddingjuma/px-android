@@ -54,8 +54,8 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_payment_result);
 
         presenter = createPresenter();
@@ -72,12 +72,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
         return new PaymentResultPresenter(session.getConfigurationModule().getPaymentSettings(),
             session.getInstructionsRepository(), paymentModel);
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
     }
 
     @Override

@@ -37,8 +37,8 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_payment_result);
 
         presenter = createPresenter();
@@ -70,12 +70,6 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     @Override
     public void onBackPressed() {
         presenter.onAbort();
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
     }
 
     @Override

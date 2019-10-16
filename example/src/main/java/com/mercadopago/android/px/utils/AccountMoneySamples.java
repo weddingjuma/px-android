@@ -5,6 +5,7 @@ import com.mercadopago.SamplePaymentProcessorNoView;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.PaymentProcessor;
+import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.GenericPayment;
@@ -41,7 +42,7 @@ public final class AccountMoneySamples {
 
     private static MercadoPagoCheckout.Builder startCheckoutWithGenericPayment() {
         final GenericPayment payment = getGenericPaymentApproved();
-        final PaymentProcessor paymentProcessor = new SamplePaymentProcessorNoView(payment);
+        final SplitPaymentProcessor paymentProcessor = new SamplePaymentProcessorNoView(payment);
         final PaymentConfiguration paymentConfiguration = new PaymentConfiguration.Builder(paymentProcessor).build();
 
         return new MercadoPagoCheckout.Builder(MERCHANT_PUBLIC_KEY,
@@ -59,7 +60,7 @@ public final class AccountMoneySamples {
             .setSecondaryButton(new ExitAction(BUSINESS_PAYMENT_BUTTON_NAME, 34))
             .build();
 
-        final PaymentProcessor paymentProcessor = new SamplePaymentProcessorNoView(payment);
+        final SplitPaymentProcessor paymentProcessor = new SamplePaymentProcessorNoView(payment);
         final PaymentConfiguration paymentConfiguration = new PaymentConfiguration.Builder(paymentProcessor).build();
 
         return new MercadoPagoCheckout.Builder(MERCHANT_PUBLIC_KEY,

@@ -1,8 +1,10 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
+import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.datasource.cache.GroupsCache;
 import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -16,6 +18,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.PaymentMethodSearchBody;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,18 +32,21 @@ public class GroupsService implements GroupsRepository {
     private static final String SEPARATOR = ",";
 
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
-    @NonNull private final IESCManager escManager;
+    @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final CheckoutService checkoutService;
     @NonNull private final String language;
+    @NonNull private final ProductIdProvider productIdProvider;
     @NonNull /* default */ final GroupsCache groupsCache;
 
     public GroupsService(@NonNull final PaymentSettingRepository paymentSettingRepository,
-        @NonNull final IESCManager escManager, @NonNull final CheckoutService checkoutService,
-        @NonNull final String language, @NonNull final GroupsCache groupsCache) {
+        @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
+        @NonNull final String language, @NonNull final ProductIdProvider productIdProvider,
+        @NonNull final GroupsCache groupsCache) {
         this.paymentSettingRepository = paymentSettingRepository;
-        this.escManager = escManager;
+        this.escManagerBehaviour = escManagerBehaviour;
         this.checkoutService = checkoutService;
         this.language = language;
+        this.productIdProvider = productIdProvider;
         this.groupsCache = groupsCache;
     }
 
@@ -73,6 +79,7 @@ public class GroupsService implements GroupsRepository {
                 return new Callback<PaymentMethodSearch>() {
                     @Override
                     public void success(final PaymentMethodSearch paymentMethodSearch) {
+                        MPTracker.getInstance().hasExpressCheckout(paymentMethodSearch.hasExpressCheckoutMetadata());
                         groupsCache.put(paymentMethodSearch);
                         callback.success(paymentMethodSearch);
                     }
@@ -108,7 +115,7 @@ public class GroupsService implements GroupsRepository {
 
         final String excludedPaymentMethodsAppended =
             getListAsString(checkoutPreference.getExcludedPaymentMethods());
-        final String cardsWithEscAppended = getListAsString(new ArrayList<>(escManager.getESCCardIds()));
+        final String cardsWithEscAppended = getListAsString(new ArrayList<>(escManagerBehaviour.getESCCardIds()));
 
         final Integer differentialPricingId =
             checkoutPreference.getDifferentialPricing() != null ? checkoutPreference.getDifferentialPricing()
@@ -121,7 +128,7 @@ public class GroupsService implements GroupsRepository {
             .setPrivateKey(paymentSettingRepository.getPrivateKey())
             .setPayerEmail(checkoutPreference.getPayer().getEmail())
             .setMarketplace(checkoutPreference.getMarketplace())
-            .setProductId(discountParamsConfiguration.getProductId())
+            .setProductId(productIdProvider.getProductId())
             .setLabels(discountParamsConfiguration.getLabels())
             .setCharges(paymentSettingRepository.getPaymentConfiguration().getCharges())
             .setProcessingModes(checkoutPreference.getProcessingModes())

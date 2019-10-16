@@ -80,9 +80,7 @@ public class SelectCheckoutActivity extends AppCompatActivity {
                 text.setText(pair.first);
                 text.setOnClickListener(v -> {
                     assert pair.second != null;
-                    //pair.second.build().startPayment(SelectCheckoutActivity.this, REQ_CODE_CHECKOUT);
-                    Security.getInstance().askForChallenge(SelectCheckoutActivity.this);
-                    Log.d("3DS", Security.getInstance().getSDKVersion());
+                    pair.second.build().startPayment(SelectCheckoutActivity.this, REQ_CODE_CHECKOUT);
                 });
             }
         }

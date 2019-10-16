@@ -1,10 +1,11 @@
 package com.mercadopago.android.px.internal.di;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
-import com.mercadopago.android.px.internal.services.ThreeDSService;
+import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
+import com.mercadopago.android.px.internal.services.SecurityService;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.model.ThreeDS.SDKEphemeralPublicKey;
 import com.mercadopago.android.px.model.ThreeDSChallenge;
@@ -12,7 +13,6 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.utils.JsonConverter;
 import com.ndsthreeds.android.sdk.NdsThreeDS2ServiceImpl;
-import com.ndsthreeds.android.sdk.NdsThreeDSServiceInitializationCallback;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,47 +35,39 @@ import retrofit2.Retrofit;
 
 public final class Security {
 
-    private static final String FURY_TOKEN = "998809d7fdbc47010d6f265b026e0e7ee75875c3ff54a3cce9cb25a3fe2c7daa";
+    private static final String FURY_TOKEN = "da32929c742dff044b705c0691d7e4fed09c0d50a6cb4e41aad67ae0e85219b7";
+    private static final String CARD_TOKEN_TEST = "59b9c8be158b95e21177ff2d74f44da4";
     private static final String BASE_URL = "http://chatest.mpcs-cardholder-authenticator.melifrontends.com";
     private Retrofit client;
-    private ThreeDSService service;
+    private SecurityService service;
     private static Security instance;
     private ThreeDS2Service threeDS2Service;
 
     private Security() {
-        super();
     }
 
     public static Security getInstance() {
         if (instance == null) {
-            instance = new Security();
-            instance.initialize();
+            throw new IllegalStateException(
+                "Session is not initialized. Make sure to call Security.initialize(Context) first.");
         }
         return instance;
     }
 
-    public void initialize() {
-        threeDS2Service = new NdsThreeDS2ServiceImpl();
-
-        ((NdsThreeDS2ServiceImpl) threeDS2Service).a(new NdsThreeDSServiceInitializationCallback() {
-            @Override
-            public void onSuccess() {
-                Log.d("3ds", "init ok");
-            }
-
-            @Override
-            public void onError(final Exception e) {
-                Log.d("3ds", "init error");
-            }
-        });
+    public static void initialize() {
+        instance = new Security();
+        instance.threeDS2Service = new NdsThreeDS2ServiceImpl();
 
         final ConfigParameters configParameters = new ConfigParameters();
+
         final UiCustomization uiCustomization = new UiCustomization();
+
         final String locale = "en_US";
 
         try {
-            threeDS2Service.initialize(
-                Session.getInstance().getApplicationContext(), configParameters, locale, uiCustomization);
+            instance.threeDS2Service
+                .initialize(Session.getInstance().getApplicationContext(), configParameters, locale,
+                    uiCustomization);
         } catch (final InvalidInputException e) {
             Log.e("3DS", e.getMessage());
         } catch (final SDKAlreadyInitializedException e) {
@@ -84,20 +76,17 @@ public final class Security {
             Log.e("3DS", e.getMessage());
         }
 
-        client = RetrofitUtil.getRetrofitClient(Session.getInstance().getApplicationContext(), BASE_URL);
-        service = client.create(ThreeDSService.class);
-    }
-
-    public String getSDKVersion() {
-        return threeDS2Service.getSDKVersion();
+        instance.client =
+            RetrofitUtil.getRetrofitClient(Session.getInstance().getApplicationContext(), BASE_URL);
+        instance.service = instance.client.create(SecurityService.class);
     }
 
     private String getDate() {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyddMMHHmmss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
         return formatter.format(new Date());
     }
 
-    Map<String, Object> makeBody( AuthenticationRequestParameters params){
+    Map<String, Object> makeBody(AuthenticationRequestParameters params) {
         final Map<String, Object> deviceRenderOptions = new HashMap<>();
         deviceRenderOptions.put("sdkInterface", "01");
         final ArrayList<String> sdkUiType = new ArrayList<>();
@@ -105,9 +94,6 @@ public final class Security {
         sdkUiType.add("02");
         sdkUiType.add("03");
         deviceRenderOptions.put("sdkUiType", sdkUiType);
-
-        final SDKEphemeralPublicKey sdkEphemeralPublicKey =
-            JsonConverter.getInstance().fromJson(params.getSDKEphemeralPublicKey(), SDKEphemeralPublicKey.class);
 
         final Map<String, Object> data = new HashMap<>();
         data.put("AuthTransaction", "01");
@@ -119,7 +105,12 @@ public final class Security {
         data.put("mechantCountryCode", "840");
         data.put("sdkAppID", params.getSDKAppID());
         data.put("sdkEncData", params.getDeviceData());
+
+        final SDKEphemeralPublicKey sdkEphemeralPublicKey =
+            JsonConverter.getInstance()
+                .fromJson(params.getSDKEphemeralPublicKey(), SDKEphemeralPublicKey.class);
         data.put("sdkEphemPubKey", sdkEphemeralPublicKey);
+
         data.put("sdkMaxTimeout", "06");
         data.put("sdkReferenceNumber", params.getSDKReferenceNumber());
         data.put("sdkTransID", params.getSDKTransactionID());
@@ -127,7 +118,7 @@ public final class Security {
 
         final Map<String, Object> body = new HashMap<>();
         body.put("protocol", "3DS");
-        body.put("version", "2.0");
+        body.put("version", params.getMessageVersion());
         body.put("DeviceChannel", "APP");
         body.put("UserID", 417995560);
         body.put("data", data);
@@ -137,56 +128,58 @@ public final class Security {
 
     public void askForChallenge(final Activity activity) {
         final Transaction transaction = threeDS2Service.createTransaction("A000000004", "2.1.0");
-        final AuthenticationRequestParameters params = transaction.getAuthenticationRequestParameters();
-        final ChallengeParameters challengeParameters = new ChallengeParameters();
+        final AuthenticationRequestParameters params =
+            transaction.getAuthenticationRequestParameters();
 
-        final ProgressDialog progress = transaction.getProgressView(activity);
-        progress.show();
+        service.getChallengeRequest(FURY_TOKEN, makeBody(params), CARD_TOKEN_TEST)
+            .enqueue(new Callback<ThreeDSChallenge>() {
+                @Override
+                public void success(final ThreeDSChallenge cReq) {
+                    final ChallengeParameters challengeParameters = new ChallengeParameters();
+                    challengeParameters.setAcsSignedContent(cReq.acsSignedContent);
+                    challengeParameters.setAcsTransactionID(cReq.acsTransID);
+                    challengeParameters.setAcsRefNumber(cReq.acsReferenceNumber);
+                    challengeParameters.set3DSServerTransactionID(cReq.threeDSServerTransID);
 
-        service.getChallengeRequest(FURY_TOKEN, makeBody(params)).enqueue(new Callback<ThreeDSChallenge>() {
-            @Override
-            public void success(final ThreeDSChallenge threeDSChallenge) {
-                challengeParameters.setAcsSignedContent(threeDSChallenge.ascSignedContent);
-                challengeParameters.setAcsTransactionID(threeDSChallenge.acsTransID);
-                challengeParameters.setAcsRefNumber(threeDSChallenge.acsReferenceNumber);
-                challengeParameters.set3DSServerTransactionID(threeDSChallenge.threeDSServerTransID);
+                    transaction.doChallenge(activity, challengeParameters,
+                        new ChallengeStatusReceiver() {
 
-                transaction.doChallenge(activity, challengeParameters, new ChallengeStatusReceiver() {
-                    @Override
-                    public void completed(final CompletionEvent completionEvent) {
-                        Toast.makeText(activity, "completed: " + completionEvent.getTransactionStatus(), Toast.LENGTH_SHORT)
-                            .show();
-                    }
+                            @Override
+                            public void completed(final CompletionEvent completionEvent) {
+                                Intent intent = new Intent(activity, CheckoutActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                intent.putExtra("completed", true);
+                                activity.startActivity(intent);
+                            }
 
-                    @Override
-                    public void cancelled() {
-                        Toast.makeText(activity, "cancelled", Toast.LENGTH_SHORT).show();
-                    }
+                            @Override
+                            public void cancelled() {
+                                Intent intent = new Intent(activity, CheckoutActivity.class)
+                                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                activity.startActivity(intent);
+                            }
 
-                    @Override
-                    public void timedout() {
-                        Toast.makeText(activity, "timedout", Toast.LENGTH_SHORT).show();
-                    }
+                            @Override
+                            public void timedout() {
+                                Toast.makeText(activity, "timedout", Toast.LENGTH_SHORT).show();
+                            }
 
-                    @Override
-                    public void protocolError(final ProtocolErrorEvent protocolErrorEvent) {
-                        Toast.makeText(activity, protocolErrorEvent.getErrorMessage().getErrorDetails(), Toast.LENGTH_SHORT)
-                            .show();
-                    }
+                            @Override
+                            public void protocolError(final ProtocolErrorEvent protocolErrorEvent) {
 
-                    @Override
-                    public void runtimeError(final RuntimeErrorEvent runtimeErrorEvent) {
-                        Toast.makeText(activity, runtimeErrorEvent.getErrorMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }, 5);
-            }
+                            }
 
-            @Override
-            public void failure(final ApiException apiException) {
+                            @Override
+                            public void runtimeError(final RuntimeErrorEvent runtimeErrorEvent) {
 
-            }
-        });
+                            }
+                        }, 5);
+                }
 
+                @Override
+                public void failure(final ApiException apiException) {
 
+                }
+            });
     }
 }

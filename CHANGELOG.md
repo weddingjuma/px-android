@@ -1,3 +1,27 @@
+## VERSION 4.21.0
+_04_09_2019_
+* FEATURE - Added secure payments behaviour
+* FEATURE - Added important fragment in business payment
+* ENHANCEMENT - Enable TLS 1.2 in HttpClient
+* ENHANCEMENT - Added collectorId to CheckoutPreference
+* FIX - Security code validation
+* FIX - Strict mode warning
+
+## VERSION 4.20.0
+_29_08_2019_
+* FEATURE - Added tracking of session time and checkout type.
+* FEATURE - Added card drawer on express payment.
+* FIX - CPF validation.
+
+## VERSION 4.19.0
+_22_08_2019_
+* FEATURE - Added tracking of payment method selected index and available methods quantity.
+* FEATURE - Unified product id setters.
+* FIX - Consumer credits crash on low res.
+* FIX - Payment method discount on one tap.
+* ENHANCEMENT - Gradle task for local builds.
+* ENHANCEMENT - Security Code screen refactor.
+
 ## VERSION 4.18.0
 _01_08_2019_
 * FIX - Prevent double click on Confirm Payment.

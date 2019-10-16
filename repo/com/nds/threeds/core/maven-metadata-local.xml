@@ -3,10 +3,10 @@
   <groupId>com.nds.threeds</groupId>
   <artifactId>core</artifactId>
   <versioning>
-    <release>1.0.132950</release>
+    <release>1.1.18.api16</release>
     <versions>
-      <version>1.0.132950</version>
+      <version>1.1.18.api16</version>
     </versions>
-    <lastUpdated>20190610221640</lastUpdated>
+    <lastUpdated>20191002221436</lastUpdated>
   </versioning>
 </metadata>

@@ -73,7 +73,6 @@ public class PaymentResultHeader extends ConstraintLayout {
 
         /* default */ final boolean dynamicHeight;
         /* default */ final int background;
-        /* default */ final int statusBarColor;
         /* default */ final int iconImage;
         /* default */ final int badgeImage;
         /* default */ final String iconUrl;
@@ -84,7 +83,6 @@ public class PaymentResultHeader extends ConstraintLayout {
         /* default */ Model(@NonNull final Builder builder) {
             dynamicHeight = builder.dynamicHeight;
             background = builder.background;
-            statusBarColor = builder.statusBarColor;
             iconImage = builder.iconImage;
             iconUrl = builder.iconUrl;
             badgeImage = builder.badgeImage;
@@ -94,17 +92,16 @@ public class PaymentResultHeader extends ConstraintLayout {
         }
 
         @ColorRes
-        public int getStatusBarColor() {
-            return statusBarColor;
+        public int getBackgroundColor() {
+            return background;
         }
 
         public static class Builder {
             /* default */ boolean dynamicHeight;
             /* default */ int background;
-            /* default */ int statusBarColor;
             /* default */ int iconImage;
             /* default */ int badgeImage;
-            /* default */ String iconUrl;
+            @Nullable /* default */ String iconUrl;
             /* default */ GenericLocalized title;
             /* default */ GenericLocalized label;
             /* default */ boolean isSuccess;
@@ -114,17 +111,12 @@ public class PaymentResultHeader extends ConstraintLayout {
                 return this;
             }
 
-            public Builder setStatusBarColor(@ColorRes final int statusBarColor) {
-                this.statusBarColor = statusBarColor;
-                return this;
-            }
-
             public Builder setIconImage(@DrawableRes final int iconImage) {
                 this.iconImage = iconImage;
                 return this;
             }
 
-            public Builder setIconUrl(final String iconUrl) {
+            public Builder setIconUrl(@Nullable final String iconUrl) {
                 this.iconUrl = iconUrl;
                 return this;
             }

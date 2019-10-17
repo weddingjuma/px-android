@@ -59,7 +59,6 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
 
         return builder
             .setBackground(type.resColor)
-            .setStatusBarColor(type.statusBarColor)
             .setBadgeImage(type.badge)
             .setTitle(new GenericLocalized(payment.getTitle(), 0))
             .setLabel(new GenericLocalized(payment.getSubtitle(), type.message))

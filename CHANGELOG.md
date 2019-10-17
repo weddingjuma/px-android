@@ -1,3 +1,7 @@
+## VERSION 4.25.1
+_17_10_2019_
+* FIX - Restored deleted colors used by Money In
+
 ## VERSION 4.25.0
 _17_10_2019_
 * ENHANCEMENT - Dynamic status bar color

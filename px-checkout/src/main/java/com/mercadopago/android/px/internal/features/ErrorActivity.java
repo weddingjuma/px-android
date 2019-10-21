@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.features;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
@@ -25,8 +26,7 @@ public class ErrorActivity extends PXActivity {
     private String message;
 
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public void onCreated(@Nullable final Bundle savedInstanceState) {
         animateErrorScreenLaunch();
         setContentView(R.layout.px_activity_error);
         error = (MercadoPagoError) getIntent().getSerializableExtra(EXTRA_ERROR);

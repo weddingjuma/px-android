@@ -14,8 +14,8 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
-import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
+import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.ReviewAndConfirmBuilder;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -78,8 +78,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     }
 
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    protected void onCreated(final Bundle savedInstanceState) {
         setContentView(R.layout.px_activity_checkout);
         if (savedInstanceState == null) {
             initPresenter();

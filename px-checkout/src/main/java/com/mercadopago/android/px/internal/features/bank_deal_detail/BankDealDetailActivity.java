@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
@@ -25,8 +26,7 @@ public class BankDealDetailActivity extends PXActivity<BankDealDetailPresenter> 
     private TextView logoName;
 
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public void onCreated(@Nullable final Bundle savedInstanceState) {
         setContentView(R.layout.px_activity_bank_deal_detail);
         createPresenter();
         initializeControls();

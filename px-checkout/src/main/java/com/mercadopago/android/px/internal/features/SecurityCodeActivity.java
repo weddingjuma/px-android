@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
@@ -96,8 +97,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     }
 
     @Override
-    public void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public void onCreated(@Nullable final Bundle savedInstanceState) {
 
         final Session session = Session.getInstance();
         final PaymentSettingRepository paymentSettings = session.getConfigurationModule().getPaymentSettings();

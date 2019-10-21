@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -32,8 +33,7 @@ public class ReviewPaymentMethodsActivity extends PXActivity<ReviewPaymentMethod
     }
 
     @Override
-    protected void onPostCreate(final Bundle savedInstance) {
-        super.onPostCreate(savedInstance);
+    protected void onCreated(@Nullable final Bundle savedInstance) {
         setContentView(R.layout.px_activity_review_payment_methods);
         recyclerView = findViewById(R.id.mpsdkReviewPaymentMethodsView);
         final FrameLayout mTryOtherCardButton = findViewById(R.id.tryOtherCardButton);

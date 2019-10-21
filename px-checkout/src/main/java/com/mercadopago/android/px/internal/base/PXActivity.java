@@ -18,8 +18,12 @@ public abstract class PXActivity<P extends BasePresenter> extends AppCompatActiv
         super.onCreate(savedInstanceState);
         if (!Session.getInstance().isInitialized()) {
             finish();
+        } else {
+            onCreated(savedInstanceState);
         }
     }
+
+    protected abstract void onCreated(@Nullable final Bundle savedInstanceState);
 
     @Override
     protected void onDestroy() {

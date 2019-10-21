@@ -79,8 +79,7 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     }
 
     @Override
-    protected void onPostCreate(@Nullable final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public void onCreated(@Nullable final Bundle savedInstanceState) {
         setContentView(R.layout.px_activity_card_vault);
         configure();
 

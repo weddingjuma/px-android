@@ -198,7 +198,7 @@ public class ExplodingFragment extends Fragment {
      */
     /* default */ void createResultAnim() {
         @ColorInt
-        final int color = ContextCompat.getColor(getContext(), explodeDecorator.getDarkPrimaryColor());
+        final int color = explodeDecorator.getDarkPrimaryColor(getContext());
         circle.setColorFilter(color);
         icon.setImageResource(explodeDecorator.getStatusIcon());
         final int duration = getResources().getInteger(R.integer.px_long_animation_time);
@@ -320,12 +320,11 @@ public class ExplodingFragment extends Fragment {
                         icon.setVisibility(View.GONE);
                         reveal.setVisibility(View.VISIBLE);
 
-                        final int startColor =
-                            ContextCompat.getColor(getContext(), explodeDecorator.getDarkPrimaryColor());
-                        final int endColor = ContextCompat.getColor(getContext(), explodeDecorator.getPrimaryColor());
+                        final int startColor = explodeDecorator.getDarkPrimaryColor(getContext());
+                        final int endColor = explodeDecorator.getPrimaryColor(getContext());
                         final Drawable[] switchColors =
                             { new ColorDrawable(startColor), new ColorDrawable(endColor) };
-                        TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
+                        final TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
                         reveal.setBackgroundDrawable(colorSwitch);
                         colorSwitch.startTransition((int) animation.getDuration());
                         tintStatusBar(endColor);

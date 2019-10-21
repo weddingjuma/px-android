@@ -78,6 +78,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
     @SuppressLint("StaticFieldLeak")
     private static Session instance;
 
+    private boolean initialized = false;
+
     // mem cache - lazy init.
     private ConfigurationModule configurationModule;
     private DiscountRepository discountRepository;
@@ -149,6 +151,12 @@ public final class Session extends ApplicationModule implements AmountComponent 
         paymentSetting.configure(paymentConfiguration);
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
+
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
     }
 
     private void resolvePreference(@NonNull final MercadoPagoCheckout mercadoPagoCheckout,
@@ -182,6 +190,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         cardTokenRepository = null;
         paymentMethodsRepository = null;
         paymentRewardRepository = null;
+        initialized = false;
     }
 
     public InitRepository getInitRepository() {
@@ -277,7 +286,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private Cache<InitResponse> getInitCache() {
         if (initCache == null) {
             initCache =
-                new InitCacheCoordinator(new InitDiskCache(getFileManager(), getJsonUtil(), getCacheDir()),
+                new InitCacheCoordinator(new InitDiskCache(getFileManager(), getCacheDir()),
                     new InitMemCache());
         }
         return initCache;

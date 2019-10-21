@@ -9,12 +9,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.PaymentProcessor;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandlerWrapper;
 import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
@@ -40,7 +40,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_FAIL
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYMENT;
 import static com.mercadopago.android.px.internal.util.ErrorUtil.ERROR_REQUEST_CODE;
 
-public final class PaymentProcessorActivity extends AppCompatActivity
+public final class PaymentProcessorActivity extends PXActivity
     implements SplitPaymentProcessor.OnPaymentListener,
     PaymentProcessor.OnPaymentListener {
 
@@ -89,8 +89,8 @@ public final class PaymentProcessorActivity extends AppCompatActivity
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(@Nullable final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final FrameLayout frameLayout = new FrameLayout(this);
         frameLayout.setId(R.id.px_main_container);

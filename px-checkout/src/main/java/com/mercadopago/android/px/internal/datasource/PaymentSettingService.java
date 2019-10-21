@@ -31,16 +31,14 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_AMOUNT_ROW_ENABLED = "PREF_AMOUNT_ROW_ENABLED";
 
     @NonNull private final SharedPreferences sharedPreferences;
-    @NonNull private final JsonUtil jsonUtil;
 
     //mem cache
     private CheckoutPreference pref;
     private PaymentConfiguration paymentConfiguration;
     private AdvancedConfiguration advancedConfiguration;
 
-    public PaymentSettingService(@NonNull final SharedPreferences sharedPreferences, @NonNull final JsonUtil jsonUtil) {
+    public PaymentSettingService(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
-        this.jsonUtil = jsonUtil;
     }
 
     @Override
@@ -55,7 +53,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public void configure(@NonNull final Token token) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(PREF_TOKEN, jsonUtil.toJson(token));
+        edit.putString(PREF_TOKEN, JsonUtil.toJson(token));
         edit.apply();
     }
 
@@ -112,7 +110,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
         if (checkoutPreference == null) {
             edit.remove(PREF_CHECKOUT_PREF).apply();
         } else {
-            edit.putString(PREF_CHECKOUT_PREF, jsonUtil.toJson(checkoutPreference));
+            edit.putString(PREF_CHECKOUT_PREF, JsonUtil.toJson(checkoutPreference));
             edit.apply();
         }
         pref = checkoutPreference;
@@ -134,7 +132,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public CheckoutPreference getCheckoutPreference() {
         if (pref == null) {
-            pref = jsonUtil.fromJson(sharedPreferences.getString(PREF_CHECKOUT_PREF, ""), CheckoutPreference.class);
+            pref = JsonUtil.fromJson(sharedPreferences.getString(PREF_CHECKOUT_PREF, ""), CheckoutPreference.class);
         }
         return pref;
     }
@@ -160,7 +158,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Nullable
     @Override
     public Token getToken() {
-        return jsonUtil.fromJson(sharedPreferences.getString(PREF_TOKEN, ""), Token.class);
+        return JsonUtil.fromJson(sharedPreferences.getString(PREF_TOKEN, ""), Token.class);
     }
 
     @Override

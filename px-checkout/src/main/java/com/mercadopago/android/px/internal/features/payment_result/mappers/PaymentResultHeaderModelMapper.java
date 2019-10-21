@@ -32,7 +32,7 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
     private final PaymentResultScreenConfiguration configuration;
     private final Instruction instruction;
 
-    public PaymentResultHeaderModelMapper(@NonNull final PaymentResultScreenConfiguration configuration,
+    /* default */ PaymentResultHeaderModelMapper(@NonNull final PaymentResultScreenConfiguration configuration,
         @Nullable final Instruction instruction) {
         this.configuration = configuration;
         this.instruction = instruction;
@@ -48,7 +48,6 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
         return new PaymentResultHeader.Model.Builder()
             .setDynamicHeight(!hasBodyComponent)
             .setBackground(viewModel.getBackgroundResId())
-            .setStatusBarColor(viewModel.getStatusBarResId())
             .setIconImage(getIconImage(paymentResult))
             .setIconUrl(getIconUrl(paymentResult))
             .setBadgeImage(getBadgeImage(paymentResult, viewModel))

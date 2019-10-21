@@ -56,7 +56,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepre
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.IdentificationCardView;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.MPAnimationUtils;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
@@ -81,6 +80,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+import static com.mercadopago.android.px.internal.features.PaymentTypesActivity.EXTRA_PAYMENT_TYPE;
 
 public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> implements
     CardExpiryDateEditTextCallback, View.OnTouchListener, View.OnClickListener, GuessingCard.View {
@@ -184,8 +184,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     public static void startGuessingCardActivityForPayment(final Activity activity, final int requestCode,
         @Nullable final PaymentRecovery paymentRecovery) {
         final Intent intent = new Intent(activity, GuessingCardActivity.class);
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
-        intent.putExtra(PARAM_PAYMENT_RECOVERY, JsonUtil.getInstance().toJson(paymentRecovery));
+        intent.putExtra(PARAM_PAYMENT_RECOVERY, paymentRecovery);
         intent.putExtra(GuessingCardActivity.PARAM_INCLUDES_PAYMENT, true);
         activity.startActivityForResult(intent, requestCode);
     }
@@ -195,8 +194,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         mActivityActive = true;
         mButtonContainerMustBeShown = true;
         analizeLowRes();
@@ -213,7 +212,6 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     @Override
     protected void onDestroy() {
         mActivityActive = false;
-        presenter.detachView();
         super.onDestroy();
     }
 
@@ -236,7 +234,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
 
         if (includesPayment) {
             final PaymentRecovery paymentRecovery =
-                JsonUtil.getInstance().fromJson(intent.getStringExtra("paymentRecovery"), PaymentRecovery.class);
+                (PaymentRecovery) intent.getSerializableExtra(PARAM_PAYMENT_RECOVERY);
             presenter =
                 GuessingCardPresenter.buildGuessingCardPaymentPresenter(Session.getInstance(), paymentRecovery);
         } else {
@@ -1414,10 +1412,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         if (requestCode == REQ_CODE_PAYMENT_TYPES) {
             if (resultCode == RESULT_OK && data != null && data.getExtras() != null) {
                 final Bundle bundle = data.getExtras();
-                final String paymentTypeJson = bundle.getString("paymentType");
-                if (!TextUtils.isEmpty(paymentTypeJson)) {
-                    final PaymentType paymentType =
-                        JsonUtil.getInstance().fromJson(paymentTypeJson, PaymentType.class);
+                final PaymentType paymentType = bundle.getParcelable(EXTRA_PAYMENT_TYPE);
+                if (paymentType != null) {
                     presenter.setSelectedPaymentType(paymentType);
                     showFinishCardFlow();
                 }
@@ -1572,7 +1568,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         // this listener covers all on touch events.
         final int id = v.getId();
         if (id == R.id.mpsdkBankDealsText) {
-            BankDealsActivity.start(this, REQ_CODE_BANK_DEALS, presenter.getBankDealsList());
+            BankDealsActivity.start(this, REQ_CODE_BANK_DEALS);
         } else if (id == R.id.mpsdkNextButton) {
             validateCurrentEditText();
         } else if (id == R.id.mpsdkBackButton && !mCurrentEditingEditText.equals(CARD_NUMBER_INPUT)) {

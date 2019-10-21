@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
@@ -37,6 +38,7 @@ import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
 import java.util.List;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
+import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 
 public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> implements AmountView.OnClick,
     PaymentVault.Actions, AmountRowController.AmountRowVisibilityBehaviour, SearchItemOnClickListenerHandler {
@@ -335,9 +337,8 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     @Override
     public void onActivityResultNotOk(@Nullable final Intent data) {
         trackScreen();
-        final boolean hasError = data != null && data.getStringExtra(EXTRA_ERROR) != null;
         final boolean shouldFinishOnBack =
-            hasError || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
+            isErrorResult(data) || selectedSearchItem == null || !selectedSearchItem.hasChildren() ||
                 selectedSearchItem.getChildren().size() == 1;
         if (shouldFinishOnBack) {
             getView().cancel(data);

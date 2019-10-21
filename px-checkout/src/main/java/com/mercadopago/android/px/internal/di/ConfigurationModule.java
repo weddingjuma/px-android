@@ -28,7 +28,7 @@ public final class ConfigurationModule extends ApplicationModule implements Conf
     @Override
     public UserSelectionRepository getUserSelectionRepository() {
         if (userSelectionRepository == null) {
-            userSelectionRepository = new UserSelectionService(getSharedPreferences(), getJsonUtil());
+            userSelectionRepository = new UserSelectionService(getSharedPreferences());
         }
         return userSelectionRepository;
     }
@@ -36,7 +36,7 @@ public final class ConfigurationModule extends ApplicationModule implements Conf
     @Override
     public PaymentSettingRepository getPaymentSettings() {
         if (paymentSettingRepository == null) {
-            paymentSettingRepository = new PaymentSettingService(getSharedPreferences(), getJsonUtil());
+            paymentSettingRepository = new PaymentSettingService(getSharedPreferences());
         }
         return paymentSettingRepository;
     }

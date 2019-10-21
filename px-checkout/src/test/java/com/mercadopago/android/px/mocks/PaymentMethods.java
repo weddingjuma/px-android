@@ -19,41 +19,41 @@ public class PaymentMethods {
 
     public static PaymentMethod getPaymentMethodWithWrongSecurityCodeSettings() {
         final String json = ResourcesUtil.getStringResource("payment_method_security_code_length_0.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static ApiException getDoNotFindPaymentMethodsException() {
-        return JsonUtil.getInstance().fromJson(doNotFindPaymentMethodsException, ApiException.class);
+        return JsonUtil.fromJson(doNotFindPaymentMethodsException, ApiException.class);
     }
 
     public static PaymentMethod getPaymentMethodWithIdNotRequired() {
         final String json = ResourcesUtil.getStringResource("payment_method_id_not_required.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static PaymentMethod getPaymentMethodOnDebit() {
         final String json = ResourcesUtil.getStringResource("payment_method_on_debit.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static PaymentMethod getPaymentMethodOnVisa() {
         final String json = ResourcesUtil.getStringResource("payment_method_visa.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static PaymentMethod getPaymentMethodOnMaster() {
         final String json = ResourcesUtil.getStringResource("payment_method_on_master.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static PaymentMethod getPaymentMethodOnMasterWithoutSecurityCodeSettings() {
         final String json = ResourcesUtil.getStringResource("payment_method_on_master_without_sec_code_settings.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static PaymentMethod getPaymentMethodOff() {
         final String json = ResourcesUtil.getStringResource("payment_method_pagofacil.json");
-        return JsonUtil.getInstance().fromJson(json, PaymentMethod.class);
+        return JsonUtil.fromJson(json, PaymentMethod.class);
     }
 
     public static List<PaymentMethod> getPaymentMethodListMLA() {
@@ -63,7 +63,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -77,7 +77,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -91,7 +91,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            cardPaymentMethods = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            cardPaymentMethods = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             cardPaymentMethods = null;
         }
@@ -105,7 +105,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }
@@ -119,7 +119,7 @@ public class PaymentMethods {
         try {
             final Type listType = new TypeToken<List<PaymentMethod>>() {
             }.getType();
-            paymentMethodList = JsonUtil.getInstance().getGson().fromJson(json, listType);
+            paymentMethodList = JsonUtil.fromJson(json, listType);
         } catch (Exception ex) {
             paymentMethodList = null;
         }

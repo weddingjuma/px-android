@@ -39,9 +39,7 @@ import com.squareup.picasso.Picasso;
 
 public final class ViewUtils {
 
-    private static final float DARKEN_FACTOR = 0.04f;
-    private static final int HSV_LENGTH = 3;
-    private static final float[] hsv = new float[HSV_LENGTH];
+    private static final float DARKEN_FACTOR = 0.1f;
 
     private ViewUtils() {
     }
@@ -260,6 +258,15 @@ public final class ViewUtils {
         }
     }
 
+    @ColorInt
+    public static int getDarkPrimaryColor(@ColorInt final int primaryColor) {
+        final float[] hsv = new float[3];
+        Color.colorToHSV(primaryColor, hsv);
+        hsv[1] = hsv[1] + DARKEN_FACTOR;
+        hsv[2] = hsv[2] - DARKEN_FACTOR;
+        return Color.HSVToColor(hsv);
+    }
+
     /**
      * Paint the status bar
      *
@@ -268,11 +275,8 @@ public final class ViewUtils {
     @SuppressLint({ "InlinedApi" })
     public static void setStatusBarColor(@ColorInt final int color, @NonNull final Window window) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            Color.RGBToHSV(Color.red(color), Color.green(color), Color.blue(color), hsv);
-            hsv[2] = Math.max(hsv[2] * (1 - DARKEN_FACTOR), 0);
-            window.setStatusBarColor(Color.HSVToColor(hsv));
+            window.setStatusBarColor(getDarkPrimaryColor(color));
         }
     }
 }

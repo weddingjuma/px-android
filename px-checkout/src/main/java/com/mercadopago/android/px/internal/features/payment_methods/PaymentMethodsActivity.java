@@ -18,7 +18,6 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.bank_deals.BankDealsActivity;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -28,6 +27,7 @@ import java.util.List;
 public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> implements PaymentMethods.View {
 
     private static final String EXTRA_PAYMENT_PREFERENCE = "paymentPreference";
+    public static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
 
     protected RecyclerView mRecyclerView;
     protected Toolbar mToolbar;
@@ -45,8 +45,8 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final Session session = Session.getInstance();
         mPresenter =
@@ -138,7 +138,7 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
             // Return to parent
             final Intent returnIntent = new Intent();
             final PaymentMethod selectedPaymentMethod = (PaymentMethod) view.getTag();
-            returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(selectedPaymentMethod));
+            returnIntent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) selectedPaymentMethod);
             setResult(RESULT_OK, returnIntent);
             finish();
         }));

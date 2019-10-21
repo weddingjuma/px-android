@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
+import java.io.IOException;
 import retrofit2.Response;
 
 public final class ApiUtil {
@@ -17,7 +18,7 @@ public final class ApiUtil {
         ApiException apiException = null;
         try {
             final String errorString = response.errorBody().string();
-            apiException = JsonUtil.getInstance().fromJson(errorString, ApiException.class);
+            apiException = JsonUtil.fromJson(errorString, ApiException.class);
         } catch (final Exception ex) {
             //Do nothing
         } finally {
@@ -34,6 +35,8 @@ public final class ApiUtil {
         final ApiException apiException = new ApiException();
         if (throwable instanceof NoConnectivityException) {
             apiException.setStatus(StatusCodes.NO_CONNECTIVITY_ERROR);
+        } else if (throwable instanceof IOException) {
+            apiException.setStatus(StatusCodes.GENERIC_TIME_OUT);
         }
 
         try {
@@ -80,6 +83,7 @@ public final class ApiUtil {
         private StatusCodes() {
         }
 
+        private static final int GENERIC_TIME_OUT = -2;
         public static final int INTERNAL_SERVER_ERROR = 500;
         public static final int PROCESSING = 499;
         public static final int BAD_REQUEST = 400;

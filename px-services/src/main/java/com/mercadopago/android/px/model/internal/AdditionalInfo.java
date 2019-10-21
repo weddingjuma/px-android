@@ -12,7 +12,7 @@ public final class AdditionalInfo {
         AdditionalInfo additionalInfoDTO = null;
         if (TextUtil.isNotEmpty(additionalInfo)) {
             try {
-                additionalInfoDTO = JsonUtil.getInstance().fromJson(additionalInfo, AdditionalInfo.class);
+                additionalInfoDTO = JsonUtil.fromJson(additionalInfo, AdditionalInfo.class);
             } catch (final Exception e) {
                 return null;
             }

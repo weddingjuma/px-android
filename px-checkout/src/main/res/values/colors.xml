@@ -123,10 +123,6 @@
 
     <!-- Payment Result components -->
     <color name="px_light_gray">#F7F7F7</color>
-    <color name="px_blue_status_bar">#008CD6</color>
-    <color name="px_green_status_bar">#0a9c4d</color>
-    <color name="px_red_status_bar">#E5464C</color>
-    <color name="px_orange_status_bar">#E5953D</color>
     <color name="px_badge_success">#008744</color>
     <color name="px_badge_orange">#f28f23</color>
 
@@ -184,4 +180,11 @@
     <color name="px_payment_result_header_ring">#11000000</color>
     <color name="px_payment_result_method_detail">#999999</color>
     <color name="px_payment_result_method_ring">#ededed</color>
+
+    <!-- Colors used by Money in -->
+    <color name="px_blue_status_bar">#008CD6</color>
+    <color name="px_green_status_bar">#0a9c4d</color>
+    <color name="px_red_status_bar">#E5464C</color>
+    <color name="px_orange_status_bar">#E5953D</color>
+
 </resources>

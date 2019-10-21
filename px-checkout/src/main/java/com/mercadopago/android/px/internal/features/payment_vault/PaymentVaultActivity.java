@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -27,7 +28,6 @@ import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
@@ -47,11 +47,13 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+import static com.mercadopago.android.px.internal.features.payment_methods.PaymentMethodsActivity.EXTRA_PAYMENT_METHOD;
 
 public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> implements PaymentVaultView {
 
@@ -65,6 +67,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     private static final String EXTRA_SELECTED_SEARCH_ITEM = "selectedSearchItem";
     private static final String EXTRA_AUTOMATIC_SELECTION = "automaticSelection";
     private static final String MISMATCHING_PAYMENT_METHOD_ERROR = "Payment method in search not found";
+    private static final String EXTRA_TOKEN = "token";
+    private static final String EXTRA_ISSUER = "issuer";
+    private static final String EXTRA_CARD = "card";
     private final PaymentMethodSearchItemAdapter groupsAdapter = new PaymentMethodSearchItemAdapter();
     // Local vars
     protected boolean mActivityActive;
@@ -90,14 +95,14 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     public static void startWithPaymentMethodSelected(@NonNull final Activity from, final int requestCode,
         @NonNull final PaymentMethodSearchItem item) {
         final Intent intent = new Intent(from, PaymentVaultActivity.class);
-        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, JsonUtil.getInstance().toJson(item));
+        intent.putExtra(EXTRA_SELECTED_SEARCH_ITEM, item);
         from.startActivityForResult(intent, requestCode);
         from.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         final Session session = Session.getInstance();
         final PaymentSettingRepository configuration = session.getConfigurationModule().getPaymentSettings();
         presenter = new PaymentVaultPresenter(configuration,
@@ -166,12 +171,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void getActivityParameters() {
         final Intent intent = getIntent();
-
-        final JsonUtil instance = JsonUtil.getInstance();
-
-        if (intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM) != null) {
-            presenter.setSelectedSearchItem(instance
-                .fromJson(intent.getStringExtra(EXTRA_SELECTED_SEARCH_ITEM), PaymentMethodSearchItem.class));
+        PaymentMethodSearchItem item = (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
+        if (item != null) {
+            presenter.setSelectedSearchItem(item);
         }
     }
 
@@ -281,9 +283,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     protected void resolveCardRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             showProgress();
-            mToken = JsonUtil.getInstance().fromJson(data.getStringExtra("token"), Token.class);
-            mSelectedIssuer = JsonUtil.getInstance().fromJson(data.getStringExtra("issuer"), Issuer.class);
-            mSelectedCard = JsonUtil.getInstance().fromJson(data.getStringExtra("card"), Card.class);
+            mToken = (Token) data.getSerializableExtra(EXTRA_TOKEN);
+            mSelectedIssuer = (Issuer) data.getSerializableExtra(EXTRA_ISSUER);
+            mSelectedCard = (Card) data.getSerializableExtra(EXTRA_CARD);
             finishWithCardResult();
         } else if (resultCode == RESULT_SILENT_ERROR) {
             setResult(RESULT_SILENT_ERROR);
@@ -317,17 +319,17 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     private void finishWith(final PaymentMethod paymentMethod) {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentMethod", JsonUtil.getInstance().toJson(paymentMethod));
+        returnIntent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) paymentMethod);
         finishWithResult(returnIntent);
     }
 
     protected void finishWithCardResult() {
         final Intent returnIntent = new Intent();
-        returnIntent.putExtra("token", JsonUtil.getInstance().toJson(mToken));
+        returnIntent.putExtra(EXTRA_TOKEN, mToken);
         if (mSelectedIssuer != null) {
-            returnIntent.putExtra("issuer", JsonUtil.getInstance().toJson(mSelectedIssuer));
+            returnIntent.putExtra(EXTRA_ISSUER, (Serializable) mSelectedIssuer);
         }
-        returnIntent.putExtra("card", JsonUtil.getInstance().toJson(mSelectedCard));
+        returnIntent.putExtra(EXTRA_CARD, mSelectedCard);
         finishWithResult(returnIntent);
     }
 
@@ -409,7 +411,6 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     protected void onDestroy() {
         mActivityActive = false;
-        presenter.detachView();
         super.onDestroy();
     }
 

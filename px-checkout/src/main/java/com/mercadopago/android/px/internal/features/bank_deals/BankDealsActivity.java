@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -16,7 +15,6 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.bank_deal_detail.BankDealDetailActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -29,12 +27,8 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter> implements
         activity.startActivity(intent);
     }
 
-    public static void start(@NonNull final Activity activity, final int requestCode,
-        @Nullable final List<BankDeal> bankDeals) {
+    public static void start(@NonNull final Activity activity, final int requestCode) {
         final Intent intent = new Intent(activity, BankDealsActivity.class);
-        if (bankDeals != null) {
-            intent.putExtra("bankDeals", JsonUtil.getInstance().toJson(bankDeals));
-        }
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -42,8 +36,8 @@ public class BankDealsActivity extends PXActivity<BankDealsPresenter> implements
     protected Toolbar toolbar;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_bank_deals);
         initializeControls();
         createPresenter();

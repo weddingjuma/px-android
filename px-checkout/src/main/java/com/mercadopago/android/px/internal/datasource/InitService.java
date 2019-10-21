@@ -17,6 +17,7 @@ import com.mercadopago.android.px.model.internal.InitRequest;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
@@ -69,6 +70,7 @@ public class InitService implements InitRepository {
                 return new Callback<InitResponse>() {
                     @Override
                     public void success(final InitResponse initResponse) {
+                        MPTracker.getInstance().hasExpressCheckout(initResponse.hasExpressCheckoutMetadata());
                         paymentSettingRepository.configure(initResponse.getCheckoutPreference());
                         paymentSettingRepository.configureSite(initResponse.getSite().getId());
                         initCache.put(initResponse);
@@ -113,6 +115,6 @@ public class InitService implements InitRepository {
             .build();
 
         return checkoutService.init(API_ENVIRONMENT, API_VERSION, language, paymentSettingRepository.getPublicKey(),
-            paymentSettingRepository.getPrivateKey(), JsonUtil.getInstance().getMapFromObject(initRequest));
+            paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
     }
 }

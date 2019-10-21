@@ -1,3 +1,18 @@
+## VERSION 4.26.0
+_17_10_2019_
+* FEATURE - Updated UI to 8.+
+
+## VERSION 4.25.1
+_17_10_2019_
+* FIX - Restored deleted colors used by Money In
+
+## VERSION 4.25.0
+_17_10_2019_
+* ENHANCEMENT - Dynamic status bar color
+* ENHANCEMENT - Refactor json util
+* ENHANCEMENT - Improved timeout handling
+* FIX - Prevent crashes related to session
+
 ## VERSION 4.24.0
 _10_10_2019_
 * ENHANCEMENT - Refactored fonts usage

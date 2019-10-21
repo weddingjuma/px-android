@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.features;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -23,7 +24,6 @@ import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCard
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
@@ -38,6 +38,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     private static final String EXTRA_PAYMENT_METHODS = "paymentMethods";
     private static final String EXTRA_PAYMENT_TYPES = "paymentTypes";
     private static final String EXTRA_CARD_INFO = "cardInfo";
+    public static final String EXTRA_PAYMENT_TYPE = "paymentType";
 
     protected PaymentTypesPresenter mPresenter;
     //ViewMode
@@ -64,14 +65,14 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
         final Intent intent = new Intent(activity, PaymentTypesActivity.class);
         intent.putParcelableArrayListExtra(EXTRA_PAYMENT_METHODS, new ArrayList<>(paymentMethods));
         intent.putParcelableArrayListExtra(EXTRA_PAYMENT_TYPES, new ArrayList<>(paymentTypes));
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        intent.putExtra(EXTRA_CARD_INFO, cardInfo);
         activity.startActivityForResult(intent, requestCode);
         activity.overridePendingTransition(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out);
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         if (mPresenter == null) {
             mPresenter = new PaymentTypesPresenter();
         }
@@ -87,8 +88,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     private void getActivityParameters() {
         final List<PaymentMethod> paymentMethods = getIntent().getParcelableArrayListExtra(EXTRA_PAYMENT_METHODS);
         final List<PaymentType> paymentTypes = getIntent().getParcelableArrayListExtra(EXTRA_PAYMENT_TYPES);
-        final CardInfo cardInfo =
-            JsonUtil.getInstance().fromJson(getIntent().getStringExtra(EXTRA_CARD_INFO), CardInfo.class);
+        final CardInfo cardInfo = (CardInfo) getIntent().getSerializableExtra(EXTRA_CARD_INFO);
         mPresenter.setPaymentMethodList(paymentMethods);
         mPresenter.setPaymentTypesList(paymentTypes);
         mPresenter.setCardInfo(cardInfo);
@@ -267,7 +267,7 @@ public class PaymentTypesActivity extends PXActivity implements PaymentTypesActi
     @Override
     public void finishWithResult(PaymentType paymentType) {
         Intent returnIntent = new Intent();
-        returnIntent.putExtra("paymentType", JsonUtil.getInstance().toJson(paymentType));
+        returnIntent.putExtra(EXTRA_PAYMENT_TYPE, (Parcelable) paymentType);
         setResult(RESULT_OK, returnIntent);
         finish();
         overridePendingTransition(R.anim.px_hold, R.anim.px_hold);

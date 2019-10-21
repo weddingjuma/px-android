@@ -16,7 +16,6 @@ import java.util.concurrent.Executors;
 public class InitDiskCache implements Cache<InitResponse> {
 
     @NonNull private final FileManager fileManager;
-    @NonNull private final JsonUtil jsonUtil;
     @NonNull private final File initFile;
 
     private static final String DEF_FILE_NAME = "px_init";
@@ -24,10 +23,8 @@ public class InitDiskCache implements Cache<InitResponse> {
     /* default */ final Handler mainHandler;
 
     public InitDiskCache(@NonNull final FileManager fileManager,
-        @NonNull final JsonUtil jsonUtil,
         @NonNull final File cacheDir) {
         this.fileManager = fileManager;
-        this.jsonUtil = jsonUtil;
         initFile = new File(createFileName(cacheDir));
         executorService = Executors.newFixedThreadPool(1);
         mainHandler = new Handler(Looper.getMainLooper());
@@ -61,7 +58,7 @@ public class InitDiskCache implements Cache<InitResponse> {
     /* default */ void read(final Callback<InitResponse> callback) {
         if (isCached()) {
             final String fileContent = fileManager.readFileContent(initFile);
-            final InitResponse initResponse = jsonUtil.fromJson(fileContent, InitResponse.class);
+            final InitResponse initResponse = JsonUtil.fromJson(fileContent, InitResponse.class);
             if (initResponse != null) {
                 mainHandler.post(() -> callback.success(initResponse));
             } else {
@@ -75,7 +72,7 @@ public class InitDiskCache implements Cache<InitResponse> {
     /* default */ void readExec(final Callback<InitResponse> callback) {
         if (isCached()) {
             final String fileContent = fileManager.readFileContent(initFile);
-            final InitResponse initResponse = jsonUtil.fromJson(fileContent, InitResponse.class);
+            final InitResponse initResponse = JsonUtil.fromJson(fileContent, InitResponse.class);
             if (initResponse != null) {
                 callback.success(initResponse);
             } else {
@@ -89,7 +86,7 @@ public class InitDiskCache implements Cache<InitResponse> {
     @Override
     public void put(@NonNull final InitResponse initResponse) {
         if (!isCached()) {
-            executorService.execute(new CacheWriter(fileManager, initFile, jsonUtil.toJson(initResponse)));
+            executorService.execute(new CacheWriter(fileManager, initFile, JsonUtil.toJson(initResponse)));
         }
     }
 

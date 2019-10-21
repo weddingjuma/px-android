@@ -7,8 +7,6 @@ import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
-import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -27,12 +25,12 @@ public class ErrorActivity extends PXActivity {
     private String message;
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         animateErrorScreenLaunch();
         setContentView(R.layout.px_activity_error);
-        error = Session.getInstance().getJsonUtil()
-                .fromJson(getIntent().getStringExtra(EXTRA_ERROR), MercadoPagoError.class);
+        error = (MercadoPagoError) getIntent().getSerializableExtra(EXTRA_ERROR);
+
         if (error != null) {
             initializeControls();
             fillData();
@@ -91,7 +89,7 @@ public class ErrorActivity extends PXActivity {
     @Override
     public void onBackPressed() {
         final Intent intent = new Intent();
-        intent.putExtra(EXTRA_ERROR, JsonUtil.getInstance().toJson(error));
+        intent.putExtra(EXTRA_ERROR, error);
         setResult(RESULT_CANCELED, intent);
         finish();
     }

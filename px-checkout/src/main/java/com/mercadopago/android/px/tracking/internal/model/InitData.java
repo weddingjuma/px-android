@@ -34,14 +34,4 @@ public final class InitData extends TrackingMapModel {
             paymentSettingRepository.getPaymentConfiguration(),
             paymentSettingRepository.getAdvancedConfiguration());
     }
-
-    @NonNull
-    @Override
-    protected Map<String, Object> sanitizeMap(@NonNull final Map<String, Object> map) {
-        final Map<String, Object> preference = (Map<String, Object>) map.get("checkout_preference");
-        if (preference != null) {
-            preference.remove("payer");
-        }
-        return map;
-    }
 }

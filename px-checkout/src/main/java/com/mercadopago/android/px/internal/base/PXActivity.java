@@ -2,14 +2,32 @@ package com.mercadopago.android.px.internal.base;
 
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.di.Session;
 
 public abstract class PXActivity<P extends BasePresenter> extends AppCompatActivity implements MvpView {
 
     protected static final String BUNDLE_CREATED = "bundle_created";
 
     protected P presenter;
+
+    @Override
+    protected final void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (!Session.getInstance().isInitialized()) {
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (presenter != null) {
+            presenter.detachView();
+        }
+    }
 
     @CallSuper
     @Override

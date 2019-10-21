@@ -26,7 +26,6 @@ import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
-import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.AmountView;
@@ -67,7 +66,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public static void start(@NonNull final Activity activity, final int requestCode,
         @NonNull final CardInfo cardInfo) {
         final Intent intent = new Intent(activity, InstallmentsActivity.class);
-        intent.putExtra(EXTRA_CARD_INFO, JsonUtil.getInstance().toJson(cardInfo));
+        intent.putExtra(EXTRA_CARD_INFO, cardInfo);
         activity.startActivityForResult(intent, requestCode);
     }
 
@@ -77,8 +76,8 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     @Override
-    public void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final Session session = Session.getInstance();
         final ConfigurationModule configurationModule = session.getConfigurationModule();
@@ -101,7 +100,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     private void getActivityParameters() {
         final Intent intent = getIntent();
-        presenter.setCardInfo(JsonUtil.getInstance().fromJson(intent.getStringExtra(EXTRA_CARD_INFO), CardInfo.class));
+        presenter.setCardInfo((CardInfo) intent.getSerializableExtra(EXTRA_CARD_INFO));
     }
 
     public void setContentView() {

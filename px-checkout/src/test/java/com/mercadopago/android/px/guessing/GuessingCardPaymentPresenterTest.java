@@ -6,15 +6,13 @@ import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingCont
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCard;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardPaymentPresenter;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
-import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.mocks.BankDealsUtils;
 import com.mercadopago.android.px.mocks.Cards;
 import com.mercadopago.android.px.mocks.DummyCard;
 import com.mercadopago.android.px.mocks.IdentificationTypes;
@@ -22,7 +20,6 @@ import com.mercadopago.android.px.mocks.IdentificationUtils;
 import com.mercadopago.android.px.mocks.Issuers;
 import com.mercadopago.android.px.mocks.PaymentMethods;
 import com.mercadopago.android.px.mocks.Tokens;
-import com.mercadopago.android.px.model.BankDeal;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cardholder;
 import com.mercadopago.android.px.model.Identification;
@@ -75,7 +72,6 @@ public class GuessingCardPaymentPresenterTest {
     @Mock private IssuersRepository issuersRepository;
     @Mock private PaymentSettingRepository paymentSettingRepository;
     @Mock private CardTokenRepository cardTokenRepository;
-    @Mock private BankDealsRepository bankDealsRepository;
     @Mock private IdentificationRepository identificationRepository;
     @Mock private SummaryAmountRepository summaryAmountRepository;
 
@@ -97,7 +93,6 @@ public class GuessingCardPaymentPresenterTest {
         when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
         when(paymentMethodSearch.getPaymentMethods()).thenReturn(pm);
         when(advancedConfiguration.isBankDealsEnabled()).thenReturn(true);
-        whenGetBankDealsAsync();
         identificationTypes = whenGetIdentificationTypesAsyncWithoutAccessToken();
         presenter = getPresenter();
     }
@@ -107,7 +102,7 @@ public class GuessingCardPaymentPresenterTest {
         final GuessingCard.View view) {
         final GuessingCardPaymentPresenter presenter =
             new GuessingCardPaymentPresenter(userSelectionRepository, paymentSettingRepository,
-                initRepository, issuersRepository, cardTokenRepository, bankDealsRepository,
+                initRepository, issuersRepository, cardTokenRepository,
                 identificationRepository, advancedConfiguration,
                 new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE),
                 summaryAmountRepository);
@@ -300,14 +295,6 @@ public class GuessingCardPaymentPresenterTest {
     @Test
     public void whenBankDealsNotEnabledThenHideBankDeals() {
         when(advancedConfiguration.isBankDealsEnabled()).thenReturn(false);
-        presenter.initialize();
-        verify(view).hideBankDeals();
-    }
-
-    @Test
-    public void whenBankDealsAreEmptyThenHideBankDeals() {
-        final List<BankDeal> bankDeals = new ArrayList<>();
-        when(bankDealsRepository.getBankDealsAsync()).thenReturn(new StubSuccessMpCall<>(bankDeals));
         presenter.initialize();
         verify(view).hideBankDeals();
     }
@@ -698,11 +685,6 @@ public class GuessingCardPaymentPresenterTest {
     }
 
     // --------- Helper methods ----------- //
-
-    private void whenGetBankDealsAsync() {
-        final List<BankDeal> bankDeals = BankDealsUtils.getBankDealsListMLA();
-        when(bankDealsRepository.getBankDealsAsync()).thenReturn(new StubSuccessMpCall<>(bankDeals));
-    }
 
     private List<IdentificationType> whenGetIdentificationTypesAsyncWithoutAccessToken() {
         final List<IdentificationType> identificationTypes = IdentificationTypes.getIdentificationTypes();

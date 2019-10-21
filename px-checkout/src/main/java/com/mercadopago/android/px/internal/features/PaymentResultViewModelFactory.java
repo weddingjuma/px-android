@@ -52,7 +52,7 @@ public final class PaymentResultViewModelFactory {
     public static PaymentResultDecorator createPaymentResultDecorator(@NonNull final IPayment payment) {
         final PaymentResultViewModel vm =
             createPaymentResultViewModel(payment.getPaymentStatus(), payment.getPaymentStatusDetail());
-        return PaymentResultDecoratorFactory.createDecorator(vm);
+        return PaymentResultDecorator.from(vm);
     }
 
     public static PaymentResultViewModel createPaymentResultViewModel(@NonNull final String statusCode,
@@ -325,7 +325,6 @@ public final class PaymentResultViewModelFactory {
     private static void setApprovedResources(final PaymentResultViewModel.Builder builder) {
         builder
             .setBackgroundColor(R.color.ui_components_success_color)
-            .setStatusBarResId(R.color.px_green_status_bar)
             .setBadgeResId(R.drawable.px_badge_check);
     }
 
@@ -333,16 +332,14 @@ public final class PaymentResultViewModelFactory {
         builder
             .setIsErrorRecoverable(false)
             .setBadgeResId(R.drawable.px_badge_error)
-            .setBackgroundColor(R.color.ui_components_error_color)
-            .setStatusBarResId(R.color.px_red_status_bar);
+            .setBackgroundColor(R.color.ui_components_error_color);
     }
 
     private static void setRecoverableErrorResources(@NonNull final PaymentResultViewModel.Builder builder) {
         builder
             .setIsErrorRecoverable(true)
             .setBadgeResId(R.drawable.px_badge_warning)
-            .setBackgroundColor(R.color.ui_components_warning_color)
-            .setStatusBarResId(R.color.px_orange_status_bar);
+            .setBackgroundColor(R.color.ui_components_warning_color);
     }
 
     private static void setPendingResources(@NonNull final PaymentResultViewModel.Builder builder,
@@ -350,13 +347,11 @@ public final class PaymentResultViewModelFactory {
         if (pendingStatusIsSuccess(statusDetail)) {
             builder
                 .setBackgroundColor(R.color.ui_components_success_color)
-                .setStatusBarResId(R.color.px_green_status_bar)
                 .setBadgeResId(R.drawable.px_badge_pending);
         } else {
             builder
                 .setBadgeResId(R.drawable.px_badge_pending_orange)
-                .setBackgroundColor(R.color.ui_components_warning_color)
-                .setStatusBarResId(R.color.px_orange_status_bar);
+                .setBackgroundColor(R.color.ui_components_warning_color);
         }
     }
 

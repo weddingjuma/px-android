@@ -17,14 +17,18 @@ import retrofit2.CallAdapter;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class ErrorHandlingCallAdapter {
+public final class ErrorHandlingCallAdapter {
+
+    private ErrorHandlingCallAdapter() {
+    }
+
     public static class ErrorHandlingCallAdapterFactory extends CallAdapter.Factory {
 
         @Override
-        public CallAdapter<MPCall<?>, MPCallAdapter> get(@NonNull Type returnType, @NonNull Annotation[] annotations,
-            @NonNull Retrofit retrofit) {
-            TypeToken<?> token = TypeToken.get(returnType);
-            if (token.getRawType() != MPCall.class) {
+        public CallAdapter<MPCall<?>, MPCallAdapter> get(@NonNull final Type returnType,
+            @NonNull final Annotation[] annotations, @NonNull final Retrofit retrofit) {
+            final TypeToken<?> token = TypeToken.get(returnType);
+            if (!token.getRawType().equals(MPCall.class)) {
                 return null;
             }
             if (!(returnType instanceof ParameterizedType)) {
@@ -51,6 +55,8 @@ public class ErrorHandlingCallAdapter {
      */
     /* default */ static class MPCallAdapter<T> implements MPCall<T> {
 
+        private static final int SUCCESS_STATUS_CODE = 200;
+        private static final int REDIRECT_STATUS_CODE = 300;
         private final Call<T> call;
 
         /* default */ MPCallAdapter(final Call<T> call) {
@@ -62,32 +68,22 @@ public class ErrorHandlingCallAdapter {
             call.enqueue(new retrofit2.Callback<T>() {
                 @Override
                 public void onResponse(@NonNull final Call<T> call, @NonNull final Response<T> response) {
-                    final Response<T> r = response;
-                    executeOnMainThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            int code = r.code();
-                            if (code >= 200 && code < 300) {
-                                //Get body
-                                final T body = r.body();
-                                callback.success(body);
-                            } else {
-                                callback.failure(ApiUtil.getApiException(r));
-                            }
+                    executeOnMainThread(() -> {
+                        final int code = response.code();
+                        if (code >= SUCCESS_STATUS_CODE && code < REDIRECT_STATUS_CODE) {
+                            //Get body
+                            final T body = response.body();
+                            callback.success(body);
+                        } else {
+                            callback.failure(ApiUtil.getApiException(response));
                         }
                     });
                 }
 
                 @Override
-                public void onFailure(@NonNull final Call<T> call, @NonNull Throwable t) {
-                    final Throwable th = t;
+                public void onFailure(@NonNull final Call<T> call, @NonNull final Throwable th) {
                     if (++callback.attempts == 3 || (th instanceof SocketTimeoutException)) {
-                        executeOnMainThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                callback.failure(ApiUtil.getApiException(th));
-                            }
-                        });
+                        executeOnMainThread(() -> callback.failure(ApiUtil.getApiException(th)));
                     } else {
                         call.clone().enqueue(this);
                     }
@@ -105,14 +101,14 @@ public class ErrorHandlingCallAdapter {
                 } else {
                     callback.failure(ApiUtil.getApiException(execute));
                 }
-            } catch (IOException e) {
+            } catch (final IOException e) {
                 callback.failure(ApiUtil.getApiException(e));
             }
         }
     }
 
-    private static void executeOnMainThread(@NonNull final Runnable r) {
-        final Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(r);
+    @SuppressWarnings("WeakerAccess")
+    /* default */ static void executeOnMainThread(@NonNull final Runnable r) {
+        new Handler(Looper.getMainLooper()).post(r);
     }
 }

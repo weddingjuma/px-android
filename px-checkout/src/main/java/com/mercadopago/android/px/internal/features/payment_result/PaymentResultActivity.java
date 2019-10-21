@@ -7,15 +7,12 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
@@ -23,6 +20,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
@@ -54,8 +52,8 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onPostCreate(final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
         setContentView(R.layout.px_activity_payment_result);
 
         presenter = createPresenter();
@@ -72,12 +70,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
         return new PaymentResultPresenter(session.getConfigurationModule().getPaymentSettings(),
             session.getInstructionsRepository(), paymentModel);
-    }
-
-    @Override
-    protected void onDestroy() {
-        presenter.detachView();
-        super.onDestroy();
     }
 
     @Override
@@ -144,11 +136,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void setStatusBarColor(@ColorRes final int color) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            final Window window = getWindow();
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, color));
-        }
+        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, color), getWindow());
     }
 
     @Override

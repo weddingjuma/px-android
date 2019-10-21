@@ -1,52 +1,52 @@
 package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 
 public final class PaymentResultDecorator {
+
+    @NonNull
+    public static PaymentResultDecorator from(@NonNull final PaymentResultViewModel viewModel) {
+        final int image;
+        // Whether payment result is approved or pending success, the colors remains the same
+        int primaryColor = R.color.ui_components_success_color;
+
+        if (viewModel.isApprovedSuccess()) {
+            image = R.drawable.px_ic_payment_success;
+        } else if (viewModel.isPendingSuccess()) {
+            image = R.drawable.px_ic_payment_pending;
+        } else if (viewModel.isPendingWarning() || viewModel.isErrorRecoverable()) {
+            // With a pending or a recoverable error, we need warning colors
+            primaryColor = R.color.ui_components_warning_color;
+
+            //We need to differ the image whether is a pending warning or a recoverable error
+            if (viewModel.isPendingWarning()) {
+                image = R.drawable.px_ic_payment_pending;
+            } else {
+                image = R.drawable.px_ic_payment_warning;
+            }
+        } else {
+            // Fallback with an error payment result
+            image = R.drawable.px_ic_payment_error;
+            primaryColor = R.color.ui_components_error_color;
+        }
+        return new PaymentResultDecorator(primaryColor, image);
+    }
+
     private final int primaryColor;
-    private final int primaryDarkColor;
     private final int statusIconResId;
 
-    PaymentResultDecorator(@NonNull final Builder builder) {
-        primaryColor = builder.primaryColor;
-        primaryDarkColor = builder.primaryDarkColor;
-        statusIconResId = builder.statusIconResId;
+    private PaymentResultDecorator(final int primaryColor, final int statusIconResId) {
+        this.primaryColor = primaryColor;
+        this.statusIconResId = statusIconResId;
     }
 
     public int getPrimaryColor() {
         return primaryColor;
     }
 
-    public int getPrimaryDarkColor() {
-        return primaryDarkColor;
-    }
-
     public int getStatusIcon() {
         return statusIconResId;
-    }
-
-    public static class Builder {
-        int primaryColor;
-        int primaryDarkColor;
-        int statusIconResId;
-
-        public Builder setPrimaryColor(final int primaryColor) {
-            this.primaryColor = primaryColor;
-            return this;
-        }
-
-        public Builder setPrimaryDarkColor(final int primaryDarkColor) {
-            this.primaryDarkColor = primaryDarkColor;
-            return this;
-        }
-
-        public Builder setStatusIconResId(final int statusIconResId) {
-            this.statusIconResId = statusIconResId;
-            return this;
-        }
-
-        public PaymentResultDecorator build() {
-            return new PaymentResultDecorator(this);
-        }
     }
 }

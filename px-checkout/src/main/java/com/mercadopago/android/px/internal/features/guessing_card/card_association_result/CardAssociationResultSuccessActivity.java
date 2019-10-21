@@ -5,13 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.tracking.internal.views.CardAssociationResultViewTrack;
 
-public class CardAssociationResultSuccessActivity extends AppCompatActivity {
+public class CardAssociationResultSuccessActivity extends PXActivity {
 
     public static void startCardAssociationResultSuccessActivity(final Activity callerActivity) {
         final Intent intent = new Intent(callerActivity, CardAssociationResultSuccessActivity.class);
@@ -20,12 +20,12 @@ public class CardAssociationResultSuccessActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(@Nullable final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         setContentView(R.layout.px_card_association_result_success);
 
-        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.px_green_status_bar), getWindow());
+        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.ui_components_success_color), getWindow());
 
         final MeliButton exitButton = findViewById(R.id.mpsdkCardAssociationResultExitButton);
         exitButton.setOnClickListener(v -> {

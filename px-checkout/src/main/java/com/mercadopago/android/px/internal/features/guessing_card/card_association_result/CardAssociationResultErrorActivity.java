@@ -5,15 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.tracking.internal.views.CardAssociationResultViewTrack;
 
-public class CardAssociationResultErrorActivity extends AppCompatActivity {
+public class CardAssociationResultErrorActivity extends PXActivity {
     private static final String PARAM_ACCESS_TOKEN = "accessToken";
     private static final String PARAM_MERCADO_PAGO_CARD_STORAGE = "mercadoPagoCardStorage";
 
@@ -28,14 +28,14 @@ public class CardAssociationResultErrorActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onPostCreate(@Nullable final Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
         final Intent intent = getIntent();
         accessToken = intent.getStringExtra(PARAM_ACCESS_TOKEN);
 
         setContentView(R.layout.px_card_association_result_error);
-        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.px_orange_status_bar), getWindow());
+        ViewUtils.setStatusBarColor(ContextCompat.getColor(this, R.color.ui_components_warning_color), getWindow());
 
         final MeliButton retryButton = findViewById(R.id.mpsdkCardAssociationResultRetryButton);
         retryButton.setOnClickListener(v -> {

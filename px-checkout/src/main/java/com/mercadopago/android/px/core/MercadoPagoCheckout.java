@@ -12,7 +12,6 @@ import com.mercadopago.android.px.internal.callbacks.CallbackHolder;
 import com.mercadopago.android.px.internal.datasource.MercadoPagoPaymentConfiguration;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
-import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -80,7 +79,6 @@ public final class MercadoPagoCheckout {
     private void startIntent(@NonNull final Context context, @NonNull final Intent checkoutIntent,
         final int requestCode) {
 
-        FontHelper.init(context);
         final Session session = Session.getInstance();
 
         if (!prefetch) {

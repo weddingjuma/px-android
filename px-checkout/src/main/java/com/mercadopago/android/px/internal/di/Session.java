@@ -4,8 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.addons.BehaviourProvider;
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
@@ -69,7 +69,6 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
-import java.util.HashMap;
 
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getPlatform;
 
@@ -160,7 +159,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         initialized = true;
     }
 
-    public boolean isInitialized(){
+    public boolean isInitialized() {
         return initialized;
     }
 

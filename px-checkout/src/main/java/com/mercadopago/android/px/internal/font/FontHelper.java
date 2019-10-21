@@ -23,6 +23,7 @@ public final class FontHelper {
 
     /* default */ static final SparseArray<Typeface> CACHE = new SparseArray<>();
     private static final Handler HANDLER;
+    private static boolean initialized = false;
 
     static {
         final HandlerThread handlerThread = new HandlerThread("fonts");
@@ -34,6 +35,10 @@ public final class FontHelper {
     }
 
     public static void init(@NonNull final Context context) {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
         fetchFont(context, PxFont.MONOSPACE.id, FONT_ROBOTO_MONO, Typeface.MONOSPACE);
     }
 

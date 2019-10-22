@@ -13,7 +13,7 @@
         android:name="android.hardware.location.gps"
         android:required="false"/>
 
-    <application android:allowBackup="true">
+    <application>
         <activity
             android:name=".internal.features.payment_methods.PaymentMethodsActivity"
             android:label="@string/px_title_activity_payment_methods"

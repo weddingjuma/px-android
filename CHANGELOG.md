@@ -1,3 +1,9 @@
+## VERSION 4.25.2
+_22_10_2019_
+* FIX - Rotation bug in one tap using postCreate
+* FIX - Card association flow
+* FIX - Removed non mandatory allowBackup from manifest
+
 ## VERSION 4.25.1
 _17_10_2019_
 * FIX - Restored deleted colors used by Money In

@@ -7,7 +7,9 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.Token;
@@ -24,6 +26,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_CHECKOUT_PREF_ID = "PREF_CHECKOUT_PREFERENCE_ID";
     private static final String PREF_PUBLIC_KEY = "PREF_PUBLIC_KEY";
     private static final String PREF_SITE_ID = "PREF_SITE_ID";
+    private static final String PREF_CURRENCY_ID = "PREF_CURRENCY_ID";
     private static final String PREF_PRIVATE_KEY = "PREF_PRIVATE_KEY";
     private static final String PREF_TOKEN = "PREF_TOKEN";
     private static final String PREF_PRODUCT_ID = "PREF_PRODUCT_ID";
@@ -86,9 +89,16 @@ public class PaymentSettingService implements PaymentSettingRepository {
     }
 
     @Override
-    public void configureSite(@NonNull final String siteId) {
+    public void configure(@NonNull final Site site) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(PREF_SITE_ID, siteId);
+        edit.putString(PREF_SITE_ID, site.getId());
+        edit.apply();
+    }
+
+    @Override
+    public void configure(@NonNull final Currency currency) {
+        final SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putString(PREF_CURRENCY_ID, currency.getId());
         edit.apply();
     }
 
@@ -153,6 +163,12 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public Site getSite() {
         return Sites.getById(sharedPreferences.getString(PREF_SITE_ID, Sites.ARGENTINA.getId()));
+    }
+
+    @NonNull
+    @Override
+    public Currency getCurrency() {
+        return CurrenciesUtil.getCurrency(sharedPreferences.getString(PREF_SITE_ID, Sites.ARGENTINA.getCurrencyId()));
     }
 
     @Nullable

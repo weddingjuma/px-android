@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
@@ -18,7 +19,9 @@ public interface PaymentSettingRepository {
 
     void configure(@NonNull final String publicKey);
 
-    void configureSite(@NonNull final String siteId);
+    void configure(@NonNull final Site site);
+
+    void configure(@NonNull final Currency currency);
 
     void configure(@Nullable final CheckoutPreference checkoutPreference);
 
@@ -49,6 +52,9 @@ public interface PaymentSettingRepository {
 
     @NonNull
     Site getSite();
+
+    @NonNull
+    Currency getCurrency();
 
     @NonNull
     String getTransactionId();

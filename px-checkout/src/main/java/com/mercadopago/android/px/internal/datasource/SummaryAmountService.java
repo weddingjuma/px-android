@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
-import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -19,7 +18,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
-import static com.mercadopago.android.px.services.BuildConfig.API_VERSION;
 
 public class SummaryAmountService implements SummaryAmountRepository {
 
@@ -70,7 +68,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         body.put("branch_id", checkoutPreference.getBranchId());
         body.put("charges", paymentSettingRepository.getPaymentConfiguration().getCharges());
 
-        return installmentService.createSummaryAmount(API_ENVIRONMENT, API_VERSION, body,
+        return installmentService.createSummaryAmount(API_ENVIRONMENT, body,
             paymentSettingRepository.getPublicKey(), paymentSettingRepository.getPrivateKey());
     }
 }

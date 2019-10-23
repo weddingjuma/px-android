@@ -17,20 +17,26 @@ import retrofit2.http.Query;
 
 public interface CheckoutService {
 
-    //TODO modify RESPONSE to support backend driven on/off features + merchant order + pref retrieved.
-    @POST("{environment}/{version}/px_mobile_api/init/checkout")
-    MPCall<InitResponse> init(
+    String CHECKOUT_VERSION = "v1";
+
+    @POST("{environment}/px_mobile/" + CHECKOUT_VERSION + "/checkout")
+    MPCall<InitResponse> checkout(
         @Path(value = "environment", encoded = true) String environment,
-        @Path(value = "version", encoded = true) String version,
         @Header("Accept-Language") String locale,
-        @Query("public_key") String publicKey,
+        @Query("access_token") String privateKey,
+        @Body Map<String, Object> body);
+
+    @POST("{environment}/px_mobile/" + CHECKOUT_VERSION + "/checkout/{preference_id}")
+    MPCall<InitResponse> checkout(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "preference_id", encoded = true) String preferenceId,
+        @Header("Accept-Language") String locale,
         @Query("access_token") String privateKey,
         @Body Map<String, Object> body);
 
     /**
      * Old api call version ; used by MercadoPagoServices.
      *
-     * @param version
      * @param locale
      * @param publicKey
      * @param amount
@@ -45,10 +51,9 @@ public interface CheckoutService {
      * @param accessToken
      * @return payment method search
      */
-    @GET("{environment}/{version}/px_mobile_api/payment_methods?api_version=1.8")
+    @GET("{environment}/px_mobile_api/payment_methods?api_version=1.8")
     MPCall<PaymentMethodSearch> getPaymentMethodSearch(
         @Path(value = "environment", encoded = true) String environment,
-        @Path(value = "version", encoded = true) String version,
         @Header("Accept-Language") String locale,
         @Query("public_key") String publicKey,
         @Query("amount") BigDecimal amount,
@@ -62,10 +67,9 @@ public interface CheckoutService {
         @Query("express_enabled") final boolean expressEnabled,
         @Nullable @Query("access_token") String accessToken);
 
-    @GET("{environment}/{version}/payment_methods")
+    @GET("{environment}/payment_methods")
     MPCall<List<PaymentMethod>> getPaymentMethods(
         @Path(value = "environment", encoded = true) String environment,
-        @Path(value = "version", encoded = true) String version,
         @Query("public_key") String publicKey,
         @Query("access_token") String privateKey);
 }

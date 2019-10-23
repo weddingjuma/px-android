@@ -203,7 +203,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
             initRepository = new InitService(paymentSettings, getMercadoPagoESC(),
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
-                LocaleUtil.getLanguage(getApplicationContext()), getInitCache());
+                LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName(), getInitCache());
         }
         return initRepository;
     }

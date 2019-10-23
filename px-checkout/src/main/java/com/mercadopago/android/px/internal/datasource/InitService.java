@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
@@ -12,7 +13,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.internal.CheckoutParams;
+import com.mercadopago.android.px.model.internal.CheckoutFeatures;
 import com.mercadopago.android.px.model.internal.InitRequest;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -20,8 +21,7 @@ import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
 
-import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
-import static com.mercadopago.android.px.services.BuildConfig.API_VERSION;
+import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_INIT;
 
 public class InitService implements InitRepository {
 
@@ -30,14 +30,16 @@ public class InitService implements InitRepository {
     @NonNull private final String language;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final Cache<InitResponse> initCache;
+    @Nullable private final String flowId;
 
     public InitService(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
-        @NonNull final String language, @NonNull final Cache<InitResponse> initCache) {
+        @NonNull final String language, @Nullable final String flowId, @NonNull final Cache<InitResponse> initCache) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.checkoutService = checkoutService;
         this.language = language;
+        this.flowId = flowId;
         this.initCache = initCache;
     }
 
@@ -71,8 +73,11 @@ public class InitService implements InitRepository {
                     @Override
                     public void success(final InitResponse initResponse) {
                         MPTracker.getInstance().hasExpressCheckout(initResponse.hasExpressCheckoutMetadata());
-                        paymentSettingRepository.configure(initResponse.getCheckoutPreference());
-                        paymentSettingRepository.configureSite(initResponse.getSite().getId());
+                        if (initResponse.getCheckoutPreference() != null) {
+                            paymentSettingRepository.configure(initResponse.getCheckoutPreference());
+                        }
+                        //paymentSettingRepository.configure(initResponse.getSite());
+                        //paymentSettingRepository.configure(initResponse.getCurrency());
                         initCache.put(initResponse);
                         callback.success(initResponse);
                     }
@@ -96,25 +101,27 @@ public class InitService implements InitRepository {
             advancedConfiguration
                 .getDiscountParamsConfiguration();
 
-        final CheckoutParams checkoutParams = new CheckoutParams.Builder()
-            .setDiscountParamsConfiguration(discountParamsConfiguration)
+        final CheckoutFeatures features = new CheckoutFeatures.Builder()
+            .setSplit(paymentConfiguration.getPaymentProcessor().supportsSplitPayment(checkoutPreference))
+            .setExpress(advancedConfiguration.isExpressPaymentEnabled())
+            .build();
+
+        final InitRequest initRequest = new InitRequest.Builder(paymentSettingRepository.getPublicKey())
             .setCardWithEsc(new ArrayList<>(escManagerBehaviour.getESCCardIds()))
             .setCharges(paymentConfiguration.getCharges())
-            .setSupportsSplit(paymentConfiguration.getPaymentProcessor().supportsSplitPayment(checkoutPreference))
-            .setSupportsExpress(advancedConfiguration.isExpressPaymentEnabled())
-            .setShouldSkipUserConfirmation(paymentSettingRepository.getPaymentConfiguration()
-                .getPaymentProcessor().shouldSkipUserConfirmation())
-            .setDynamicDialogLocations(advancedConfiguration.getDynamicDialogConfiguration().getSupportedLocations())
-            .setDynamicViewLocations(advancedConfiguration.getDynamicFragmentConfiguration().getSupportedLocations())
-            .build();
-
-        final InitRequest initRequest = new InitRequest.Builder()
-            .setCheckoutPreferenceId(paymentSettingRepository.getCheckoutPreferenceId())
+            .setDiscountParamsConfiguration(discountParamsConfiguration)
+            .setCheckoutFeatures(features)
             .setCheckoutPreference(checkoutPreference)
-            .setCheckoutParams(checkoutParams)
+            .setFlowId(flowId)
             .build();
 
-        return checkoutService.init(API_ENVIRONMENT, API_VERSION, language, paymentSettingRepository.getPublicKey(),
-            paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
+        final String preferenceId = paymentSettingRepository.getCheckoutPreferenceId();
+        if (preferenceId != null) {
+            return checkoutService.checkout(API_ENVIRONMENT_INIT, preferenceId, language,
+                paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
+        } else {
+            return checkoutService.checkout(API_ENVIRONMENT_INIT, language,
+                paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
+        }
     }
 }

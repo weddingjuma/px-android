@@ -40,7 +40,6 @@ import java.util.Map;
 import retrofit2.Retrofit;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT;
-import static com.mercadopago.android.px.services.BuildConfig.API_VERSION;
 
 /**
  * MercadoPagoServices provides an interface to access to our main API methods.
@@ -77,9 +76,8 @@ public class MercadoPagoServices {
     public void getInstructions(final Long paymentId, final String paymentTypeId,
         final Callback<Instructions> callback) {
         final InstructionsClient service = retrofitClient.create(InstructionsClient.class);
-        service.getInstructions(API_ENVIRONMENT, API_VERSION, LocaleUtil.getLanguage(context), paymentId,
-            publicKey, privateKey, paymentTypeId)
-            .enqueue(callback);
+        service.getInstructions(API_ENVIRONMENT, LocaleUtil.getLanguage(context), paymentId, publicKey, privateKey,
+            paymentTypeId).enqueue(callback);
     }
 
     /**
@@ -105,7 +103,7 @@ public class MercadoPagoServices {
         final String cardsWithEscAppended = getListAsString(cardsWithEsc, separator);
 
         service.getPaymentMethodSearch(
-            API_ENVIRONMENT, API_VERSION,
+            API_ENVIRONMENT,
             LocaleUtil.getLanguage(context), publicKey, amount,
             excludedPaymentTypesAppended, excludedPaymentMethodsAppended, site.getId(),
             processingMode.asQueryParamName(), cardsWithEscAppended,
@@ -174,21 +172,21 @@ public class MercadoPagoServices {
         @Nullable final Integer differentialPricingId,
         final Callback<List<Installment>> callback) {
         final InstallmentService service = retrofitClient.create(InstallmentService.class);
-        service.getInstallments(API_ENVIRONMENT, API_VERSION, publicKey, privateKey, bin, amount, issuerId,
-            paymentMethodId, LocaleUtil.getLanguage(context), processingMode.asQueryParamName(), differentialPricingId)
+        service.getInstallments(API_ENVIRONMENT, publicKey, privateKey, bin, amount, issuerId, paymentMethodId,
+            LocaleUtil.getLanguage(context), processingMode.asQueryParamName(), differentialPricingId)
             .enqueue(callback);
     }
 
     public void getIssuers(final String paymentMethodId, final String bin, final Callback<List<Issuer>> callback) {
         final IssuersService service = retrofitClient.create(IssuersService.class);
         service
-            .getIssuers(API_ENVIRONMENT, API_VERSION, publicKey, privateKey, paymentMethodId, bin,
+            .getIssuers(API_ENVIRONMENT, publicKey, privateKey, paymentMethodId, bin,
                 processingMode.asQueryParamName()).enqueue(callback);
     }
 
     public void getPaymentMethods(final Callback<List<PaymentMethod>> callback) {
         final CheckoutService service = retrofitClient.create(CheckoutService.class);
-        service.getPaymentMethods(API_ENVIRONMENT, API_VERSION, publicKey, privateKey).enqueue(callback);
+        service.getPaymentMethods(API_ENVIRONMENT, publicKey, privateKey).enqueue(callback);
     }
 
     /**
@@ -231,8 +229,7 @@ public class MercadoPagoServices {
             queryParams.put("access_token", privateKey);
         }
         final PaymentService paymentService = retrofitClient.create(PaymentService.class);
-        paymentService.createPayment(API_ENVIRONMENT, API_VERSION, transactionId, paymentData, queryParams)
-            .enqueue(callback);
+        paymentService.createPayment(API_ENVIRONMENT, transactionId, paymentData, queryParams).enqueue(callback);
     }
 
     private String getListAsString(final List<String> list, final String separator) {

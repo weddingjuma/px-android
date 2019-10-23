@@ -12,10 +12,9 @@ public interface InstructionsClient {
 
     String INSTRUCTIONS_VERSION = "1.7";
 
-    @GET("{environment}/{version}/checkout/payments/{payment_id}/results?api_version=" + INSTRUCTIONS_VERSION)
+    @GET("{environment}/checkout/payments/{payment_id}/results?api_version=" + INSTRUCTIONS_VERSION)
     MPCall<Instructions> getInstructions(
         @Path(value = "environment", encoded = true) String environment,
-        @Path(value = "version", encoded = true) String version,
         @Header("Accept-Language") String locale,
         @Path(value = "payment_id", encoded = true) Long paymentId,
         @Query("public_key") String mKey,

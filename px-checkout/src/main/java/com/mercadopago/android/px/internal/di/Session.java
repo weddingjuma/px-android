@@ -11,6 +11,7 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
+import com.mercadopago.android.px.core.internal.MercadoPagoCardStorage;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.core.SessionIdProvider;
@@ -152,6 +153,10 @@ public final class Session extends ApplicationModule implements AmountComponent 
         resolvePreference(mercadoPagoCheckout, paymentSetting);
         // end Store persistent paymentSetting
 
+        initialized = true;
+    }
+
+    public void init(@NonNull final MercadoPagoCardStorage mercadoPagoCardStorage) {
         initialized = true;
     }
 

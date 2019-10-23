@@ -127,8 +127,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
      * the UI for review and confirm right away, and we can start the recover payment process
      */
     @Override
-    protected void onPostCreate(final Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
+    public void onCreated(@Nullable final Bundle savedInstanceState) {
         setContentView(R.layout.px_view_container_review_and_confirm);
         initializeViews();
         final Session session = Session.getInstance();

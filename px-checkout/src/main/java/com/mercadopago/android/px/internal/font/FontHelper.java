@@ -12,11 +12,8 @@ import android.support.v4.provider.FontRequest;
 import android.support.v4.provider.FontsContractCompat;
 import android.util.SparseArray;
 import android.widget.TextView;
-
 import com.mercadolibre.android.ui.font.TypefaceHelper;
 import com.mercadopago.android.px.R;
-
-import static android.support.v4.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND;
 
 public final class FontHelper {
 
@@ -26,6 +23,7 @@ public final class FontHelper {
 
     /* default */ static final SparseArray<Typeface> CACHE = new SparseArray<>();
     private static final Handler HANDLER;
+    private static boolean initialized = false;
 
     static {
         final HandlerThread handlerThread = new HandlerThread("fonts");
@@ -37,6 +35,10 @@ public final class FontHelper {
     }
 
     public static void init(@NonNull final Context context) {
+        if (initialized) {
+            return;
+        }
+        initialized = true;
         fetchFont(context, PxFont.MONOSPACE.id, FONT_ROBOTO_MONO, Typeface.MONOSPACE);
     }
 
@@ -66,20 +68,11 @@ public final class FontHelper {
 
     public static void getFont(@NonNull final Context context, @NonNull final PxFont font,
         @NonNull final ResourcesCompat.FontCallback callback) {
-        final Typeface cacheTypeface = CACHE.get(font.id);
-        if (cacheTypeface != null) {
-            callback.onFontRetrieved(cacheTypeface);
-        } else {
-            findFont(context, font, callback);
-        }
-    }
-
-    private static void findFont(@NonNull Context context, @NonNull PxFont font, @NonNull ResourcesCompat.FontCallback callback) {
-        Typeface typeface = TypefaceHelper.geyFontTypeface(context, font.font);
-        if (typeface == null) {
-            callback.onFontRetrievalFailed(FAIL_REASON_FONT_NOT_FOUND);
-        } else {
+        final Typeface typeface = CACHE.get(font.id);
+        if (typeface != null) {
             callback.onFontRetrieved(typeface);
+        } else {
+            TypefaceHelper.getTypeface(context, font.font, callback);
         }
     }
 

@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.font.FontHelper;
 
 public abstract class PXActivity<P extends BasePresenter> extends AppCompatActivity implements MvpView {
 
@@ -16,10 +17,15 @@ public abstract class PXActivity<P extends BasePresenter> extends AppCompatActiv
     @Override
     protected final void onCreate(@Nullable final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FontHelper.init(getApplicationContext());
         if (!Session.getInstance().isInitialized()) {
             finish();
+        } else {
+            onCreated(savedInstanceState);
         }
     }
+
+    protected abstract void onCreated(@Nullable final Bundle savedInstanceState);
 
     @Override
     protected void onDestroy() {

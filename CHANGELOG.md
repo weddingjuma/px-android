@@ -1,6 +1,8 @@
-## VERSION 4.26.0
-_17_10_2019_
-* FEATURE - Updated UI to 8.+
+## VERSION 4.25.2
+_22_10_2019_
+* FIX - Rotation bug in one tap using postCreate
+* FIX - Card association flow
+* FIX - Removed non mandatory allowBackup from manifest
 
 ## VERSION 4.25.1
 _17_10_2019_

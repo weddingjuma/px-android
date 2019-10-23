@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.TrackingConfiguration;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.core.SessionIdProvider;
+import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
@@ -82,6 +83,7 @@ public final class MercadoPagoCardStorage implements Parcelable {
             new TrackingConfiguration.Builder().build().getSessionId());
         MPTracker.getInstance().setSessionId(sessionIdProvider.getSessionId());
         MPTracker.getInstance().initializeSessionTime();
+        Session.getInstance().init(this);
         GuessingCardActivity.startGuessingCardActivityForStorage(context, this);
     }
 

@@ -22,6 +22,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
@@ -96,19 +97,19 @@ import java.util.Set;
 
     private void handleResult(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward) {
-        final String currencyId = paymentSettings.getSite().getCurrencyId();
+        final Currency currency = paymentSettings.getCurrency();
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 final PaymentModel paymentModel =
-                    new PaymentModel(payment, paymentResult, paymentReward, currencyId);
+                    new PaymentModel(payment, paymentResult, paymentReward, currency);
                 getView().showResult(paymentModel);
             }
 
             @Override
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 final BusinessPaymentModel paymentModel =
-                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, paymentReward, currencyId);
+                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, paymentReward, currency);
                 getView().showResult(paymentModel);
             }
         });
@@ -224,14 +225,14 @@ import java.util.Set;
 
         recovery = this::pay;
         if (error.isPaymentProcessing()) {
-            final String currencyId = paymentSettings.getSite().getCurrencyId();
+            final Currency currency = paymentSettings.getCurrency();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
             getView().showResult(paymentModel);
         } else if (error.isInternalServerError() || error.isNoConnectivityError()) {
             getView().showErrorSnackBar(error);

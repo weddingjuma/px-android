@@ -14,7 +14,6 @@ import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
@@ -22,6 +21,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.CustomSearchItemToC
 import com.mercadopago.android.px.internal.viewmodel.mappers.CustomSearchOptionViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodSearchOptionViewModelMapper;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -37,7 +37,6 @@ import com.mercadopago.android.px.tracking.internal.views.SelectMethodChildView;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
 import java.util.List;
 
-import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
 import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 
 public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> implements AmountView.OnClick,
@@ -127,7 +126,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     public void showAmountRow() {
         getView().showAmount(discountRepository.getCurrentConfiguration(),
             paymentSettingRepository.getCheckoutPreference().getTotalAmount(),
-            paymentSettingRepository.getSite());
+            paymentSettingRepository.getCurrency());
     }
 
     @Override
@@ -349,7 +348,7 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
 
     @Override
     public void onDetailClicked(@NonNull final DiscountConfigurationModel discountModel) {
-        getView().showDetailDialog(discountModel);
+        getView().showDetailDialog(paymentSettingRepository.getCurrency(), discountModel);
     }
 
     public void onPaymentMethodReturned() {

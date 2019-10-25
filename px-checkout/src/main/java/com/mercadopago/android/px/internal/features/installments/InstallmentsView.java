@@ -2,9 +2,9 @@ package com.mercadopago.android.px.internal.features.installments;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.MvpView;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -25,10 +25,10 @@ public interface InstallmentsView extends MvpView {
 
     void warnAboutBankInterests();
 
-    void showDetailDialog(@NonNull final DiscountConfigurationModel discountModel);
+    void showDetailDialog(@NonNull final Currency currency, @NonNull final DiscountConfigurationModel discountModel);
 
     void showAmount(@NonNull final DiscountConfigurationModel discountModel, @NonNull final BigDecimal itemsPlusCharges,
-        @NonNull final Site site);
+        @NonNull final Currency currency);
 
     void hideAmountRow();
 

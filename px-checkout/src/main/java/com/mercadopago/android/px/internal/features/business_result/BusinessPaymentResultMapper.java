@@ -30,7 +30,7 @@ public class BusinessPaymentResultMapper extends Mapper<BusinessPaymentModel, Bu
         final List<PaymentResultMethod.Model> methodModels = new ArrayList<>();
         if (payment.shouldShowPaymentMethod()) {
             for (final PaymentData paymentData : model.getPaymentResult().getPaymentDataList()) {
-                methodModels.add(PaymentResultMethod.Model.with(paymentData, model.getCurrencyId(),
+                methodModels.add(PaymentResultMethod.Model.with(paymentData, model.getCurrency(),
                     payment.getStatementDescription()));
             }
         }

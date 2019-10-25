@@ -22,6 +22,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cause;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
@@ -168,14 +169,14 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     private void resolvePaymentFailure(final MercadoPagoError mercadoPagoError) {
         if (mercadoPagoError != null && mercadoPagoError.isPaymentProcessing()) {
-            final String currencyId = paymentSettingRepository.getSite().getCurrencyId();
+            final Currency currency = paymentSettingRepository.getCurrency();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
             getView().showPaymentResult(paymentModel);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
             setFailureRecovery(() -> getView().startPayment());
@@ -376,12 +377,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     private void handleResult(@NonNull final IPaymentDescriptor payment,
         @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward) {
-        final String currencyId = paymentSettingRepository.getSite().getCurrencyId();
+        final Currency currency = paymentSettingRepository.getCurrency();
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 getView().hideProgress();
-                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currencyId);
+                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currency);
                 getView().showPaymentResult(paymentModel);
             }
 
@@ -389,7 +390,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 getView().hideProgress();
                 final BusinessPaymentModel paymentModel =
-                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currencyId);
+                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currency);
                 getView().showBusinessResult(paymentModel);
             }
         });

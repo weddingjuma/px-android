@@ -9,15 +9,18 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.TermsAndConditionsActivity;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import java.util.Locale;
 
 public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void> {
 
     public static class Props {
+        @NonNull /* default */ final Currency currency;
         @NonNull /* default */ final DiscountConfigurationModel discountModel;
 
-        public Props(@NonNull final DiscountConfigurationModel discountModel) {
+        public Props(@NonNull final Currency currency, @NonNull final DiscountConfigurationModel discountModel) {
+            this.currency = currency;
             this.discountModel = discountModel;
         }
     }
@@ -46,7 +49,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
     private void configureSubtitleMessage(final View mainContainer) {
         final TextView subtitleMessage = mainContainer.findViewById(R.id.subtitle);
         if (isMaxCouponAmountApplicable(props.discountModel)) {
-            TextFormatter.withCurrencyId(props.discountModel.getDiscount().getCurrencyId())
+            TextFormatter.withCurrency(props.currency)
                 .withSpace()
                 .amount(props.discountModel.getCampaign().getMaxCouponAmount())
                 .normalDecimals()

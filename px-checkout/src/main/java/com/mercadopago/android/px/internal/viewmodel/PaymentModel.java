@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PaymentReward;
@@ -25,14 +26,14 @@ public class PaymentModel implements Parcelable {
     private final IPaymentDescriptor payment;
     private final PaymentResult paymentResult;
     private final PaymentReward paymentReward;
-    private final String currencyId;
+    private final Currency currency;
 
     public PaymentModel(@Nullable final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentReward paymentReward, @NonNull final String currencyId) {
+        @NonNull final PaymentReward paymentReward, @NonNull final Currency currency) {
         this.payment = payment;
         this.paymentResult = paymentResult;
         this.paymentReward = paymentReward;
-        this.currencyId = currencyId;
+        this.currency = currency;
     }
 
     @Nullable
@@ -46,8 +47,8 @@ public class PaymentModel implements Parcelable {
     }
 
     @NonNull
-    public String getCurrencyId() {
-        return currencyId;
+    public Currency getCurrency() {
+        return currency;
     }
 
     @NonNull
@@ -59,7 +60,7 @@ public class PaymentModel implements Parcelable {
         payment = (IPaymentDescriptor) in.readSerializable();
         paymentResult = (PaymentResult) in.readSerializable();
         paymentReward = in.readParcelable(PaymentReward.class.getClassLoader());
-        currencyId = in.readString();
+        currency = in.readParcelable(Currency.class.getClassLoader());
     }
 
     @Override
@@ -67,7 +68,7 @@ public class PaymentModel implements Parcelable {
         dest.writeSerializable(payment);
         dest.writeSerializable(paymentResult);
         dest.writeParcelable(paymentReward, flags);
-        dest.writeString(currencyId);
+        dest.writeParcelable(currency, flags);
     }
 
     @Override

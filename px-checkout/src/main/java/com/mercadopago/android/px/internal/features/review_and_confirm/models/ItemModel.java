@@ -6,16 +6,17 @@ import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.Currency;
 import java.math.BigDecimal;
 
-public class ItemModel implements Parcelable {
+public final class ItemModel implements Parcelable {
 
     public final String imageUrl;
     public final String title;
     public final String subtitle;
     public final Integer quantity;
     @VisibleForTesting
-    public final String currencyId;
+    public final Currency currency;
     @VisibleForTesting
     public final String unitPrice;
 
@@ -23,13 +24,13 @@ public class ItemModel implements Parcelable {
         final String title,
         @Nullable final String subtitle,
         final Integer quantity,
-        final String currencyId,
+        final Currency currency,
         @Nullable final BigDecimal unitPrice) {
         this.imageUrl = imageUrl;
         this.title = title;
         this.subtitle = subtitle;
         this.quantity = quantity;
-        this.currencyId = currencyId;
+        this.currency = currency;
         this.unitPrice = unitPrice == null ? "" : unitPrice.toString();
     }
 
@@ -42,10 +43,10 @@ public class ItemModel implements Parcelable {
     }
 
     public String getPrice() {
-        return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currencyId, new BigDecimal(unitPrice));
+        return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currency, new BigDecimal(unitPrice));
     }
 
-    protected ItemModel(Parcel in) {
+    /* default */ ItemModel(final Parcel in) {
         imageUrl = in.readString();
         title = in.readString();
         subtitle = in.readString();
@@ -54,18 +55,18 @@ public class ItemModel implements Parcelable {
         } else {
             quantity = in.readInt();
         }
-        currencyId = in.readString();
+        currency = in.readParcelable(Currency.class.getClassLoader());
         unitPrice = in.readString();
     }
 
     public static final Creator<ItemModel> CREATOR = new Creator<ItemModel>() {
         @Override
-        public ItemModel createFromParcel(Parcel in) {
+        public ItemModel createFromParcel(final Parcel in) {
             return new ItemModel(in);
         }
 
         @Override
-        public ItemModel[] newArray(int size) {
+        public ItemModel[] newArray(final int size) {
             return new ItemModel[size];
         }
     };
@@ -86,7 +87,7 @@ public class ItemModel implements Parcelable {
             dest.writeByte((byte) 1);
             dest.writeInt(quantity);
         }
-        dest.writeString(currencyId);
+        dest.writeParcelable(currency, flags);
         dest.writeString(unitPrice);
     }
 }

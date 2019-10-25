@@ -37,11 +37,11 @@ import com.mercadopago.android.px.internal.view.GridSpacingItemDecoration;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -171,7 +171,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void getActivityParameters() {
         final Intent intent = getIntent();
-        PaymentMethodSearchItem item = (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
+        PaymentMethodSearchItem item =
+            (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
         if (item != null) {
             presenter.setSelectedSearchItem(item);
         }
@@ -433,8 +434,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     }
 
     @Override
-    public void showDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
-        DiscountDetailDialog.showDialog(getSupportFragmentManager(), discountModel);
+    public void showDetailDialog(@NonNull final Currency currency,
+        @NonNull final DiscountConfigurationModel discountModel) {
+        DiscountDetailDialog.showDialog(getSupportFragmentManager(), currency, discountModel);
     }
 
     @Override
@@ -453,9 +455,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount,
-        @NonNull final Site site) {
+        @NonNull final Currency currency) {
         amountView.setOnClickListener(presenter);
-        amountView.show(discountModel, totalAmount, site);
+        amountView.show(discountModel, totalAmount, currency);
     }
 
     @Override

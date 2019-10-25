@@ -50,6 +50,7 @@ public final class Site implements Serializable, Parcelable {
         return id;
     }
 
+    @Deprecated
     public String getCurrencyId() {
         return currencyId;
     }

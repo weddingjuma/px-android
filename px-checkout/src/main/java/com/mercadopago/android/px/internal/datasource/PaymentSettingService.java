@@ -7,11 +7,9 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
-import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -25,8 +23,8 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_CHECKOUT_PREF = "PREF_CHECKOUT_PREFERENCE";
     private static final String PREF_CHECKOUT_PREF_ID = "PREF_CHECKOUT_PREFERENCE_ID";
     private static final String PREF_PUBLIC_KEY = "PREF_PUBLIC_KEY";
-    private static final String PREF_SITE_ID = "PREF_SITE_ID";
-    private static final String PREF_CURRENCY_ID = "PREF_CURRENCY_ID";
+    private static final String PREF_SITE = "PREF_SITE";
+    private static final String PREF_CURRENCY = "PREF_CURRENCY";
     private static final String PREF_PRIVATE_KEY = "PREF_PRIVATE_KEY";
     private static final String PREF_TOKEN = "PREF_TOKEN";
     private static final String PREF_PRODUCT_ID = "PREF_PRODUCT_ID";
@@ -91,14 +89,14 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @Override
     public void configure(@NonNull final Site site) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(PREF_SITE_ID, site.getId());
+        edit.putString(PREF_SITE, JsonUtil.toJson(site));
         edit.apply();
     }
 
     @Override
     public void configure(@NonNull final Currency currency) {
         final SharedPreferences.Editor edit = sharedPreferences.edit();
-        edit.putString(PREF_CURRENCY_ID, currency.getId());
+        edit.putString(PREF_CURRENCY, JsonUtil.toJson(currency));
         edit.apply();
     }
 
@@ -162,13 +160,21 @@ public class PaymentSettingService implements PaymentSettingRepository {
     @NonNull
     @Override
     public Site getSite() {
-        return Sites.getById(sharedPreferences.getString(PREF_SITE_ID, Sites.ARGENTINA.getId()));
+        final Site site = JsonUtil.fromJson(sharedPreferences.getString(PREF_SITE, null), Site.class);
+        if (site == null) {
+            throw new IllegalStateException("Unable to retrieve site from storage");
+        }
+        return site;
     }
 
     @NonNull
     @Override
     public Currency getCurrency() {
-        return CurrenciesUtil.getCurrency(sharedPreferences.getString(PREF_SITE_ID, Sites.ARGENTINA.getCurrencyId()));
+        final Currency currency = JsonUtil.fromJson(sharedPreferences.getString(PREF_CURRENCY, null), Currency.class);
+        if (currency == null) {
+            throw new IllegalStateException("Unable to retrieve currency from storage");
+        }
+        return currency;
     }
 
     @Nullable

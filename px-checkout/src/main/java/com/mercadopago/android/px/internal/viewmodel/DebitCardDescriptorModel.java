@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.util.textformatter.SpannableFormatter
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
 
 /**
@@ -20,19 +21,19 @@ import com.mercadopago.android.px.model.PayerCost;
  */
 public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.Model {
 
-    private final String currencyId;
+    private final Currency currency;
     private final AmountConfiguration amountConfiguration;
 
     @NonNull
     public static PaymentMethodDescriptorView.Model createFrom(
-        @NonNull final String currencyId,
+        @NonNull final Currency currency,
         @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
-        return new DebitCardDescriptorModel(currencyId, amountConfiguration, disabledPaymentMethod);
+        return new DebitCardDescriptorModel(currency, amountConfiguration, disabledPaymentMethod);
     }
 
-    private DebitCardDescriptorModel(@NonNull final String currencyId,
+    private DebitCardDescriptorModel(@NonNull final Currency currency,
         @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
-        this.currencyId = currencyId;
+        this.currency = currency;
         this.amountConfiguration = amountConfiguration;
         this.disabledPaymentMethod = disabledPaymentMethod;
     }
@@ -57,7 +58,7 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
         @NonNull final TextView textView) {
 
         if (amountConfiguration.allowSplit()) {
-            final Spannable amount = TextFormatter.withCurrencyId(currencyId)
+            final Spannable amount = TextFormatter.withCurrency(currency)
                 .amount(getCurrent().getInstallmentAmount())
                 .normalDecimals()
                 .into(textView)

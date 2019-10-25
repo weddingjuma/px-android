@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.viewmodel.ItemLocalized;
 import com.mercadopago.android.px.internal.viewmodel.SoldOutDiscountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.SummaryViewDefaultColor;
 import com.mercadopago.android.px.internal.viewmodel.SummaryViewDetailDrawable;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
@@ -26,18 +27,18 @@ public class SummaryDetailDescriptorFactory {
     @NonNull private final DiscountConfigurationModel discountModel;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final SummaryInfo summaryInfo;
-    @NonNull private final String currencyId;
+    @NonNull private final Currency currency;
     @Nullable private final PaymentTypeChargeRule chargeRule;
 
     public SummaryDetailDescriptorFactory(@NonNull final AmountDescriptorView.OnClickListener listener,
         @NonNull final DiscountConfigurationModel discountModel, @NonNull final AmountRepository amountRepository,
-        @NonNull final SummaryInfo summaryInfo, @NonNull final String currencyId,
+        @NonNull final SummaryInfo summaryInfo, @NonNull final Currency currency,
         @Nullable final PaymentTypeChargeRule chargeRule) {
         this.listener = listener;
         this.discountModel = discountModel;
         this.amountRepository = amountRepository;
         this.summaryInfo = summaryInfo;
-        this.currencyId = currencyId;
+        this.currency = currency;
         this.chargeRule = chargeRule;
     }
 
@@ -61,7 +62,7 @@ public class SummaryDetailDescriptorFactory {
                 .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
         } else if (discount != null) {
             list.add(new AmountDescriptorView.Model(new DiscountDescriptionLocalized(discount),
-                new DiscountAmountLocalized(discount.getCouponAmount(), currencyId), new DiscountDetailColor())
+                new DiscountAmountLocalized(discount.getCouponAmount(), currency), new DiscountDetailColor())
                 .setDetailDrawable(new SummaryViewDetailDrawable(), new DiscountDetailColor())
                 .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
         }
@@ -69,7 +70,7 @@ public class SummaryDetailDescriptorFactory {
 
     private void addChargesRow(@NonNull final Collection<AmountDescriptorView.Model> list) {
         final AmountDescriptorView.Model model = new AmountDescriptorView.Model(new ChargeLocalized(summaryInfo),
-            new AmountLocalized(chargeRule.charge(), currencyId), new SummaryViewDefaultColor());
+            new AmountLocalized(chargeRule.charge(), currency), new SummaryViewDefaultColor());
         if (chargeRule.hasDetailModal()) {
             model.setDetailDrawable(new SummaryViewDetailDrawable(), new SummaryViewDefaultColor())
                 .setListener(v -> listener.onChargesAmountDescriptorClicked(chargeRule.getDetailModal()));
@@ -80,7 +81,7 @@ public class SummaryDetailDescriptorFactory {
     private void addTotalRow(@NonNull final List<AmountDescriptorView.Model> list) {
         if (!list.isEmpty()) {
             list.add(0, new AmountDescriptorView.Model(new ItemLocalized(summaryInfo),
-                new AmountLocalized(amountRepository.getItemsAmount(), currencyId), new SummaryViewDefaultColor()));
+                new AmountLocalized(amountRepository.getItemsAmount(), currency), new SummaryViewDefaultColor()));
         }
     }
 }

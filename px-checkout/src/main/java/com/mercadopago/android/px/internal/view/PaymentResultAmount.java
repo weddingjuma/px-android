@@ -9,6 +9,7 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
@@ -47,7 +48,7 @@ public class PaymentResultAmount extends FlexboxLayout {
 
         final Discount discount = model.discount;
         if (discount != null) {
-            rawAmount.setText(getPrettyAmount(model.currencyId, model.rawAmount));
+            rawAmount.setText(getPrettyAmount(model.currency, model.rawAmount));
             rawAmount.setPaintFlags(rawAmount.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             this.discount.setText(discount.getName());
         } else {
@@ -59,11 +60,11 @@ public class PaymentResultAmount extends FlexboxLayout {
     @NonNull
     private String getAmountTitle(@NonNull final Model model) {
         if (hasPayerCostWithMultipleInstallments(model.payerCost)) {
-            final String installmentsAmount = getPrettyAmount(model.currencyId, model.payerCost.getInstallmentAmount());
+            final String installmentsAmount = getPrettyAmount(model.currency, model.payerCost.getInstallmentAmount());
             return String.format(Locale.getDefault(), "%dx %s", model.payerCost.getInstallments(),
                 installmentsAmount);
         } else {
-            return getPrettyAmount(model.currencyId, model.amount);
+            return getPrettyAmount(model.currency, model.amount);
         }
     }
 
@@ -79,15 +80,15 @@ public class PaymentResultAmount extends FlexboxLayout {
     }
 
     @NonNull
-    private String getPrettyAmount(@NonNull final String currencyId, @NonNull final BigDecimal amount) {
-        return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currencyId, amount);
+    private String getPrettyAmount(@NonNull final Currency currency, @NonNull final BigDecimal amount) {
+        return CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(currency, amount);
     }
 
     @Nullable
     private String getAmountDetail(@NonNull final Model model) {
         if (hasPayerCostWithMultipleInstallments(model.payerCost)) {
             return String.format(Locale.getDefault(), "(%s)",
-                getPrettyAmount(model.currencyId, model.payerCost.getTotalAmount()));
+                getPrettyAmount(model.currency, model.payerCost.getTotalAmount()));
         }
         return null;
     }
@@ -99,13 +100,13 @@ public class PaymentResultAmount extends FlexboxLayout {
     public static final class Model {
         @NonNull /* default */ final BigDecimal amount;
         @NonNull /* default */ final BigDecimal rawAmount;
-        @NonNull /* default */ final String currencyId;
+        @NonNull /* default */ final Currency currency;
         @Nullable /* default */ final PayerCost payerCost;
         @Nullable /* default */ final Discount discount;
 
         /* default */ Model(@NonNull final Builder builder) {
             amount = builder.amount;
-            currencyId = builder.currencyId;
+            currency = builder.currency;
             payerCost = builder.payerCost;
             discount = builder.discount;
             rawAmount = builder.rawAmount;
@@ -114,15 +115,15 @@ public class PaymentResultAmount extends FlexboxLayout {
         public static class Builder {
             @NonNull /* default */ BigDecimal amount;
             @NonNull /* default */ BigDecimal rawAmount;
-            @NonNull /* default */ String currencyId;
+            @NonNull /* default */ Currency currency;
             @Nullable /* default */ PayerCost payerCost;
             @Nullable /* default */ Discount discount;
 
             public Builder(@NonNull final BigDecimal amount, @NonNull final BigDecimal rawAmount,
-                @NonNull final String currencyId) {
+                @NonNull final Currency currency) {
                 this.amount = amount;
                 this.rawAmount = rawAmount;
-                this.currencyId = currencyId;
+                this.currency = currency;
             }
 
             public Builder setPayerCost(@Nullable final PayerCost payerCost) {

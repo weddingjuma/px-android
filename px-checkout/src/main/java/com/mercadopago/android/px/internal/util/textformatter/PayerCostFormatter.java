@@ -7,12 +7,13 @@ import android.text.SpannableStringBuilder;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
 
 public class PayerCostFormatter {
 
     private PayerCost payerCost;
-    private String currencyId;
+    private Currency currency;
     private int textColor;
     private final Context context;
     private final SpannableStringBuilder spannableStringBuilder;
@@ -20,12 +21,12 @@ public class PayerCostFormatter {
     public PayerCostFormatter(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context,
         @NonNull final PayerCost payerCost,
-        @NonNull final String currencyId) {
+        @NonNull final Currency currency) {
 
         this.spannableStringBuilder = spannableStringBuilder;
         this.context = context;
         this.payerCost = payerCost;
-        this.currencyId = currencyId;
+        this.currency = currency;
     }
 
     public PayerCostFormatter withTextColor(final int color) {
@@ -34,7 +35,7 @@ public class PayerCostFormatter {
     }
 
     public Spannable apply() {
-        final Spannable totalAmount = TextFormatter.withCurrencyId(currencyId)
+        final Spannable totalAmount = TextFormatter.withCurrency(currency)
             .amount(payerCost.getTotalAmount())
             .normalDecimals()
             .apply(R.string.px_total_amount_holder, context);

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.DiscountHelper;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import javax.annotation.Nonnull;
@@ -15,11 +16,13 @@ public class DiscountDetailContainer extends CompactComponent<DiscountDetailCont
 
     public static final class Props {
         @NonNull /* default */ final DialogTitleType dialogTitleType;
+        @NonNull /* default */ final Currency currency;
         @NonNull /* default */ final DiscountConfigurationModel discountModel;
 
-        public Props(@NonNull final DialogTitleType dialogTitleType,
+        public Props(@NonNull final DialogTitleType dialogTitleType, @NonNull final Currency currency,
             @Nonnull final DiscountConfigurationModel discountModel) {
             this.dialogTitleType = dialogTitleType;
+            this.currency = currency;
             this.discountModel = discountModel;
         }
 
@@ -42,7 +45,7 @@ public class DiscountDetailContainer extends CompactComponent<DiscountDetailCont
 
     private void addDiscountDetail(@NonNull final ViewGroup parent) {
         final View discountView =
-            new DiscountDetail(new DiscountDetail.Props(props.discountModel))
+            new DiscountDetail(new DiscountDetail.Props(props.currency, props.discountModel))
                 .render(parent);
 
         parent.addView(discountView);

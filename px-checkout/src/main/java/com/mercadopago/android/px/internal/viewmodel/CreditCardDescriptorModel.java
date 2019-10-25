@@ -15,6 +15,7 @@ import com.mercadopago.android.px.internal.util.textformatter.SpannableFormatter
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
 import java.math.BigDecimal;
 
@@ -24,15 +25,15 @@ import java.math.BigDecimal;
  */
 public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView.Model {
 
-    private final String currencyId;
+    private final Currency currency;
     private final AmountConfiguration amountConfiguration;
 
     @NonNull
     public static PaymentMethodDescriptorView.Model createFrom(
-        @NonNull final String currencyId,
+        @NonNull final Currency currency,
         @NonNull final AmountConfiguration amountConfiguration,
         final boolean disabledPaymentMethod) {
-        return new CreditCardDescriptorModel(currencyId, amountConfiguration, disabledPaymentMethod);
+        return new CreditCardDescriptorModel(currency, amountConfiguration, disabledPaymentMethod);
     }
 
     @Override
@@ -40,9 +41,9 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
         return amountConfiguration.getAppliedPayerCost(userWantToSplit).size() > 1;
     }
 
-    private CreditCardDescriptorModel(@NonNull final String currencyId,
+    private CreditCardDescriptorModel(@NonNull final Currency currency,
         @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
-        this.currencyId = currencyId;
+        this.currency = currency;
         this.amountConfiguration = amountConfiguration;
         this.disabledPaymentMethod = disabledPaymentMethod;
     }
@@ -68,7 +69,7 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
         @NonNull final Context context,
         @NonNull final TextView textView) {
 
-        final Spannable amount = TextFormatter.withCurrencyId(currencyId)
+        final Spannable amount = TextFormatter.withCurrency(currency)
             .amount(getCurrent().getInstallmentAmount())
             .normalDecimals()
             .into(textView)
@@ -90,7 +91,7 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
         if (BigDecimal.ZERO.compareTo(getCurrent().getInstallmentRate()) < 0) {
             final PayerCostFormatter payerCostFormatter =
                 new PayerCostFormatter(spannableStringBuilder, context,
-                    getCurrent(), currencyId)
+                    getCurrent(), currency)
                     .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey));
             payerCostFormatter.apply();
         }

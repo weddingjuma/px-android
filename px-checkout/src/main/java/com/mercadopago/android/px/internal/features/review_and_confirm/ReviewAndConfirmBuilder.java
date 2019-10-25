@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.Item;
@@ -51,6 +52,7 @@ public class ReviewAndConfirmBuilder {
         final Issuer issuer = userSelectionRepository.getIssuer();
         final PaymentSettingRepository paymentSettings = configurationModule.getPaymentSettings();
         final Site site = paymentSettings.getSite();
+        final Currency currency = paymentSettings.getCurrency();
         final String publicKey = paymentSettings.getPublicKey();
         final Token token = paymentSettings.getToken();
         final AmountRepository amountRepository = session.getAmountRepository();
@@ -82,10 +84,11 @@ public class ReviewAndConfirmBuilder {
         final PayerCost payerCost = userSelectionRepository.getPayerCost();
         final SummaryModel summaryModel =
             new SummaryModel(amountRepository.getAmountToPay(paymentMethod.getPaymentTypeId(), payerCost),
-                paymentMethod, site, payerCost, discountModel.getDiscount(), title, checkoutPreference.getTotalAmount(),
+                paymentMethod, site, currency, payerCost, discountModel.getDiscount(), title,
+                checkoutPreference.getTotalAmount(),
                 amountRepository.getAppliedCharges(paymentMethod.getPaymentTypeId(), payerCost));
 
-        final ItemsModel itemsModel = new ItemsModel(site.getCurrencyId(), items);
+        final ItemsModel itemsModel = new ItemsModel(currency, items);
 
         LinkableText linkableText = null;
         if (paymentMethod.getDisplayInfo() != null) {

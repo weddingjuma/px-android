@@ -20,7 +20,6 @@ import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
 import com.mercadopago.android.px.internal.util.SecurityValidationDataFactory;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
@@ -49,6 +48,7 @@ import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -144,17 +144,16 @@ import java.util.Set;
             new ElementDescriptorMapper().map(summaryInfo);
 
         final List<SummaryView.Model> summaryModels =
-            new SummaryViewModelMapper(paymentSettingRepository.getSite().getCurrencyId(),
+            new SummaryViewModelMapper(paymentSettingRepository.getCurrency(),
                 discountRepository, amountRepository, elementDescriptorModel, this, summaryInfo,
                 chargeRepository).map(new ArrayList<>(expressMetadataList));
 
         final List<PaymentMethodDescriptorView.Model> paymentModels =
-            new PaymentMethodDescriptorMapper(paymentSettingRepository.getSite().getCurrencyId(),
+            new PaymentMethodDescriptorMapper(paymentSettingRepository.getCurrency(),
                 amountConfigurationRepository, disabledPaymentMethodRepository).map(expressMetadataList);
 
         final List<SplitPaymentHeaderAdapter.Model> splitHeaderModels =
-            new SplitHeaderMapper(paymentSettingRepository.getSite().getCurrencyId(),
-                amountConfigurationRepository)
+            new SplitHeaderMapper(paymentSettingRepository.getCurrency(), amountConfigurationRepository)
                 .map(expressMetadataList);
 
         final List<ConfirmButtonViewModel> confirmButtonViewModels =
@@ -166,7 +165,7 @@ import java.util.Set;
         getView().showToolbarElementDescriptor(elementDescriptorModel);
 
         getView().configureAdapters(paymentMethodDrawableItemMapper.map(expressMetadataList),
-            paymentSettingRepository.getSite(), model);
+            paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency(), model);
 
         getView().setPayButtonText(payButtonViewModel);
     }
@@ -433,7 +432,7 @@ import java.util.Set;
 
     @Override
     public void onDiscountAmountDescriptorClicked(@NonNull final DiscountConfigurationModel discountModel) {
-        getView().showDiscountDetailDialog(discountModel);
+        getView().showDiscountDetailDialog(paymentSettingRepository.getCurrency(), discountModel);
     }
 
     @Override

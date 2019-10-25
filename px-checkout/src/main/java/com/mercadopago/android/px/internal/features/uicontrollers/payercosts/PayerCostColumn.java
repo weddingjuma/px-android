@@ -11,12 +11,14 @@ import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
 import java.math.BigDecimal;
 
 public class PayerCostColumn {
 
     private final Site site;
+    private final Currency currency;
     private final Context context;
     private View view;
     private MPTextView installmentsTextView;
@@ -27,10 +29,11 @@ public class PayerCostColumn {
     private final BigDecimal installmentsAmount;
     private final Integer installments;
 
-    public PayerCostColumn(final Context context, final Site site, final BigDecimal installmentsRate,
-        final BigDecimal installmentsAmount, final Integer installments) {
+    public PayerCostColumn(final Context context, final Site site, final Currency currency,
+        final BigDecimal installmentsRate, final BigDecimal installmentsAmount, final Integer installments) {
         this.context = context;
         this.site = site;
+        this.currency = currency;
         this.installmentsRate = installmentsRate;
         this.installmentsAmount = installmentsAmount;
         this.installments = installments;
@@ -58,7 +61,7 @@ public class PayerCostColumn {
 
     private void setInstallmentsText() {
         final Spanned spannedInstallmentsText =
-            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(installmentsAmount, site.getCurrencyId());
+            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(installmentsAmount, currency);
         final String x = installmentsTextView.getContext().getString(R.string.px_installments_by);
         installmentsTextView
             .setText(new SpannableStringBuilder(installments.toString()).append(x).append(" ")

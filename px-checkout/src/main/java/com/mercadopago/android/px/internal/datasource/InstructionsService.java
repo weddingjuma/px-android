@@ -97,9 +97,11 @@ public class InstructionsService implements InstructionsRepository {
         return new MPCallWrapper<Instructions>() {
             @Override
             protected MPCall<Instructions> method() {
-                return instructionsClient
-                    .getInstructions(API_ENVIRONMENT, locale, id, paymentSettingRepository.getPublicKey(),
-                        paymentSettingRepository.getPrivateKey(), paymentTypeId);
+                return instructionsClient.getInstructions(API_ENVIRONMENT,
+                    locale, id,
+                    paymentSettingRepository.getPublicKey(),
+                    paymentSettingRepository.getPrivateKey(),
+                    paymentTypeId);
             }
         }.wrap();
     }

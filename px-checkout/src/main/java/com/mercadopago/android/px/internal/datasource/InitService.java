@@ -76,8 +76,8 @@ public class InitService implements InitRepository {
                         if (initResponse.getCheckoutPreference() != null) {
                             paymentSettingRepository.configure(initResponse.getCheckoutPreference());
                         }
-                        //paymentSettingRepository.configure(initResponse.getSite());
-                        //paymentSettingRepository.configure(initResponse.getCurrency());
+                        paymentSettingRepository.configure(initResponse.getSite());
+                        paymentSettingRepository.configure(initResponse.getCurrency());
                         initCache.put(initResponse);
                         callback.success(initResponse);
                     }

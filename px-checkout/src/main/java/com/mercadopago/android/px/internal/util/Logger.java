@@ -14,4 +14,10 @@ public final class Logger {
             Log.d(tag, data);
         }
     }
+
+    public static void debug(@NonNull final String tag, @NonNull final Throwable tr) {
+        if (BuildConfig.DEBUG) {
+            Log.d(tag, TextUtil.EMPTY, tr);
+        }
+    }
 }

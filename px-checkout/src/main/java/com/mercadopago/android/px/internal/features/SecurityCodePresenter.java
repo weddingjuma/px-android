@@ -342,9 +342,11 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
 
             @Override
             public void onFailure(final MercadoPagoError error) {
-                setFailureRecovery(() -> createESCToken(savedESCCardToken));
-                getView().stopLoadingView();
-                getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
+                if (isViewAttached()) {
+                    setFailureRecovery(() -> createESCToken(savedESCCardToken));
+                    getView().stopLoadingView();
+                    getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
+                }
             }
         });
     }

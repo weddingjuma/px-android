@@ -63,8 +63,6 @@ import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.display_info.LinkableText;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
-import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 import static com.mercadopago.android.px.core.MercadoPagoCheckout.EXTRA_ERROR;
@@ -72,7 +70,6 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANC
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CANCEL_PAYMENT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CHANGE_PAYMENT_METHOD;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERROR;
-import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 
 public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmPresenter> implements
@@ -132,23 +129,14 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         initializeViews();
         final Session session = Session.getInstance();
 
-        //TODO remove try/catch after session is persisted
-        try {
-            presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
-                session.getDiscountRepository(),
-                session.getConfigurationModule().getPaymentSettings(),
-                session.getConfigurationModule().getUserSelectionRepository(),
-                session.getPaymentRewardRepository(),
-                session.getMercadoPagoESC(),
-                session.getProductIdProvider());
-            presenter.attachView(this);
-        } catch (final Exception e) {
-            FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
-                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
-                .track();
-
-            exitCheckout(RESULT_SILENT_ERROR);
-        }
+        presenter = new ReviewAndConfirmPresenter(session.getPaymentRepository(),
+            session.getDiscountRepository(),
+            session.getConfigurationModule().getPaymentSettings(),
+            session.getConfigurationModule().getUserSelectionRepository(),
+            session.getPaymentRewardRepository(),
+            session.getMercadoPagoESC(),
+            session.getProductIdProvider());
+        presenter.attachView(this);
 
         if (savedInstanceState == null) {
             checkIntentActions();
@@ -323,22 +311,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
         container.setDispatcher(this);
 
-        //TODO remove try/catch after session is persisted
-        try {
-            manager.render(container, mainContent);
-        } catch (final Exception e) {
-            FrictionEventTracker.with(ReviewAndConfirmViewTracker.PATH,
-                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
-                .track();
-
-            exitCheckout(RESULT_SILENT_ERROR);
-        }
-    }
-
-    public void exitCheckout(final int resCode) {
-        overrideTransitionOut();
-        setResult(resCode);
-        finish();
+        manager.render(container, mainContent);
     }
 
     private ContainerProps getActivityParameters() {

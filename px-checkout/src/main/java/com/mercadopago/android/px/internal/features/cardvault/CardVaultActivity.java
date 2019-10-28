@@ -25,7 +25,6 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
@@ -85,15 +84,7 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
 
         if (savedInstanceState == null) {
             getActivityParameters();
-            try {
-                presenter.initialize();
-            } catch (final Exception e) {
-                FrictionEventTracker.with("/px_checkout/card_vault",
-                    FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN,
-                    ErrorUtil.getStacktraceMessage(e))
-                    .track();
-                cancelCardVault();
-            }
+            presenter.initialize();
         } else {
             restoreInstanceState(savedInstanceState);
         }

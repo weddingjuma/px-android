@@ -13,6 +13,7 @@ import android.view.View;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
@@ -26,6 +27,7 @@ import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getSafeIn
 public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentResultPresenter>
     implements BusinessPaymentResultContract.View {
 
+    private static final String TAG = BusinessPaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
 
     public static Intent getIntent(@NonNull final Context context,
@@ -92,7 +94,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Logger.debug(TAG, e);
         }
     }
 
@@ -101,7 +103,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         try {
             startActivity(getSafeIntent(this, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Logger.debug(TAG, e);
         }
     }
 }

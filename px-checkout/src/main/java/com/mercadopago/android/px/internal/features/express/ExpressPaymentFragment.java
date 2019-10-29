@@ -50,7 +50,6 @@ import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAd
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -153,24 +152,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         configureViews(view);
 
-        //TODO remove try catch after session is persisted
-        try {
-            presenter = createPresenter();
-            presenter.attachView(this);
-            if (savedInstanceState == null) {
-                presenter.trackExpressView();
-            } else {
-                renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
-                presenter.recoverFromBundle(savedInstanceState);
-            }
-            presenter.loadViewModel();
-        } catch (final Exception e) {
-            if (savedInstanceState == null) {
-                ErrorUtil.startErrorActivity(getActivity());
-            } else {
-                cancel();
-            }
+        presenter = createPresenter();
+        presenter.attachView(this);
+        if (savedInstanceState == null) {
+            presenter.trackExpressView();
+        } else {
+            renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
+            presenter.recoverFromBundle(savedInstanceState);
         }
+        presenter.loadViewModel();
 
         // Order is important - On click and events should be wired AFTER view is attached.
         summaryView.setOnFitListener(this);

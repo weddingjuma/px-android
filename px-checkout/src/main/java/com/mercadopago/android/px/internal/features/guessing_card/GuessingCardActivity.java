@@ -11,7 +11,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -74,12 +73,9 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
-import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
-import com.mercadopago.android.px.tracking.internal.views.GuessingRootViewTracker;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
 import static com.mercadopago.android.px.internal.features.PaymentTypesActivity.EXTRA_PAYMENT_TYPE;
 
 public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> implements
@@ -275,22 +271,8 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
         final Session session = Session.getInstance();
-        try {
-            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
-            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
-        } catch (Exception e) {
-            FrictionEventTracker.with(GuessingRootViewTracker.PATH,
-                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN, ErrorUtil.getStacktraceMessage(e))
-                .track();
-
-            exitCheckout(RESULT_SILENT_ERROR);
-        }
-    }
-
-    public void exitCheckout(final int resCode) {
-        overrideTransitionOut();
-        setResult(resCode);
-        finish();
+        session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
+        session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
     }
 
     private void analizeLowRes() {

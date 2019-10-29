@@ -21,6 +21,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
+import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
@@ -43,6 +44,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private static final int REJECTION_REQUEST_CODE = 9;
     private static final int PENDING_REQUEST_CODE = 8;
     private static final int CALL_FOR_AUTHORIZE_REQUEST_CODE = 7;
+    private static final String TAG = PaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
 
@@ -142,10 +144,9 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     @Override
     public void openLink(@NonNull final String url) {
         try {
-            final Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-            startActivity(browserIntent);
-        } catch (final Exception e) {
-
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        } catch (final ActivityNotFoundException e) {
+            Logger.debug(TAG, e);
         }
     }
 
@@ -191,7 +192,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Logger.debug(TAG, e);
         }
     }
 
@@ -200,7 +201,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         try {
             startActivity(getSafeIntent(this, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {
-            e.printStackTrace();
+            Logger.debug(TAG, e);
         }
     }
 }

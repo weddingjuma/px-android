@@ -10,6 +10,7 @@ import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.repository.TestingRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -29,13 +30,16 @@ public class InitService implements InitRepository {
     @NonNull private final CheckoutService checkoutService;
     @NonNull private final String language;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
+    @NonNull /* default */ final TestingRepository testingRepository;
     @NonNull /* default */ final Cache<InitResponse> initCache;
     @Nullable private final String flow;
 
     public InitService(@NonNull final PaymentSettingRepository paymentSettingRepository,
+        @NonNull final TestingRepository testingRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
         @NonNull final String language, @Nullable final String flow, @NonNull final Cache<InitResponse> initCache) {
         this.paymentSettingRepository = paymentSettingRepository;
+        this.testingRepository = testingRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.checkoutService = checkoutService;
         this.language = language;
@@ -78,6 +82,8 @@ public class InitService implements InitRepository {
                         }
                         paymentSettingRepository.configure(initResponse.getSite());
                         paymentSettingRepository.configure(initResponse.getCurrency());
+                        testingRepository.configure(initResponse.getExperiments());
+
                         initCache.put(initResponse);
                         callback.success(initResponse);
                     }

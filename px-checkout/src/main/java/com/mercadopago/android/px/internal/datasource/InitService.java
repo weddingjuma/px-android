@@ -30,16 +30,16 @@ public class InitService implements InitRepository {
     @NonNull private final String language;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final Cache<InitResponse> initCache;
-    @Nullable private final String flowId;
+    @Nullable private final String flow;
 
     public InitService(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
-        @NonNull final String language, @Nullable final String flowId, @NonNull final Cache<InitResponse> initCache) {
+        @NonNull final String language, @Nullable final String flow, @NonNull final Cache<InitResponse> initCache) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.checkoutService = checkoutService;
         this.language = language;
-        this.flowId = flowId;
+        this.flow = flow;
         this.initCache = initCache;
     }
 
@@ -112,7 +112,7 @@ public class InitService implements InitRepository {
             .setDiscountParamsConfiguration(discountParamsConfiguration)
             .setCheckoutFeatures(features)
             .setCheckoutPreference(checkoutPreference)
-            .setFlowId(flowId)
+            .setFlow(flow)
             .build();
 
         final String preferenceId = paymentSettingRepository.getCheckoutPreferenceId();

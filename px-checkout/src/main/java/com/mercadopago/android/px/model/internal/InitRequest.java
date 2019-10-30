@@ -41,7 +41,7 @@ public final class InitRequest {
      */
     @Nullable private final CheckoutPreference preference;
 
-    @Nullable private final String flowId;
+    @Nullable private final String flow;
 
     /* default */ InitRequest(final Builder builder) {
         publicKey = builder.publicKey;
@@ -51,7 +51,7 @@ public final class InitRequest {
         features = builder.features;
         preference = builder.preference;
         preferenceId = builder.preferenceId;
-        flowId = builder.flowId;
+        flow = builder.flow;
     }
 
     public static class Builder {
@@ -64,7 +64,7 @@ public final class InitRequest {
 
         /* default */ @Nullable CheckoutPreference preference;
         /* default */ @Nullable String preferenceId;
-        /* default */ @Nullable String flowId = TextUtil.EMPTY;
+        /* default */ @Nullable String flow = TextUtil.EMPTY;
 
         public Builder(@NonNull final String publicKey) {
             this.publicKey = publicKey;
@@ -100,8 +100,8 @@ public final class InitRequest {
             return this;
         }
 
-        public Builder setFlowId(@Nullable final String flowId) {
-            this.flowId = flowId;
+        public Builder setFlow(@Nullable final String flow) {
+            this.flow = flow;
             return this;
         }
 

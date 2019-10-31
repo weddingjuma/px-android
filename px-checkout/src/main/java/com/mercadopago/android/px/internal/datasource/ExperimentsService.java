@@ -3,12 +3,12 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.internal.repository.TestingRepository;
+import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Experiment;
 import java.util.List;
 
-public class TestingService implements TestingRepository {
+public class ExperimentsService implements ExperimentsRepository {
 
     private static final String PREF_EXPERIMENTS = "PREF_EXPERIMENTS";
 
@@ -16,7 +16,7 @@ public class TestingService implements TestingRepository {
 
     @Nullable private List<Experiment> experiments;
 
-    public TestingService(@NonNull final SharedPreferences sharedPreferences) {
+    public ExperimentsService(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
     }
 

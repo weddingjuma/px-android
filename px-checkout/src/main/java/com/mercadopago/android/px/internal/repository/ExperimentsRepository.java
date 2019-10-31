@@ -4,7 +4,7 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.Experiment;
 import java.util.List;
 
-public interface TestingRepository {
+public interface ExperimentsRepository {
 
     void reset();
 

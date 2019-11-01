@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Site;
 import java.math.BigDecimal;
@@ -31,9 +32,9 @@ import java.util.Locale;
         highlight = itemView.findViewById(R.id.highlight);
     }
 
-    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener,
-        @NonNull final Site site, @NonNull final PayerCost payerCost) {
-        setInstallmentsText(site, payerCost);
+    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener, @NonNull final Site site,
+        @NonNull final Currency currency, @NonNull final PayerCost payerCost) {
+        setInstallmentsText(currency, payerCost);
 
         if (!site.shouldWarnAboutBankInterests()) {
             if (BigDecimal.ZERO.equals(payerCost.getInstallmentRate())) {
@@ -41,26 +42,26 @@ import java.util.Locale;
                 zeroRateText.setVisibility(payerCost.getInstallments() > 1 ? View.VISIBLE : View.GONE);
             } else {
                 zeroRateText.setVisibility(View.GONE);
-                setAmountWithRateText(site, payerCost);
+                setAmountWithRateText(currency, payerCost);
             }
         }
 
         itemView.setOnClickListener(v -> itemListener.onClick(payerCost));
     }
 
-    private void setAmountWithRateText(@NonNull final Site site, @NonNull final PayerCost payerCost) {
+    private void setAmountWithRateText(@NonNull final Currency currency, @NonNull final PayerCost payerCost) {
         totalText.setVisibility(View.VISIBLE);
 
         final Spanned spannedInstallmentsText =
-            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getTotalAmount(), site.getCurrencyId());
+            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getTotalAmount(), currency);
 
         totalText.setText(TextUtils.concat("(", spannedInstallmentsText, ")"));
     }
 
-    private void setInstallmentsText(@NonNull final Site site, @NonNull final PayerCost payerCost) {
+    private void setInstallmentsText(@NonNull final Currency currency, @NonNull final PayerCost payerCost) {
 
         final Spanned spannedInstallmentsText =
-            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getInstallmentAmount(), site.getCurrencyId());
+            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getInstallmentAmount(), currency);
 
         final String x = installmentsTextView.getContext().getString(R.string.px_installments_by);
 
@@ -70,11 +71,11 @@ import java.util.Locale;
                 .append(spannedInstallmentsText));
     }
 
-    public void highLight() {
+    /* default */ void highLight() {
         highlight.setVisibility(View.VISIBLE);
     }
 
-    public void noHighLight() {
+    /* default */ void noHighLight() {
         highlight.setVisibility(View.GONE);
     }
 }

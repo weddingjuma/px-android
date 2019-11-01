@@ -17,6 +17,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.view.Renderer;
 import com.mercadopago.android.px.internal.view.RendererFactory;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentTypes;
 import java.math.BigDecimal;
 
@@ -50,6 +51,7 @@ public class FullSummaryRenderer extends Renderer<FullSummary> {
             final PayerCostColumn payerCostColumn =
                 new PayerCostColumn(context,
                     component.props.summaryModel.getSite(),
+                    component.props.summaryModel.getCurrency(),
                     component.props.summaryModel.getInstallmentsRate(),
                     component.props.summaryModel.getInstallmentAmount(),
                     component.props.summaryModel.getInstallments());
@@ -72,7 +74,7 @@ public class FullSummaryRenderer extends Renderer<FullSummary> {
 
         //total
         setText(totalAmountTextView, getFormattedAmount(component.props.summaryModel.getAmountToPay(),
-            component.props.summaryModel.getSite().getCurrencyId()));
+            component.props.summaryModel.getCurrency()));
 
         //disclaimer
         setText(disclaimerTextView, component.getSummary(context).getDisclaimerText());
@@ -95,12 +97,11 @@ public class FullSummaryRenderer extends Renderer<FullSummary> {
     }
 
     @Nullable
-    private Spanned getFormattedAmount(final BigDecimal amount, final String currencyId) {
-        return amount != null && !TextUtil.isEmpty(currencyId) ? CurrenciesUtil
-            .getSpannedAmountWithCurrencySymbol(amount, currencyId) : null;
+    private Spanned getFormattedAmount(final BigDecimal amount, @NonNull final Currency currency) {
+        return amount != null ? CurrenciesUtil.getSpannedAmountWithCurrencySymbol(amount, currency) : null;
     }
 
-    public String getDisclaimer(FullSummary component, Context context) {
+    private String getDisclaimer(FullSummary component, Context context) {
         return context.getString(R.string.px_installments_cft, component.props.summaryModel.getCftPercent());
     }
 }

@@ -76,7 +76,7 @@ public class AddNewCardFragment extends Fragment implements AddNewCard.View, Vie
     }
 
     private AddNewCardPresenter createPresenter() {
-        return new AddNewCardPresenter(Session.getInstance().getGroupsRepository());
+        return new AddNewCardPresenter(Session.getInstance().getInitRepository());
     }
 
     protected void configureClick(@NonNull final View view) {

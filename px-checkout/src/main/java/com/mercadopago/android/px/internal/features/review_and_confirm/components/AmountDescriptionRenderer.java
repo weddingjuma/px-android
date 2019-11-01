@@ -28,7 +28,7 @@ public class AmountDescriptionRenderer extends Renderer<AmountDescription> {
             amountBuilder.append("-");
         }
         final Spanned spannedAmount =
-            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(component.props.amount, component.props.currencyId);
+            CurrenciesUtil.getSpannedAmountWithCurrencySymbol(component.props.amount, component.props.currency);
 
         amountTextView.setText(TextUtils.concat(amountBuilder, spannedAmount));
 

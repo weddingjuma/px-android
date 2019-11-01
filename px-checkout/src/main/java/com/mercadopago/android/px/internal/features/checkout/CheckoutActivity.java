@@ -121,10 +121,9 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                 new CheckoutPresenter(CheckoutStateModel.fromBundle(savedInstanceState),
                     configurationModule.getPaymentSettings(),
                     configurationModule.getUserSelectionRepository(),
-                    session.getGroupsRepository(),
+                    session.getInitRepository(),
                     session.getPluginRepository(),
                     session.getPaymentRepository(),
-                    session.getCheckoutPreferenceRepository(),
                     session.getPaymentRewardRepository(),
                     session.getInternalConfiguration());
 
@@ -133,7 +132,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             presenter.attachView(this);
 
             if (presenter.getState().isExpressCheckout) {
-                presenter.retrievePaymentMethodSearch();
+                presenter.initialize();
             }
         }
     }
@@ -161,10 +160,9 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         return new CheckoutPresenter(persistentData,
             configuration,
             configurationModule.getUserSelectionRepository(),
-            session.getGroupsRepository(),
+            session.getInitRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
-            session.getCheckoutPreferenceRepository(),
             session.getPaymentRewardRepository(),
             session.getInternalConfiguration());
     }

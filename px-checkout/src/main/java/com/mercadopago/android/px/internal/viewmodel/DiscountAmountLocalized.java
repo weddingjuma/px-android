@@ -7,23 +7,24 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
+import com.mercadopago.android.px.model.Currency;
 import java.math.BigDecimal;
 
 public class DiscountAmountLocalized implements ILocalizedCharSequence {
 
     private final BigDecimal amount;
-    private final String currencyId;
+    private final Currency currency;
 
-    public DiscountAmountLocalized(@NonNull final BigDecimal amount, @NonNull final String currencyId) {
+    public DiscountAmountLocalized(@NonNull final BigDecimal amount, @NonNull final Currency currency) {
         this.amount = amount;
-        this.currencyId = currencyId;
+        this.currency = currency;
     }
 
     @Override
     public CharSequence get(@NonNull final Context context) {
         final Editable spannableStringBuilder = new SpannableStringBuilder();
         final Spannable spannable =
-            TextFormatter.withCurrencyId(currencyId)
+            TextFormatter.withCurrency(currency)
                 .withSpace()
                 .amount(amount)
                 .normalDecimals()

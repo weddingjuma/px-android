@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Site;
 import java.util.List;
@@ -15,6 +16,7 @@ import static com.mercadopago.android.px.model.PayerCost.NO_SELECTED;
 public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHolder> {
 
     @NonNull private final Site site;
+    @NonNull private final Currency currency;
     @NonNull private List<PayerCost> payerCosts;
     private int payerCostSelected;
     @NonNull private final ItemListener itemListener;
@@ -23,19 +25,21 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
         void onClick(final PayerCost payerCostSelected);
     }
 
-    public InstallmentsAdapter(@NonNull final Site site,
+    public InstallmentsAdapter(@NonNull final Site site, @NonNull final Currency currency,
         @NonNull final List<PayerCost> payerCosts, @NonNull final ItemListener itemListener) {
         this.site = site;
+        this.currency = currency;
         this.payerCosts = payerCosts;
         this.itemListener = itemListener;
         payerCostSelected = NO_SELECTED;
     }
 
-    public InstallmentsAdapter(@NonNull final Site site,
+    public InstallmentsAdapter(@NonNull final Site site, @NonNull final Currency currency,
         @NonNull final List<PayerCost> payerCosts,
         final int payerCostSelected,
         @NonNull final ItemListener itemListener) {
         this.site = site;
+        this.currency = currency;
         this.payerCosts = payerCosts;
         this.payerCostSelected = payerCostSelected;
         this.itemListener = itemListener;
@@ -49,16 +53,17 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
         this.payerCostSelected = payerCostSelected;
     }
 
+    @NonNull
     @Override
-    public InstallmentRowHolder onCreateViewHolder(final ViewGroup parent, final int viewType) {
+    public InstallmentRowHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int viewType) {
         final View installmentView =
             LayoutInflater.from(parent.getContext()).inflate(R.layout.px_view_payer_cost_item, parent, false);
         return new InstallmentRowHolder(installmentView);
     }
 
     @Override
-    public void onBindViewHolder(final InstallmentRowHolder holder, final int position) {
-        holder.populate(itemListener, site, payerCosts.get(position));
+    public void onBindViewHolder(@NonNull final InstallmentRowHolder holder, final int position) {
+        holder.populate(itemListener, site, currency, payerCosts.get(position));
 
         if (position == payerCostSelected) {
             holder.highLight();

@@ -59,6 +59,15 @@ public final class MPTracker {
     }
 
     /**
+     * @return flow name configured when listener is attached to MPTracker see {@link com.mercadopago.android.px.tracking.PXTracker#setListener(PXTrackingListener,
+     * Map, String)}.
+     */
+    @Nullable
+    public String getFlowName() {
+        return flowName;
+    }
+
+    /**
      * Set listener to track library's screens and events in the app.
      *
      * @param pxEventListener implementing the tracking methods

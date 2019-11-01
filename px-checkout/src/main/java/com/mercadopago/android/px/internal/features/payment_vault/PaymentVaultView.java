@@ -5,11 +5,10 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
-import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import java.math.BigDecimal;
@@ -37,13 +36,13 @@ public interface PaymentVaultView extends MvpView {
 
     void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount,
-        @NonNull final Site site);
+        @NonNull final Currency currency);
 
     void hideAmountRow();
 
     void collectPayerInformation();
 
-    void showDetailDialog(@NonNull final DiscountConfigurationModel discountModel);
+    void showDetailDialog(@NonNull final Currency currency, @NonNull final DiscountConfigurationModel discountModel);
 
     void showEmptyPaymentMethodsError();
 

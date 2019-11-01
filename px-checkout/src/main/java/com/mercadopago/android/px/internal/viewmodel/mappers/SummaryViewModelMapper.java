@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.SummaryViewDefaultColor;
 import com.mercadopago.android.px.internal.viewmodel.TotalLocalized;
 import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
@@ -24,7 +25,7 @@ import java.util.List;
 public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod, SummaryView.Model,
     Pair<DiscountConfigurationModel, PaymentTypeChargeRule>> {
 
-    @NonNull private final String currencyId;
+    @NonNull private final Currency currency;
     @NonNull private final DiscountRepository discountRepository;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final ElementDescriptorView.Model elementDescriptorModel;
@@ -32,12 +33,12 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
     @NonNull private final SummaryInfo summaryInfo;
     @NonNull private final ChargeRepository chargeRepository;
 
-    public SummaryViewModelMapper(@NonNull final String currencyId,
+    public SummaryViewModelMapper(@NonNull final Currency currency,
         @NonNull final DiscountRepository discountRepository, @NonNull final AmountRepository amountRepository,
         @NonNull final ElementDescriptorView.Model elementDescriptorModel,
         @NonNull final AmountDescriptorView.OnClickListener listener,
         @NonNull final SummaryInfo summaryInfo, @NonNull final ChargeRepository chargeRepository) {
-        this.currencyId = currencyId;
+        this.currency = currency;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
         this.elementDescriptorModel = elementDescriptorModel;
@@ -73,12 +74,12 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
         @NonNull final DiscountConfigurationModel discountModel) {
         final PaymentTypeChargeRule chargeRule = chargeRepository.getChargeRule(paymentTypeId);
         final List<AmountDescriptorView.Model> summaryDetailList =
-            new SummaryDetailDescriptorFactory(listener, discountModel, amountRepository, summaryInfo, currencyId,
+            new SummaryDetailDescriptorFactory(listener, discountModel, amountRepository, summaryInfo, currency,
                 chargeRule).create();
 
         final AmountDescriptorView.Model totalRow = new AmountDescriptorView.Model(
             new TotalLocalized(),
-            new AmountLocalized(amountRepository.getAmountToPay(paymentTypeId, discountModel), currencyId),
+            new AmountLocalized(amountRepository.getAmountToPay(paymentTypeId, discountModel), currency),
             new SummaryViewDefaultColor());
 
         return new SummaryView.Model(elementDescriptorModel, summaryDetailList, totalRow);

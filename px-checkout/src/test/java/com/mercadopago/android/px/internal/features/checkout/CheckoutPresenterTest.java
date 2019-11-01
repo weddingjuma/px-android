@@ -5,8 +5,7 @@ import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.features.Constants;
-import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -15,8 +14,8 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
-import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
-import com.mercadopago.android.px.mocks.Payments;
+import com.mercadopago.android.px.mocks.ApiExceptionStubs;
+import com.mercadopago.android.px.mocks.InitResponseStub;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Payment;
@@ -26,8 +25,8 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Setting;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.utils.StubFailMpCall;
@@ -40,12 +39,10 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubExpiredPreference;
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItem;
 import static com.mercadopago.android.px.utils.StubCheckoutPreferenceUtils.stubPreferenceOneItemAndPayer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -59,81 +56,30 @@ public class CheckoutPresenterTest {
 
     private static final String DEFAULT_CARD_ID = "260077840";
     private static final String DEBIT_CARD_DEBCABAL = "debcabal";
-    public static final String PREF_ID = "pref_id";
     public static final int CUSTOM_RESULT_CODE = 1;
 
     @Mock private Checkout.View checkoutView;
     @Mock private PaymentSettingRepository paymentSettingRepository;
     @Mock private UserSelectionRepository userSelectionRepository;
-    @Mock private GroupsRepository groupsRepository;
+    @Mock private InitRepository initRepository;
     @Mock private PluginRepository pluginRepository;
     @Mock private PaymentRepository paymentRepository;
-    @Mock private CheckoutPreferenceRepository checkoutPreferenceRepository;
     @Mock private PaymentRewardRepository paymentRewardRepository;
     @Mock private InternalConfiguration internalConfiguration;
 
     private CheckoutPresenter presenter;
+    private CheckoutStateModel checkoutStateModel;
 
     @Before
     public void setUp() {
-        presenter = getPresenter();
-    }
-
-    @Test
-    public void whenChoHasPrefIdSetRetrievePreferenceFromMercadoPagoAndItFailsThenShowError() {
-        final ApiException apiException = mock(ApiException.class);
-
-        when(paymentSettingRepository.getCheckoutPreferenceId()).thenReturn(PREF_ID);
-        when(checkoutPreferenceRepository.getCheckoutPreference(PREF_ID))
-            .thenReturn(new StubFailMpCall<>(apiException));
-
-        presenter.initialize();
-
-        verify(checkoutView).showError(any(MercadoPagoError.class));
-    }
-
-    @Test
-    public void whenPreferenceIsRetrievedFromMercadoPagoThenStartCheckoutForPreference() {
-        final CheckoutPreference checkoutPreference = stubPreferenceOneItem();
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
-        when(checkoutPreferenceRepository.getCheckoutPreference(anyString()))
-            .thenReturn(new StubSuccessMpCall<>(checkoutPreference));
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
-
-        presenter.retrieveCheckoutPreference(anyString());
-
-        verify(checkoutView).showPaymentMethodSelection();
-        verifyNoMoreInteractions(checkoutView);
-    }
-
-    @Test
-    public void whenPreferenceIsNotRetrievedAndRecoverFromFailureThenStartCheckoutForPreference() {
-        final CheckoutPreference checkoutPreference = stubPreferenceOneItem();
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
-        when(checkoutPreferenceRepository.getCheckoutPreference(anyString()))
-            .thenReturn(new StubFailMpCall<>(mock(ApiException.class)));
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
-
-        presenter.retrieveCheckoutPreference(anyString());
-
-        when(checkoutPreferenceRepository.getCheckoutPreference(anyString()))
-            .thenReturn(new StubSuccessMpCall<>(checkoutPreference));
-
-        presenter.recoverFromFailure();
-
-        verify(checkoutView).showError(any(MercadoPagoError.class));
-        verify(checkoutView).showPaymentMethodSelection();
-        verifyNoMoreInteractions(checkoutView);
+        checkoutStateModel = new CheckoutStateModel();
+        presenter = getPresenter(checkoutStateModel);
     }
 
     @Test
     public void whenCheckoutInitializedAndPaymentMethodSearchFailsThenShowError() {
         final ApiException apiException = mock(ApiException.class);
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(stubPreferenceOneItem());
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubFailMpCall<>(apiException));
+        when(initRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
 
         presenter.initialize();
 
@@ -146,41 +92,29 @@ public class CheckoutPresenterTest {
     public void whenChoHasCompletePrefSetDoNotCallRepositoryToGetPreference() {
         final CheckoutPreference preference = stubPreferenceOneItem();
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
 
         presenter.initialize();
 
         verifyInitializeWithPreference();
         verifyNoMoreInteractions(checkoutView);
-        verifyNoMoreInteractions(checkoutPreferenceRepository);
-    }
-
-    @Test
-    public void whenPreferenceIsExpiredThenShowErrorInView() {
-        final CheckoutPreference preference = stubExpiredPreference();
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
-        presenter.initialize();
-        verify(checkoutView).showCheckoutExceptionError(any(CheckoutPreferenceException.class));
     }
 
     @Test
     public void whenChoHasPreferenceAndPaymentMethodRetrievedShowPaymentMethodSelection() {
         final CheckoutPreference preference = stubPreferenceOneItemAndPayer();
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
         presenter.initialize();
 
-        verify(groupsRepository).getGroups();
+        verify(initRepository).init();
         verifyInitializeWithPreference();
         verifyNoMoreInteractions(checkoutView);
-        verifyNoMoreInteractions(groupsRepository);
+        verifyNoMoreInteractions(initRepository);
     }
 
     @Test
     public void whenAPaymentMethodIsSelectedThenShowReviewAndConfirmIfPaymentProcessorShouldNotSkipUserConfirmation() {
-        final CheckoutPresenter presenter = getPresenter();
         final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
         final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
 
@@ -210,30 +144,29 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenDefaultCardIdValidSelectedThenShowSecurityCode() {
-        final PaymentMethodSearch search = mockPaymentMethodSearchForDriver(true);
+        final InitResponse search = mockPaymentMethodSearchForDriver(true);
         presenter.startFlow(search);
         verify(checkoutView).showSavedCardFlow(any(Card.class));
     }
 
     @Test
     public void whenDefaultCardIdInvalidSelectedThenShowPaymentVault() {
-        final PaymentMethodSearch search = mockPaymentMethodSearchForDriver(false);
+        final InitResponse search = mockPaymentMethodSearchForDriver(false);
         presenter.startFlow(search);
         verify(checkoutView).showPaymentMethodSelection();
     }
 
     @Test
     public void whenDefaultCardIdIsNullAndDefaultPaymentTypeIsValidThenShowNewCardFlow() {
-        final PaymentMethodSearch search = mockPaymentMethodSearchForNewCardDriver();
+        final InitResponse search = mockPaymentMethodSearchForNewCardDriver();
         presenter.startFlow(search);
         verify(checkoutView).showNewCardFlow();
     }
 
     @Test
     public void whenCardFlowCanceledAndThereIsValidCardThenCancelCheckout() {
-        final PaymentMethodSearch paymentMethodSearch = mockPaymentMethodSearchForDriver(true);
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        final InitResponse paymentMethodSearch = mockPaymentMethodSearchForDriver(true);
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
 
         presenter.onCardFlowCancel();
 
@@ -243,9 +176,8 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenCardFlowCancelAndDefaultCardIdIsNullAndDefaultPaymentTypeIsValidThenCancelCheckout() {
-        final PaymentMethodSearch paymentMethodSearch = mockPaymentMethodSearchForNewCardDriver();
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        final InitResponse paymentMethodSearch = mockPaymentMethodSearchForNewCardDriver();
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
 
         presenter.onCardFlowCancel();
 
@@ -255,9 +187,8 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenCardFlowCanceledAndThereIsInValidCardThenShowPaymentMethodSelection() {
-        final PaymentMethodSearch paymentMethodSearch = mockPaymentMethodSearchForDriver(false);
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
+        final InitResponse paymentMethodSearch = mockPaymentMethodSearchForDriver(false);
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
 
         presenter.onCardFlowCancel();
 
@@ -268,8 +199,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenCardFlowCanceledAndPaymentMethodSearchFailsThenShowPaymentMethodSelection() {
         final ApiException apiException = mock(ApiException.class);
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubFailMpCall<>(apiException));
+        when(initRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
 
         presenter.onCardFlowCancel();
 
@@ -329,14 +259,12 @@ public class CheckoutPresenterTest {
         presenter.onChangePaymentMethod();
 
         verify(checkoutView).transitionOut();
-        verify(checkoutView)
-            .finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD);
+        verify(checkoutView).finishWithPaymentResult(Constants.RESULT_CHANGE_PAYMENT_METHOD);
     }
 
     @Test
     public void whenPaymentNeedsRecoveryFromReviewAndConfirmThenShowReviewAndConfirmAndRecoverPayment() {
-        final RecoverPaymentPostPaymentAction action =
-            new RecoverPaymentPostPaymentAction();
+        final RecoverPaymentPostPaymentAction action = new RecoverPaymentPostPaymentAction();
         action.execute(presenter);
 
         verify(checkoutView).showReviewAndConfirmAndRecoverPayment(false, action);
@@ -344,10 +272,9 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenPaymentNeedsRecoveryFromOneTapThenDoNothing() {
-        final CheckoutPresenter presenter = getOneTapPresenter();
+        checkoutStateModel.isExpressCheckout = true;
 
-        final RecoverPaymentPostPaymentAction action =
-            new RecoverPaymentPostPaymentAction();
+        final RecoverPaymentPostPaymentAction action = new RecoverPaymentPostPaymentAction();
         action.execute(presenter);
 
         verifyNoMoreInteractions(checkoutView);
@@ -364,7 +291,8 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenOneTapPaymentHasInvalidEscThenStartPaymentRecoveryFlow() {
-        final CheckoutPresenter presenter = getOneTapPresenter();
+        checkoutStateModel.isExpressCheckout = true;
+
         final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
 
         presenter.onRecoverPaymentEscInvalid(paymentRecovery);
@@ -427,8 +355,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenCheckoutisInitializedAndUserPressesBackThenCancelCheckout() {
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(stubPreferenceOneItem());
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
 
         presenter.initialize();
 
@@ -445,8 +372,7 @@ public class CheckoutPresenterTest {
         final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(stubPreferenceOneItem());
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
         when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
         when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
         when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(false);
@@ -468,8 +394,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenReviewAndConfirmCanceledAndOnlyOnePaymentMethodThenCancelCheckout() {
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(stubPreferenceOneItem());
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getPaymentMethodSearchWithOnlyAccountMoneyMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.ONLY_ACCOUNT_MONEY_MLA.get()));
 
         presenter.initialize();
         presenter.onReviewAndConfirmCancel();
@@ -480,8 +405,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenReviewAndConfirmCanceledAndThereIsMoreThanOnePaymentMethodThenShowPaymentMethodSelection() {
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(stubPreferenceOneItem());
-        when(groupsRepository.getGroups())
-            .thenReturn(new StubSuccessMpCall<>(PaymentMethodSearchs.getCompletePaymentMethodSearchMLA()));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
 
         presenter.initialize();
         presenter.onReviewAndConfirmCancel();
@@ -519,7 +443,7 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenErrorShownAndInvalidIdentificationThenGoBackToPaymentMethodSelection() {
-        final ApiException apiException = Payments.getInvalidIdentificationPayment();
+        final ApiException apiException = ApiExceptionStubs.INVALID_IDENTIFICATION_PAYMENT.get();
         final MercadoPagoError mpException = new MercadoPagoError(apiException, "");
 
         presenter.onErrorCancel(mpException);
@@ -580,9 +504,6 @@ public class CheckoutPresenterTest {
         final MercadoPagoError mercadoPagoError = mock(MercadoPagoError.class);
         when(mercadoPagoError.isPaymentProcessing()).thenReturn(true);
         when(paymentRepository.getPaymentDataList()).thenReturn(mock(List.class));
-        final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
-        when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
         presenter.onPaymentError(mercadoPagoError);
 
         verify(checkoutView).hideProgress();
@@ -705,29 +626,16 @@ public class CheckoutPresenterTest {
     private CheckoutPresenter getBasePresenter(
         final Checkout.View view, final CheckoutStateModel checkoutStateModel) {
 
-        presenter = new CheckoutPresenter(checkoutStateModel, paymentSettingRepository,
-            userSelectionRepository,
-            groupsRepository,
-            pluginRepository,
-            paymentRepository,
-            checkoutPreferenceRepository,
-            paymentRewardRepository,
-            internalConfiguration);
+        presenter = new CheckoutPresenter(checkoutStateModel, paymentSettingRepository, userSelectionRepository,
+            initRepository, pluginRepository, paymentRepository, paymentRewardRepository, internalConfiguration);
 
         presenter.attachView(view);
         return presenter;
     }
 
     @NonNull
-    private CheckoutPresenter getPresenter() {
-        return getBasePresenter(checkoutView, new CheckoutStateModel());
-    }
-
-    @NonNull
-    private CheckoutPresenter getOneTapPresenter() {
-        final CheckoutStateModel stateModel = new CheckoutStateModel();
-        stateModel.isExpressCheckout = true;
-        return getBasePresenter(checkoutView, stateModel);
+    private CheckoutPresenter getPresenter(final CheckoutStateModel checkoutStateModel) {
+        return getBasePresenter(checkoutView, checkoutStateModel);
     }
 
     private void verifyInitializeWithPreference() {
@@ -736,9 +644,9 @@ public class CheckoutPresenterTest {
     }
 
     @NonNull
-    private PaymentMethodSearch mockPaymentMethodSearchForDriver(boolean isValidCard) {
-        PaymentMethodSearch search = mock(PaymentMethodSearch.class);
-        PaymentMethod paymentMethod = mock(PaymentMethod.class);
+    private InitResponse mockPaymentMethodSearchForDriver(boolean isValidCard) {
+        final InitResponse search = mock(InitResponse.class);
+        final PaymentMethod paymentMethod = mock(PaymentMethod.class);
         when(paymentMethod.getPaymentTypeId()).thenReturn("debit_card");
         final ArrayList settingsList = mock(ArrayList.class);
         final Setting setting = mock(Setting.class);
@@ -763,15 +671,13 @@ public class CheckoutPresenterTest {
     }
 
     @NonNull
-    private PaymentMethodSearch mockPaymentMethodSearchForNewCardDriver() {
-        final PaymentMethodSearch search = mock(PaymentMethodSearch.class);
+    private InitResponse mockPaymentMethodSearchForNewCardDriver() {
+        final InitResponse search = mock(InitResponse.class);
         final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getPaymentPreference()).thenReturn(mock(PaymentPreference.class));
-        when(paymentSettingRepository.getCheckoutPreference().getPaymentPreference().getDefaultCardId())
-            .thenReturn(null);
-        when(paymentSettingRepository.getCheckoutPreference().getPaymentPreference().getDefaultPaymentTypeId())
-            .thenReturn("debit_card");
+        when(checkoutPreference.getPaymentPreference().getDefaultCardId()).thenReturn(null);
+        when(checkoutPreference.getPaymentPreference().getDefaultPaymentTypeId()).thenReturn("debit_card");
+        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         return search;
     }
 

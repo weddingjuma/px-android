@@ -4,7 +4,6 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
-import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -50,7 +49,7 @@ public class SummaryAmountService implements SummaryAmountRepository {
         final Issuer issuer = userSelectionRepository.getIssuer();
 
         final Map<String, Object> body = new HashMap<>();
-        body.put("site_id", checkoutPreference.getSite().getId());
+        body.put("site_id", paymentSettingRepository.getSite().getId());
         body.put("transaction_amount", checkoutPreference.getTotalAmount());
         body.put("marketplace", checkoutPreference.getMarketplace());
         if (TextUtil.isNotEmpty(checkoutPreference.getPayer().getEmail())) {

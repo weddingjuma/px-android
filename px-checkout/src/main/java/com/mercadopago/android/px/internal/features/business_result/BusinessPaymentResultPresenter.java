@@ -30,8 +30,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
     /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final BusinessPaymentModel model) {
         this.model = model;
-
-        viewTracker = new ResultViewTrack(model, paymentSettings.getCheckoutPreference());
+        viewTracker = new ResultViewTrack(model, paymentSettings);
     }
 
     @Override

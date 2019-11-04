@@ -3,7 +3,6 @@ package com.mercadopago.android.px.mocks;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.IdentificationType;
-import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.utils.ResourcesUtil;
 import java.lang.reflect.Type;
 import java.util.List;
@@ -18,8 +17,6 @@ public class IdentificationTypes {
     private static final int CPF_INVALID_LENGTH = 10;
     private static final int CPF_VALID_LENGTH = 11;
     private static final int CNPJ_VALID_LENGTH = 14;
-    private static final String doNotFindIdentificationTypesException =
-        "{\"message\":\"doesn't find identification types\",\"error\":\"identification types not found error\",\"cause\":[]}";
 
     public static IdentificationType getById(String id) {
         switch (id) {
@@ -30,10 +27,6 @@ public class IdentificationTypes {
         default:
             return new IdentificationType("DNI", "DNI", "number", 7, 8);
         }
-    }
-
-    public static ApiException getDoNotFindIdentificationTypesException() {
-        return JsonUtil.fromJson(doNotFindIdentificationTypesException, ApiException.class);
     }
 
     public static IdentificationType getIdentificationType() {

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * DTO that represents init informaton from checkout.
+ * DTO that represents init information from checkout.
  */
 @SuppressWarnings("unused")
 public final class InitRequest {
@@ -31,7 +31,7 @@ public final class InitRequest {
     @NonNull private final CheckoutFeatures features;
 
     /**
-     * When when there is a "close" preference this value is not null.
+     * When there is a "closed" preference this value is not null.
      */
     @Nullable private final String preferenceId;
 

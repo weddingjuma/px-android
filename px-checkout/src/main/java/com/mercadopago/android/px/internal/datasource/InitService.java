@@ -99,8 +99,8 @@ public class InitService implements InitRepository {
         };
     }
 
-    @NonNull /* default */ MPCall<InitResponse> newRequest() {
-        // nullable value
+    @NonNull
+        /* default */ MPCall<InitResponse> newRequest() {
         final CheckoutPreference checkoutPreference = paymentSettingRepository.getCheckoutPreference();
         final PaymentConfiguration paymentConfiguration = paymentSettingRepository.getPaymentConfiguration();
 

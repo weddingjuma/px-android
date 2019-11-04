@@ -20,16 +20,18 @@ import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
+import com.mercadopago.android.px.mocks.CurrencyStub;
+import com.mercadopago.android.px.mocks.SiteStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.CardDisplayInfo;
 import com.mercadopago.android.px.model.CardMetadata;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.Site;
-import com.mercadopago.android.px.model.Sites;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.Arrays;
@@ -59,7 +61,7 @@ public class ExpressPaymentPresenterTest {
     private PaymentRepository paymentRepository;
 
     @Mock
-    private PaymentSettingRepository configuration;
+    private PaymentSettingRepository paymentSettingRepository;
 
     @Mock
     private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
@@ -77,7 +79,7 @@ public class ExpressPaymentPresenterTest {
     private AmountRepository amountRepository;
 
     @Mock
-    private PaymentMethodSearch paymentMethodSearch;
+    private InitResponse initResponse;
 
     @Mock
     private ExpressMetadata expressMetadata;
@@ -112,15 +114,15 @@ public class ExpressPaymentPresenterTest {
     public void setUp() {
         //This is needed for the presenter constructor
         final CheckoutPreference preference = mock(CheckoutPreference.class);
-        when(preference.getSite()).thenReturn(Sites.ARGENTINA);
         when(preference.getItems()).thenReturn(Collections.singletonList(mock(Item.class)));
-        when(configuration.getCheckoutPreference()).thenReturn(preference);
-        when(configuration.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
+        when(paymentSettingRepository.getSite()).thenReturn(SiteStub.MLA.get());
+        when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
+        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
+        when(paymentSettingRepository.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.getDynamicDialogConfiguration()).thenReturn(dynamicDialogConfiguration);
         when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
-        when(initRepository.init())
-            .thenReturn(new StubSuccessMpCall<>(paymentMethodSearch));
-        when(paymentMethodSearch.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
+        when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(initResponse));
+        when(initResponse.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
         when(expressMetadata.isCard()).thenReturn(true);
         when(expressMetadata.getCustomOptionId()).thenReturn("123");
@@ -131,7 +133,7 @@ public class ExpressPaymentPresenterTest {
         when(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration);
 
         expressPaymentPresenter =
-            new ExpressPaymentPresenter(paymentRepository, configuration, disabledPaymentMethodRepository,
+            new ExpressPaymentPresenter(paymentRepository, paymentSettingRepository, disabledPaymentMethodRepository,
                 discountRepository,
                 amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
                 escManagerBehaviour, productIdProvider);
@@ -238,7 +240,7 @@ public class ExpressPaymentPresenterTest {
 
         verify(view).showToolbarElementDescriptor(any(ElementDescriptorView.Model.class));
         verify(view).configureAdapters(anyListOf(DrawableFragmentItem.class), any(Site.class),
-            any(HubAdapter.Model.class));
+            any(Currency.class), any(HubAdapter.Model.class));
         verify(view).setPayButtonText(any(PayButtonViewModel.class));
     }
 

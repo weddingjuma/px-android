@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.internal.driver;
 
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
-import com.mercadopago.android.px.mocks.PaymentMethodSearchs;
+import com.mercadopago.android.px.mocks.InitResponseStub;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentTypes;
@@ -31,7 +31,7 @@ public class DefaultPaymentMethodDriverTest {
 
     @Before
     public void setUp() {
-        paymentMethods = PaymentMethodSearchs.getPaymentMethodSearchWithSavedCardsMLA();
+        paymentMethods = InitResponseStub.FULL.get();
         handler = new DefaultPaymentMethodDriver(paymentMethods, paymentPreference);
     }
 
@@ -43,7 +43,7 @@ public class DefaultPaymentMethodDriverTest {
     }
 
     @Test
-    public void whenPaymentMethodIsCardAndCardIdIsNullThenDriveToNewCardFlow(){
+    public void whenPaymentMethodIsCardAndCardIdIsNullThenDriveToNewCardFlow() {
         when(paymentPreference.getDefaultPaymentTypeId()).thenReturn(STUB_CREDIT_CARD);
         handler.drive(paymentMethodDriverCallback);
         verify(paymentMethodDriverCallback).driveToNewCardFlow(STUB_CREDIT_CARD);

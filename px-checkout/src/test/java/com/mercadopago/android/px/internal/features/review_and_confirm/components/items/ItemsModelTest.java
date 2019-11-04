@@ -2,6 +2,8 @@ package com.mercadopago.android.px.internal.features.review_and_confirm.componen
 
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.ItemModel;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.ItemsModel;
+import com.mercadopago.android.px.mocks.CurrencyStub;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Item;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class ItemsModelTest {
     private final static String ITEM_TITLE_1 = "item_title_1";
     private final static String ITEM_TITLE_2 = "item_title_2";
     private final static String ITEM_DESCRIPTION = "item_description";
-    private final static String ITEM_CURRENCY_ID = "item_currency_id";
+    private final static Currency ITEM_CURRENCY = CurrencyStub.MLA.get();
     private final static BigDecimal ITEM_UNIT_PRICE_1 = new BigDecimal(100);
     private final static BigDecimal ITEM_UNIT_PRICE_2 = new BigDecimal(200);
 
@@ -35,9 +37,9 @@ public class ItemsModelTest {
     public void whenUniqueItemHasDescriptionThenCreateComponent() {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
         Assert.assertEquals(1, model.itemsModelList.size());
     }
 
@@ -45,9 +47,9 @@ public class ItemsModelTest {
     public void whenUniqueItemDoesntHaveDescriptionThenDontCreateComponent() {
         when(itemWithoutDescription.getDescription()).thenReturn("");
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithoutDescription);
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
         Assert.assertEquals(0, model.itemsModelList.size());
     }
 
@@ -56,9 +58,9 @@ public class ItemsModelTest {
         when(itemWithoutDescription.getDescription()).thenReturn("");
         when(itemWithoutDescription.getQuantity()).thenReturn(2);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithoutDescription);
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
 
         Assert.assertEquals(1, model.itemsModelList.size());
     }
@@ -68,11 +70,11 @@ public class ItemsModelTest {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
         when(itemWithoutDescription.getDescription()).thenReturn("");
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
         itemList.add(itemWithoutDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
         Assert.assertEquals(2, model.itemsModelList.size());
     }
 
@@ -81,14 +83,14 @@ public class ItemsModelTest {
         when(itemWithDescription.getTitle()).thenReturn(ITEM_TITLE_1);
         when(itemWithoutDescription.getTitle()).thenReturn(ITEM_TITLE_2);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
         itemList.add(itemWithoutDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel firstItem = itemModelList.get(0);
-        ItemModel secondItem = itemModelList.get(1);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel firstItem = itemModelList.get(0);
+        final ItemModel secondItem = itemModelList.get(1);
 
         Assert.assertEquals(2, model.itemsModelList.size());
         Assert.assertEquals(ITEM_TITLE_1, firstItem.title);
@@ -99,12 +101,12 @@ public class ItemsModelTest {
     public void whenUniqueItemThenCreateItemModelWithDescriptionAsTitle() {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertEquals(ITEM_DESCRIPTION, uniqueItem.title);
@@ -115,12 +117,12 @@ public class ItemsModelTest {
         when(itemWithDescription.getPictureUrl()).thenReturn(ITEM_IMAGE_URL);
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertEquals(ITEM_IMAGE_URL, uniqueItem.imageUrl);
@@ -131,14 +133,14 @@ public class ItemsModelTest {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
         when(itemWithoutDescription.getDescription()).thenReturn("");
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
         itemList.add(itemWithoutDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel firstItem = itemModelList.get(0);
-        ItemModel secondItem = itemModelList.get(1);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel firstItem = itemModelList.get(0);
+        final ItemModel secondItem = itemModelList.get(1);
 
         Assert.assertEquals(2, model.itemsModelList.size());
         Assert.assertEquals(ITEM_DESCRIPTION, firstItem.subtitle);
@@ -149,12 +151,12 @@ public class ItemsModelTest {
     public void whenUniqueItemThenCreateItemModelWithNoSubtitle() {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertNull(uniqueItem.subtitle);
@@ -165,12 +167,12 @@ public class ItemsModelTest {
         when(itemWithDescription.getQuantity()).thenReturn(1);
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertTrue(uniqueItem.quantity == 1);
@@ -181,14 +183,14 @@ public class ItemsModelTest {
         when(itemWithDescription.getUnitPrice()).thenReturn(ITEM_UNIT_PRICE_1);
         when(itemWithoutDescription.getUnitPrice()).thenReturn(ITEM_UNIT_PRICE_2);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
         itemList.add(itemWithoutDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel firstItem = itemModelList.get(0);
-        ItemModel secondItem = itemModelList.get(1);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel firstItem = itemModelList.get(0);
+        final ItemModel secondItem = itemModelList.get(1);
 
         Assert.assertEquals(2, model.itemsModelList.size());
         Assert.assertEquals(ITEM_UNIT_PRICE_1.toString(), firstItem.unitPrice);
@@ -202,12 +204,12 @@ public class ItemsModelTest {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
         when(itemWithDescription.hasCardinality()).thenReturn(true);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertEquals(ITEM_UNIT_PRICE_1.toString(), uniqueItem.unitPrice);
@@ -218,12 +220,12 @@ public class ItemsModelTest {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
         when(itemWithDescription.hasCardinality()).thenReturn(false);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
         Assert.assertEquals("", uniqueItem.unitPrice);
@@ -233,14 +235,14 @@ public class ItemsModelTest {
     public void createItemModelWithCurrencyId() {
         when(itemWithDescription.getDescription()).thenReturn(ITEM_DESCRIPTION);
 
-        List<Item> itemList = new ArrayList<>();
+        final List<Item> itemList = new ArrayList<>();
         itemList.add(itemWithDescription);
 
-        ItemsModel model = new ItemsModel(ITEM_CURRENCY_ID, itemList);
-        List<ItemModel> itemModelList = model.itemsModelList;
-        ItemModel uniqueItem = itemModelList.get(0);
+        final ItemsModel model = new ItemsModel(ITEM_CURRENCY, itemList);
+        final List<ItemModel> itemModelList = model.itemsModelList;
+        final ItemModel uniqueItem = itemModelList.get(0);
 
         Assert.assertEquals(1, model.itemsModelList.size());
-        Assert.assertEquals(ITEM_CURRENCY_ID, uniqueItem.currencyId);
+        Assert.assertEquals(ITEM_CURRENCY, uniqueItem.currency);
     }
 }

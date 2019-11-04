@@ -1,3 +1,7 @@
+## VERSION 4.26.0
+_31_10_2019_
+* IMPROVEMENT - Removed try-catches from activities/fragments creation
+
 ## VERSION 4.25.2
 _22_10_2019_
 * FIX - Rotation bug in one tap using postCreate

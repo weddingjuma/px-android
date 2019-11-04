@@ -84,6 +84,8 @@ public class InitService implements InitRepository {
                         paymentSettingRepository.configure(initResponse.getCurrency());
                         experimentsRepository.configure(initResponse.getExperiments());
 
+                        MPTracker.getInstance().setExperiments(experimentsRepository.getExperiments());
+
                         initCache.put(initResponse);
                         callback.success(initResponse);
                     }

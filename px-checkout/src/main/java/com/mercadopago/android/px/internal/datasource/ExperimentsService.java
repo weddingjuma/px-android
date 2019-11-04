@@ -3,9 +3,11 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Experiment;
+import java.lang.reflect.Type;
 import java.util.List;
 
 public class ExperimentsService implements ExperimentsRepository {
@@ -34,8 +36,15 @@ public class ExperimentsService implements ExperimentsRepository {
         edit.apply();
     }
 
+    @Override
     @Nullable
     public List<Experiment> getExperiments() {
-        return experiments;
+        if (experiments == null) {
+            final Type type = new TypeToken<List<Experiment>>() {
+            }.getType();
+            return JsonUtil.fromJson(sharedPreferences.getString(PREF_EXPERIMENTS, null), type);
+        } else {
+            return experiments;
+        }
     }
 }

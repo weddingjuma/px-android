@@ -9,4 +9,6 @@ public interface ExperimentsRepository {
     void reset();
 
     void configure(@Nullable final List<Experiment> experiments);
+
+    List<Experiment> getExperiments();
 }

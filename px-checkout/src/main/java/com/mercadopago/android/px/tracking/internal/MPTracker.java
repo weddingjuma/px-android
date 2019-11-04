@@ -220,14 +220,16 @@ public final class MPTracker {
     private StringBuilder getExperimentsLabel() {
         StringBuilder label = new StringBuilder();
 
-        for (final Experiment experiment : experiments) {
-            if (!isEmpty(label)) {
-                label.append(",");
-            }
+        if (experiments != null) {
+            for (final Experiment experiment : experiments) {
+                if (!isEmpty(label)) {
+                    label.append(",");
+                }
 
-            label.append(experiment.getName());
-            label.append(" - ");
-            label.append(experiment.getVariant().getName());
+                label.append(experiment.getName());
+                label.append(" - ");
+                label.append(experiment.getVariant().getName());
+            }
         }
 
         return label;

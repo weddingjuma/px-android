@@ -201,6 +201,7 @@ public final class MPTracker {
                 value.put(ATTR_SESSION_TIME, getSecondsAfterInit());
                 value.put(ATTR_CHECKOUT_TYPE, checkoutType);
                 value.put(ATTR_SECURITY_ENABLED, securityEnabled);
+                value.put(ATTR_EXPERIMENTS, getExperimentsLabel());
             } catch (final ClassCastException e) {
                 // do nothing.
             }
@@ -217,7 +218,7 @@ public final class MPTracker {
         data.put(ATTR_EXPERIMENTS, getExperimentsLabel());
     }
 
-    private StringBuilder getExperimentsLabel() {
+    private String getExperimentsLabel() {
         StringBuilder label = new StringBuilder();
 
         if (experiments != null) {
@@ -232,7 +233,7 @@ public final class MPTracker {
             }
         }
 
-        return label;
+        return label.toString();
     }
 
     private long getSecondsAfterInit() {

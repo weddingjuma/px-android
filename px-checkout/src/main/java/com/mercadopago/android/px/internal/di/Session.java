@@ -180,6 +180,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     private void clear() {
+        getExperimentsRepository().reset();
         getConfigurationModule().reset();
         getInitCache().evict();
         getPaymentRewardCache().evict();

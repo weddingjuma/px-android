@@ -206,7 +206,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         if (initRepository == null) {
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
             initRepository = new InitService(paymentSettings, getExperimentsRepository(), getMercadoPagoESC(),
-                RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
+                RetrofitUtil.getRetrofitTest(getApplicationContext()).create(CheckoutService.class),
                 LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName(), getInitCache());
         }
         return initRepository;

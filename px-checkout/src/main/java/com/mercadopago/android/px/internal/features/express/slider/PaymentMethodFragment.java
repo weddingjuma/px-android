@@ -50,7 +50,9 @@ public abstract class PaymentMethodFragment extends Fragment implements PaymentM
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        presenter.detachView();
+        if (presenter != null) {
+            presenter.detachView();
+        }
     }
 
     @Override

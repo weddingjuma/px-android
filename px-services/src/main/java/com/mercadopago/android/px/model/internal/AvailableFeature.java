@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.model;
+package com.mercadopago.android.px.model.internal;
 
 class AvailableFeature {
 

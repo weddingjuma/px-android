@@ -6,8 +6,9 @@ import android.support.annotation.Nullable;
 import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.util.JsonUtil;
-import com.mercadopago.android.px.model.Experiment;
+import com.mercadopago.android.px.model.internal.Experiment;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExperimentsService implements ExperimentsRepository {
@@ -37,12 +38,14 @@ public class ExperimentsService implements ExperimentsRepository {
     }
 
     @Override
-    @Nullable
+    @NonNull
     public List<Experiment> getExperiments() {
         if (experiments == null) {
             final Type type = new TypeToken<List<Experiment>>() {
             }.getType();
-            return JsonUtil.fromJson(sharedPreferences.getString(PREF_EXPERIMENTS, null), type);
+            final List<Experiment> experimentsFromPreference = JsonUtil
+                .fromJson(sharedPreferences.getString(PREF_EXPERIMENTS, new ArrayList<Experiment>().toString()), type);
+            return experimentsFromPreference == null ? new ArrayList<>() : experimentsFromPreference;
         } else {
             return experiments;
         }

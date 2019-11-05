@@ -4,11 +4,12 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.CheckoutType;
 import com.mercadopago.android.px.model.Event;
-import com.mercadopago.android.px.model.Experiment;
+import com.mercadopago.android.px.model.internal.Experiment;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -52,7 +53,7 @@ public final class MPTracker {
 
     private boolean securityEnabled;
 
-    @Nullable private List<Experiment> experiments;
+    @NonNull private List<Experiment> experiments = new ArrayList<>();
 
     private MPTracker() {
         // do nothing
@@ -136,7 +137,7 @@ public final class MPTracker {
      *
      * @param experiments The active A/B testing experiments.
      */
-    public void setExperiments(@Nullable final List<Experiment> experiments) {
+    public void setExperiments(@NonNull final List<Experiment> experiments) {
         this.experiments = experiments;
     }
 
@@ -221,16 +222,14 @@ public final class MPTracker {
     private String getExperimentsLabel() {
         StringBuilder label = new StringBuilder();
 
-        if (experiments != null) {
-            for (final Experiment experiment : experiments) {
-                if (!isEmpty(label)) {
-                    label.append(",");
-                }
-
-                label.append(experiment.getName());
-                label.append(" - ");
-                label.append(experiment.getVariant().getName());
+        for (final Experiment experiment : experiments) {
+            if (!isEmpty(label)) {
+                label.append(",");
             }
+
+            label.append(experiment.getName());
+            label.append(" - ");
+            label.append(experiment.getVariant().getName());
         }
 
         return label.toString();

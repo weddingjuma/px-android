@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.internal.repository;
 
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.model.Experiment;
+import com.mercadopago.android.px.model.internal.Experiment;
 import java.util.List;
 
 public interface ExperimentsRepository {

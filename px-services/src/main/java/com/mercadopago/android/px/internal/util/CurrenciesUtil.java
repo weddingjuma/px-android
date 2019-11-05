@@ -12,10 +12,36 @@ import com.mercadopago.android.px.model.Currency;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class CurrenciesUtil {
 
+    private static final String CURRENCY_ARGENTINA = "ARS";
+    private static final String CURRENCY_BRAZIL = "BRL";
+    private static final String CURRENCY_CHILE = "CLP";
+    private static final String CURRENCY_COLOMBIA = "COP";
+    private static final String CURRENCY_MEXICO = "MXN";
+    private static final String CURRENCY_VENEZUELA = "VES";
+    private static final String CURRENCY_USA = "USD";
+    private static final String CURRENCY_PERU = "PEN";
+    private static final String CURRENCY_URUGUAY = "UYU";
     private static final String ZERO_DECIMAL = "00";
+
+    private static Map<String, Currency> currenciesList = new HashMap<String, Currency>() {{
+        put(CURRENCY_ARGENTINA,
+            new Currency(CURRENCY_ARGENTINA, "Peso argentino", "$", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_BRAZIL, new Currency(CURRENCY_BRAZIL, "Real", "R$", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_CHILE, new Currency(CURRENCY_CHILE, "Peso chileno", "$", 0, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_COLOMBIA,
+            new Currency(CURRENCY_COLOMBIA, "Peso colombiano", "$", 0, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_MEXICO, new Currency(CURRENCY_MEXICO, "Peso mexicano", "$", 2, ".".charAt(0), ",".charAt(0)));
+        put(CURRENCY_VENEZUELA,
+            new Currency(CURRENCY_VENEZUELA, "Bolívares Soberanos", "BsS", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_USA, new Currency(CURRENCY_USA, "Dolar americano", "US$", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_PERU, new Currency(CURRENCY_PERU, "Soles", "S/.", 2, ",".charAt(0), ".".charAt(0)));
+        put(CURRENCY_URUGUAY, new Currency(CURRENCY_URUGUAY, "Peso Uruguayo", "$", 2, ",".charAt(0), ".".charAt(0)));
+    }};
 
     private CurrenciesUtil() {
     }
@@ -73,6 +99,16 @@ public final class CurrenciesUtil {
         }
 
         return new SpannedString(spannableAmount);
+    }
+
+    /**
+     * @deprecated only exists because moneyIn depends on it. Will be eliminated in next releases.
+     */
+    @Deprecated
+    public static String getLocalizedAmountWithoutZeroDecimals(@NonNull final String currencyId,
+        @NonNull final BigDecimal amount) {
+        //noinspection ConstantConditions
+        return getLocalizedAmountWithoutZeroDecimals(currenciesList.get(currencyId), amount);
     }
 
     public static String getLocalizedAmountWithoutZeroDecimals(@NonNull final Currency currency,

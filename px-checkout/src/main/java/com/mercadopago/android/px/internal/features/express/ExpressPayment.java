@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
@@ -24,8 +25,8 @@ public interface ExpressPayment {
 
     interface View extends MvpView {
 
-        void configureAdapters(@NonNull List<DrawableFragmentItem> items, @NonNull final Site site, @NonNull HubAdapter
-            .Model paymentMethodViewModel);
+        void configureAdapters(@NonNull List<DrawableFragmentItem> items, @NonNull final Site site,
+            @NonNull final Currency currency, @NonNull HubAdapter.Model paymentMethodViewModel);
 
         void cancel();
 
@@ -67,7 +68,8 @@ public interface ExpressPayment {
 
         void collapseInstallmentsSelection();
 
-        void showDiscountDetailDialog(@NonNull final DiscountConfigurationModel discountModel);
+        void showDiscountDetailDialog(@NonNull final Currency currency,
+            @NonNull final DiscountConfigurationModel discountModel);
 
         boolean isExploding();
 

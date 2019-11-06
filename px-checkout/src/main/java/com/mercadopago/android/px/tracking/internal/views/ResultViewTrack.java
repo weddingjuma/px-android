@@ -2,10 +2,10 @@ package com.mercadopago.android.px.tracking.internal.views;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.ResultViewTrackModel;
 import java.util.Locale;
 import java.util.Map;
@@ -24,14 +24,17 @@ public class ResultViewTrack extends ViewTracker {
 
     public ResultViewTrack(@NonNull final PaymentModel paymentModel,
         @NonNull final PaymentResultScreenConfiguration screenConfiguration,
-        @NonNull final CheckoutPreference checkoutPreference) {
-        resultViewTrackModel = new ResultViewTrackModel(paymentModel, screenConfiguration, checkoutPreference);
+        @NonNull final PaymentSettingRepository paymentSetting) {
+        resultViewTrackModel =
+            new ResultViewTrackModel(paymentModel, screenConfiguration, paymentSetting.getCheckoutPreference(),
+                paymentSetting.getCurrency().getId());
         paymentStatus = getMappedResult(paymentModel.getPaymentResult());
     }
 
     public ResultViewTrack(@NonNull final BusinessPaymentModel paymentModel,
-        @NonNull final CheckoutPreference checkoutPreference) {
-        resultViewTrackModel = new ResultViewTrackModel(paymentModel, checkoutPreference);
+        @NonNull final PaymentSettingRepository paymentSetting) {
+        resultViewTrackModel = new ResultViewTrackModel(paymentModel, paymentSetting.getCheckoutPreference(),
+            paymentSetting.getCurrency().getId());
         paymentStatus = getMappedResult(paymentModel.getPaymentResult());
     }
 

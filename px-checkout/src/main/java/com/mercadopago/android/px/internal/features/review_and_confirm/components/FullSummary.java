@@ -37,7 +37,7 @@ public class FullSummary extends Component<SummaryComponent.SummaryProps, Void> 
             final AmountDescriptionProps amountDescriptionProps = new AmountDescriptionProps(
                 summaryDetail.getTotalAmount(),
                 summaryDetail.getTitle(),
-                props.summaryModel.getSite().getCurrencyId(),
+                props.summaryModel.getCurrency(),
                 summaryDetail.getTextColor(),
                 summaryDetail.getSummaryItemType());
 

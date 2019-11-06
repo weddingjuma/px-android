@@ -98,17 +98,13 @@ public final class PaymentProcessorActivity extends PXActivity
 
         final Session session = Session.getInstance();
 
-        try {
-            paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
-                session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-                new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository(),
-                session.getPaymentRewardRepository());
+        paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
+            session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+            new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository(),
+            session.getPaymentRewardRepository());
 
-            if (getFragmentByTag() == null) { // if fragment is not added, then create it.
-                addPaymentProcessorFragment(getSupportFragmentManager(), session);
-            }
-        } catch (final Exception e) {
-            finishWithCanceledResult();
+        if (getFragmentByTag() == null) { // if fragment is not added, then create it.
+            addPaymentProcessorFragment(getSupportFragmentManager(), session);
         }
     }
 

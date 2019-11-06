@@ -5,7 +5,7 @@ import com.mercadopago.android.px.internal.features.SecurityCodeActivityView;
 import com.mercadopago.android.px.internal.features.SecurityCodePresenter;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.mocks.PaymentMethods;
+import com.mercadopago.android.px.mocks.PaymentMethodStub;
 import com.mercadopago.android.px.mocks.Tokens;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
@@ -28,7 +28,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -54,7 +53,7 @@ public class SecurityCodePresenterTest {
     @Before
     public void setUp() {
         stubToken = Tokens.getVisaToken();
-        stubPaymentMethod = PaymentMethods.getPaymentMethodOnVisa();
+        stubPaymentMethod = PaymentMethodStub.VISA_CREDIT.get();
         presenter = getPresenter();
     }
 

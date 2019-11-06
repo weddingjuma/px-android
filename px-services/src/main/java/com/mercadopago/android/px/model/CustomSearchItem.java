@@ -23,9 +23,10 @@ public class CustomSearchItem implements Serializable, Parcelable {
 
     @Nullable private String discountInfo;
 
-
+    @SerializedName("coupon_to_apply")
     private String defaultAmountConfiguration;
 
+    @SerializedName("payment_options")
     private Map<String, AmountConfiguration> amountConfigurations;
 
     @Nullable private Issuer issuer;

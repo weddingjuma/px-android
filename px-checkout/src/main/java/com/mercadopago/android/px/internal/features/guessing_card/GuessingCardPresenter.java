@@ -108,7 +108,7 @@ public abstract class GuessingCardPresenter extends BasePresenter<GuessingCard.V
         final PaymentRecovery paymentRecovery) {
         return new GuessingCardPaymentPresenter(
             session.getConfigurationModule().getUserSelectionRepository(),
-            session.getConfigurationModule().getPaymentSettings(), session.getGroupsRepository(),
+            session.getConfigurationModule().getPaymentSettings(), session.getInitRepository(),
             session.getIssuersRepository(),
             session.getCardTokenRepository(),
             session.getIdentificationRepository(),

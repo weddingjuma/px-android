@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.util.textformatter.AmountLabeledForma
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Split;
 import java.util.List;
 
@@ -46,12 +47,12 @@ public class SplitPaymentHeaderAdapter extends ViewAdapter<List<SplitPaymentHead
 
     public static final class SplitModel extends Model {
 
-        private final String currencyId;
+        private final Currency currency;
         @NonNull private final Split split;
         private boolean isChecked;
 
-        public SplitModel(@NonNull final String currencyId, @NonNull final Split split) {
-            this.currencyId = currencyId;
+        public SplitModel(@NonNull final Currency currency, @NonNull final Split split) {
+            this.currency = currency;
             this.split = split;
             isChecked = split.defaultEnabled;
         }
@@ -65,7 +66,7 @@ public class SplitPaymentHeaderAdapter extends ViewAdapter<List<SplitPaymentHead
                     .withSemiBoldStyle()
                     .withTextColor(ContextCompat.getColor(labeledSwitch.getContext(), R.color.ui_meli_black))
                     .apply(TextFormatter
-                        .withCurrencyId(currencyId)
+                        .withCurrency(currency)
                         .amount(split.secondaryPaymentMethod.getVisibleAmountToPay())
                         .normalDecimals()
                         .toSpannable());

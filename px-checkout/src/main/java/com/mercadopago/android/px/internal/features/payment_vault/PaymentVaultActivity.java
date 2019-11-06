@@ -37,17 +37,15 @@ import com.mercadopago.android.px.internal.view.GridSpacingItemDecoration;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.PaymentPreference;
-import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
-import com.mercadopago.android.px.tracking.internal.views.SelectMethodView;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
@@ -109,7 +107,7 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
             session.getConfigurationModule().getUserSelectionRepository(),
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),
             session.getDiscountRepository(),
-            session.getGroupsRepository(),
+            session.getInitRepository(),
             session.getMercadoPagoESC(),
             new PaymentVaultTitleSolverImpl(getApplicationContext(),
                 configuration.getAdvancedConfiguration().getCustomStringConfiguration()));
@@ -143,22 +141,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     //TODO remove method after session is persisted
     private void validatePaymentConfiguration() {
         final Session session = Session.getInstance();
-        try {
-            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
-            session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
-        } catch (Exception e) {
-            FrictionEventTracker.with(SelectMethodView.PATH_PAYMENT_VAULT,
-                FrictionEventTracker.Id.SILENT, FrictionEventTracker.Style.SCREEN,
-                ErrorUtil.getStacktraceMessage(e));
-
-            exitCheckout(RESULT_SILENT_ERROR);
-        }
-    }
-
-    public void exitCheckout(final int resCode) {
-        overrideTransitionOut();
-        setResult(resCode);
-        finish();
+        session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getCharges();
+        session.getConfigurationModule().getPaymentSettings().getPaymentConfiguration().getPaymentProcessor();
     }
 
     private void configurePresenter() {
@@ -171,7 +155,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     protected void getActivityParameters() {
         final Intent intent = getIntent();
-        PaymentMethodSearchItem item = (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
+        PaymentMethodSearchItem item =
+            (PaymentMethodSearchItem) intent.getSerializableExtra(EXTRA_SELECTED_SEARCH_ITEM);
         if (item != null) {
             presenter.setSelectedSearchItem(item);
         }
@@ -433,8 +418,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     }
 
     @Override
-    public void showDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
-        DiscountDetailDialog.showDialog(getSupportFragmentManager(), discountModel);
+    public void showDetailDialog(@NonNull final Currency currency,
+        @NonNull final DiscountConfigurationModel discountModel) {
+        DiscountDetailDialog.showDialog(getSupportFragmentManager(), currency, discountModel);
     }
 
     @Override
@@ -453,9 +439,9 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     @Override
     public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount,
-        @NonNull final Site site) {
+        @NonNull final Currency currency) {
         amountView.setOnClickListener(presenter);
-        amountView.show(discountModel, totalAmount, site);
+        amountView.show(discountModel, totalAmount, currency);
     }
 
     @Override

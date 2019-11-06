@@ -11,15 +11,17 @@ import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
 import com.mercadopago.android.px.internal.repository.CardPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.services.CardService;
+import com.mercadopago.android.px.mocks.ApiExceptionStubs;
 import com.mercadopago.android.px.mocks.Cards;
 import com.mercadopago.android.px.mocks.IdentificationTypes;
-import com.mercadopago.android.px.mocks.PaymentMethods;
+import com.mercadopago.android.px.mocks.PaymentMethodStub;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -56,7 +58,8 @@ public class GuessingCardStoragePresenterTest {
     private static final String DUMMY_TOKEN_ID = "123";
     private static final String DUMMY_CARD_ID = "1234567890";
     private static final String DUMMY_TOKEN_ESC = "ABCDEFGH";
-    final List<PaymentMethod> cardPaymentMethodListMLA = PaymentMethods.getCardPaymentMethodListMLA();
+    final List<PaymentMethod> cardPaymentMethodList =
+        PaymentMethodStub.getAll(PaymentTypes.DEBIT_CARD, PaymentTypes.CREDIT_CARD);
 
     private GuessingCardStoragePresenter presenter;
 
@@ -126,7 +129,7 @@ public class GuessingCardStoragePresenterTest {
     @Test
     public void whenCardPaymentMethodCallFailsThenShowError() {
         when(cardPaymentMethodRepository.getCardPaymentMethods(anyString())).thenReturn(
-            new StubFailMpCall<List<PaymentMethod>>(PaymentMethods.getDoNotFindPaymentMethodsException()));
+            new StubFailMpCall<>(ApiExceptionStubs.PAYMENT_METHOD_NOT_FOUND.get()));
 
         presenter.initialize();
         verify(view).showErrorScreen(DUMMY_ACCESS_TOKEN);
@@ -147,7 +150,7 @@ public class GuessingCardStoragePresenterTest {
 
         initializePresenterWithValidCardPaymentMethods();
 
-        final List<PaymentMethod> selected = Collections.singletonList(PaymentMethods.getPaymentMethodOnVisa());
+        final List<PaymentMethod> selected = Collections.singletonList(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), selected.get(0).getId());
@@ -180,7 +183,7 @@ public class GuessingCardStoragePresenterTest {
         initializePresenterWithValidCardPaymentMethods();
 
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
 
@@ -196,7 +199,7 @@ public class GuessingCardStoragePresenterTest {
     @Test
     public void whenPaymentMethodSetDoNotHaveIdentificationTypeRequiredThenHideIdentificationView() {
         final List<PaymentMethod> idNotRequiredPaymentMethods = new ArrayList<>();
-        idNotRequiredPaymentMethods.add(PaymentMethods.getPaymentMethodWithIdNotRequired());
+        idNotRequiredPaymentMethods.add(PaymentMethodStub.CORDIAL_CREDIT.get());
 
         when(cardPaymentMethodRepository.getCardPaymentMethods(anyString()))
             .thenReturn(new StubSuccessMpCall<>(idNotRequiredPaymentMethods));
@@ -224,7 +227,7 @@ public class GuessingCardStoragePresenterTest {
         initializePresenterWithValidCardPaymentMethods();
 
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -244,7 +247,7 @@ public class GuessingCardStoragePresenterTest {
         initializePresenterWithValidCardPaymentMethods();
 
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -287,7 +290,7 @@ public class GuessingCardStoragePresenterTest {
     public void whenPaymentMethodSetThenFetchIssuers() {
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -304,7 +307,7 @@ public class GuessingCardStoragePresenterTest {
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
         final Card card = null;
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
         final PaymentMethod paymentMethod = mockedGuessedPaymentMethods.get(0);
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
@@ -334,7 +337,7 @@ public class GuessingCardStoragePresenterTest {
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
         final Card card = mock(Card.class);
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
         final PaymentMethod paymentMethod = mockedGuessedPaymentMethods.get(0);
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
@@ -368,7 +371,7 @@ public class GuessingCardStoragePresenterTest {
 
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -396,7 +399,7 @@ public class GuessingCardStoragePresenterTest {
 
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -432,7 +435,7 @@ public class GuessingCardStoragePresenterTest {
 
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());
@@ -466,7 +469,7 @@ public class GuessingCardStoragePresenterTest {
     public void whenMoreThanOneIssuerIsReturnedThenCallIssuersActivity() {
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer1 = new Issuer(1L, "Dummy Issuer #1");
         final Issuer dummyIssuer2 = new Issuer(2L, "Dummy Issuer #2");
@@ -490,7 +493,7 @@ public class GuessingCardStoragePresenterTest {
 
     private void initializePresenterWithValidCardPaymentMethods() {
         when(cardPaymentMethodRepository.getCardPaymentMethods(anyString()))
-            .thenReturn(new StubSuccessMpCall<>(cardPaymentMethodListMLA));
+            .thenReturn(new StubSuccessMpCall<>(cardPaymentMethodList));
         presenter.initialize();
     }
 
@@ -525,7 +528,7 @@ public class GuessingCardStoragePresenterTest {
 
         initializePresenterWithValidCardPaymentMethods();
         final List<PaymentMethod> mockedGuessedPaymentMethods = new ArrayList<>();
-        mockedGuessedPaymentMethods.add(PaymentMethods.getPaymentMethodOnVisa());
+        mockedGuessedPaymentMethods.add(PaymentMethodStub.VISA_CREDIT.get());
 
         final Issuer dummyIssuer = new Issuer(1L, "Dummy Issuer");
         mockIssuers(Collections.singletonList(dummyIssuer), mockedGuessedPaymentMethods.get(0).getId());

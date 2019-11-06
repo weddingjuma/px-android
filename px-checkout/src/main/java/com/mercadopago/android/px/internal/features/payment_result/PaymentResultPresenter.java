@@ -51,7 +51,7 @@ import java.util.List;
         screenConfiguration =
             paymentSettings.getAdvancedConfiguration().getPaymentResultScreenConfiguration();
         resultViewTrack =
-            new ResultViewTrack(paymentModel, screenConfiguration, paymentSettings.getCheckoutPreference());
+            new ResultViewTrack(paymentModel, screenConfiguration, paymentSettings);
     }
 
     @Override

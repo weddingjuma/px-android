@@ -50,34 +50,33 @@ public final class ResultViewTrackModel extends TrackingMapModel {
 
     public ResultViewTrackModel(@NonNull final PaymentModel paymentModel,
         @NonNull final PaymentResultScreenConfiguration screenConfiguration,
-        @NonNull final CheckoutPreference checkoutPreference) {
-        this(Style.GENERIC, paymentModel, checkoutPreference);
+        @NonNull final CheckoutPreference checkoutPreference, @NonNull final String currencyId) {
+        this(Style.GENERIC, paymentModel, checkoutPreference, currencyId);
         hasBottomView = screenConfiguration.hasBottomFragment();
         hasTopView = screenConfiguration.hasTopFragment();
         hasImportantView = false;
     }
 
     public ResultViewTrackModel(@NonNull final BusinessPaymentModel paymentModel,
-        @NonNull final CheckoutPreference checkoutPreference) {
-        this(Style.CUSTOM, paymentModel, checkoutPreference);
+        @NonNull final CheckoutPreference checkoutPreference, @NonNull final String currencyId) {
+        this(Style.CUSTOM, paymentModel, checkoutPreference, currencyId);
         hasBottomView = paymentModel.getPayment().hasBottomFragment();
         hasTopView = paymentModel.getPayment().hasTopFragment();
     }
 
     private ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentModel paymentModel,
-        @NonNull final CheckoutPreference checkoutPreference) {
+        @NonNull final CheckoutPreference checkoutPreference, @NonNull final String currencyId) {
         final PaymentResult paymentResult = paymentModel.getPaymentResult();
         final PaymentReward paymentReward = paymentModel.getPaymentReward();
         final PaymentData paymentData = paymentResult.getPaymentData();
         final PaymentReward.Discount discount = paymentReward.getDiscount();
         final Campaign campaign = paymentData != null ? paymentData.getCampaign() : null;
         final PaymentMethod paymentMethod = paymentData != null ? paymentData.getPaymentMethod() : null;
-
         this.style = style.value;
+        this.currencyId = currencyId;
         paymentId = paymentResult.getPaymentId();
         paymentStatus = paymentResult.getPaymentStatus();
         paymentStatusDetail = paymentResult.getPaymentStatusDetail();
-        currencyId = checkoutPreference.getSite().getCurrencyId();
         hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentResult.getPaymentDataList());
         preferenceAmount = checkoutPreference.getTotalAmount();
         discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentResult.getPaymentDataList());

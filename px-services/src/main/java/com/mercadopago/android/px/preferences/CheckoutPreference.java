@@ -19,8 +19,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
-
 /**
  * Model that represents curl -X OPTIONS "https://api.mercadopago.com/checkout/preferences" | json_pp It can be not
  * exactly the same because exists custom configurations for open Preference. Some values like: binary mode are not
@@ -104,39 +102,12 @@ public class CheckoutPreference implements Serializable {
         paymentPreference.setDefaultInstallments(builder.defaultInstallments);
     }
 
+    /**
+     * @throws CheckoutPreferenceException
+     * @deprecated preference is validated backend side
+     */
     @Deprecated
     public void validate() throws CheckoutPreferenceException {
-        if (!Item.areItemsValid(items)) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.INVALID_ITEM);
-        } else if (isEmpty(payer.getEmail())) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.NO_EMAIL_FOUND);
-        } else if (isExpired()) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.EXPIRED_PREFERENCE);
-        } else if (!isActive()) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.INACTIVE_PREFERENCE);
-        } else if (!validInstallmentsPreference()) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.INVALID_INSTALLMENTS);
-        } else if (!validPaymentTypeExclusion()) {
-            throw new CheckoutPreferenceException(CheckoutPreferenceException.EXCLUDED_ALL_PAYMENT_TYPES);
-        }
-    }
-
-    /* default */ boolean validPaymentTypeExclusion() {
-        return getPaymentPreference().excludedPaymentTypesValid();
-    }
-
-    /* default */ boolean validInstallmentsPreference() {
-        return getPaymentPreference().installmentPreferencesValid();
-    }
-
-    /* default */ Boolean isExpired() {
-        final Date date = new Date();
-        return expirationDateTo != null && date.after(expirationDateTo);
-    }
-
-    /* default */ Boolean isActive() {
-        final Date date = new Date();
-        return expirationDateFrom == null || date.after(expirationDateFrom);
     }
 
     //region support external integrations - payment processor instores
@@ -183,6 +154,11 @@ public class CheckoutPreference implements Serializable {
         return Item.getTotalAmountWith(items);
     }
 
+    /**
+     * @return site
+     * @deprecated preference should not have site in it's model
+     */
+    @Deprecated
     @NonNull
     public Site getSite() {
         return Sites.getById(siteId);

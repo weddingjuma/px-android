@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,22 +24,22 @@ public final class JsonUtil {
     private JsonUtil() {
     }
 
-    public static <T> T fromJson(@NonNull final String json, @NonNull final Class<T> classOfT) {
+    public static <T> T fromJson(@Nullable final String json, @NonNull final Class<T> classOfT) {
         return GSON.fromJson(json, classOfT);
     }
 
-    public static <T> T fromJson(@NonNull final String json, @NonNull final Type classOfT) {
+    public static <T> T fromJson(@Nullable final String json, @NonNull final Type classOfT) {
         return GSON.fromJson(json, classOfT);
     }
 
-    private static Map<String, Object> getMapFromJson(@NonNull final String json) {
+    private static Map<String, Object> getMapFromJson(@Nullable final String json) {
         return GSON.fromJson(
             json, new TypeToken<ObjectMapTypeAdapter.ObjectMapType>() {
             }.getType()
         );
     }
 
-    public static Map<String, Object> getMapFromObject(@NonNull final Object src) {
+    public static Map<String, Object> getMapFromObject(@Nullable final Object src) {
         return getMapFromJson(GSON.toJson(src));
     }
 

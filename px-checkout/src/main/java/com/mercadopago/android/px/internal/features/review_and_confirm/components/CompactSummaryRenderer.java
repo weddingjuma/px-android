@@ -26,7 +26,7 @@ public class CompactSummaryRenderer extends Renderer<CompactSummary> {
         final LinearLayout disclaimerLinearLayout = summaryView.findViewById(R.id.disclaimer);
 
         setText(totalAmountTextView, CurrenciesUtil.getSpannedAmountWithCurrencySymbol(
-            component.props.getAmountToPay(), component.props.getSite().getCurrencyId()));
+            component.props.getAmountToPay(), component.props.getCurrency()));
         setText(itemTitleTextView, getItemTitle(component.props.title, context));
 
         if (shouldShowCftDisclaimer(component.props)) {

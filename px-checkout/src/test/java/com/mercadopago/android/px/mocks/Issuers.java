@@ -5,47 +5,27 @@ import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.utils.ResourcesUtil;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import java.util.List;
 
-public class Issuers {
+public final class Issuers {
     private Issuers() {
-    }
-
-    public static List<Issuer> getIssuers() {
-        String json = ResourcesUtil.getStringResource("issuers.json");
-        Type listType = new TypeToken<List<Issuer>>() {
-        }.getType();
-        return JsonUtil.fromJson(json, listType);
-    }
-
-    public static Issuer getIssuerMLA() {
-        String json = ResourcesUtil.getStringResource("issuer_MLA.json");
-        return JsonUtil.fromJson(json, Issuer.class);
+        //TODO it could be replaced for IssuerStubs?
     }
 
     public static List<Issuer> getOneIssuerListMLA() {
-        List<Issuer> issuerList;
-        String json = ResourcesUtil.getStringResource("issuer_list_MLA.json");
-
-        try {
-            Type listType = new TypeToken<List<Issuer>>() {
-            }.getType();
-            issuerList = JsonUtil.fromJson(json, listType);
-        } catch (Exception ex) {
-            issuerList = null;
-        }
-        return issuerList;
+        return Collections.singletonList(getIssuersListMLA().get(0));
     }
 
     public static List<Issuer> getIssuersListMLA() {
         List<Issuer> issuerList;
-        String json = ResourcesUtil.getStringResource("issuers.json");
+        final String json = ResourcesUtil.getStringResource("issuers_MLA.json");
 
         try {
-            Type listType = new TypeToken<List<Issuer>>() {
+            final Type listType = new TypeToken<List<Issuer>>() {
             }.getType();
             issuerList = JsonUtil.fromJson(json, listType);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             issuerList = null;
         }
         return issuerList;

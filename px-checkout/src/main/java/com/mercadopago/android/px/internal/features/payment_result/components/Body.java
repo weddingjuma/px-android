@@ -43,7 +43,7 @@ public class Body extends CompactComponent<PaymentResultBodyProps, ActionDispatc
             .setStatus(props.paymentResult.getPaymentStatus())
             .setStatusDetail(props.paymentResult.getPaymentStatusDetail())
             .setPaymentMethodName(props.paymentResult.getPaymentData().getPaymentMethod().getName())
-            .setPaymentAmount(CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(props.currencyId,
+            .setPaymentAmount(CurrenciesUtil.getLocalizedAmountWithoutZeroDecimals(props.currency,
                 PaymentDataHelper.getPrettyAmountToPay(props.paymentResult.getPaymentData())))
             .build();
         return new BodyError(bodyErrorProps, getActions());

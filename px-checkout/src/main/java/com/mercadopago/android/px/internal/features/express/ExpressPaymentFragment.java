@@ -50,7 +50,6 @@ import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAd
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -69,6 +68,7 @@ import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.Card;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
@@ -152,24 +152,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
         configureViews(view);
 
-        //TODO remove try catch after session is persisted
-        try {
-            presenter = createPresenter();
-            presenter.attachView(this);
-            if (savedInstanceState == null) {
-                presenter.trackExpressView();
-            } else {
-                renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
-                presenter.recoverFromBundle(savedInstanceState);
-            }
-            presenter.loadViewModel();
-        } catch (final Exception e) {
-            if (savedInstanceState == null) {
-                ErrorUtil.startErrorActivity(getActivity());
-            } else {
-                cancel();
-            }
+        presenter = createPresenter();
+        presenter.attachView(this);
+        if (savedInstanceState == null) {
+            presenter.trackExpressView();
+        } else {
+            renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
+            presenter.recoverFromBundle(savedInstanceState);
         }
+        presenter.loadViewModel();
 
         // Order is important - On click and events should be wired AFTER view is attached.
         summaryView.setOnFitListener(this);
@@ -243,7 +234,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
-            session.getGroupsRepository(),
+            session.getInitRepository(),
             session.getAmountConfigurationRepository(),
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
@@ -301,7 +292,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void configureAdapters(@NonNull final List<DrawableFragmentItem> items,
-        @NonNull final Site site,
+        @NonNull final Site site, @NonNull final Currency currency,
         @NonNull final HubAdapter.Model model) {
 
         if (paymentMethodPager.getAdapter() == null) {
@@ -319,7 +310,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             indicator.attachToPager(paymentMethodPager);
         }
 
-        installmentsAdapter = new InstallmentsAdapter(site, new ArrayList<>(), PayerCost.NO_SELECTED, this);
+        installmentsAdapter = new InstallmentsAdapter(site, currency, new ArrayList<>(), PayerCost.NO_SELECTED, this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
         installmentsRecyclerView.setVisibility(View.GONE);
 
@@ -591,8 +582,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void showDiscountDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
-        DiscountDetailDialog.showDialog(getFragmentManager(), discountModel);
+    public void showDiscountDetailDialog(@NonNull final Currency currency,
+        @NonNull final DiscountConfigurationModel discountModel) {
+        DiscountDetailDialog.showDialog(getFragmentManager(), currency, discountModel);
     }
 
     @Override

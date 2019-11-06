@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.viewmodel;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.BusinessPayment;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 
@@ -10,9 +11,10 @@ public class BusinessPaymentModel extends PaymentModel {
 
     private final BusinessPayment businessPayment;
 
-    public BusinessPaymentModel(@NonNull final BusinessPayment businessPayment, @NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentReward paymentReward, @NonNull final String currencyId) {
-        super(null, paymentResult, paymentReward, currencyId);
+    public BusinessPaymentModel(@NonNull final BusinessPayment businessPayment,
+        @NonNull final PaymentResult paymentResult, @NonNull final PaymentReward paymentReward,
+        @NonNull final Currency currency) {
+        super(null, paymentResult, paymentReward, currency);
         this.businessPayment = businessPayment;
     }
 

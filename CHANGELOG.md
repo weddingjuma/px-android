@@ -1,3 +1,7 @@
+## VERSION 4.26.1
+_05_11_2019_
+* FIX - Validate presenter state in fragment's onDetach event
+
 ## VERSION 4.25.3
 _06_11_2019_
 * FIX - Validate presenter state in fragment's onDetach event

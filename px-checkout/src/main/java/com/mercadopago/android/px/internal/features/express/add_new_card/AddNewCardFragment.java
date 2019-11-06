@@ -58,7 +58,9 @@ public class AddNewCardFragment extends Fragment implements AddNewCard.View, Vie
 
     @Override
     public void onDetach() {
-        presenter.detachView();
+        if (presenter != null) {
+            presenter.detachView();
+        }
         super.onDetach();
     }
 

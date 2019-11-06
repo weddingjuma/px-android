@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
@@ -16,29 +17,26 @@ import retrofit2.http.Query;
 
 public interface CheckoutService {
 
-    String GROUPS_VERSION = "2.0";
+    String CHECKOUT_VERSION = "v1";
 
-    @POST("/{version}/px_mobile_api/payment_methods?api_version=" + GROUPS_VERSION)
-    MPCall<PaymentMethodSearch> getPaymentMethodSearch(
-        @Path(value = "version", encoded = true) String version,
+    @POST("{environment}/px_mobile/" + CHECKOUT_VERSION + "/checkout")
+    MPCall<InitResponse> checkout(
+        @Path(value = "environment", encoded = true) String environment,
         @Header("Accept-Language") String locale,
-        @Query("public_key") String publicKey,
-        @Query("amount") BigDecimal amount,
-        @Query("excluded_payment_types") String excludedPaymentTypes,
-        @Query("excluded_payment_methods") String excludedPaymentMethods,
-        @Query("site_id") String siteId,
-        @Query("cards_esc") String cardsWithEsc,
-        @Nullable @Query("differential_pricing_id") Integer differentialPricingId,
-        @Nullable @Query("default_installments") final Integer defaultInstallments,
-        @Nullable @Query("max_installments") final Integer maxInstallments,
-        @Query("express_enabled") final boolean expressEnabled,
-        @Query("split_payment_enabled") final boolean hasSplitPaymentProcessor,
+        @Query("access_token") String privateKey,
+        @Body Map<String, Object> body);
+
+    @POST("{environment}/px_mobile/" + CHECKOUT_VERSION + "/checkout/{preference_id}")
+    MPCall<InitResponse> checkout(
+        @Path(value = "environment", encoded = true) String environment,
+        @Path(value = "preference_id", encoded = true) String preferenceId,
+        @Header("Accept-Language") String locale,
+        @Query("access_token") String privateKey,
         @Body Map<String, Object> body);
 
     /**
      * Old api call version ; used by MercadoPagoServices.
      *
-     * @param version
      * @param locale
      * @param publicKey
      * @param amount
@@ -53,9 +51,9 @@ public interface CheckoutService {
      * @param accessToken
      * @return payment method search
      */
-    @GET("/{version}/px_mobile_api/payment_methods?api_version=1.8")
+    @GET("{environment}/px_mobile_api/payment_methods?api_version=1.8")
     MPCall<PaymentMethodSearch> getPaymentMethodSearch(
-        @Path(value = "version", encoded = true) String version,
+        @Path(value = "environment", encoded = true) String environment,
         @Header("Accept-Language") String locale,
         @Query("public_key") String publicKey,
         @Query("amount") BigDecimal amount,
@@ -69,8 +67,9 @@ public interface CheckoutService {
         @Query("express_enabled") final boolean expressEnabled,
         @Nullable @Query("access_token") String accessToken);
 
-    @GET("/v1/payment_methods")
-    MPCall<List<PaymentMethod>> getPaymentMethods(@Query("public_key") String publicKey,
+    @GET("{environment}/payment_methods")
+    MPCall<List<PaymentMethod>> getPaymentMethods(
+        @Path(value = "environment", encoded = true) String environment,
+        @Query("public_key") String publicKey,
         @Query("access_token") String privateKey);
 }
-

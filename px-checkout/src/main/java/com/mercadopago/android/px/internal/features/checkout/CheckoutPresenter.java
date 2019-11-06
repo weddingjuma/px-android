@@ -5,19 +5,16 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
-import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.navigation.DefaultPaymentMethodDriver;
 import com.mercadopago.android.px.internal.navigation.OnChangePaymentMethodDriver;
-import com.mercadopago.android.px.internal.repository.CheckoutPreferenceRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.PreferenceValidator;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.CheckoutStateModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -25,6 +22,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Cause;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
@@ -32,10 +30,9 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.exceptions.CheckoutPreferenceException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.model.internal.PaymentReward;
-import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
@@ -46,9 +43,8 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @NonNull /* default */ final PaymentRepository paymentRepository;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull /* default */ final CheckoutPreferenceRepository checkoutPreferenceRepository;
     @NonNull private final PluginRepository pluginRepository;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     @NonNull private final PaymentRewardRepository paymentRewardRepository;
     @NonNull private final InternalConfiguration internalConfiguration;
     private transient FailureRecovery failureRecovery;
@@ -56,19 +52,17 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     /* default */ CheckoutPresenter(@NonNull final CheckoutStateModel persistentData,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final PluginRepository pluginRepository,
         @NonNull final PaymentRepository paymentRepository,
-        @NonNull final CheckoutPreferenceRepository checkoutPreferenceRepository,
         @NonNull final PaymentRewardRepository paymentRewardRepository,
         @NonNull final InternalConfiguration internalConfiguration) {
 
         this.paymentSettingRepository = paymentSettingRepository;
         this.userSelectionRepository = userSelectionRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.pluginRepository = pluginRepository;
         this.paymentRepository = paymentRepository;
-        this.checkoutPreferenceRepository = checkoutPreferenceRepository;
         this.paymentRewardRepository = paymentRewardRepository;
         this.internalConfiguration = internalConfiguration;
         state = persistentData;
@@ -82,49 +76,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void initialize() {
         getView().showProgress();
-        configurePreference();
-    }
-
-    @Override
-    public void attachView(final Checkout.View view) {
-        super.attachView(view);
-    }
-
-    @Override
-    public void detachView() {
-        super.detachView();
-    }
-
-    private void configurePreference() {
-        if (paymentSettingRepository.getCheckoutPreference() != null) {
-            startCheckoutForPreference();
-        } else {
-            retrieveCheckoutPreference(paymentSettingRepository.getCheckoutPreferenceId());
-        }
-    }
-
-    /* default */ void startCheckoutForPreference() {
-        try {
-            PreferenceValidator.validate(paymentSettingRepository.getCheckoutPreference(),
-                paymentSettingRepository.getPrivateKey());
-            startCheckout();
-        } catch (final CheckoutPreferenceException e) {
-            getView().showCheckoutExceptionError(e);
-        }
-    }
-
-    private void startCheckout() {
-        retrievePaymentMethodSearch();
-    }
-
-    @Override
-    public void retrievePaymentMethodSearch() {
         if (isViewAttached()) {
-            groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+            initRepository.init().enqueue(new Callback<InitResponse>() {
                 @Override
-                public void success(final PaymentMethodSearch paymentMethodSearch) {
+                public void success(final InitResponse initResponse) {
                     if (isViewAttached()) {
-                        startFlow(paymentMethodSearch);
+                        startFlow(initResponse);
                     }
                 }
 
@@ -132,7 +89,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
                 public void failure(final ApiException apiException) {
                     if (isViewAttached()) {
                         getView().showError(
-                            new MercadoPagoError(apiException, ApiUtil.RequestOrigin.GET_PAYMENT_METHODS));
+                            new MercadoPagoError(apiException, ApiUtil.RequestOrigin.POST_INIT));
                     }
                 }
             });
@@ -176,32 +133,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     }
 
     @Override
-    public boolean isESCEnabled() {
-        return paymentSettingRepository.getAdvancedConfiguration().isEscEnabled();
-    }
-
-    /* default */ void retrieveCheckoutPreference(final String checkoutPreferenceId) {
-        checkoutPreferenceRepository.getCheckoutPreference(checkoutPreferenceId)
-            .enqueue(new TaggedCallback<CheckoutPreference>(ApiUtil.RequestOrigin.GET_PREFERENCE) {
-                @Override
-                public void onSuccess(final CheckoutPreference checkoutPreference) {
-                    if (isViewAttached()) {
-                        paymentSettingRepository.configure(checkoutPreference);
-                        startCheckoutForPreference();
-                    }
-                }
-
-                @Override
-                public void onFailure(final MercadoPagoError error) {
-                    if (isViewAttached()) {
-                        getView().showError(error);
-                        setFailureRecovery(() -> retrieveCheckoutPreference(checkoutPreferenceId));
-                    }
-                }
-            });
-    }
-
-    @Override
     public void onErrorCancel(@Nullable final MercadoPagoError mercadoPagoError) {
         if (isIdentificationInvalidInPayment(mercadoPagoError)) {
             getView().showPaymentMethodSelection();
@@ -238,14 +169,14 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     private void resolvePaymentFailure(final MercadoPagoError mercadoPagoError) {
         if (mercadoPagoError != null && mercadoPagoError.isPaymentProcessing()) {
-            final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
+            final Currency currency = paymentSettingRepository.getCurrency();
             final PaymentResult paymentResult =
                 new PaymentResult.Builder()
                     .setPaymentData(paymentRepository.getPaymentDataList())
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currencyId);
+            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
             getView().showPaymentResult(paymentModel);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
             setFailureRecovery(() -> getView().startPayment());
@@ -304,10 +235,10 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onCardFlowCancel() {
-        groupsRepository.getGroups().execute(new Callback<PaymentMethodSearch>() {
+        initRepository.init().execute(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
-                new DefaultPaymentMethodDriver(paymentMethodSearch,
+            public void success(final InitResponse initResponse) {
+                new DefaultPaymentMethodDriver(initResponse,
                     paymentSettingRepository.getCheckoutPreference().getPaymentPreference()).drive(
                     new DefaultPaymentMethodDriver.PaymentMethodDriverCallback() {
                         @Override
@@ -446,12 +377,12 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     private void handleResult(@NonNull final IPaymentDescriptor payment,
         @NonNull final PaymentResult paymentResult,
         @NonNull final PaymentReward paymentReward) {
-        final String currencyId = paymentSettingRepository.getCheckoutPreference().getSite().getCurrencyId();
+        final Currency currency = paymentSettingRepository.getCurrency();
         payment.process(new IPaymentDescriptorHandler() {
             @Override
             public void visit(@NonNull final IPaymentDescriptor payment) {
                 getView().hideProgress();
-                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currencyId);
+                final PaymentModel paymentModel = new PaymentModel(payment, paymentResult, paymentReward, currency);
                 getView().showPaymentResult(paymentModel);
             }
 
@@ -459,7 +390,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
             public void visit(@NonNull final BusinessPayment businessPayment) {
                 getView().hideProgress();
                 final BusinessPaymentModel paymentModel =
-                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currencyId);
+                    new BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currency);
                 getView().showBusinessResult(paymentModel);
             }
         });

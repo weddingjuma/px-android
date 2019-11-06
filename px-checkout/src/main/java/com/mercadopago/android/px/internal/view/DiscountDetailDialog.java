@@ -9,18 +9,21 @@ import android.view.ViewGroup;
 import com.mercadolibre.android.ui.widgets.MeliDialog;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.view.DiscountDetailContainer.Props.DialogTitleType;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.tracking.internal.views.AppliedDiscountViewTracker;
 
 public class DiscountDetailDialog extends MeliDialog {
 
     private static final String TAG = DiscountDetailDialog.class.getName();
+    private static final String ARG_CURRENCY = "arg_currency";
     private static final String ARG_DISCOUNT = "arg_discount";
 
     public static void showDialog(@NonNull final FragmentManager supportFragmentManager,
-        @NonNull final DiscountConfigurationModel discountModel) {
+        @NonNull final Currency currency, @NonNull final DiscountConfigurationModel discountModel) {
         final DiscountDetailDialog discountDetailDialog = new DiscountDetailDialog();
         final Bundle arguments = new Bundle();
+        arguments.putParcelable(ARG_CURRENCY, currency);
         arguments.putParcelable(ARG_DISCOUNT, discountModel);
         discountDetailDialog.setArguments(arguments);
         discountDetailDialog.show(supportFragmentManager, TAG);
@@ -31,10 +34,11 @@ public class DiscountDetailDialog extends MeliDialog {
         super.onViewCreated(view, savedInstanceState);
         final ViewGroup container = view.findViewById(R.id.main_container);
 
+        final Currency currency = getArguments().getParcelable(ARG_CURRENCY);
         final DiscountConfigurationModel discountModel = getArguments().getParcelable(ARG_DISCOUNT);
         new AppliedDiscountViewTracker(discountModel).track();
         final DiscountDetailContainer discountDetailContainer = new DiscountDetailContainer(
-            new DiscountDetailContainer.Props(DialogTitleType.BIG, discountModel));
+            new DiscountDetailContainer.Props(DialogTitleType.BIG, currency, discountModel));
         discountDetailContainer.render(container);
     }
 

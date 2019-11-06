@@ -8,7 +8,6 @@ import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import static com.mercadopago.android.px.internal.util.CurrenciesUtil.isValidCurrency;
 import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 /**
@@ -215,9 +214,6 @@ public class Discount implements Serializable, Parcelable {
          * @return Discount
          */
         public Discount build() {
-            if (!isValidCurrency(currencyId)) {
-                throw new IllegalStateException("invalid currency id");
-            }
             return new Discount(this);
         }
     }

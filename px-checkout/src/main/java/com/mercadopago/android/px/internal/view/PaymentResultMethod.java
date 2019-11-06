@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.util.PaymentDataHelper;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
@@ -88,17 +89,17 @@ public class PaymentResultMethod extends ConstraintLayout {
 
     public static final class Model {
 
-        public static Model with(@NonNull final PaymentData paymentData, @NonNull final String currencyId) {
-            return with(paymentData, currencyId, null);
+        public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency) {
+            return with(paymentData, currency, null);
         }
 
-        public static Model with(@NonNull final PaymentData paymentData, @NonNull final String currencyId,
+        public static Model with(@NonNull final PaymentData paymentData, @NonNull final Currency currency,
             @Nullable final String statement) {
 
             final PaymentResultAmount.Model amountModel = new PaymentResultAmount.Model.Builder(
-                PaymentDataHelper.getPrettyAmountToPay(paymentData), paymentData.getRawAmount(), currencyId)
+                PaymentDataHelper.getPrettyAmountToPay(paymentData), paymentData.getRawAmount(), currency)
                 .setPayerCost(paymentData.getPayerCost())
-                    .setDiscount(paymentData.getDiscount())
+                .setDiscount(paymentData.getDiscount())
                 .build();
 
             final PaymentMethod paymentMethod = paymentData.getPaymentMethod();

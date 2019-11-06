@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
@@ -49,6 +50,7 @@ public class SummaryModel implements Parcelable {
 
     @NonNull private final String amount;
     @NonNull private final Site site;
+    @NonNull private final Currency currency;
     @NonNull private final String paymentTypeId;
     @Nullable private final String payerCostTotalAmount;
     private final int installments;
@@ -64,6 +66,7 @@ public class SummaryModel implements Parcelable {
     public SummaryModel(final BigDecimal amount,
         final PaymentMethod paymentMethod,
         @NonNull final Site site,
+        @NonNull final Currency currency,
         final PayerCost payerCost,
         final Discount discount,
         final String title,
@@ -72,6 +75,7 @@ public class SummaryModel implements Parcelable {
 
         this.amount = amount.toString();
         this.site = site;
+        this.currency = currency;
         paymentTypeId = paymentMethod.getPaymentTypeId();
         payerCostTotalAmount =
             payerCost != null && payerCost.getTotalAmount() != null ? payerCost.getTotalAmount().toString() : null;
@@ -93,6 +97,7 @@ public class SummaryModel implements Parcelable {
     protected SummaryModel(final Parcel in) {
         amount = in.readString();
         site = in.readParcelable(Site.class.getClassLoader());
+        currency = in.readParcelable(Currency.class.getClassLoader());
         paymentTypeId = in.readString();
         payerCostTotalAmount = in.readString();
         installments = in.readInt();
@@ -115,6 +120,7 @@ public class SummaryModel implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(amount);
         dest.writeParcelable(site, flags);
+        dest.writeParcelable(currency, flags);
         dest.writeString(paymentTypeId);
         dest.writeString(payerCostTotalAmount);
         dest.writeInt(installments);
@@ -168,6 +174,11 @@ public class SummaryModel implements Parcelable {
     @NonNull
     public Site getSite() {
         return site;
+    }
+
+    @NonNull
+    public Currency getCurrency() {
+        return currency;
     }
 
     @NonNull

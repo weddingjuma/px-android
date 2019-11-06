@@ -15,6 +15,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
+import com.mercadopago.android.px.mocks.CurrencyStub;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
@@ -69,9 +70,6 @@ public class ReviewAndConfirmPresenterTest {
 
     @Mock
     private ProductIdProvider productIdProvider;
-
-    @Mock
-    private SecurityBehaviour securityBehaviour;
 
     @Before
     public void setUp() {
@@ -348,9 +346,7 @@ public class ReviewAndConfirmPresenterTest {
     }
 
     private void verifyOnPaymentError(@NonNull final MercadoPagoError mercadoPagoError) {
-        final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
-        when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
+        when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
         reviewAndConfirmPresenter.onPaymentError(mercadoPagoError);
         verify(view).cancelLoadingButton();
         verify(view).showConfirmButton();
@@ -358,12 +354,10 @@ public class ReviewAndConfirmPresenterTest {
 
     private void whenIPaymentAndAnimationIsFinishedThenShowResult(final IPaymentDescriptor payment) {
         final PaymentResult paymentResult = mock(PaymentResult.class);
-        final CheckoutPreference checkoutPreference = mock(CheckoutPreference.class);
         when(paymentResult.getPaymentData()).thenReturn(mock(PaymentData.class));
         when(paymentRepository.getPayment()).thenReturn(payment);
         when(paymentRepository.createPaymentResult(payment)).thenReturn(paymentResult);
-        when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
-        when(checkoutPreference.getSite()).thenReturn(Sites.ARGENTINA);
+        when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
         doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(), any());
 
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();

@@ -8,8 +8,8 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
-import com.mercadopago.android.px.internal.repository.GroupsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
+import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
@@ -19,12 +19,12 @@ import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import com.mercadopago.android.px.services.Callback;
 import java.util.ArrayList;
@@ -34,7 +34,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
-    @NonNull private final GroupsRepository groupsRepository;
+    @NonNull private final InitRepository initRepository;
     @NonNull private final IssuersRepository issuersRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
     @NonNull private final IdentificationRepository identificationRepository;
@@ -45,7 +45,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
     public GuessingCardPaymentPresenter(@NonNull final UserSelectionRepository userSelectionRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
-        @NonNull final GroupsRepository groupsRepository,
+        @NonNull final InitRepository initRepository,
         @NonNull final IssuersRepository issuersRepository,
         @NonNull final CardTokenRepository cardTokenRepository,
         @NonNull final IdentificationRepository identificationRepository,
@@ -55,7 +55,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         super();
         this.userSelectionRepository = userSelectionRepository;
         this.paymentSettingRepository = paymentSettingRepository;
-        this.groupsRepository = groupsRepository;
+        this.initRepository = initRepository;
         this.issuersRepository = issuersRepository;
         this.cardTokenRepository = cardTokenRepository;
         this.identificationRepository = identificationRepository;
@@ -116,15 +116,15 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void getPaymentMethods() {
         getView().showProgress();
-        groupsRepository.getGroups().enqueue(new Callback<PaymentMethodSearch>() {
+        initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override
-            public void success(final PaymentMethodSearch paymentMethodSearch) {
+            public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
                     getView().hideProgress();
                     final PaymentPreference paymentPreference =
                         paymentSettingRepository.getCheckoutPreference().getPaymentPreference();
                     paymentMethodGuessingController = new PaymentMethodGuessingController(
-                        paymentPreference.getSupportedPaymentMethods(paymentMethodSearch.getPaymentMethods()),
+                        paymentPreference.getSupportedPaymentMethods(initResponse.getPaymentMethods()),
                         getPaymentTypeId(),
                         paymentPreference.getExcludedPaymentTypes());
                     startGuessingForm();
@@ -224,7 +224,7 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
 
             @Override
             public void failure(final ApiException apiException) {
-                if(isViewAttached()) {
+                if (isViewAttached()) {
                     final String origin = ApiUtil.RequestOrigin.POST_SUMMARY_AMOUNT;
                     getView().showApiExceptionError(apiException, origin);
                     setFailureRecovery(() -> getInstallments());

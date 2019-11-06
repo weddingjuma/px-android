@@ -16,25 +16,28 @@ public class PaymentMethodSearch implements Serializable {
     /**
      * express list contains the list of user related payment methods to offer inside ExpressCheckout
      */
+    @SerializedName("one_tap")
     @Nullable private List<ExpressMetadata> express;
+    @SerializedName("available_payment_methods")
     private List<PaymentMethod> paymentMethods;
     private List<PaymentMethodSearchItem> groups;
     private List<Card> cards;
-    @SerializedName("custom_options")
+    @SerializedName("payer_payment_methods")
     private List<CustomSearchItem> customSearchItems;
 
     /**
      * amount management
      **/
+    @SerializedName("general_coupon")
     private String defaultAmountConfiguration;
 
+    @SerializedName("coupons")
     private Map<String, DiscountConfigurationModel> discountsConfigurations;
 
     /**
      * @deprecated use new {{@link #express}} we will delete this method on px v5
      */
     @Deprecated
-    @SerializedName("one_tap")
     private OneTapMetadata oneTapMetadata;
 
     /**

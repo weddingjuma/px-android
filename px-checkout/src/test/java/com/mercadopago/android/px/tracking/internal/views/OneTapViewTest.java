@@ -44,8 +44,7 @@ public class OneTapViewTest {
 
         final PXTrackingListener listener = mock(PXTrackingListener.class);
         PXTracker.setListener(listener);
-        OneTapViewTracker tracker = new OneTapViewTracker(Collections.EMPTY_LIST, checkoutPreference, discountModel, Collections.emptySet(),
-            Collections.emptySet());
+        final OneTapViewTracker tracker = new OneTapViewTracker(Collections.EMPTY_LIST, checkoutPreference, discountModel, Collections.emptySet(), Collections.emptySet());
         tracker.track();
         final Map<String, Object> data = emptyOneTapData((long)tracker.getData().get("session_time"));
         verify(listener).onView(EXPECTED_PATH, data);
@@ -65,6 +64,7 @@ public class OneTapViewTest {
         data.put("session_time", sessionTime);
         data.put("checkout_type", "one_tap");
         data.put("security_enabled", false);
+        data.put("experiments", "");
         return data;
     }
 }

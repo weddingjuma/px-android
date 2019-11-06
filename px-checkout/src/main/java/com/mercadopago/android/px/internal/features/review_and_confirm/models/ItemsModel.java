@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Item;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +13,8 @@ public class ItemsModel implements Parcelable {
 
     public final List<ItemModel> itemsModelList;
 
-    public ItemsModel(@NonNull final String currencyId, @NonNull final List<Item> itemList) {
-        itemsModelList = parseItems(itemList, currencyId);
+    public ItemsModel(@NonNull final Currency currency, @NonNull final List<Item> itemList) {
+        itemsModelList = parseItems(itemList, currency);
     }
 
     /* default */ ItemsModel(final Parcel in) {
@@ -33,11 +34,11 @@ public class ItemsModel implements Parcelable {
     };
 
     @NonNull
-    private List<ItemModel> parseItems(final List<Item> itemList, final String currencyId) {
+    private List<ItemModel> parseItems(final List<Item> itemList, final Currency currency) {
         final List<ItemModel> toReturn = new ArrayList<>();
 
         for (final Item item : itemList) {
-            addItemToList(toReturn, item, itemList.size() > 1, currencyId);
+            addItemToList(toReturn, item, itemList.size() > 1, currency);
         }
 
         return toReturn;
@@ -46,20 +47,20 @@ public class ItemsModel implements Parcelable {
     private void addItemToList(final List<ItemModel> toReturn,
         final Item item,
         final boolean hasMultipleItems,
-        final String currencyId) {
+        final Currency currency) {
         if (hasMultipleItems || TextUtil.isNotEmpty(item.getDescription()) || item.getQuantity() > 1) {
-            toReturn.add(createItemModel(item, hasMultipleItems, currencyId));
+            toReturn.add(createItemModel(item, hasMultipleItems, currency));
         }
     }
 
     private ItemModel createItemModel(final Item item,
         final boolean hasMultipleItems,
-        final String currencyId) {
+        final Currency currency) {
         return new ItemModel(item.getPictureUrl(),
             hasMultipleItems ? item.getTitle() : item.getDescription(),
             hasMultipleItems ? item.getDescription() : null,
             item.getQuantity(),
-            currencyId,
+            currency,
             hasMultipleItems || item.hasCardinality() ? item.getUnitPrice() : null);
     }
 

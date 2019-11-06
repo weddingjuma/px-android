@@ -2,26 +2,27 @@ package com.mercadopago.android.px.internal.features.payment_result.props;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.PaymentResult;
 
 public class PaymentResultBodyProps {
 
     public final Instruction instruction;
-    public final String currencyId;
+    public final Currency currency;
     public final PaymentResultScreenConfiguration configuration;
     public final PaymentResult paymentResult;
 
     public PaymentResultBodyProps(@NonNull final Builder builder) {
         paymentResult = builder.paymentResult;
         instruction = builder.instruction;
-        currencyId = builder.currencyId;
+        currency = builder.currency;
         configuration = builder.configuration;
     }
 
     public static class Builder {
         public Instruction instruction;
-        public String currencyId;
+        public Currency currency;
         public PaymentResultScreenConfiguration configuration;
         public PaymentResult paymentResult;
 
@@ -34,8 +35,8 @@ public class PaymentResultBodyProps {
             return this;
         }
 
-        public Builder setCurrencyId(final String currencyId) {
-            this.currencyId = currencyId;
+        public Builder setCurrency(final Currency currency) {
+            this.currency = currency;
             return this;
         }
 

@@ -1,7 +1,8 @@
 package com.mercadopago.android.px.internal.features.review_payment_methods;
 
-import com.mercadopago.android.px.mocks.PaymentMethods;
+import com.mercadopago.android.px.mocks.PaymentMethodStub;
 import com.mercadopago.android.px.model.PaymentMethod;
+import com.mercadopago.android.px.model.Sites;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +22,7 @@ public class ReviewPaymentMethodsPresenterTest {
 
     @Before
     public void setUp() {
-        stubPaymentMethodList = PaymentMethods.getPaymentMethodListMLA();
+        stubPaymentMethodList = PaymentMethodStub.getAllBySite(Sites.ARGENTINA.getId());
         presenter = new ReviewPaymentMethodsPresenter(stubPaymentMethodList);
         presenter.attachView(view);
     }

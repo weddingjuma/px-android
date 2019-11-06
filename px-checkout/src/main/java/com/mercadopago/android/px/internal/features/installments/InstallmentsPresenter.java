@@ -18,6 +18,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.CardInfo;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -32,7 +33,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     AmountView.OnClick, InstallmentsAdapter.ItemListener, AmountRowController.AmountRowVisibilityBehaviour {
 
     @NonNull /* default */ final AmountRepository amountRepository;
-    @NonNull /* default */ final PaymentSettingRepository configuration;
+    @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final UserSelectionRepository userSelectionRepository;
     @NonNull /* default */ final DiscountRepository discountRepository;
     @NonNull private final SummaryAmountRepository summaryAmountRepository;
@@ -52,7 +53,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
         @NonNull final SummaryAmountRepository summaryAmountRepository,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository) {
         this.amountRepository = amountRepository;
-        this.configuration = configuration;
+        this.paymentSettingRepository = configuration;
         this.userSelectionRepository = userSelectionRepository;
         this.discountRepository = discountRepository;
         this.summaryAmountRepository = summaryAmountRepository;
@@ -65,7 +66,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     }
 
     private void showSiteRelatedInformation() {
-        if (configuration.getCheckoutPreference().getSite().shouldWarnAboutBankInterests()) {
+        if (paymentSettingRepository.getSite().shouldWarnAboutBankInterests()) {
             getView().warnAboutBankInterests();
         }
     }
@@ -117,7 +118,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     }
 
     /* default */ void initializeAmountRow() {
-        amountRowController = new AmountRowController(this, configuration.getAdvancedConfiguration());
+        amountRowController = new AmountRowController(this, paymentSettingRepository.getAdvancedConfiguration());
         amountRowController.configure();
     }
 
@@ -125,7 +126,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
     public void showAmountRow() {
         getView().showAmount(discountRepository.getCurrentConfiguration(),
             amountRepository.getItemsPlusCharges(userSelectionRepository.getPaymentMethod().getPaymentTypeId()),
-            configuration.getCheckoutPreference().getSite());
+            paymentSettingRepository.getCurrency());
     }
 
     @Override
@@ -174,7 +175,7 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
 
     @Override
     public void onDetailClicked(@NonNull final DiscountConfigurationModel discountModel) {
-        getView().showDetailDialog(discountModel);
+        getView().showDetailDialog(paymentSettingRepository.getCurrency(), discountModel);
     }
 
     @Override

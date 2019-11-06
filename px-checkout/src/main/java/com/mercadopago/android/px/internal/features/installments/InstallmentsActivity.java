@@ -33,9 +33,9 @@ import com.mercadopago.android.px.internal.view.AmountView;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.math.BigDecimal;
@@ -254,8 +254,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public void showInstallments(final List<PayerCost> payerCostList) {
         showHeader();
         final InstallmentsAdapter installmentsAdapter =
-            new InstallmentsAdapter(configuration.getCheckoutPreference().getSite(),
-                payerCostList, presenter);
+            new InstallmentsAdapter(configuration.getSite(), configuration.getCurrency(), payerCostList, presenter);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
     }
 
@@ -327,10 +326,10 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
 
     @Override
     public void showAmount(@NonNull final DiscountConfigurationModel discountModel,
-        @NonNull final BigDecimal itemsPlusCharges, @NonNull final Site site) {
+        @NonNull final BigDecimal itemsPlusCharges, @NonNull final Currency currency) {
         amountView.setVisibility(View.VISIBLE);
         amountView.setOnClickListener(presenter);
-        amountView.show(discountModel, itemsPlusCharges, site);
+        amountView.show(discountModel, itemsPlusCharges, currency);
     }
 
     @Override
@@ -339,7 +338,8 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     @Override
-    public void showDetailDialog(@NonNull final DiscountConfigurationModel discountModel) {
-        DiscountDetailDialog.showDialog(getSupportFragmentManager(), discountModel);
+    public void showDetailDialog(@NonNull final Currency currency,
+        @NonNull final DiscountConfigurationModel discountModel) {
+        DiscountDetailDialog.showDialog(getSupportFragmentManager(), currency, discountModel);
     }
 }

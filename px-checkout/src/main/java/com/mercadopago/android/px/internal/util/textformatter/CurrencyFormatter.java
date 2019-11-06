@@ -7,16 +7,14 @@ import com.mercadopago.android.px.model.Currency;
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import static com.mercadopago.android.px.internal.util.CurrenciesUtil.getCurrency;
-
 public class CurrencyFormatter extends ChainFormatter {
 
     final Currency currency;
     private boolean hasSpace;
     private boolean hasSymbol;
 
-    CurrencyFormatter(final String currencyId) {
-        currency = getCurrency(currencyId);
+    CurrencyFormatter(final Currency currency) {
+        this.currency = currency;
         hasSymbol = true;
     }
 

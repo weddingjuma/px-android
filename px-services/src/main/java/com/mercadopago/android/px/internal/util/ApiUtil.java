@@ -97,7 +97,7 @@ public final class ApiUtil {
         private RequestOrigin() {
         }
 
-        public static final String GET_PREFERENCE = "GET_PREFERENCE";
+        public static final String POST_INIT = "POST_INIT";
         public static final String POST_SUMMARY_AMOUNT = "POST_SUMMARY_AMOUNT";
         public static final String GET_ISSUERS = "GET_ISSUERS";
         public static final String CREATE_PAYMENT = "CREATE_PAYMENT";

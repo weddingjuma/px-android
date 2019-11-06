@@ -39,7 +39,7 @@ public final class PaymentResultLegacyRenderer {
             new PaymentResultBodyProps.Builder(viewModel.configuration)
                 .setPaymentResult(viewModel.model.getPaymentResult())
                 .setInstruction(viewModel.instruction)
-                .setCurrencyId(viewModel.model.getCurrencyId())
+                .setCurrency(viewModel.model.getCurrency())
                 .build();
         return new Body(bodyProps, callback);
     }

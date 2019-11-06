@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.model.Currency;
 
 public class TextFormatter {
 
@@ -31,8 +32,8 @@ public class TextFormatter {
         return this;
     }
 
-    public static CurrencyFormatter withCurrencyId(@NonNull final String currencyId) {
-        return new CurrencyFormatter(currencyId);
+    public static CurrencyFormatter withCurrency(@NonNull final Currency currency) {
+        return new CurrencyFormatter(currency);
     }
 
     public TextFormatter holder(@StringRes final int holder) {

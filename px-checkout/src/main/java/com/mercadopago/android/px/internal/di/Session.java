@@ -30,6 +30,7 @@ import com.mercadopago.android.px.internal.datasource.PaymentRewardRepositoryImp
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
+import com.mercadopago.android.px.internal.datasource.ExperimentsService;
 import com.mercadopago.android.px.internal.datasource.TokenizeService;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
@@ -51,6 +52,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
+import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.services.BankDealService;
@@ -100,6 +102,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private IdentificationRepository identificationRepository;
     private PaymentMethodsRepository paymentMethodsRepository;
     private PaymentRewardRepository paymentRewardRepository;
+    private ExperimentsRepository experimentsRepository;
 
     private Session(@NonNull final Context context) {
         super(context);
@@ -177,6 +180,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     private void clear() {
+        getExperimentsRepository().reset();
         getConfigurationModule().reset();
         getInitCache().evict();
         getPaymentRewardCache().evict();
@@ -201,11 +205,19 @@ public final class Session extends ApplicationModule implements AmountComponent 
     public InitRepository getInitRepository() {
         if (initRepository == null) {
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-            initRepository = new InitService(paymentSettings, getMercadoPagoESC(),
+            initRepository = new InitService(paymentSettings, getExperimentsRepository(), getMercadoPagoESC(),
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
                 LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName(), getInitCache());
         }
         return initRepository;
+    }
+
+    private ExperimentsRepository getExperimentsRepository() {
+        if (experimentsRepository == null) {
+            experimentsRepository = new ExperimentsService(getSharedPreferences());
+        }
+
+        return experimentsRepository;
     }
 
     public SummaryAmountRepository getSummaryAmountRepository() {

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * DTO that represents init informaton from checkout.
+ * DTO that represents init information from checkout.
  */
 @SuppressWarnings("unused")
 public final class InitRequest {

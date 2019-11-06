@@ -89,7 +89,9 @@ public class GuessingCardPaymentPresenterTest {
         // No charge initialization.
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(checkoutPreference);
         when(checkoutPreference.getPaymentPreference()).thenReturn(paymentPreference);
+
         final List<PaymentMethod> pm = PaymentMethodStub.getAllBySite(Sites.ARGENTINA.getId());
+
         when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(initResponse));
         when(initResponse.getPaymentMethods()).thenReturn(pm);
         when(advancedConfiguration.isBankDealsEnabled()).thenReturn(true);
@@ -299,6 +301,7 @@ public class GuessingCardPaymentPresenterTest {
     @Test
     public void whenGetPaymentMethodFailsThenHideProgress() {
         final ApiException apiException = mock(ApiException.class);
+
         when(initRepository.init()).thenReturn(new StubFailMpCall<>(apiException));
 
         presenter.initialize();

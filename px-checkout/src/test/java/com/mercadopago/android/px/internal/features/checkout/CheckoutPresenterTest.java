@@ -23,7 +23,6 @@ import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Setting;
-import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
@@ -105,6 +104,7 @@ public class CheckoutPresenterTest {
         final CheckoutPreference preference = stubPreferenceOneItemAndPayer();
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
         when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(InitResponseStub.FULL.get()));
+
         presenter.initialize();
 
         verify(initRepository).init();

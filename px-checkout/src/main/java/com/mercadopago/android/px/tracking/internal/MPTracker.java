@@ -4,14 +4,19 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.CheckoutType;
 import com.mercadopago.android.px.model.Event;
+import com.mercadopago.android.px.model.internal.Experiment;
 import com.mercadopago.android.px.model.ScreenViewEvent;
 import com.mercadopago.android.px.tracking.PXEventListener;
 import com.mercadopago.android.px.tracking.PXTrackingListener;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+
+import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public final class MPTracker {
 
@@ -22,6 +27,7 @@ public final class MPTracker {
     private static final String ATTR_SESSION_TIME = "session_time";
     private static final String ATTR_CHECKOUT_TYPE = "checkout_type";
     private static final String ATTR_SECURITY_ENABLED = "security_enabled";
+    private static final String ATTR_EXPERIMENTS = "experiments";
 
     private static MPTracker trackerInstance;
 
@@ -46,6 +52,8 @@ public final class MPTracker {
     private long initSessionTimestamp;
 
     private boolean securityEnabled;
+
+    @NonNull private List<Experiment> experiments = new ArrayList<>();
 
     private MPTracker() {
         // do nothing
@@ -125,6 +133,15 @@ public final class MPTracker {
     }
 
     /**
+     * Set all A/B testing experiments that are active.
+     *
+     * @param experiments The active A/B testing experiments.
+     */
+    public void setExperiments(@NonNull final List<Experiment> experiments) {
+        this.experiments = experiments;
+    }
+
+    /**
      * This method tracks a list of events in one request
      *
      * @param event Event to track
@@ -185,6 +202,7 @@ public final class MPTracker {
                 value.put(ATTR_SESSION_TIME, getSecondsAfterInit());
                 value.put(ATTR_CHECKOUT_TYPE, checkoutType);
                 value.put(ATTR_SECURITY_ENABLED, securityEnabled);
+                value.put(ATTR_EXPERIMENTS, getExperimentsLabel());
             } catch (final ClassCastException e) {
                 // do nothing.
             }
@@ -198,6 +216,23 @@ public final class MPTracker {
         data.put(ATTR_SESSION_TIME, getSecondsAfterInit());
         data.put(ATTR_CHECKOUT_TYPE, checkoutType);
         data.put(ATTR_SECURITY_ENABLED, securityEnabled);
+        data.put(ATTR_EXPERIMENTS, getExperimentsLabel());
+    }
+
+    private String getExperimentsLabel() {
+        StringBuilder label = new StringBuilder();
+
+        for (final Experiment experiment : experiments) {
+            if (!isEmpty(label)) {
+                label.append(",");
+            }
+
+            label.append(experiment.getName());
+            label.append(" - ");
+            label.append(experiment.getVariant().getName());
+        }
+
+        return label.toString();
     }
 
     private long getSecondsAfterInit() {

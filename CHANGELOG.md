@@ -1,3 +1,7 @@
+## VERSION 4.25.3
+_06_11_2019_
+* FIX - Validate presenter state in fragment's onDetach event
+
 ## VERSION 4.25.2
 _22_10_2019_
 * FIX - Rotation bug in one tap using postCreate

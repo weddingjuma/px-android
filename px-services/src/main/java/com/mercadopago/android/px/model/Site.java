@@ -3,6 +3,7 @@ package com.mercadopago.android.px.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.io.Serializable;
 
 public final class Site implements Serializable, Parcelable {
@@ -51,6 +52,7 @@ public final class Site implements Serializable, Parcelable {
     }
 
     @Deprecated
+    @Nullable
     public String getCurrencyId() {
         return currencyId;
     }

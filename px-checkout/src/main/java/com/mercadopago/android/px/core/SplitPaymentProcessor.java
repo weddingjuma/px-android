@@ -59,7 +59,7 @@ public interface SplitPaymentProcessor extends Parcelable {
      *
      * @return if it should show view
      */
-    boolean supportsSplitPayment(@NonNull final CheckoutPreference checkoutPreference);
+    boolean supportsSplitPayment(@Nullable final CheckoutPreference checkoutPreference);
 
     /**
      * Fragment that will appear if {@link #shouldShowFragmentOnPayment(CheckoutPreference)} is true when user clicks

@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import com.google.gson.annotations.SerializedName;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.DifferentialPricing;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.OpenPayer;
@@ -159,9 +160,9 @@ public class CheckoutPreference implements Serializable {
      * @deprecated preference should not have site in it's model
      */
     @Deprecated
-    @NonNull
+    @Nullable
     public Site getSite() {
-        return Sites.getById(siteId);
+        return TextUtil.isNotEmpty(siteId) ? Sites.getById(siteId) : null;
     }
 
     @Size(min = 1)

@@ -196,7 +196,7 @@ public class PaymentMethod implements Parcelable, Serializable {
         this.settings = settings;
     }
 
-    protected PaymentMethod(Parcel in) {
+    protected PaymentMethod(final Parcel in) {
         additionalInfoNeeded = in.createStringArrayList();
         id = in.readString();
         name = in.readString();

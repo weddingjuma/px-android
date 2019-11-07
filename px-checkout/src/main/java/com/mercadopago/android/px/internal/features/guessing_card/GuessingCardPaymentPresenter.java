@@ -75,9 +75,8 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     }
 
     private void fillRecoveryFields() {
-        getView().setCardholderName(paymentSettingRepository.getToken().getCardHolder().getName());
-        getView().setIdentificationNumber(
-            paymentSettingRepository.getToken().getCardHolder().getIdentification().getNumber());
+        getView().setCardholderName(paymentRecovery.getToken().getCardHolder().getName());
+        getView().setIdentificationNumber(paymentRecovery.getToken().getCardHolder().getIdentification().getNumber());
     }
 
     @Nullable
@@ -155,7 +154,6 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
         }
     }
 
-
     @Override
     public void onIssuerSelected(final Long issuerId) {
         // Empty body, this behavior only exists on CardStoragePresenter
@@ -173,10 +171,10 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     @Override
     public void onRestoreInstanceState(final Bundle savedInstanceState) {
         if (savedInstanceState != null && savedInstanceState.getParcelable(PAYMENT_METHOD_BUNDLE) != null) {
-                setPaymentTypesList(savedInstanceState.getParcelableArrayList(PAYMENT_TYPES_LIST_BUNDLE));
-                setPaymentRecovery((PaymentRecovery)savedInstanceState.getSerializable(PAYMENT_RECOVERY_BUNDLE));
-                super.onRestoreInstanceState(savedInstanceState);
-            }
+            setPaymentTypesList(savedInstanceState.getParcelableArrayList(PAYMENT_TYPES_LIST_BUNDLE));
+            setPaymentRecovery((PaymentRecovery) savedInstanceState.getSerializable(PAYMENT_RECOVERY_BUNDLE));
+            super.onRestoreInstanceState(savedInstanceState);
+        }
     }
 
     @Override
@@ -240,15 +238,14 @@ public class GuessingCardPaymentPresenter extends GuessingCardPresenter {
     public void setPaymentRecovery(final PaymentRecovery paymentRecovery) {
         this.paymentRecovery = paymentRecovery;
         if (recoverWithCardHolder()) {
-            saveCardholderName(paymentSettingRepository.getToken().getCardHolder().getName());
-            saveIdentificationNumber(
-                paymentSettingRepository.getToken().getCardHolder().getIdentification().getNumber());
+            saveCardholderName(paymentRecovery.getToken().getCardHolder().getName());
+            saveIdentificationNumber(paymentRecovery.getToken().getCardHolder().getIdentification().getNumber());
         }
     }
 
     private boolean recoverWithCardHolder() {
-        return paymentRecovery != null && paymentSettingRepository.getToken() != null &&
-            paymentSettingRepository.getToken().getCardHolder() != null;
+        return paymentRecovery != null && paymentRecovery.getToken() != null &&
+            paymentRecovery.getToken().getCardHolder() != null;
     }
 
     @Override

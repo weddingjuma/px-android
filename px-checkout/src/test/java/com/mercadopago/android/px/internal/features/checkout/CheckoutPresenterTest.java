@@ -23,6 +23,7 @@ import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Setting;
+import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
@@ -302,13 +303,8 @@ public class CheckoutPresenterTest {
 
     @Test
     public void whenCardFlowResponseHasRecoverableTokenProcessThenCreatePaymentInOneTap() {
-        final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
-        when(paymentRepository.hasPayment()).thenReturn(true);
-        when(paymentRepository.createPaymentRecovery()).thenReturn(paymentRecovery);
-        when(paymentRecovery.isTokenRecoverable()).thenReturn(true);
-
+        when(paymentRepository.hasRecoverablePayment()).thenReturn(true);
         presenter.onCardFlowResponse();
-
         verify(checkoutView).startPayment();
     }
 
@@ -317,15 +313,13 @@ public class CheckoutPresenterTest {
         final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
         final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
 
-        when(paymentRepository.hasPayment()).thenReturn(false);
-
         when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
         when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
         when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(false);
 
         presenter.onCardFlowResponse();
 
-        verify(paymentRepository).hasPayment();
+        verify(paymentRepository).hasRecoverablePayment();
         verify(checkoutView).showReviewAndConfirm(false);
         verifyNoMoreInteractions(checkoutView);
         verifyNoMoreInteractions(paymentRepository);
@@ -336,15 +330,13 @@ public class CheckoutPresenterTest {
         final PaymentConfiguration paymentConfiguration = mock(PaymentConfiguration.class);
         final SplitPaymentProcessor paymentProcessor = mock(SplitPaymentProcessor.class);
 
-        when(paymentRepository.hasPayment()).thenReturn(false);
-
         when(paymentSettingRepository.getPaymentConfiguration()).thenReturn(paymentConfiguration);
         when(paymentConfiguration.getPaymentProcessor()).thenReturn(paymentProcessor);
         when(paymentProcessor.shouldSkipUserConfirmation()).thenReturn(true);
 
         presenter.onCardFlowResponse();
 
-        verify(paymentRepository).hasPayment();
+        verify(paymentRepository).hasRecoverablePayment();
         verify(checkoutView).showPaymentProcessorWithAnimation();
         verify(checkoutView, never()).showReviewAndConfirm(anyBoolean());
         verifyNoMoreInteractions(checkoutView);

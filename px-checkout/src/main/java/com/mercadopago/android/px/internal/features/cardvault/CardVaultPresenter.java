@@ -42,8 +42,6 @@ import java.util.List;
     //Activity parameters
     private PaymentRecovery paymentRecovery;
 
-    private boolean issuersListShown;
-
     //Activity result
     protected PaymentMethod paymentMethod;
 
@@ -69,8 +67,6 @@ import java.util.List;
 
     @Override
     public void initialize() {
-        issuersListShown = false;
-
         if (tokenRecoveryAvailable()) {
             startTokenRecoveryFlow();
         } else if (getCard() == null) {
@@ -151,14 +147,6 @@ import java.util.List;
         return PaymentMethodGuessingController.getCardNumberLength(paymentMethod, bin);
     }
 
-    public boolean isIssuersListShown() {
-        return issuersListShown;
-    }
-
-    public void setIssuersListShown(final boolean issuersListShown) {
-        this.issuersListShown = issuersListShown;
-    }
-
     private void checkStartInstallmentsActivity() {
         if (userSelectionRepository.getPayerCost() == null) {
             getView().askForInstallments(getCardInfo());
@@ -169,7 +157,6 @@ import java.util.List;
 
     private void checkStartIssuersActivity(@NonNull final Intent data) {
         if (userSelectionRepository.getIssuer() == null) {
-            issuersListShown = true;
             getView().startIssuersActivity(GuessingCardActivity.extractIssuersFromIntent(data));
         } else {
             checkStartInstallmentsActivity();
@@ -184,7 +171,6 @@ import java.util.List;
     }
 
     /* default */ void resolveIssuersRequest() {
-        issuersListShown = true;
         checkStartInstallmentsActivity();
     }
 
@@ -220,9 +206,9 @@ import java.util.List;
     }
 
     private void startTokenRecoveryFlow() {
-        setCardInfo(new CardInfo(paymentSettingRepository.getToken()));
+        setCardInfo(new CardInfo(getPaymentRecovery().getToken()));
         setPaymentMethod(userSelectionRepository.getPaymentMethod());
-        setToken(paymentSettingRepository.getToken());
+        setToken(getPaymentRecovery().getToken());
         getView().askForSecurityCodeFromTokenRecovery(Reason.from(paymentRecovery));
     }
 
@@ -245,7 +231,7 @@ import java.util.List;
     }
 
     private boolean tokenRecoveryAvailable() {
-        return getPaymentRecovery() != null && getPaymentRecovery().isTokenRecoverable();
+        return paymentRecovery != null && paymentRecovery.isTokenRecoverable();
     }
 
     private void startSecurityCodeFlowIfNeeded() {

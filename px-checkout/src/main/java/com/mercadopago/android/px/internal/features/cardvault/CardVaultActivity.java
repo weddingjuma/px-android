@@ -41,7 +41,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     private static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
     private static final String EXTRA_TOKEN = "token";
     private static final String EXTRA_CARD_INFO = "cardInfo";
-    private static final String EXTRA_ISSUERS_LIST_SHOWN = "issuersListShown";
 
     private CardVaultPresenter presenter;
 
@@ -54,11 +53,11 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     }
 
     @SuppressWarnings("TypeMayBeWeakened")
-    public static void startActivityForRecovery(final Fragment oneTapFragment, final int reqCode,
+    public static void startActivityForRecovery(final Fragment fragment, final int reqCode,
         @NonNull final PaymentRecovery paymentRecovery) {
-        final Intent intent = new Intent(oneTapFragment.getActivity(), CardVaultActivity.class);
+        final Intent intent = new Intent(fragment.getActivity(), CardVaultActivity.class);
         intent.putExtra(EXTRA_PAYMENT_RECOVERY, paymentRecovery);
-        oneTapFragment.startActivityForResult(intent, reqCode);
+        fragment.startActivityForResult(intent, reqCode);
     }
 
     public static void startActivity(@NonNull final Activity context, final int reqCode) {
@@ -96,7 +95,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         presenter.setPaymentMethod((PaymentMethod) savedInstanceState.getSerializable(EXTRA_PAYMENT_METHOD));
         presenter.setToken((Token) savedInstanceState.getSerializable(EXTRA_TOKEN));
         presenter.setCardInfo((CardInfo) savedInstanceState.getSerializable(EXTRA_CARD_INFO));
-        presenter.setIssuersListShown(savedInstanceState.getBoolean(EXTRA_ISSUERS_LIST_SHOWN, false));
     }
 
     private void getActivityParameters() {
@@ -156,7 +154,6 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
         if (presenter != null) {
             outState.putSerializable(EXTRA_CARD, presenter.getCard());
             outState.putSerializable(EXTRA_PAYMENT_RECOVERY, presenter.getPaymentRecovery());
-            outState.putBoolean(EXTRA_ISSUERS_LIST_SHOWN, presenter.isIssuersListShown());
 
             if (presenter.getPaymentMethod() != null) {
                 outState.putSerializable(EXTRA_PAYMENT_METHOD, presenter.getPaymentMethod());

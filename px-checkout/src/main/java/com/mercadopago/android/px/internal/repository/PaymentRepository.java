@@ -41,6 +41,8 @@ public interface PaymentRepository {
 
     boolean hasPayment();
 
+    boolean hasRecoverablePayment();
+
     @NonNull
     PaymentRecovery createRecoveryForInvalidESC();
 

@@ -30,6 +30,11 @@ import com.mercadopago.android.px.tracking.internal.views.CvvAskViewTracker;
 public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityView> implements SecurityCode.Actions {
 
     private static final String BUNDLE_REASON = "BUNDLE_REASON";
+    private static final String BUNDLE_CARD_INFO = "BUNDLE_CARD_INFO";
+    private static final String BUNDLE_PAYMENT_RECOVERY = "BUNDLE_PAYMENT_RECOVERY";
+    private static final String BUNDLE_TOKEN = "BUNDLE_TOKEN";
+    private static final String BUNDLE_CARD = "BUNDLE_CARD";
+    private static final String BUNDLE_PAYMENT_METHOD = "BUNDLE_PAYMENT_METHOD";
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
@@ -239,14 +244,15 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
     }
 
     private boolean hasToCloneToken() {
-        return paymentRecovery != null && (paymentRecovery.isStatusDetailCallForAuthorize() ||
-            paymentRecovery.isStatusDetailCardDisabled()) && token != null;
+        return paymentRecovery != null &&
+            (paymentRecovery.isStatusDetailCallForAuthorize() || paymentRecovery.isStatusDetailCardDisabled()) &&
+            token != null && TextUtil.isEmpty(token.getCardId());
     }
 
     private boolean hasToRecoverTokenFromESC() {
         return paymentRecovery != null && paymentRecovery.isStatusDetailInvalidESC() &&
-            ((token != null && token.getCardId() != null && !token.getCardId().isEmpty()) ||
-                (card != null && card.getId() != null && !card.getId().isEmpty()));
+            ((token != null && TextUtil.isNotEmpty(token.getCardId())) ||
+                (card != null && TextUtil.isNotEmpty(card.getId())));
     }
 
     private boolean isSavedCardWithESC() {
@@ -357,7 +363,9 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
             this.token.setLastFourDigits(cardInfo.getLastFourDigits());
         }
         paymentSettingRepository.configure(this.token);
-        getView().finishWithResult();
+        if (isViewAttached()) {
+            getView().finishWithResult();
+        }
     }
 
     public void setSecurityCodeCardType() {
@@ -377,12 +385,22 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
     public void recoverFromBundle(@NonNull final Bundle fromBundle) {
         super.recoverFromBundle(fromBundle);
         reason = Reason.valueOf(fromBundle.getString(BUNDLE_REASON));
+        cardInfo = (CardInfo) fromBundle.getSerializable(BUNDLE_CARD_INFO);
+        paymentRecovery = (PaymentRecovery) fromBundle.getSerializable(BUNDLE_PAYMENT_RECOVERY);
+        token = (Token) fromBundle.getSerializable(BUNDLE_TOKEN);
+        card = (Card) fromBundle.getSerializable(BUNDLE_CARD);
+        paymentMethod = fromBundle.getParcelable(BUNDLE_PAYMENT_METHOD);
     }
 
     @NonNull
     @Override
     public Bundle storeInBundle(@NonNull final Bundle toBundle) {
         toBundle.putString(BUNDLE_REASON, reason.name());
+        toBundle.putSerializable(BUNDLE_CARD_INFO, cardInfo);
+        toBundle.putSerializable(BUNDLE_PAYMENT_RECOVERY, paymentRecovery);
+        toBundle.putSerializable(BUNDLE_TOKEN, token);
+        toBundle.putSerializable(BUNDLE_CARD, card);
+        toBundle.putParcelable(BUNDLE_PAYMENT_METHOD, paymentMethod);
         return super.storeInBundle(toBundle);
     }
 }

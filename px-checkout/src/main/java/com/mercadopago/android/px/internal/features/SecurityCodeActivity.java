@@ -44,7 +44,6 @@ import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
-import java.io.Serializable;
 
 public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> implements SecurityCodeActivityView {
 
@@ -54,9 +53,6 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     private static final String EXTRA_CARD_INFO = "CARD_INFO";
     private static final String EXTRA_PAYMENT_RECOVERY = "PAYMENT_RECOVERY";
     private static final String EXTRA_REASON = "REASON";
-
-    private static final String CARD_INFO_BUNDLE = "cardInfoBundle";
-    private static final String PAYMENT_RECOVERY_BUNDLE = "paymentRecoveryBundle";
 
     public static final String ERROR_STATE = "textview_error";
     public static final String NORMAL_STATE = "textview_normal";
@@ -107,13 +103,6 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         if (savedInstanceState == null) {
             getActivityParameters();
         } else {
-            presenter.setToken(paymentSettings.getToken());
-            presenter.setCard(session.getConfigurationModule().getUserSelectionRepository().getCard());
-            presenter
-                .setPaymentMethod(session.getConfigurationModule().getUserSelectionRepository().getPaymentMethod());
-            presenter.setCardInfo((CardInfo) savedInstanceState.getSerializable(CARD_INFO_BUNDLE));
-            presenter
-                .setPaymentRecovery((PaymentRecovery) savedInstanceState.getSerializable(PAYMENT_RECOVERY_BUNDLE));
             presenter.recoverFromBundle(savedInstanceState);
         }
 
@@ -124,10 +113,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     @Override
     public void onSaveInstanceState(final Bundle outState) {
-        outState.putSerializable(CARD_INFO_BUNDLE, presenter.getCardInfo());
-        outState.putSerializable(PAYMENT_RECOVERY_BUNDLE, presenter.getPaymentRecovery());
         presenter.storeInBundle(outState);
-
         super.onSaveInstanceState(outState);
     }
 
@@ -141,7 +127,8 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         final Card card = (Card) getIntent().getSerializableExtra(EXTRA_CARD);
         final Token token = (Token) getIntent().getSerializableExtra(EXTRA_TOKEN);
         final PaymentMethod paymentMethod = getIntent().getParcelableExtra(EXTRA_PAYMENT_METHOD);
-        final PaymentRecovery paymentRecovery = (PaymentRecovery) getIntent().getSerializableExtra(EXTRA_PAYMENT_RECOVERY);
+        final PaymentRecovery paymentRecovery =
+            (PaymentRecovery) getIntent().getSerializableExtra(EXTRA_PAYMENT_RECOVERY);
         final Reason reason =
             Reason.valueOf(getIntent().getStringExtra(EXTRA_REASON));
 

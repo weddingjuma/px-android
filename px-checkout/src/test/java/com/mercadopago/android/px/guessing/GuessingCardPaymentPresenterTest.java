@@ -140,12 +140,11 @@ public class GuessingCardPaymentPresenterTest {
 
         final Cardholder cardHolder = mock(Cardholder.class);
         final Token token = mock(Token.class);
-        when(paymentSettingRepository.getToken()).thenReturn(token);
         when(token.getCardHolder()).thenReturn(cardHolder);
         when(cardHolder.getIdentification()).thenReturn(mock(Identification.class));
 
         presenter
-            .setPaymentRecovery(new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE));
+            .setPaymentRecovery(new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE, token));
 
         presenter.initialize();
 

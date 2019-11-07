@@ -221,7 +221,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onCardFlowResponse() {
-        if (isRecoverableTokenProcess()) {
+        if (paymentRepository.hasRecoverablePayment()) {
             getView().startPayment();
         } else {
             onPaymentMethodSelected();
@@ -303,10 +303,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void setFailureRecovery(final FailureRecovery failureRecovery) {
         this.failureRecovery = failureRecovery;
-    }
-
-    private boolean isRecoverableTokenProcess() {
-        return paymentRepository.hasPayment() && paymentRepository.createPaymentRecovery().isTokenRecoverable();
     }
 
     private void finishCheckout() {

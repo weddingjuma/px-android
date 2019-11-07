@@ -68,9 +68,10 @@ public class CardVaultPresenterTest {
 
     @Test
     public void whenTokenIsRecoverableThenStartTokenRecoveryFlow() {
-        when(paymentSettingRepository.getToken()).thenReturn(mock(Token.class));
+        final Token token = mock(Token.class);
         final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
         when(paymentRecovery.isTokenRecoverable()).thenReturn(true);
+        when(paymentRecovery.getToken()).thenReturn(token);
 
         presenter.setPaymentRecovery(paymentRecovery);
         presenter.initialize();

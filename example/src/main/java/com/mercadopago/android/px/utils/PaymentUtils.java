@@ -10,7 +10,6 @@ import com.mercadopago.example.R;
 public final class PaymentUtils {
 
     private PaymentUtils() {
-        //Do nothing
     }
 
     @NonNull
@@ -27,14 +26,6 @@ public final class PaymentUtils {
         return new GenericPayment.Builder(
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED
-        ).setPaymentId(123L).createGenericPayment();
-    }
-
-    @NonNull
-    public static GenericPayment getGenericPaymentRejectedHigRisk() {
-        return new GenericPayment.Builder(
-            Payment.StatusCodes.STATUS_REJECTED,
-            Payment.StatusDetail.STATUS_DETAIL_REJECTED_HIGH_RISK
         ).setPaymentId(123L).createGenericPayment();
     }
 }

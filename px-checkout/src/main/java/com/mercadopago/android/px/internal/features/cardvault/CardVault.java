@@ -81,10 +81,6 @@ import java.util.List;
 
         int getCardNumberLength();
 
-        boolean isIssuersListShown();
-
-        void setIssuersListShown(boolean issuersListShown);
-
         void recoverFromFailure();
 
         void resolveInstallmentsRequest();

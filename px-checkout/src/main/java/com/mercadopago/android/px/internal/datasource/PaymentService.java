@@ -121,16 +121,28 @@ public class PaymentService implements PaymentRepository {
         return payment != null;
     }
 
+    @Override
+    public boolean hasRecoverablePayment() {
+        return hasPayment() && Payment.StatusDetail.isStatusDetailRecoverable(payment.getPaymentStatusDetail());
+    }
+
     @NonNull
     @Override
     public PaymentRecovery createRecoveryForInvalidESC() {
-        return new PaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC);
+        return createPaymentRecovery(Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC);
     }
 
     @NonNull
     @Override
     public PaymentRecovery createPaymentRecovery() {
-        return new PaymentRecovery(getPayment().getPaymentStatusDetail());
+        return createPaymentRecovery(getPayment().getPaymentStatusDetail());
+    }
+
+    @NonNull
+    private PaymentRecovery createPaymentRecovery(@NonNull final String statusDetail) {
+        final Token token = paymentSettingRepository.getToken();
+        paymentSettingRepository.clearToken();
+        return new PaymentRecovery(statusDetail, token);
     }
 
     /**

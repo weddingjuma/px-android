@@ -20,6 +20,7 @@ import com.mercadopago.android.px.model.exceptions.CardTokenException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
+import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -300,10 +301,13 @@ public class SecurityCodePresenterTest {
 
     @Test
     public void whenESCRecoverFromPaymentWithPaymentResultIntegrationThenCreateESCToken() {
+        final Token token = mock(Token.class);
+        when(token.getCardId()).thenReturn(UUID.randomUUID().toString());
         when(paymentRecovery.isStatusDetailInvalidESC()).thenReturn(true);
         when(cardTokenRepository.createToken(any(SavedESCCardToken.class)))
-            .thenReturn(new StubSuccessMpCall<>(stubToken));
+            .thenReturn(new StubSuccessMpCall<>(token));
         presenter.setCard(null);
+        presenter.setToken(token);
         presenter.saveSecurityCode(DUMMY_CVV);
         presenter.validateSecurityCodeInput();
 

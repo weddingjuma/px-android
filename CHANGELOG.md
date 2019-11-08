@@ -1,3 +1,9 @@
+## VERSION 4.27.0
+_07_11_2019_
+* FEATURE - New endpoint "checkout" integration in replace of "payment_method"
+* FEATURE - Tracking experiments data
+* FIX - Refactored card token handling in session to avoid payments with cvv null
+
 ## VERSION 4.26.1
 _05_11_2019_
 * FIX - Validate presenter state in fragment's onDetach event

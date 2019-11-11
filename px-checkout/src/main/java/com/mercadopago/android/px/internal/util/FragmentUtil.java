@@ -16,6 +16,13 @@ public final class FragmentUtil {
     private FragmentUtil() {
     }
 
+    public static void removeFragment(@NonNull final FragmentManager fragmentManager, @NonNull final String tag) {
+        final Fragment fragment = fragmentManager.findFragmentByTag(tag);
+        if (fragment != null) {
+            fragmentManager.beginTransaction().remove(fragment).commitNowAllowingStateLoss();
+        }
+    }
+
     public static void replaceFragment(@NonNull final ViewGroup container, @NonNull final ExternalFragment model) {
         if (container.getContext() instanceof AppCompatActivity) {
             final AppCompatActivity activity = (AppCompatActivity) container.getContext();

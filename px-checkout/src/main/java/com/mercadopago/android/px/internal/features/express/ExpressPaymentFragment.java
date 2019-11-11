@@ -279,6 +279,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
+    public void onDestroy() {
+        FragmentUtil.removeFragment(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT);
+        super.onDestroy();
+    }
+
+    @Override
     public void onDetach() {
         callback = null;
         slideDownAndFadeAnimation = null;

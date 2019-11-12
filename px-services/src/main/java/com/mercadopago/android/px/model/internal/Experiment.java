@@ -1,6 +1,8 @@
 package com.mercadopago.android.px.model.internal;
 
-public class Experiment {
+import java.io.Serializable;
+
+public class Experiment implements Serializable {
 
     private String id;
     private String name;

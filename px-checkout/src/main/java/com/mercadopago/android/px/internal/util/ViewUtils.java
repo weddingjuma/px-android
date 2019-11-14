@@ -59,7 +59,7 @@ public final class ViewUtils {
 
     public static void loadOrCallError(final String imgUrl, final ImageView logo, final Callback callback) {
         if (!TextUtil.isEmpty(imgUrl)) {
-            Picasso.with(logo.getContext())
+            PicassoLoader.getPicasso()
                 .load(imgUrl)
                 .into(logo, callback);
         } else {

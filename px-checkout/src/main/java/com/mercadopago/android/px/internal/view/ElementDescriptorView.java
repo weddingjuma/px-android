@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.PicassoLoader;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.RequestCreator;
@@ -122,7 +123,7 @@ public class ElementDescriptorView extends LinearLayout {
         } else {
             subtitle.setVisibility(GONE);
         }
-        final Picasso picasso = Picasso.with(getContext());
+        final Picasso picasso = PicassoLoader.getPicasso();
         final RequestCreator requestCreator;
 
         if (TextUtil.isNotEmpty(model.getUrlIcon())) {

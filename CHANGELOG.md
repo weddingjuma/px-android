@@ -1,3 +1,10 @@
+## VERSION 4.27.1
+_14_11_2019_
+* ENHANCEMENT - Added upward compatibility with picasso 2.7
+* FIX - Parsing string to long with parse long
+* FIX - Added Serializable to new models
+* FIX - Remove old fragments on new intent
+
 ## VERSION 4.27.0
 _07_11_2019_
 * FEATURE - New endpoint "checkout" integration in replace of "payment_method"

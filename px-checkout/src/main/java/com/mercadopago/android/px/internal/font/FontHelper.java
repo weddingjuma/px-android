@@ -7,7 +7,6 @@ import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.provider.FontRequest;
 import android.support.v4.provider.FontsContractCompat;
 import android.util.SparseArray;
@@ -43,18 +42,11 @@ public final class FontHelper {
     }
 
     public static void setFont(@NonNull final CollapsingToolbarLayout toolbar, @NonNull final PxFont font) {
-        getFont(toolbar.getContext(), font, new ResourcesCompat.FontCallback() {
-            @Override
-            public void onFontRetrieved(@NonNull final Typeface typeface) {
-                toolbar.setCollapsedTitleTypeface(typeface);
-                toolbar.setExpandedTitleTypeface(typeface);
-            }
-
-            @Override
-            public void onFontRetrievalFailed(final int i) {
-                //Nothing to do here
-            }
-        });
+        final Typeface typeface = getFont(toolbar.getContext(), font);
+        if (typeface != null) {
+            toolbar.setCollapsedTitleTypeface(typeface);
+            toolbar.setExpandedTitleTypeface(typeface);
+        }
     }
 
     public static void setFont(@NonNull final TextView view, @NonNull final PxFont font) {
@@ -66,14 +58,10 @@ public final class FontHelper {
         }
     }
 
-    public static void getFont(@NonNull final Context context, @NonNull final PxFont font,
-        @NonNull final ResourcesCompat.FontCallback callback) {
+    @Nullable
+    public static Typeface getFont(@NonNull final Context context, @NonNull final PxFont font) {
         final Typeface typeface = CACHE.get(font.id);
-        if (typeface != null) {
-            callback.onFontRetrieved(typeface);
-        } else {
-            TypefaceHelper.getTypeface(context, font.font, callback);
-        }
+        return typeface != null ? typeface : TypefaceHelper.getFontTypeface(context, font.font);
     }
 
     private static void fetchFont(@NonNull final Context context, final int id, @NonNull final String fontName,

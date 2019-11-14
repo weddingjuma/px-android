@@ -166,19 +166,9 @@ public final class ViewUtils {
 
     public static void setFontInSpannable(@NonNull final Context context, @NonNull final PxFont font,
         @NonNull final Spannable spannable, final int indexStart, final int indexEnd) {
-        FontHelper.getFont(context, font, new ResourcesCompat.FontCallback() {
-            @Override
-            public void onFontRetrieved(@NonNull final Typeface typeface) {
-                spannable.setSpan(new StyleSpan(typeface.getStyle()), indexStart, indexEnd,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-
-            @Override
-            public void onFontRetrievalFailed(final int i) {
-                spannable.setSpan(new StyleSpan(font.fallbackStyle), indexStart, indexEnd,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-            }
-        });
+        final Typeface typeface = FontHelper.getFont(context, font);
+        spannable.setSpan(new StyleSpan(typeface != null ? typeface.getStyle() : font.fallbackStyle),
+            indexStart, indexEnd, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
     }
 
     public static void stretchHeight(@NonNull final View view) {

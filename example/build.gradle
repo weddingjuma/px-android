@@ -70,6 +70,7 @@ dependencies {
     implementation "com.facebook.stetho:stetho-okhttp3:$stetho"
     implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "com.android.support:design:$support_library_version"
+    implementation "com.squareup.picasso:picasso:2.71828" // intended to maintain compatibility
 
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_cannary"

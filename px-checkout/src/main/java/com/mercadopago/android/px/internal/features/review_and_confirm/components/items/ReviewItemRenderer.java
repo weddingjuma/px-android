@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.PicassoLoader;
 import com.mercadopago.android.px.internal.view.CircleTransform;
 import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -54,7 +55,7 @@ public class ReviewItemRenderer extends Renderer<ReviewItem> {
     private void drawItemFromUrl(final ImageView itemImage, final ReviewItem component, final Context context) {
         final int dimen =
             ScaleUtil.getPxFromDp((int) context.getResources().getDimension(R.dimen.px_m_height), context);
-        Picasso.with(context)
+        PicassoLoader.getPicasso()
             .load(component.props.itemModel.imageUrl)
             .transform(new CircleTransform())
             .resize(dimen, dimen)

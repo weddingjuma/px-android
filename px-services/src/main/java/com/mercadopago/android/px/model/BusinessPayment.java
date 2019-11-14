@@ -185,7 +185,7 @@ public class BusinessPayment implements IPaymentDescriptor, Parcelable {
     @Nullable
     @Override
     public Long getId() {
-        return Long.getLong(getReceipt());
+        return Long.parseLong(getReceipt());
     }
 
     @Override

@@ -5,11 +5,11 @@ import java.util.List;
 
 public class Variant implements Serializable {
 
-    private String id;
+    private int id;
     private String name;
     private List<AvailableFeature> availableFeatures;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

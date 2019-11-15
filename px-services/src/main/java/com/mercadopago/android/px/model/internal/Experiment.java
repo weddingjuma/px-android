@@ -4,11 +4,11 @@ import java.io.Serializable;
 
 public class Experiment implements Serializable {
 
-    private String id;
+    private int id;
     private String name;
     private Variant variant;
 
-    public String getId() {
+    public int getId() {
         return id;
     }
 

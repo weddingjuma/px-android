@@ -28,6 +28,7 @@
         android:layout_marginEnd="@dimen/px_xxxs_margin"
         android:layout_marginRight="@dimen/px_xxxs_margin"
         android:maxLines="1"
+        app:customStyle="semi_bold"
         tools:text="sin interés"/>
 
     <com.mercadopago.android.px.internal.view.MPTextView
@@ -39,6 +40,7 @@
         android:layout_marginEnd="@dimen/px_xxxs_margin"
         android:layout_marginRight="@dimen/px_xxxs_margin"
         android:maxLines="1"
+        app:customStyle="semi_bold"
         tools:text="(1500)"/>
 
     <com.mercadopago.android.px.internal.view.MPTextView
@@ -50,6 +52,7 @@
         android:layout_marginEnd="@dimen/px_xxxs_margin"
         android:layout_marginRight="@dimen/px_xxxs_margin"
         android:maxLines="1"
+        app:customStyle="semi_bold"
         tools:text="3000"/>
 
     <com.mercadopago.android.px.internal.view.MPTextView
@@ -59,6 +62,7 @@
         android:textColor="@color/ui_components_success_color"
         android:textSize="@dimen/px_s_text"
         android:maxLines="1"
+        app:customStyle="semi_bold"
         tools:text="50% OFF"/>
 
 </merge>

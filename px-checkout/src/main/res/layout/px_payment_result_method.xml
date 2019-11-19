@@ -62,7 +62,7 @@
         android:layout_height="wrap_content"
         android:textColor="@color/px_payment_result_method_detail"
         android:textSize="@dimen/px_xs_text"
-        android:lineSpacingExtra="3dp"
+        android:lineSpacingExtra="@dimen/px_xxxs_margin"
         tools:text="En tu estado de cuenta verás el cargo como MERCADOPAGO"
         android:layout_marginStart="@dimen/px_s_margin"
         android:layout_marginLeft="@dimen/px_s_margin"

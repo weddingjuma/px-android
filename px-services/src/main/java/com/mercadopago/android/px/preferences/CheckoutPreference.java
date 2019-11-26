@@ -73,6 +73,10 @@ public class CheckoutPreference implements Serializable {
 
     @Nullable private final ProcessingMode[] processingModes;
 
+    @Nullable private final Long orderId;
+
+    @Nullable private final Long merchantOrderId;
+
     @SerializedName("binary_mode")
     private boolean isBinaryMode = false;
     //endregion support external integrations
@@ -94,6 +98,8 @@ public class CheckoutPreference implements Serializable {
         additionalInfo = builder.additionalInfo;
         processingModes = builder.processingModes;
         collectorId = null;
+        orderId = null;
+        merchantOrderId = null;
 
         branchId = builder.branchId;
         paymentPreference = new PaymentPreference();
@@ -251,6 +257,16 @@ public class CheckoutPreference implements Serializable {
 
     public boolean isBinaryMode() {
         return isBinaryMode;
+    }
+
+    @Nullable
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    @Nullable
+    public Long getMerchantOrderId() {
+        return merchantOrderId;
     }
 
     @NonNull

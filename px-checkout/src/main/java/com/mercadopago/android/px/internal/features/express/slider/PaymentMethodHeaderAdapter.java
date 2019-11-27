@@ -3,21 +3,20 @@ package com.mercadopago.android.px.internal.features.express.slider;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
+import com.mercadopago.android.px.internal.viewmodel.DisabledPaymentMethodDescriptorModel;
 import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
 public class PaymentMethodHeaderAdapter
-    extends ViewAdapter<List<PaymentMethodDescriptorView.Model>,
-    PaymentMethodHeaderView> {
+    extends HubableAdapter<List<PaymentMethodDescriptorView.Model>, PaymentMethodHeaderView> {
 
     private static final int NO_SELECTED = -1;
 
     private int currentIndex = NO_SELECTED;
 
-    public PaymentMethodHeaderAdapter(@NonNull final List<PaymentMethodDescriptorView.Model> data,
-        @NonNull final PaymentMethodHeaderView view) {
-        super(data, view);
+    public PaymentMethodHeaderAdapter(@NonNull final PaymentMethodHeaderView view) {
+        super(view);
     }
 
     @Override
@@ -30,9 +29,7 @@ public class PaymentMethodHeaderAdapter
         @NonNull final SplitSelectionState splitSelectionState) {
         this.currentIndex = currentIndex;
         final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex);
-        final boolean isExpandible = currentModel.hasPayerCostList() && !currentModel.isDisabledPaymentMethod();
-        view.showTitlePager(isExpandible);
-        view.setArrowVisibility(isExpandible);
+        view.updateData(currentModel.hasPayerCostList(), currentModel instanceof DisabledPaymentMethodDescriptorModel);
     }
 
     @Override
@@ -42,10 +39,15 @@ public class PaymentMethodHeaderAdapter
         if (nextIndex >= 0 && nextIndex < data.size()) {
             final PaymentMethodDescriptorView.Model currentModel = data.get(currentIndex);
             final PaymentMethodDescriptorView.Model nextModel = data.get(nextIndex);
-            final PaymentMethodHeaderView.Model viewModel = new PaymentMethodHeaderView.Model(goingTo,
-                currentModel.hasPayerCostList() && !currentModel.isDisabledPaymentMethod(),
-                nextModel.hasPayerCostList() && !nextModel.isDisabledPaymentMethod());
+            final PaymentMethodHeaderView.Model viewModel =
+                new PaymentMethodHeaderView.Model(goingTo, currentModel.hasPayerCostList(),
+                    nextModel.hasPayerCostList());
             view.trackPagerPosition(positionOffset, viewModel);
         }
+    }
+
+    @Override
+    public List<PaymentMethodDescriptorView.Model> getNewModels(final HubAdapter.Model model) {
+        return model.paymentMethodDescriptorModels;
     }
 }

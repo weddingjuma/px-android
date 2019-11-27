@@ -6,16 +6,15 @@ import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
-public class SummaryViewAdapter extends ViewAdapter<List<SummaryView.Model>, SummaryView> {
+public class SummaryViewAdapter extends HubableAdapter<List<SummaryView.Model>, SummaryView> {
 
     private static final int NO_SELECTED = -1;
 
     private int currentIndex = NO_SELECTED;
     private SummaryView.Model currentModel;
 
-    public SummaryViewAdapter(@NonNull final List<SummaryView.Model> data, @NonNull final SummaryView view) {
-        super(data, view);
-        view.setMaxElementsToShow(getMaxItemsInSummaryAvailable());
+    public SummaryViewAdapter(@NonNull final SummaryView view) {
+        super(view);
     }
 
     @Override
@@ -49,11 +48,22 @@ public class SummaryViewAdapter extends ViewAdapter<List<SummaryView.Model>, Sum
         }
     }
 
+    @Override
+    public void update(@NonNull final List<SummaryView.Model> newData) {
+        super.update(newData);
+        view.setMaxElementsToShow(getMaxItemsInSummaryAvailable());
+    }
+
     private int getMaxItemsInSummaryAvailable() {
         int maxItems = 0;
         for (final SummaryView.Model model : data) {
             maxItems = Math.max(maxItems, model.getElementsSize());
         }
         return maxItems;
+    }
+
+    @Override
+    public List<SummaryView.Model> getNewModels(final HubAdapter.Model model) {
+        return model.summaryViewModels;
     }
 }

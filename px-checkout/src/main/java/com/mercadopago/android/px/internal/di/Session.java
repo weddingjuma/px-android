@@ -21,6 +21,7 @@ import com.mercadopago.android.px.internal.datasource.BankDealsService;
 import com.mercadopago.android.px.internal.datasource.CardTokenService;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
+import com.mercadopago.android.px.internal.datasource.ExperimentsService;
 import com.mercadopago.android.px.internal.datasource.IdentificationService;
 import com.mercadopago.android.px.internal.datasource.InitService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
@@ -30,7 +31,6 @@ import com.mercadopago.android.px.internal.datasource.PaymentRewardRepositoryImp
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
-import com.mercadopago.android.px.internal.datasource.ExperimentsService;
 import com.mercadopago.android.px.internal.datasource.TokenizeService;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
@@ -42,6 +42,7 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
+import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
@@ -52,7 +53,6 @@ import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
-import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.services.BankDealService;
@@ -205,7 +205,8 @@ public final class Session extends ApplicationModule implements AmountComponent 
     public InitRepository getInitRepository() {
         if (initRepository == null) {
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-            initRepository = new InitService(paymentSettings, getExperimentsRepository(), getMercadoPagoESC(),
+            initRepository = new InitService(paymentSettings, getExperimentsRepository(),
+                configurationModule.getDisabledPaymentMethodRepository(), getMercadoPagoESC(),
                 RetrofitUtil.getRetrofitClient(getApplicationContext()).create(CheckoutService.class),
                 LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName(), getInitCache());
         }

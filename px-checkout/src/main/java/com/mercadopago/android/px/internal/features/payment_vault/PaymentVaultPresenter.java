@@ -21,7 +21,6 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.CustomSearchItemToC
 import com.mercadopago.android.px.internal.viewmodel.mappers.CustomSearchOptionViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodSearchOptionViewModelMapper;
 import com.mercadopago.android.px.model.Card;
-import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -31,6 +30,7 @@ import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.views.SelectMethodChildView;
@@ -222,8 +222,8 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     }
 
     @Override
-    public void showDisabledPaymentMethodDetailDialog(@NonNull final String paymentMethodType) {
-        getView().showDisabledPaymentMethodDetailDialog(paymentMethodType);
+    public void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+        getView().showDisabledPaymentMethodDetailDialog(disabledPaymentMethod);
     }
 
     private Card getCardWithPaymentMethod(final CustomSearchItem searchItem) {
@@ -313,14 +313,16 @@ public class PaymentVaultPresenter extends BasePresenter<PaymentVaultView> imple
     private void trackInitialScreen() {
         final SelectMethodView selectMethodView =
             new SelectMethodView(initResponse, escManagerBehaviour.getESCCardIds(),
-                paymentSettingRepository.getCheckoutPreference());
+                paymentSettingRepository.getCheckoutPreference(),
+                disabledPaymentMethodRepository.getDisabledPaymentMethods().size());
         setCurrentViewTracker(selectMethodView);
     }
 
     private void trackChildScreen() {
         final SelectMethodChildView selectMethodChildView =
             new SelectMethodChildView(initResponse, selectedSearchItem,
-                paymentSettingRepository.getCheckoutPreference());
+                paymentSettingRepository.getCheckoutPreference(),
+                disabledPaymentMethodRepository.getDisabledPaymentMethods().size());
         setCurrentViewTracker(selectMethodChildView);
     }
 

@@ -22,10 +22,11 @@ public class SelectMethodView extends ViewTracker {
     @NonNull private final List<AvailableMethod> availableMethods;
     @NonNull private final List<ItemInfo> items;
     private final BigDecimal totalAmount;
+    private final int disabledMethodsQuantity;
 
     public SelectMethodView(@NonNull final PaymentMethodSearch paymentMethodSearch,
-        @NonNull final Set<String> escCardIds,
-        @NonNull final CheckoutPreference preference) {
+        @NonNull final Set<String> escCardIds, @NonNull final CheckoutPreference preference,
+        final int disabledMethodsQuantity) {
         availableMethods =
             new ArrayList<>(
                 new FromCustomItemToAvailableMethod(escCardIds).map(paymentMethodSearch.getCustomSearchItems()));
@@ -33,6 +34,7 @@ public class SelectMethodView extends ViewTracker {
             new FromPaymentMethodSearchItemToAvailableMethod(paymentMethodSearch).map(paymentMethodSearch.getGroups()));
         items = new FromItemToItemInfo().map(preference.getItems());
         totalAmount = preference.getTotalAmount();
+        this.disabledMethodsQuantity = disabledMethodsQuantity;
     }
 
     @NonNull
@@ -44,7 +46,6 @@ public class SelectMethodView extends ViewTracker {
     @NonNull
     @Override
     public Map<String, Object> getData() {
-        return new SelectMethodData(availableMethods, items,
-            totalAmount).toMap();
+        return new SelectMethodData(availableMethods, items, totalAmount, disabledMethodsQuantity).toMap();
     }
 }

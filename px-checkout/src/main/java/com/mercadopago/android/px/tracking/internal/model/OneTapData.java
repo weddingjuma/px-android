@@ -18,20 +18,17 @@ public class OneTapData extends SelectMethodData {
 
     @Nullable private final DiscountInfo discount;
 
-    public OneTapData(@NonNull final List<AvailableMethod> availableMethods,
-        @NonNull final BigDecimal totalAmount,
-        @Nullable final DiscountInfo discount,
-        @NonNull final List<ItemInfo> items) {
-        super(availableMethods, items, totalAmount);
+    public OneTapData(@NonNull final List<AvailableMethod> availableMethods, @NonNull final BigDecimal totalAmount,
+        @Nullable final DiscountInfo discount, @NonNull final List<ItemInfo> items, final int disabledMethodsQuantity) {
+        super(availableMethods, items, totalAmount, disabledMethodsQuantity);
         this.discount = discount;
     }
 
     @NonNull
     public static OneTapData createFrom(final Iterable<ExpressMetadata> expressMetadataList,
-        final CheckoutPreference checkoutPreference,
-        final DiscountConfigurationModel discountModel,
-        @NonNull final Set<String> cardsWithEsc,
-        @NonNull final Set<String> cardsWithSplit) {
+        final CheckoutPreference checkoutPreference, final DiscountConfigurationModel discountModel,
+        @NonNull final Set<String> cardsWithEsc, @NonNull final Set<String> cardsWithSplit,
+        final int disabledMethodsQuantity) {
 
         final List<ItemInfo> itemInfoList = new FromItemToItemInfo().map(checkoutPreference.getItems());
 
@@ -40,6 +37,6 @@ public class OneTapData extends SelectMethodData {
 
         return new OneTapData(
             new FromExpressMetadataToAvailableMethods(cardsWithEsc, cardsWithSplit).map(expressMetadataList),
-            checkoutPreference.getTotalAmount(), discountInfo, itemInfoList);
+            checkoutPreference.getTotalAmount(), discountInfo, itemInfoList, disabledMethodsQuantity);
     }
 }

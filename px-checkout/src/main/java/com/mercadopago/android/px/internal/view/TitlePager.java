@@ -98,6 +98,7 @@ public class TitlePager extends FrameLayout implements ViewTreeObserver.OnGlobal
             currentView = previousView;
             previousView = auxView;
         }
+        resetViewsPosition();
         adapter.updateViewsOrder(previousView, currentView, nextView);
     }
 

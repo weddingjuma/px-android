@@ -7,23 +7,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.ImageView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AccountMoneyDrawableFragmentItem;
-import com.mercadopago.android.px.model.AccountMoneyMetadata;
-import com.mercadopago.android.px.model.PaymentTypes;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
-public class AccountMoneyFragment extends PaymentMethodFragment {
+public class AccountMoneyFragment extends PaymentMethodFragment<AccountMoneyDrawableFragmentItem> {
 
     @NonNull
-    public static Fragment getInstance(@NonNull final AccountMoneyDrawableFragmentItem item) {
-        final AccountMoneyFragment accountMoneyFragment = new AccountMoneyFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, item);
-        bundle.putString(ARG_PM_TYPE, PaymentTypes.ACCOUNT_MONEY);
-        accountMoneyFragment.setArguments(bundle);
-        return accountMoneyFragment;
+    public static Fragment getInstance(@NonNull final AccountMoneyDrawableFragmentItem model) {
+        final AccountMoneyFragment instance = new AccountMoneyFragment();
+        instance.storeModel(model);
+        return instance;
     }
 
     @Nullable
@@ -36,24 +33,18 @@ public class AccountMoneyFragment extends PaymentMethodFragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(ARG_MODEL)) {
-            final AccountMoneyDrawableFragmentItem model =
-                (AccountMoneyDrawableFragmentItem) arguments.getSerializable(ARG_MODEL);
-            final TextView message = view.findViewById(R.id.label);
-            setMessage(message, model.metadata);
-        } else {
-            throw new IllegalStateException("AccountMoneyFragment does not contain model info");
-        }
     }
 
-    private void setMessage(final TextView message,
-        final AccountMoneyMetadata metadata) {
-        if (TextUtil.isEmpty(metadata.displayInfo.message)) {
-            message.setVisibility(View.GONE);
-        } else {
-            message.setVisibility(View.VISIBLE);
-            message.setText(metadata.displayInfo.message);
-        }
+    @Override
+    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+        super.disable(disabledPaymentMethod);
+        final DisableConfiguration disableConfiguration = new DisableConfiguration(getContext());
+        final ViewGroup card = getView().findViewById(R.id.payment_method);
+        final ImageView background = getView().findViewById(R.id.background);
+
+        ViewUtils.grayScaleViewGroup(card);
+        background.clearColorFilter();
+        background.setImageResource(0);
+        background.setBackgroundColor(disableConfiguration.getBackgroundColor());
     }
 }

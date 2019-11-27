@@ -13,16 +13,11 @@ import com.mercadopago.android.px.internal.viewmodel.drawables.AddNewCardFragmen
 
 public class AddNewCardLowResFragment extends AddNewCardFragment {
 
-    private static final String ARG_MODEL = "ARG_MODEL";
-
-    @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
-    public static Fragment getInstance(@NonNull final AddNewCardFragmentDrawableFragmentItem drawableItem) {
-        final AddNewCardLowResFragment changePaymentMethodFragment = new AddNewCardLowResFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, drawableItem);
-        changePaymentMethodFragment.setArguments(bundle);
-        return changePaymentMethodFragment;
+    public static Fragment getInstance(@NonNull final AddNewCardFragmentDrawableFragmentItem model) {
+        final AddNewCardLowResFragment instance = new AddNewCardLowResFragment();
+        instance.storeModel(model);
+        return instance;
     }
 
     @Nullable
@@ -35,7 +30,8 @@ public class AddNewCardLowResFragment extends AddNewCardFragment {
     @Override
     protected void configureClick(@NonNull final View view) {
         final MeliButton message = view.findViewById(R.id.message);
-        message.setText(getString(R.string.px_add_new_card));
+
+        message.setText(model.metadata.getLabel().getMessage());
         message.setOnClickListener(this);
     }
 }

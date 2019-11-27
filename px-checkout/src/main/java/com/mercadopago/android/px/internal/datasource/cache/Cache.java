@@ -7,7 +7,7 @@ public interface Cache<T> {
     @NonNull
     MPCall<T> get();
 
-    void put(@NonNull final T groups);
+    void put(@NonNull final T data);
 
     void evict();
 

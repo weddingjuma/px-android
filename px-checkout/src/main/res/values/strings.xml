@@ -213,7 +213,6 @@
 
     <!-- Review and Confirm -->
     <string name="px_change_payment">Pay using a different method</string>
-    <string name="px_add_new_card">Add new card</string>
     <string name="px_your_atm">ATM of</string>
     <string name="px_review_off_text_default">You will pay %1$s\n%2$s</string>
     <string name="px_review_off_text">You will pay %1$s in a\n%2$s</string>
@@ -271,14 +270,13 @@
     <string name="px_cnpj_card_holder_identification_hint" translatable="false">********/****-**</string>
 
     <!-- Disable payment method detail dialog -->
-    <string name="px_dialog_detail_payment_method_disable_card_title">This card is currently unavailable</string>
-    <string name="px_dialog_detail_payment_method_disable_account_money_title">Your money in Mercado Pago is currently unavailable</string>
-    <string name="px_dialog_detail_payment_method_disable_detail">Don’t worry, you can use another method to complete the payment.</string>
-    <string name="px_dialog_detail_payment_method_disable_link">Pay with a different method</string>
+    <string name="px_dialog_detail_payment_method_disable_high_risk">We rejected your payment.\n\nTry paying with a different payment method.</string>
+    <string name="px_dialog_detail_payment_method_disable_black_list">We rejected the payment with this card.\n\nTry paying with a different payment method.</string>
+    <string name="px_dialog_detail_payment_method_disable_insufficient_amount">Your funds are insufficient or you exceeded the purchase limit.\n\nTry paying with a different payment method.</string>
+    <string name="px_dialog_detail_payment_method_disable_link">Pay using a different method</string>
 
     <!-- Disable payment method title pager -->
-    <string name="px_payment_method_disable_card_title">Card unavailable for this payment</string>
-    <string name="px_payment_method_disable_account_money_title">Method unavailable for this payment</string>
+    <string name="px_payment_method_disable_title">You can not use this payment method</string>
 
     <!-- Card Drawer -->
     <string name="px_card_aspect_ratio" translatable="false">H,256:158</string>

@@ -11,48 +11,28 @@ import android.support.v7.widget.CardView;
 import android.view.View;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.base.BaseFragment;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
-import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
-public abstract class PaymentMethodFragment extends Fragment implements PaymentMethod.View {
+public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
+    extends BaseFragment<PaymentMethodPresenter, T> implements PaymentMethod.View {
 
-    protected static final String ARG_MODEL = "ARG_MODEL";
-    protected static final String ARG_PM_TYPE = "ARG_PM_TYPE";
-
-    private View badge;
     private CardView card;
-    private String paymentMethodType;
-    private PaymentMethodPresenter presenter;
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments == null || !arguments.containsKey(ARG_MODEL) || !arguments.containsKey(ARG_PM_TYPE)) {
-            throw new IllegalStateException("PaymentMethodFragment does not contain model info");
-        }
-        paymentMethodType = arguments.getString(ARG_PM_TYPE);
-        presenter = new PaymentMethodPresenter(
-            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(),
-            (DrawableFragmentItem) arguments.getSerializable(ARG_MODEL));
+    protected PaymentMethodPresenter createPresenter() {
+        return new PaymentMethodPresenter(
+            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(), model);
     }
 
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        badge = view.findViewById(R.id.px_disabled_badge);
         card = view.findViewById(R.id.payment_method);
         presenter.attachView(this);
-    }
-
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (presenter != null) {
-            presenter.detachView();
-        }
     }
 
     @Override
@@ -62,11 +42,16 @@ public abstract class PaymentMethodFragment extends Fragment implements PaymentM
     }
 
     @Override
-    public void disable() {
-        badge.setVisibility(View.VISIBLE);
-        ViewUtils.grayScaleViewGroup(card);
+    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+        final Fragment parentFragment = getParentFragment();
+        if (!(parentFragment instanceof DisabledDetailDialogLauncher)) {
+            throw new IllegalStateException(
+                "Parent fragment should implement " + DisabledDetailDialogLauncher.class.getSimpleName());
+        }
         card.setOnClickListener(
-            v -> DisabledPaymentMethodDetailDialog.showDialog(getChildFragmentManager(), paymentMethodType));
+            v -> DisabledPaymentMethodDetailDialog
+                .showDialog(parentFragment, ((DisabledDetailDialogLauncher) parentFragment).getRequestCode(),
+                    disabledPaymentMethod, model.getStatus()));
     }
 
     protected void tintBackground(@NonNull final ImageView background, @NonNull final String color) {
@@ -90,5 +75,9 @@ public abstract class PaymentMethodFragment extends Fragment implements PaymentM
         gradientDrawable.setDither(true);
 
         background.setImageDrawable(gradientDrawable);
+    }
+
+    public interface DisabledDetailDialogLauncher {
+        int getRequestCode();
     }
 }

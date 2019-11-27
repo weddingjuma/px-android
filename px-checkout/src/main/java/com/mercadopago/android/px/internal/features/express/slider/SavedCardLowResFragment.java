@@ -10,19 +10,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.viewmodel.drawables.SavedCardDrawableFragmentItem;
-import com.mercadopago.android.px.model.PaymentTypes;
 
 public class SavedCardLowResFragment extends SavedCardFragment {
 
     @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
-    public static Fragment getInstance(final SavedCardDrawableFragmentItem savedCard) {
-        final SavedCardLowResFragment savedCardFragment = new SavedCardLowResFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, savedCard);
-        bundle.putString(ARG_PM_TYPE, PaymentTypes.CREDIT_CARD);
-        savedCardFragment.setArguments(bundle);
-        return savedCardFragment;
+    public static Fragment getInstance(final SavedCardDrawableFragmentItem model) {
+        final SavedCardLowResFragment instance = new SavedCardLowResFragment();
+        instance.storeModel(model);
+        return instance;
     }
 
     @Nullable

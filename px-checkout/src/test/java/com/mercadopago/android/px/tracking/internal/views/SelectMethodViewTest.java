@@ -23,18 +23,19 @@ import static org.mockito.Mockito.when;
 public class SelectMethodViewTest {
 
     private static final String EXPECTED_PATH = "/px_checkout/payments/select_method";
+    private static final int DISABLED_METHODS_QUANTITY = 0;
 
     private static final String EXPECTED_ONE_CARD_SAVED_WITH_ESC =
-        "{available_methods=[{payment_method_id=visa, payment_method_type=credit_card, extra_info={card_id=123456, selected_installment=null, issuer_id=null, has_esc=true}}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1}";
+        "{available_methods=[{payment_method_id=visa, payment_method_type=credit_card, extra_info={card_id=123456, selected_installment=null, issuer_id=null, has_esc=true}}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1, disabled_methods_quantity=0}";
 
     private static final String EXPECTED_ONE_CARD_SAVED_NO_ESC =
-        "{available_methods=[{payment_method_id=visa, payment_method_type=credit_card, extra_info={card_id=123456, selected_installment=null, issuer_id=null, has_esc=false}}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1}";
+        "{available_methods=[{payment_method_id=visa, payment_method_type=credit_card, extra_info={card_id=123456, selected_installment=null, issuer_id=null, has_esc=false}}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1, disabled_methods_quantity=0}";
 
     private static final String EXPECTED_JUST_ACCOUNT_MONEY =
-        "{available_methods=[{payment_method_id=account_money, payment_method_type=account_money, extra_info=null}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1}";
+        "{available_methods=[{payment_method_id=account_money, payment_method_type=account_money, extra_info=null}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1, disabled_methods_quantity=0}";
 
     private static final String EXPECTED_JUST_ONE_GROUP =
-        "{available_methods=[{payment_method_id=null, payment_method_type=cards, extra_info=null}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1}";
+        "{available_methods=[{payment_method_id=null, payment_method_type=cards, extra_info=null}], items=[{quantity=1, item={id=1234, description=description, price=10}}], preference_amount=10, available_methods_quantity=1, disabled_methods_quantity=0}";
 
     private static final String CARD_ID = "123456";
 
@@ -58,8 +59,8 @@ public class SelectMethodViewTest {
 
     @Test
     public void whenGetPathObtainedIsCorrect() {
-        final SelectMethodView selectMethodView = new SelectMethodView(paymentMethodSearch, cardsWithEsc,
-            checkoutPreference);
+        final SelectMethodView selectMethodView =
+            new SelectMethodView(paymentMethodSearch, cardsWithEsc, checkoutPreference, DISABLED_METHODS_QUANTITY);
 
         assertEquals(EXPECTED_PATH, selectMethodView.getViewPath());
     }
@@ -72,8 +73,8 @@ public class SelectMethodViewTest {
         when(customSearchItem.getPaymentMethodId()).thenReturn("visa");
         when(customSearchItem.getType()).thenReturn("credit_card");
 
-        final SelectMethodView selectMethodView = new SelectMethodView(paymentMethodSearch, cardsWithEsc,
-            checkoutPreference);
+        final SelectMethodView selectMethodView =
+            new SelectMethodView(paymentMethodSearch, cardsWithEsc, checkoutPreference, DISABLED_METHODS_QUANTITY);
 
         assertEquals(EXPECTED_ONE_CARD_SAVED_WITH_ESC, selectMethodView.getData().toString());
     }
@@ -86,8 +87,8 @@ public class SelectMethodViewTest {
         when(customSearchItem.getPaymentMethodId()).thenReturn("visa");
         when(customSearchItem.getType()).thenReturn("credit_card");
 
-        final SelectMethodView selectMethodView = new SelectMethodView(paymentMethodSearch, cardsWithEsc,
-            checkoutPreference);
+        final SelectMethodView selectMethodView =
+            new SelectMethodView(paymentMethodSearch, cardsWithEsc, checkoutPreference, DISABLED_METHODS_QUANTITY);
 
         assertEquals(EXPECTED_ONE_CARD_SAVED_NO_ESC, selectMethodView.getData().toString());
     }
@@ -98,8 +99,8 @@ public class SelectMethodViewTest {
         when(customSearchItem.getId()).thenReturn("account_money");
         when(customSearchItem.getType()).thenReturn("account_money");
 
-        final SelectMethodView selectMethodView = new SelectMethodView(paymentMethodSearch, cardsWithEsc,
-            checkoutPreference);
+        final SelectMethodView selectMethodView =
+            new SelectMethodView(paymentMethodSearch, cardsWithEsc, checkoutPreference, DISABLED_METHODS_QUANTITY);
 
         assertEquals(EXPECTED_JUST_ACCOUNT_MONEY, selectMethodView.getData().toString());
     }
@@ -109,8 +110,8 @@ public class SelectMethodViewTest {
         when(paymentMethodSearch.getGroups()).thenReturn(Collections.singletonList(pmSearchItem));
         when(pmSearchItem.getId()).thenReturn("cards");
 
-        final SelectMethodView selectMethodView = new SelectMethodView(paymentMethodSearch, cardsWithEsc,
-            checkoutPreference);
+        final SelectMethodView selectMethodView =
+            new SelectMethodView(paymentMethodSearch, cardsWithEsc, checkoutPreference, DISABLED_METHODS_QUANTITY);
 
         assertEquals(EXPECTED_JUST_ONE_GROUP, selectMethodView.getData().toString());
     }

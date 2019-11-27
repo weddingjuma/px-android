@@ -53,7 +53,6 @@ public final class ExamplesUtils {
     public static final String MLB_PUBLIC_KEY = "APP_USR-f3f035a2-d343-4a6f-bd3b-fc3c3cb72416";
     public static final String MLB_PREFERENCE_ID = "245099733-8771f469-d68e-4863-b8cb-9402e22c6bb2";
 
-
     public static void resolveCheckoutResult(final Activity context, final int requestCode, final int resultCode,
         final Intent data, final int reqCodeCheckout) {
         ViewUtils.showRegularLayout(context);
@@ -66,20 +65,17 @@ public final class ExamplesUtils {
                     .append(payment), Toast.LENGTH_LONG)
                     .show();
             } else if (resultCode == RESULT_CANCELED) {
-                if (data != null
-                    && data.getExtras() != null
-                    && data.getExtras().containsKey(MercadoPagoCheckout.EXTRA_ERROR)) {
+                if (data != null && data.getExtras() != null &&
+                    data.getExtras().containsKey(MercadoPagoCheckout.EXTRA_ERROR)) {
                     final MercadoPagoError mercadoPagoError =
                         (MercadoPagoError) data.getSerializableExtra(MercadoPagoCheckout.EXTRA_ERROR);
-                    Toast.makeText(context, "Error: " + mercadoPagoError, Toast.LENGTH_LONG)
-                        .show();
+                    Toast.makeText(context, "Error: " + mercadoPagoError, Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(context, new StringBuilder()
                         .append("Cancel - ")
                         .append(REQUESTED_CODE_MESSAGE)
                         .append(requestCode)
                         .append(RESULT_CODE_MESSAGE)
-
                         .append(resultCode), Toast.LENGTH_LONG)
                         .show();
                 }
@@ -129,8 +125,7 @@ public final class ExamplesUtils {
     private static CheckoutPreference.Builder getBasePreferenceBuilder() {
         final Item item = new Item.Builder("title", 1, new BigDecimal(10)).setDescription("description").build();
 
-        return new CheckoutPreference.Builder(Sites.ARGENTINA, "a@a.a",
-            Collections.singletonList(item));
+        return new CheckoutPreference.Builder(Sites.ARGENTINA, "a@a.a", Collections.singletonList(item));
     }
 
     private static Builder customExitReviewAndConfirm() {
@@ -139,10 +134,9 @@ public final class ExamplesUtils {
             .setTopFragment(Fragment.class, new Bundle())
             .build();
 
-        return createBaseWithDecimals().setAdvancedConfiguration(
-            new AdvancedConfiguration.Builder()
-                .setReviewAndConfirmConfiguration(preferences)
-                .build());
+        return createBaseWithDecimals().setAdvancedConfiguration(new AdvancedConfiguration.Builder()
+            .setReviewAndConfirmConfiguration(preferences)
+            .build());
     }
 
     private static Builder startBaseFlowWithTrackListener() {

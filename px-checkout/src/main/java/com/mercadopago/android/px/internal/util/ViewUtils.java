@@ -40,6 +40,21 @@ import com.squareup.picasso.Picasso;
 public final class ViewUtils {
 
     private static final float DARKEN_FACTOR = 0.1f;
+    private static final ColorMatrixColorFilter DISABLED_FILTER;
+
+    static {
+        final ColorMatrix matrix = new ColorMatrix();
+        matrix.setSaturation(0);
+        final float[] lightingMatrix = {
+            1, 0, 0, 0, 50,
+            0, 1, 0, 0, 50,
+            0, 0, 1, 0, 50,
+            0, 0, 0, 0.9f, 0
+        };
+
+        matrix.postConcat(new ColorMatrix(lightingMatrix));
+        DISABLED_FILTER = new ColorMatrixColorFilter(matrix);
+    }
 
     private ViewUtils() {
     }
@@ -216,10 +231,7 @@ public final class ViewUtils {
     }
 
     public static void grayScaleView(@NonNull final ImageView targetView) {
-        final ColorMatrix matrix = new ColorMatrix();
-        matrix.setSaturation(0);
-        final ColorMatrixColorFilter filter = new ColorMatrixColorFilter(matrix);
-        targetView.setColorFilter(filter);
+        targetView.setColorFilter(DISABLED_FILTER);
     }
 
     public static void grayScaleViewGroup(@NonNull final ViewGroup viewGroup) {

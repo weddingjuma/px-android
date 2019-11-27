@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.tracking.internal.mapper;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.NonNullMapper;
 import com.mercadopago.android.px.model.AccountMoneyMetadata;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -10,7 +10,7 @@ import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.CardExtraExpress;
 import java.util.Set;
 
-public class FromExpressMetadataToAvailableMethods extends Mapper<ExpressMetadata, AvailableMethod> {
+public class FromExpressMetadataToAvailableMethods extends NonNullMapper<ExpressMetadata, AvailableMethod> {
 
     @NonNull private final Set<String> cardsWithEsc;
     @NonNull private final Set<String> cardsWithSplit;
@@ -33,6 +33,8 @@ public class FromExpressMetadataToAvailableMethods extends Mapper<ExpressMetadat
             final AccountMoneyMetadata accountMoney = expressMetadata.getAccountMoney();
             return new AvailableMethod(expressMetadata.getPaymentMethodId(), expressMetadata.getPaymentTypeId(),
                 new AccountMoneyExtraInfo(accountMoney.getBalance(), accountMoney.isInvested()).toMap());
+        } else if (expressMetadata.isNewCard()) {
+            return null;
         } else {
             return new AvailableMethod(expressMetadata.getPaymentMethodId(), expressMetadata.getPaymentTypeId());
         }

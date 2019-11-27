@@ -45,6 +45,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -450,8 +451,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
     }
 
     @Override
-    public void showDisabledPaymentMethodDetailDialog(@NonNull final String paymentMethodType) {
-        DisabledPaymentMethodDetailDialog.showDialog(getSupportFragmentManager(), paymentMethodType);
+    public void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+        DisabledPaymentMethodDetailDialog.showDialog(getSupportFragmentManager(), disabledPaymentMethod, null);
     }
 
     @Override

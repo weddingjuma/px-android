@@ -3,7 +3,7 @@ package com.mercadopago.android.px.model.internal;
 import java.io.Serializable;
 import java.util.List;
 
-public class Variant implements Serializable {
+public final class Variant implements Serializable {
 
     private int id;
     private String name;

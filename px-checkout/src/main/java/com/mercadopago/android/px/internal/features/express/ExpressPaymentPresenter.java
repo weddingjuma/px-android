@@ -69,8 +69,8 @@ import java.util.Set;
 
     private static final String BUNDLE_STATE_PAYER_COST = "state_payer_cost";
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
-    private static final String BUNDLE_STATE_AVAILABLE_PM_COUNT = "state_available_pm_count";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
+
     @NonNull private final PaymentRepository paymentRepository;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final DiscountRepository discountRepository;
@@ -81,15 +81,14 @@ import java.util.Set;
     @NonNull private final ProductIdProvider productIdProvider;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
+    @NonNull /* default */ final InitRepository initRepository;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
     private final PayButtonViewModel payButtonViewModel;
-    //TODO remove.
-    /* default */ List<ExpressMetadata> expressMetadataList;
-    private PayerCostSelection payerCostSelection;
+    /* default */ List<ExpressMetadata> expressMetadataList; //FIXME remove.
+    /* default */ PayerCostSelection payerCostSelection;
+    /* default */ int paymentMethodIndex;
     private SplitSelectionState splitSelectionState;
-    private int availablePaymentMethodsCount = -1;
     private Set<String> cardsWithSplit;
-    private int paymentMethodIndex;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -100,44 +99,33 @@ import java.util.Set;
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
         @NonNull final ChargeRepository chargeRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
-        @NonNull final ProductIdProvider productIdProvider) {
+        @NonNull final ProductIdProvider productIdProvider,
+        @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
+        this.initRepository = initRepository;
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.chargeRepository = chargeRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.productIdProvider = productIdProvider;
+        this.paymentMethodDrawableItemMapper = paymentMethodDrawableItemMapper;
 
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
-        paymentMethodDrawableItemMapper = new PaymentMethodDrawableItemMapper();
         splitSelectionState = new SplitSelectionState();
         payButtonViewModel = new PayButtonViewModelMapper().map(
             paymentSettingRepository.getAdvancedConfiguration().getCustomStringConfiguration());
+    }
 
-        initRepository.init().execute(new Callback<InitResponse>() {
-            @Override
-            public void success(final InitResponse initResponse) {
-                expressMetadataList = initResponse.getExpress();
-                //Plus one to compensate for add new payment method
-                payerCostSelection = createNewPayerCostSelected();
-                cardsWithSplit = initResponse.getIdsWithSplitAllowed();
-            }
-
-            @Override
-            public void failure(final ApiException apiException) {
-                throw new IllegalStateException("groups missing rendering one tap");
-            }
-        });
+    /* default */ void onFailToRetrieveInitResponse() {
+        throw new IllegalStateException("groups missing rendering one tap");
     }
 
     @Override
     public void loadViewModel() {
-        availablePaymentMethodsCount = countAvailablePaymentMethods();
-
         final SummaryInfo summaryInfo = new SummaryInfoMapper().map(paymentSettingRepository.getCheckoutPreference());
 
         final ElementDescriptorView.Model elementDescriptorModel =
@@ -164,8 +152,10 @@ import java.util.Set;
 
         getView().showToolbarElementDescriptor(elementDescriptorModel);
 
-        getView().configureAdapters(paymentMethodDrawableItemMapper.map(expressMetadataList),
-            paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency(), model);
+        getView().updateAdapters(model);
+        updateElements();
+        getView().configureAdapters(paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency());
+        getView().updatePaymentMethods(paymentMethodDrawableItemMapper.map(expressMetadataList));
 
         getView().setPayButtonText(payButtonViewModel);
     }
@@ -173,27 +163,30 @@ import java.util.Set;
     @Override
     public void onViewResumed() {
         paymentRepository.attach(this);
-        if (shouldReloadModel()) {
-            loadViewModel();
-        }
-        updateElementPosition();
     }
 
-    private boolean shouldReloadModel() {
-        final int currentAvailablePaymentMethodsCount = countAvailablePaymentMethods();
-        return availablePaymentMethodsCount != currentAvailablePaymentMethodsCount;
+    @Override
+    public void attachView(final ExpressPayment.View view) {
+        super.attachView(view);
+        initPresenter();
     }
 
-    private int countAvailablePaymentMethods() {
-        int currentAvailablePaymentMethodsCount = expressMetadataList.size();
-        for (final ExpressMetadata expressMetadata : expressMetadataList) {
-            if ((expressMetadata.isCard() &&
-                disabledPaymentMethodRepository.hasPaymentMethodId(expressMetadata.getCard().getId())) ||
-                disabledPaymentMethodRepository.hasPaymentMethodId(expressMetadata.getPaymentMethodId())) {
-                currentAvailablePaymentMethodsCount--;
+    private void initPresenter() {
+        initRepository.init().execute(new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                expressMetadataList = initResponse.getExpress();
+                //Plus one to compensate for add new payment method
+                payerCostSelection = createNewPayerCostSelected();
+                cardsWithSplit = initResponse.getIdsWithSplitAllowed();
+                loadViewModel();
             }
-        }
-        return currentAvailablePaymentMethodsCount;
+
+            @Override
+            public void failure(final ApiException apiException) {
+                onFailToRetrieveInitResponse();
+            }
+        });
     }
 
     @Override
@@ -206,7 +199,6 @@ import java.util.Set;
     public void recoverFromBundle(@NonNull final Bundle bundle) {
         payerCostSelection = bundle.getParcelable(BUNDLE_STATE_PAYER_COST);
         splitSelectionState = bundle.getParcelable(BUNDLE_STATE_SPLIT_PREF);
-        availablePaymentMethodsCount = bundle.getInt(BUNDLE_STATE_AVAILABLE_PM_COUNT);
         paymentMethodIndex = bundle.getInt(BUNDLE_STATE_CURRENT_PM_INDEX);
     }
 
@@ -215,18 +207,16 @@ import java.util.Set;
     public Bundle storeInBundle(@NonNull final Bundle bundle) {
         bundle.putParcelable(BUNDLE_STATE_PAYER_COST, payerCostSelection);
         bundle.putParcelable(BUNDLE_STATE_SPLIT_PREF, splitSelectionState);
-        bundle.putInt(BUNDLE_STATE_AVAILABLE_PM_COUNT, availablePaymentMethodsCount);
         bundle.putInt(BUNDLE_STATE_CURRENT_PM_INDEX, paymentMethodIndex);
         return bundle;
     }
 
     @Override
     public void trackExpressView() {
-        final OneTapViewTracker oneTapViewTracker = new OneTapViewTracker(expressMetadataList,
-            paymentSettingRepository.getCheckoutPreference(),
-            discountRepository.getCurrentConfiguration(),
-            escManagerBehaviour.getESCCardIds(),
-            cardsWithSplit);
+        final OneTapViewTracker oneTapViewTracker =
+            new OneTapViewTracker(expressMetadataList, paymentSettingRepository.getCheckoutPreference(),
+                discountRepository.getCurrentConfiguration(), escManagerBehaviour.getESCCardIds(), cardsWithSplit,
+                disabledPaymentMethodRepository.getDisabledPaymentMethods().size());
         setCurrentViewTracker(oneTapViewTracker);
     }
 
@@ -328,7 +318,6 @@ import java.util.Set;
 
     @Override
     public void onCvvRequired(@NonNull final Card card) {
-        cancelLoading();
         getView().showSecurityCodeScreen(card);
     }
 
@@ -340,7 +329,7 @@ import java.util.Set;
 
     private void updateElementPosition(final int selectedPayerCost) {
         payerCostSelection.save(paymentMethodIndex, selectedPayerCost);
-        updateElementPosition();
+        updateElements();
     }
 
     @Override
@@ -368,7 +357,7 @@ import java.util.Set;
      */
     @Override
     public void onInstallmentSelectionCanceled() {
-        updateElementPosition();
+        updateElements();
         getView().collapseInstallmentsSelection();
     }
 
@@ -384,7 +373,7 @@ import java.util.Set;
         updateElementPosition(payerCostSelection.get(paymentMethodIndex));
     }
 
-    private void updateElementPosition() {
+    private void updateElements() {
         getView().updateViewForPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex),
             splitSelectionState);
     }
@@ -400,9 +389,14 @@ import java.util.Set;
         final int selected = amountConfigurationRepository.getConfigurationFor(customOptionId)
             .getAppliedPayerCost(splitSelectionState.userWantsToSplit())
             .indexOf(payerCostSelected);
-
         updateElementPosition(selected);
         getView().collapseInstallmentsSelection();
+    }
+
+    public void onDisabledDescriptorViewClick() {
+        getView().showDisabledPaymentMethodDetailDialog(
+            disabledPaymentMethodRepository.getDisabledPaymentMethod(getCurrentExpressMetadata().getCustomOptionId()),
+            getCurrentExpressMetadata().getStatus());
     }
 
     @Override
@@ -471,14 +465,32 @@ import java.util.Set;
     }
 
     @NonNull
-    private PayerCostSelection createNewPayerCostSelected() {
+        /* default */ PayerCostSelection createNewPayerCostSelected() {
         return new PayerCostSelection(expressMetadataList.size() + 1);
     }
 
     @Override
     public void onChangePaymentMethod() {
         cancelLoading();
-        getView().resetPagerIndex();
+        postDisableModelUpdate();
+    }
+
+    private void postDisableModelUpdate() {
+        initRepository.refresh().enqueue(new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                expressMetadataList = initResponse.getExpress();
+                payerCostSelection = createNewPayerCostSelected();
+                paymentMethodIndex = 0;
+                getView().clearAdapters();
+                loadViewModel();
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                onFailToRetrieveInitResponse();
+            }
+        });
     }
 
     @Override

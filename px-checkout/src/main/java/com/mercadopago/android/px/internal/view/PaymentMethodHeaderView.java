@@ -20,14 +20,21 @@ public class PaymentMethodHeaderView extends FrameLayout {
 
     /* default */ final ImageView arrow;
 
+    /* default */ final ImageView helper;
+
     /* default */ final Animation rotateUp;
 
     /* default */ final Animation rotateDown;
 
     private final TitlePager titlePager;
 
+    private boolean isDisabled;
+
     public interface Listener {
         void onDescriptorViewClicked();
+
+        void onDisabledDescriptorViewClick();
+
         void onInstallmentsSelectorCancelClicked();
     }
 
@@ -44,12 +51,26 @@ public class PaymentMethodHeaderView extends FrameLayout {
         titleView = findViewById(R.id.installments_title);
         titlePager = findViewById(R.id.title_pager);
         arrow = findViewById(R.id.arrow);
+        helper = findViewById(R.id.helper);
         titleView.setVisibility(GONE);
+    }
+
+    public void updateData(final boolean hasPayerCost, final boolean isDisabled) {
+        final boolean isEspandible = hasPayerCost && !isDisabled;
+        this.isDisabled = isDisabled;
+
+        showTitlePager(hasPayerCost);
+        setArrowVisibility(isEspandible);
+        setHelperVisibility(isDisabled);
+
+        setClickable(hasPayerCost || isDisabled);
     }
 
     public void setListener(final Listener listener) {
         setOnClickListener(v -> {
-            if (hasEndedAnim(arrow)) {
+            if (isDisabled) {
+                listener.onDisabledDescriptorViewClick();
+            } else if (hasEndedAnim(arrow)) {
                 if (titleView.getVisibility() == VISIBLE) {
                     arrow.startAnimation(rotateDown);
                     listener.onInstallmentsSelectorCancelClicked();
@@ -99,6 +120,10 @@ public class PaymentMethodHeaderView extends FrameLayout {
 
     public void setArrowVisibility(final boolean visible) {
         arrow.setAlpha(visible ? 1.0f : 0.0f);
+    }
+
+    public void setHelperVisibility(final boolean visible) {
+        helper.setVisibility(visible ? VISIBLE : GONE);
     }
 
     public static class Model {

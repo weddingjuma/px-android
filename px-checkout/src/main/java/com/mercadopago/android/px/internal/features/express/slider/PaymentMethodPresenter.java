@@ -18,7 +18,7 @@ class PaymentMethodPresenter extends BasePresenter<PaymentMethod.View> implement
     @Override
     public void onViewResumed() {
         if (disabledPaymentMethodRepository.hasPaymentMethodId(item.getId())) {
-            getView().disable();
+            getView().disable(disabledPaymentMethodRepository.getDisabledPaymentMethod(item.getId()));
         }
     }
 }

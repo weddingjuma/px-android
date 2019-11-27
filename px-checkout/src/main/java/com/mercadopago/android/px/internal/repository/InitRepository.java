@@ -8,4 +8,6 @@ public interface InitRepository {
 
     @NonNull
     MPCall<InitResponse> init();
+
+    MPCall<InitResponse> refresh();
 }

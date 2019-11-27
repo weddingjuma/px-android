@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,14 +9,13 @@
         android:id="@+id/payment_method"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="@dimen/px_xs_margin"
         android:layout_marginLeft="@dimen/px_m_margin"
         android:layout_marginRight="@dimen/px_m_margin"
         android:layout_marginBottom="@dimen/px_s_margin"
-        android:layout_marginTop="@dimen/px_badge_offset"
-        app:cardPreventCornerOverlap="false"
         app:cardBackgroundColor="@color/px_expressCheckoutChangePaymentMethodColor"
-        app:cardElevation="2dp">
+        app:cardCornerRadius="@dimen/px_xs_margin"
+        app:cardElevation="2dp"
+        app:cardPreventCornerOverlap="false">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
@@ -30,8 +28,8 @@
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 android:src="@drawable/px_change_payment_method_shape"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintDimensionRatio="@string/px_card_aspect_ratio"/>
+                app:layout_constraintDimensionRatio="@string/px_card_aspect_ratio"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/floating_change"
@@ -39,28 +37,28 @@
                 android:layout_height="wrap_content"
                 android:elevation="@dimen/px_xxxs_margin"
                 android:tint="@color/ui_components_primary_color"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/message"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:elevation="@dimen/px_xxxs_margin"
                 app:backgroundTint="@color/px_white"
-                app:srcCompat="@android:drawable/ic_input_add"
-                app:fabSize="mini"/>
+                app:elevation="@dimen/px_xxxs_margin"
+                app:fabSize="mini"
+                app:layout_constraintBottom_toTopOf="@id/message"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="packed"
+                app:srcCompat="@android:drawable/ic_input_add" />
 
             <com.mercadolibre.android.ui.widgets.MeliButton
                 android:id="@+id/message"
-                android:padding="@dimen/px_xxs_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/floating_change"
+                android:padding="@dimen/px_xxs_margin"
                 app:layout_constraintBottom_toBottomOf="@id/background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/floating_change"
                 app:layout_constraintVertical_chainStyle="packed"
                 app:type="optionPrimary"
-                tools:text="Agregar nueva tarjeta"/>
+                tools:text="Agregar nueva tarjeta" />
 
         </android.support.constraint.ConstraintLayout>
 

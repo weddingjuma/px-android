@@ -11,19 +11,14 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.view.LinkableTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.ConsumerCreditsDrawableFragmentItem;
 import com.mercadopago.android.px.model.ConsumerCreditsDisplayInfo;
-import com.mercadopago.android.px.model.PaymentTypes;
 
 public class ConsumerCreditsLowResFragment extends ConsumerCreditsFragment {
 
-    @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
-    public static Fragment getInstance(@NonNull final ConsumerCreditsDrawableFragmentItem item) {
-        final ConsumerCreditsLowResFragment creditsFragment = new ConsumerCreditsLowResFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, item);
-        bundle.putString(ARG_PM_TYPE, PaymentTypes.DIGITAL_CURRENCY);
-        creditsFragment.setArguments(bundle);
-        return creditsFragment;
+    public static Fragment getInstance(@NonNull final ConsumerCreditsDrawableFragmentItem model) {
+        final ConsumerCreditsLowResFragment instance = new ConsumerCreditsLowResFragment();
+        instance.storeModel(model);
+        return instance;
     }
 
     @Nullable

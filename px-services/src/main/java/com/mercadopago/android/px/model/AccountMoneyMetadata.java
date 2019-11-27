@@ -12,16 +12,8 @@ public class AccountMoneyMetadata implements Serializable, Parcelable {
 
     @SerializedName("available_balance")
     public final BigDecimal balance;
-
     public final boolean invested;
-
     public final AccountMoneyDisplayInfo displayInfo;
-
-    protected AccountMoneyMetadata(final Parcel in) {
-        invested = in.readByte() != 0;
-        balance = ParcelableUtil.getBigDecimal(in);
-        displayInfo = in.readParcelable(AccountMoneyDisplayInfo.class.getClassLoader());
-    }
 
     public static final Creator<AccountMoneyMetadata> CREATOR = new Creator<AccountMoneyMetadata>() {
         @Override
@@ -34,6 +26,12 @@ public class AccountMoneyMetadata implements Serializable, Parcelable {
             return new AccountMoneyMetadata[size];
         }
     };
+
+    protected AccountMoneyMetadata(final Parcel in) {
+        invested = in.readByte() != 0;
+        balance = ParcelableUtil.getBigDecimal(in);
+        displayInfo = in.readParcelable(AccountMoneyDisplayInfo.class.getClassLoader());
+    }
 
     @Override
     public int describeContents() {

@@ -203,7 +203,6 @@
 
     <!-- Review and Confirm -->
     <string name="px_change_payment">Alterar meio de pagamento</string>
-    <string name="px_add_new_card">Adicionar um novo cartão</string>
     <string name="px_review_off_text_default">Você pagará %1$s\n%2$s</string>
     <string name="px_review_off_text">Você pagará %1$s com\n%2$s</string>
     <string name="px_review_off_text_2">Você pagará %1$s no\n%2$s</string>
@@ -255,12 +254,11 @@
     <string name="px_bolbradesco_rejection">Não foi possível processar o seu pagamento, desculpe-nos</string>
 
     <!-- Disable payment method detail dialog -->
-    <string name="px_dialog_detail_payment_method_disable_card_title">Este cartão está indisponível no momento</string>
-    <string name="px_dialog_detail_payment_method_disable_account_money_title">Seu dinheiro do Mercado Pago está indisponível no momento</string>
-    <string name="px_dialog_detail_payment_method_disable_detail">Não se preocupe, você pode usar outro meio para concluir o pagamento.</string>
+    <string name="px_dialog_detail_payment_method_disable_high_risk">Recusamos seu pagamento\n\nTente pagar com outro meio.</string>
+    <string name="px_dialog_detail_payment_method_disable_black_list">Recusamos seu pagamento com este cartão.\n\nTente pagar com outro meio.</string>
+    <string name="px_dialog_detail_payment_method_disable_insufficient_amount">Seus fundos são insuficientes ou você excedeu o limite de compra.\n\nTente pagar com outro meio.</string>
     <string name="px_dialog_detail_payment_method_disable_link">Pagar com outro meio</string>
 
     <!-- Disable payment method title pager -->
-    <string name="px_payment_method_disable_card_title">Cartão indisponível para este pagamento</string>
-    <string name="px_payment_method_disable_account_money_title">Meio indisponível para este pagamento</string>
+    <string name="px_payment_method_disable_title">Não é possível pagar com essa opção</string>
 </resources>

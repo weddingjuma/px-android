@@ -31,10 +31,8 @@ public class PaymentMethodDescriptorView extends MPTextView {
     }
 
     public abstract static class Model {
-
         protected int payerCostSelected = PayerCost.NO_SELECTED;
         protected boolean userWantToSplit = true;
-        protected boolean disabledPaymentMethod;
 
         public abstract void updateSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
             @NonNull final TextView textView);
@@ -49,10 +47,6 @@ public class PaymentMethodDescriptorView extends MPTextView {
 
         public boolean hasPayerCostList() {
             return false;
-        }
-
-        public boolean isDisabledPaymentMethod() {
-            return disabledPaymentMethod;
         }
     }
 }

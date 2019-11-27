@@ -1,7 +1,6 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
@@ -18,7 +17,7 @@ import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Split;
 import java.util.List;
 
-public class SplitPaymentHeaderAdapter extends ViewAdapter<List<SplitPaymentHeaderAdapter.Model>, LabeledSwitch>
+public class SplitPaymentHeaderAdapter extends HubableAdapter<List<SplitPaymentHeaderAdapter.Model>, LabeledSwitch>
     implements CompoundButton.OnCheckedChangeListener {
 
     @NonNull private final SplitListener splitListener;
@@ -91,9 +90,8 @@ public class SplitPaymentHeaderAdapter extends ViewAdapter<List<SplitPaymentHead
         }
     }
 
-    public SplitPaymentHeaderAdapter(@NonNull final List<Model> data, @Nullable final LabeledSwitch view,
-        @NonNull final SplitListener splitListener) {
-        super(data, view);
+    public SplitPaymentHeaderAdapter(@NonNull final LabeledSwitch view, @NonNull final SplitListener splitListener) {
+        super(view);
         this.splitListener = splitListener;
         view.setOnCheckedChanged(this);
     }
@@ -117,5 +115,10 @@ public class SplitPaymentHeaderAdapter extends ViewAdapter<List<SplitPaymentHead
     @Override
     public void onCheckedChanged(final CompoundButton buttonView, final boolean isChecked) {
         splitListener.onSplitChanged(isChecked);
+    }
+
+    @Override
+    public List<Model> getNewModels(final HubAdapter.Model model) {
+        return model.splitModels;
     }
 }

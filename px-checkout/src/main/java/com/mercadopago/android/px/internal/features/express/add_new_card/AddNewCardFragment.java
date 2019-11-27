@@ -11,26 +11,25 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.base.BaseFragment;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AddNewCardFragmentDrawableFragmentItem;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 
-public class AddNewCardFragment extends Fragment implements AddNewCard.View, View.OnClickListener {
+public class AddNewCardFragment extends BaseFragment<AddNewCardPresenter, AddNewCardFragmentDrawableFragmentItem>
+    implements AddNewCard.View, View.OnClickListener {
 
-    private static final String ARG_MODEL = "ARG_MODEL";
-
-    private AddNewCardPresenter presenter;
-
-    @SuppressWarnings("TypeMayBeWeakened")
     @NonNull
-    public static Fragment getInstance(@NonNull final AddNewCardFragmentDrawableFragmentItem drawableItem) {
-        final AddNewCardFragment addNewCardFragment = new AddNewCardFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, drawableItem);
-        addNewCardFragment.setArguments(bundle);
-        return addNewCardFragment;
+    public static Fragment getInstance(@NonNull final AddNewCardFragmentDrawableFragmentItem model) {
+        final AddNewCardFragment instance = new AddNewCardFragment();
+        instance.storeModel(model);
+        return instance;
+    }
+
+    protected AddNewCardPresenter createPresenter() {
+        return new AddNewCardPresenter(Session.getInstance().getInitRepository());
     }
 
     @Nullable
@@ -42,26 +41,8 @@ public class AddNewCardFragment extends Fragment implements AddNewCard.View, Vie
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(ARG_MODEL)) {
-            // unused for now
-            //final AddNewCardFragmentDrawableFragmentItem model =
-            //    (AddNewCardFragmentDrawableFragmentItem) arguments.getSerializable(ARG_MODEL);
-
-            configureClick(view);
-        } else {
-            throw new IllegalStateException("AddNewCardFragment does not contains model info");
-        }
-        presenter = createPresenter();
-        presenter.attachView(this);
-    }
-
-    @Override
-    public void onDetach() {
-        if (presenter != null) {
-            presenter.detachView();
-        }
-        super.onDetach();
+        super.onViewCreated(view, savedInstanceState);
+        configureClick(view);
     }
 
     @Override
@@ -73,18 +54,15 @@ public class AddNewCardFragment extends Fragment implements AddNewCard.View, Vie
     @Override
     public void showPaymentMethodsWithSelection(@NonNull final PaymentMethodSearchItem paymentMethodSearchItem) {
         //TODO refactor
-        PaymentVaultActivity.startWithPaymentMethodSelected(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT,
-            paymentMethodSearchItem);
-    }
-
-    private AddNewCardPresenter createPresenter() {
-        return new AddNewCardPresenter(Session.getInstance().getInitRepository());
+        PaymentVaultActivity
+            .startWithPaymentMethodSelected(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT, paymentMethodSearchItem);
     }
 
     protected void configureClick(@NonNull final View view) {
         final FloatingActionButton floating = view.findViewById(R.id.floating_change);
         final MeliButton message = view.findViewById(R.id.message);
-        message.setText(getString(R.string.px_add_new_card));
+
+        message.setText(model.metadata.getLabel().getMessage());
         floating.setScaleType(ImageView.ScaleType.CENTER);
         floating.setOnClickListener(this);
         message.setOnClickListener(this);

@@ -14,13 +14,13 @@ public class SpannableFormatter extends ChainFormatter {
     private int textColor;
     private final Context context;
     private final SpannableStringBuilder spannableStringBuilder;
-    private boolean semiBoldStyle;
+    private PxFont font;
 
     public SpannableFormatter(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
         this.spannableStringBuilder = spannableStringBuilder;
         this.context = context;
-        semiBoldStyle = false;
+        font = PxFont.REGULAR;
     }
 
     public SpannableFormatter withTextColor(final int color) {
@@ -28,8 +28,13 @@ public class SpannableFormatter extends ChainFormatter {
         return this;
     }
 
-    public SpannableFormatter withSemiBoldStyle() {
-        semiBoldStyle = true;
+    public SpannableFormatter withStyle(@NonNull final String name) {
+        font = PxFont.from(name);
+        return this;
+    }
+
+    public SpannableFormatter withStyle(@NonNull final PxFont pxFont) {
+        font = pxFont;
         return this;
     }
 
@@ -54,7 +59,6 @@ public class SpannableFormatter extends ChainFormatter {
     }
 
     private void updateTextStyle(final int indexStart, final int indexEnd) {
-        ViewUtils.setFontInSpannable(context, semiBoldStyle ? PxFont.SEMI_BOLD : PxFont.REGULAR, spannableStringBuilder,
-            indexStart, indexEnd);
+        ViewUtils.setFontInSpannable(context, font, spannableStringBuilder, indexStart, indexEnd);
     }
 }

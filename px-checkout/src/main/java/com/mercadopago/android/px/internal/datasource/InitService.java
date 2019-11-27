@@ -8,19 +8,23 @@ import com.mercadopago.android.px.configuration.DiscountParamsConfiguration;
 import com.mercadopago.android.px.configuration.PaymentConfiguration;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.datasource.cache.Cache;
+import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
+import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.services.CheckoutService;
 import com.mercadopago.android.px.internal.util.JsonUtil;
+import com.mercadopago.android.px.internal.viewmodel.mappers.ExpressMetadataToDisabledIdMapper;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.CheckoutFeatures;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.model.internal.InitRequest;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 import java.util.ArrayList;
+import java.util.Map;
 
 import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_INIT;
 
@@ -31,15 +35,18 @@ public class InitService implements InitRepository {
     @NonNull private final String language;
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final ExperimentsRepository experimentsRepository;
+    @NonNull /* default */ DisabledPaymentMethodRepository disabledPaymentMethodRepository;
     @NonNull /* default */ final Cache<InitResponse> initCache;
     @Nullable private final String flow;
 
     public InitService(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final ExperimentsRepository experimentsRepository,
+        @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour, @NonNull final CheckoutService checkoutService,
         @NonNull final String language, @Nullable final String flow, @NonNull final Cache<InitResponse> initCache) {
         this.paymentSettingRepository = paymentSettingRepository;
         this.experimentsRepository = experimentsRepository;
+        this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         this.escManagerBehaviour = escManagerBehaviour;
         this.checkoutService = checkoutService;
         this.language = language;
@@ -50,11 +57,7 @@ public class InitService implements InitRepository {
     @NonNull
     @Override
     public MPCall<InitResponse> init() {
-        if (initCache.isCached()) {
-            return initCache.get();
-        } else {
-            return newCall();
-        }
+        return initCache.isCached() ? initCache.get() : newCall();
     }
 
     @NonNull
@@ -84,6 +87,9 @@ public class InitService implements InitRepository {
                         paymentSettingRepository.configure(initResponse.getCurrency());
                         experimentsRepository.configure(initResponse.getExperiments());
 
+                        disabledPaymentMethodRepository.storeDisabledPaymentMethodsIds(
+                            new ExpressMetadataToDisabledIdMapper().map(initResponse.getExpress()));
+
                         MPTracker.getInstance().setExperiments(experimentsRepository.getExperiments());
 
                         initCache.put(initResponse);
@@ -106,8 +112,7 @@ public class InitService implements InitRepository {
 
         final AdvancedConfiguration advancedConfiguration = paymentSettingRepository.getAdvancedConfiguration();
         final DiscountParamsConfiguration discountParamsConfiguration =
-            advancedConfiguration
-                .getDiscountParamsConfiguration();
+            advancedConfiguration.getDiscountParamsConfiguration();
 
         final CheckoutFeatures features = new CheckoutFeatures.Builder()
             .setSplit(paymentConfiguration.getPaymentProcessor().supportsSplitPayment(checkoutPreference))
@@ -125,11 +130,46 @@ public class InitService implements InitRepository {
 
         final String preferenceId = paymentSettingRepository.getCheckoutPreferenceId();
         if (preferenceId != null) {
-            return checkoutService.checkout(API_ENVIRONMENT_INIT, preferenceId, language,
-                paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
+            return checkoutService
+                .checkout(API_ENVIRONMENT_INIT, preferenceId, language, paymentSettingRepository.getPrivateKey(),
+                    JsonUtil.getMapFromObject(initRequest));
         } else {
-            return checkoutService.checkout(API_ENVIRONMENT_INIT, language,
-                paymentSettingRepository.getPrivateKey(), JsonUtil.getMapFromObject(initRequest));
+            return checkoutService.checkout(API_ENVIRONMENT_INIT, language, paymentSettingRepository.getPrivateKey(),
+                JsonUtil.getMapFromObject(initRequest));
         }
+    }
+
+    @Override
+    public MPCall<InitResponse> refresh() {
+        return new MPCall<InitResponse>() {
+            @Override
+            public void enqueue(final Callback<InitResponse> callback) {
+                init().enqueue(getRefreshCallback(callback));
+            }
+
+            @Override
+            public void execute(final Callback<InitResponse> callback) {
+                init().execute(getRefreshCallback(callback));
+            }
+        };
+    }
+
+    /* default */ Callback<InitResponse> getRefreshCallback(@NonNull final Callback<InitResponse> originalCallback) {
+        final Map<String, DisabledPaymentMethod> disabledPaymentMethodMap =
+            disabledPaymentMethodRepository.getDisabledPaymentMethods();
+        return new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                new ExpressMetadataSorter(initResponse.getExpress(), disabledPaymentMethodMap).sort();
+                initCache.evict();
+                initCache.put(initResponse);
+                originalCallback.success(initResponse);
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                originalCallback.failure(apiException);
+            }
+        };
     }
 }

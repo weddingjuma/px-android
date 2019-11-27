@@ -2,17 +2,24 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
+import com.google.gson.reflect.TypeToken;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
+import com.mercadopago.android.px.internal.util.JsonUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
-import java.util.HashSet;
-import java.util.Set;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.mercadopago.android.px.internal.util.TextUtil.isNotEmpty;
 
 public final class DisabledPaymentMethodService implements DisabledPaymentMethodRepository {
 
-    private static final String PREF_DISABLED_PAYMENT_METHODS_IDS = "PREF_DISABLED_PAYMENT_METHODS_IDS";
+    private static final String PREF_DISABLED_PAYMENT_METHODS = "PREF_DISABLED_PAYMENT_METHODS";
 
     @NonNull private final SharedPreferences sharedPreferences;
 
@@ -20,41 +27,70 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
         this.sharedPreferences = sharedPreferences;
     }
 
-    private void storeDisabledPaymentMethodId(@NonNull final String paymentMethodId) {
-        final Set<String> disabledPaymentMethodIds = getDisabledPaymentMethodIds();
-        disabledPaymentMethodIds.add(paymentMethodId);
-        sharedPreferences.edit().putStringSet(PREF_DISABLED_PAYMENT_METHODS_IDS, disabledPaymentMethodIds).apply();
+    private void storeDisabledPaymentMethodId(@NonNull final String paymentMethodId,
+        @NonNull final String paymentStatusDetail) {
+        final Map<String, DisabledPaymentMethod> disabledPaymentMethods = getDisabledPaymentMethods();
+        disabledPaymentMethods.put(paymentMethodId, new DisabledPaymentMethod(paymentMethodId, paymentStatusDetail));
+        sharedPreferences.edit().putString(PREF_DISABLED_PAYMENT_METHODS, JsonUtil.toJson(disabledPaymentMethods))
+            .apply();
+    }
+
+    @Override
+    public void storeDisabledPaymentMethodsIds(@NonNull final Collection<String> paymentMethodsIds) {
+        final Map<String, DisabledPaymentMethod> disabledPaymentMethods = getDisabledPaymentMethods();
+        for (final String paymentMethodId : paymentMethodsIds) {
+            disabledPaymentMethods.put(paymentMethodId, new DisabledPaymentMethod(paymentMethodId));
+        }
+        sharedPreferences.edit().putString(PREF_DISABLED_PAYMENT_METHODS, JsonUtil.toJson(disabledPaymentMethods))
+            .apply();
     }
 
     @NonNull
-    private Set<String> getDisabledPaymentMethodIds() {
-        return sharedPreferences.getStringSet(PREF_DISABLED_PAYMENT_METHODS_IDS, new HashSet<>());
+    @Override
+    public Map<String, DisabledPaymentMethod> getDisabledPaymentMethods() {
+        final String disabledPaymentMethods =
+            sharedPreferences.getString(PREF_DISABLED_PAYMENT_METHODS, null);
+        final Type type = new TypeToken<HashMap<String, DisabledPaymentMethod>>() {
+        }.getType();
+        return disabledPaymentMethods != null ? JsonUtil.fromJson(disabledPaymentMethods, type) : new HashMap<>();
+    }
+
+    @Override
+    public DisabledPaymentMethod getDisabledPaymentMethod(@NonNull final String paymentMethodId) {
+        return getDisabledPaymentMethods().get(paymentMethodId);
     }
 
     @Override
     public void reset() {
-        sharedPreferences.edit().remove(PREF_DISABLED_PAYMENT_METHODS_IDS).apply();
+        sharedPreferences.edit().remove(PREF_DISABLED_PAYMENT_METHODS).apply();
     }
 
     @Override
     public boolean hasPaymentMethodId(@NonNull final String paymentMethodId) {
-        return getDisabledPaymentMethodIds().contains(paymentMethodId);
+        return getDisabledPaymentMethods().containsKey(paymentMethodId);
     }
 
     @Override
     public void handleDisableablePayment(@NonNull final PaymentResult paymentResult) {
         if (isDisableablePayment(paymentResult)) {
             final boolean isSplitPayment = paymentResult.getPaymentDataList().size() > 1;
+            final String paymentMethodId;
+            final String paymentTypeId = paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId();
+
             if (isSplitPayment && TextUtil.isNotEmpty(paymentResult.getPaymentMethodId())) {
-                storeDisabledPaymentMethodId(paymentResult.getPaymentMethodId());
-            } else if (PaymentTypes
-                .isAccountMoney(paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId())) {
-                storeDisabledPaymentMethodId(paymentResult.getPaymentData().getPaymentMethod().getId());
-            } else if (PaymentTypes
-                .isCardPaymentType(paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId()) &&
-                paymentResult.getPaymentData().getToken() != null &&
-                TextUtil.isNotEmpty(paymentResult.getPaymentData().getToken().getCardId())) {
-                storeDisabledPaymentMethodId(paymentResult.getPaymentData().getToken().getCardId());
+                paymentMethodId = paymentResult.getPaymentMethodId();
+            } else if (
+                PaymentTypes.isCardPaymentType(paymentResult.getPaymentData().getPaymentMethod().getPaymentTypeId()) &&
+                    paymentResult.getPaymentData().getToken() != null &&
+                    TextUtil.isNotEmpty(paymentResult.getPaymentData().getToken().getCardId())) {
+                paymentMethodId = paymentResult.getPaymentData().getToken().getCardId();
+            } else {
+                paymentMethodId = paymentResult.getPaymentData().getPaymentMethod().getId();
+            }
+
+            if (!PaymentTypes.isCardPaymentType(paymentTypeId) ||
+                isNotEmpty(paymentResult.getPaymentData().getToken().getCardId())) {
+                storeDisabledPaymentMethodId(paymentMethodId, paymentResult.getPaymentStatusDetail());
             }
         }
     }
@@ -66,6 +102,8 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
                 Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK
                     .equalsIgnoreCase(paymentResult.getPaymentStatusDetail()) ||
                 Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BLACKLIST
+                    .equalsIgnoreCase(paymentResult.getPaymentStatusDetail()) ||
+                Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_INSUFFICIENT_AMOUNT
                     .equalsIgnoreCase(paymentResult.getPaymentStatusDetail()));
     }
 }

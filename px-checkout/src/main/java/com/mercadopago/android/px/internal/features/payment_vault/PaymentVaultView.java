@@ -10,6 +10,7 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.preferences.PaymentPreference;
 import java.math.BigDecimal;
 import java.util.List;
@@ -50,7 +51,7 @@ public interface PaymentVaultView extends MvpView {
 
     void saveAutomaticSelection(final boolean automaticSelection);
 
-    void showDisabledPaymentMethodDetailDialog(@NonNull final String paymentMethodType);
+    void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod);
 
     void cancel(@Nullable final Intent data);
 

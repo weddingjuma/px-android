@@ -6,11 +6,10 @@ import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
-public class ConfirmButtonAdapter extends ViewAdapter<List<ConfirmButtonViewModel>, MeliButton> {
+public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewModel>, MeliButton> {
 
-    public ConfirmButtonAdapter(final List<ConfirmButtonViewModel> models,
-        @NonNull final MeliButton view) {
-        super(models, view);
+    public ConfirmButtonAdapter(@NonNull final MeliButton view) {
+        super(view);
     }
 
     @Override
@@ -21,5 +20,10 @@ public class ConfirmButtonAdapter extends ViewAdapter<List<ConfirmButtonViewMode
         } else {
             view.setState(MeliButton.State.NORMAL);
         }
+    }
+
+    @Override
+    public List<ConfirmButtonViewModel> getNewModels(final HubAdapter.Model model) {
+        return model.confirmButtonViewModels;
     }
 }

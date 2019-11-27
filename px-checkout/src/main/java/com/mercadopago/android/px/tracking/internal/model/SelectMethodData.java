@@ -13,13 +13,14 @@ public class SelectMethodData extends TrackingMapModel {
     @NonNull private final List<ItemInfo> items;
     @NonNull private final BigDecimal preferenceAmount;
     private final int availableMethodsQuantity;
+    private final int disabledMethodsQuantity;
 
-    public SelectMethodData(@NonNull final List<AvailableMethod> availableMethods,
-        @NonNull final List<ItemInfo> items,
-        @NonNull final BigDecimal totalAmount) {
+    public SelectMethodData(@NonNull final List<AvailableMethod> availableMethods, @NonNull final List<ItemInfo> items,
+        @NonNull final BigDecimal totalAmount, final int disabledMethodsQuantity) {
         this.availableMethods = availableMethods;
         this.items = items;
+        this.disabledMethodsQuantity = disabledMethodsQuantity;
         preferenceAmount = totalAmount;
-        availableMethodsQuantity = availableMethods.size();
+        availableMethodsQuantity = availableMethods.size() - disabledMethodsQuantity;
     }
 }

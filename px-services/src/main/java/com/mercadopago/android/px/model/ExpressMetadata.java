@@ -2,6 +2,7 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
 import java.io.Serializable;
 
@@ -12,6 +13,20 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
     private final CardMetadata card;
     private final AccountMoneyMetadata accountMoney;
     private final ConsumerCreditsMetadata consumerCredits;
+    private final NewCardMetadata newCard;
+    private final StatusMetadata status;
+
+    public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
+        @Override
+        public ExpressMetadata createFromParcel(final Parcel in) {
+            return new ExpressMetadata(in);
+        }
+
+        @Override
+        public ExpressMetadata[] newArray(final int size) {
+            return new ExpressMetadata[size];
+        }
+    };
 
     @Override
     public String getPaymentMethodId() {
@@ -36,6 +51,15 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return accountMoney;
     }
 
+    public NewCardMetadata getNewCard() {
+        return newCard;
+    }
+
+    @NonNull
+    public StatusMetadata getStatus() {
+        return status;
+    }
+
     public boolean isAccountMoney() {
         return accountMoney != null;
     }
@@ -49,6 +73,10 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return card != null;
     }
 
+    public boolean isNewCard() {
+        return newCard != null;
+    }
+
     @Override
     public String getCustomOptionId() {
         return isCard() ? getCard().getId() : getPaymentMethodId();
@@ -60,19 +88,9 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         card = in.readParcelable(CardMetadata.class.getClassLoader());
         accountMoney = in.readParcelable(AccountMoneyMetadata.class.getClassLoader());
         consumerCredits = in.readParcelable(ConsumerCreditsMetadata.class.getClassLoader());
+        newCard = in.readParcelable(NewCardMetadata.class.getClassLoader());
+        status = in.readParcelable(StatusMetadata.class.getClassLoader());
     }
-
-    public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
-        @Override
-        public ExpressMetadata createFromParcel(final Parcel in) {
-            return new ExpressMetadata(in);
-        }
-
-        @Override
-        public ExpressMetadata[] newArray(final int size) {
-            return new ExpressMetadata[size];
-        }
-    };
 
     @Override
     public int describeContents() {
@@ -86,5 +104,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         dest.writeParcelable(card, flags);
         dest.writeParcelable(accountMoney, flags);
         dest.writeParcelable(consumerCredits, flags);
+        dest.writeParcelable(newCard, flags);
+        dest.writeParcelable(status, flags);
     }
 }

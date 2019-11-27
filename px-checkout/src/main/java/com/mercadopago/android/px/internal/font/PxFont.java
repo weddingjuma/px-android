@@ -35,4 +35,14 @@ public enum PxFont {
         }
         return REGULAR;
     }
+
+    @NonNull
+    public static PxFont from(@NonNull final String name) {
+        for (final PxFont font : values()) {
+            if (font.name().equalsIgnoreCase(name)) {
+                return font;
+            }
+        }
+        return REGULAR;
+    }
 }

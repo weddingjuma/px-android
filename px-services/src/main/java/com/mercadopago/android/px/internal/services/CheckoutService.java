@@ -17,7 +17,7 @@ import retrofit2.http.Query;
 
 public interface CheckoutService {
 
-    String CHECKOUT_VERSION = "v1";
+    String CHECKOUT_VERSION = "v2";
 
     @POST("{environment}/px_mobile/" + CHECKOUT_VERSION + "/checkout")
     MPCall<InitResponse> checkout(

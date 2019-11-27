@@ -187,4 +187,8 @@
     <color name="px_red_status_bar">#E5464C</color>
     <color name="px_orange_status_bar">#E5953D</color>
 
+    <!-- Colors disabled payment method -->
+    <color name="px_disabled_background">#ededed</color>
+    <color name="px_disabled_font">#11000000</color>
+
 </resources>

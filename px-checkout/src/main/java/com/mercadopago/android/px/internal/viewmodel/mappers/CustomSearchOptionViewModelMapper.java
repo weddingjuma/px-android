@@ -12,6 +12,7 @@ import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.PaymentMethodViewModel;
 import com.mercadopago.android.px.model.CustomSearchItem;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import java.util.Collections;
 import java.util.List;
 
@@ -37,12 +38,14 @@ public class CustomSearchOptionViewModelMapper
     public PaymentMethodViewModel map(@NonNull final CustomSearchItem val) {
         return new PaymentMethodViewModel() {
 
-            private final boolean disabled = disabledPaymentMethodRepository.hasPaymentMethodId(val.getId());
+            private final DisabledPaymentMethod disabledPaymentMethod =
+                disabledPaymentMethodRepository.getDisabledPaymentMethod(val.getId());
+            private final boolean disabled = disabledPaymentMethod != null;
 
             @Override
             public String getPaymentMethodId() {
                 return TextUtil.isEmpty(val.getLastFourDigits()) ? val.getPaymentMethodId() :
-                String.format("%1$s/%2$s", val.getType(), val.getLastFourDigits());
+                    String.format("%1$s/%2$s", val.getType(), val.getLastFourDigits());
             }
 
             @Override
@@ -86,7 +89,7 @@ public class CustomSearchOptionViewModelMapper
             @Override
             public void handleOnClick() {
                 if (disabled) {
-                    handler.showDisabledPaymentMethodDetailDialog(val.getType());
+                    handler.showDisabledPaymentMethodDetailDialog(disabledPaymentMethod);
                 } else {
                     handler.selectItem(val);
                 }

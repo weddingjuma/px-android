@@ -7,18 +7,23 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodFragmentDrawer;
+import java.util.Collections;
 import java.util.List;
 
 public class PaymentMethodFragmentAdapter extends FragmentStatePagerAdapter {
 
-    @NonNull private final List<DrawableFragmentItem> items;
+    @NonNull private List<DrawableFragmentItem> items;
     @NonNull private PaymentMethodFragmentDrawer drawer;
 
-    public PaymentMethodFragmentAdapter(@NonNull final FragmentManager fm,
-        @NonNull final List<DrawableFragmentItem> drawableFragmentItems) {
+    public PaymentMethodFragmentAdapter(@NonNull final FragmentManager fm) {
         super(fm);
-        items = drawableFragmentItems;
+        items = Collections.emptyList();
         drawer = new PaymentMethodHighResDrawer();
+    }
+
+    public void setItems(@NonNull final List<DrawableFragmentItem> items) {
+        this.items = items;
+        notifyDataSetChanged();
     }
 
     @Override

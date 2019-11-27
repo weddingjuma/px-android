@@ -34,6 +34,7 @@ import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
+import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
@@ -43,6 +44,7 @@ import com.mercadopago.android.px.internal.features.express.animations.FadeAnima
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.ConfirmButtonAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
+import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodFragment;
 import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodFragmentAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.PaymentMethodHeaderAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
@@ -67,6 +69,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
+import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -74,7 +77,9 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
+import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -88,7 +93,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     InstallmentsAdapter.ItemListener,
     SummaryView.OnFitListener,
     ExplodingFragment.ExplodingAnimationListener,
-    SplitPaymentHeaderAdapter.SplitListener {
+    SplitPaymentHeaderAdapter.SplitListener,
+    PaymentMethodFragment.DisabledDetailDialogLauncher {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
@@ -97,6 +103,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private static final int REQ_CODE_CARD_VAULT = 102;
     private static final int REQ_CODE_SECURITY_CODE = 103;
     private static final int REQ_CODE_BIOMETRICS = 104;
+    private static final int REQ_CODE_DISABLE_DIALOG = 105;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
 
     @Nullable private CallBack callback;
@@ -124,7 +131,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private PaymentMethodFragmentAdapter paymentMethodFragmentAdapter;
     @RenderMode private String renderMode;
 
-    private final HubAdapter hubAdapter = new HubAdapter();
+    private HubAdapter hubAdapter;
 
     public static Fragment getInstance() {
         return new ExpressPaymentFragment();
@@ -160,7 +167,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
             presenter.recoverFromBundle(savedInstanceState);
         }
-        presenter.loadViewModel();
 
         // Order is important - On click and events should be wired AFTER view is attached.
         summaryView.setOnFitListener(this);
@@ -222,9 +228,24 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             public void onInstallmentsSelectorCancelClicked() {
                 presenter.onInstallmentSelectionCanceled();
             }
+
+            @Override
+            public void onDisabledDescriptorViewClick() {
+                presenter.onDisabledDescriptorViewClick();
+            }
         });
 
         configureToolbar(view);
+
+        final TitlePagerAdapter titlePagerAdapter = new TitlePagerAdapter(titlePager);
+        titlePager.setAdapter(titlePagerAdapter);
+
+        hubAdapter = new HubAdapter(Arrays.asList(titlePagerAdapter,
+            new SummaryViewAdapter(summaryView),
+            new SplitPaymentHeaderAdapter(splitPaymentView, this),
+            new PaymentMethodHeaderAdapter(paymentMethodHeaderView),
+            new ConfirmButtonAdapter(confirmButton)
+        ));
     }
 
     private ExpressPaymentPresenter createPresenter() {
@@ -238,7 +259,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getAmountConfigurationRepository(),
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
-            session.getProductIdProvider());
+            session.getProductIdProvider(),
+            new PaymentMethodDrawableItemMapper(getContext()));
     }
 
     @Override
@@ -297,12 +319,20 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void configureAdapters(@NonNull final List<DrawableFragmentItem> items,
-        @NonNull final Site site, @NonNull final Currency currency,
-        @NonNull final HubAdapter.Model model) {
+    public void clearAdapters() {
+        paymentMethodPager.setAdapter(null);
+    }
+
+    @Override
+    public void configureAdapters(@NonNull final Site site, @NonNull final Currency currency) {
+        installmentsAdapter = new InstallmentsAdapter(site, currency, new ArrayList<>(), PayerCost.NO_SELECTED, this);
+        installmentsRecyclerView.setAdapter(installmentsAdapter);
+        installmentsRecyclerView.setVisibility(View.GONE);
+
+        // Order is important, should update all others adapters before update paymentMethodAdapter
 
         if (paymentMethodPager.getAdapter() == null) {
-            paymentMethodFragmentAdapter = new PaymentMethodFragmentAdapter(getChildFragmentManager(), items);
+            paymentMethodFragmentAdapter = new PaymentMethodFragmentAdapter(getChildFragmentManager());
             if (renderMode == null) {
                 summaryView.setMeasureListener((itemsClipped) -> {
                     summaryView.setMeasureListener(null);
@@ -315,21 +345,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             paymentMethodPager.setAdapter(paymentMethodFragmentAdapter);
             indicator.attachToPager(paymentMethodPager);
         }
+    }
 
-        installmentsAdapter = new InstallmentsAdapter(site, currency, new ArrayList<>(), PayerCost.NO_SELECTED, this);
-        installmentsRecyclerView.setAdapter(installmentsAdapter);
-        installmentsRecyclerView.setVisibility(View.GONE);
+    @Override
+    public void updateAdapters(@NonNull final HubAdapter.Model model) {
+        hubAdapter.update(model);
+    }
 
-        final TitlePagerAdapter titlePagerAdapter =
-            new TitlePagerAdapter(model.paymentMethodDescriptorModels, titlePager);
-        titlePager.setAdapter(titlePagerAdapter);
-
-        hubAdapter.update(Arrays.asList(titlePagerAdapter,
-            new SummaryViewAdapter(model.summaryViewModels, summaryView),
-            new SplitPaymentHeaderAdapter(model.splitModels, splitPaymentView, this),
-            new PaymentMethodHeaderAdapter(model.paymentMethodDescriptorModels, paymentMethodHeaderView),
-            new ConfirmButtonAdapter(model.confirmButtonViewModels, confirmButton)
-        ));
+    @Override
+    public void updatePaymentMethods(@NonNull final List<DrawableFragmentItem> items) {
+        paymentMethodFragmentAdapter.setItems(items);
     }
 
     @Override
@@ -368,6 +393,13 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
+    public void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod,
+        @NonNull final StatusMetadata currentStatus) {
+        DisabledPaymentMethodDetailDialog
+            .showDialog(this, REQ_CODE_DISABLE_DIALOG, disabledPaymentMethod, currentStatus);
+    }
+
+    @Override
     public void collapseInstallmentsSelection() {
         paymentMethodPager.startAnimation(slideUpAndFadeAnimation);
         fadeAnimation.fadeIn(confirmButton);
@@ -379,14 +411,24 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQ_CODE_CARD_VAULT) {
             handleCardVaultResult(resultCode);
-        } else if (requestCode == REQ_CODE_SECURITY_CODE && resultCode == RESULT_OK) {
-            presenter.onTokenResolved();
+        } else if (requestCode == REQ_CODE_SECURITY_CODE) {
+            handleSecurityCodeResult(resultCode);
         } else if (requestCode == REQ_CODE_BIOMETRICS) {
             handleBiometricsResult(resultCode);
+        } else if (requestCode == REQ_CODE_DISABLE_DIALOG) {
+            resetPagerIndex();
         } else if (resultCode == Constants.RESULT_ACTION) {
             handleAction(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void handleSecurityCodeResult(final int resultCode) {
+        if (resultCode == RESULT_OK) {
+            presenter.onTokenResolved();
+        } else {
+            cancelLoading();
         }
     }
 
@@ -620,5 +662,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private void onRenderModeDecided() {
         //Workaround to pager not updating the fragments
         paymentMethodPager.post(() -> paymentMethodFragmentAdapter.setRenderMode(renderMode));
+    }
+
+    @Override
+    public int getRequestCode() {
+        return REQ_CODE_DISABLE_DIALOG;
     }
 }

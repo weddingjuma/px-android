@@ -8,20 +8,6 @@ public class ConsumerCreditsMetadata implements Parcelable, Serializable {
 
     public final ConsumerCreditsDisplayInfo displayInfo;
 
-    protected ConsumerCreditsMetadata(final Parcel in) {
-        displayInfo = in.readParcelable(ConsumerCreditsDisplayInfo.class.getClassLoader());
-    }
-
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(displayInfo, flags);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
     public static final Creator<ConsumerCreditsMetadata> CREATOR = new Creator<ConsumerCreditsMetadata>() {
         @Override
         public ConsumerCreditsMetadata createFromParcel(final Parcel in) {
@@ -34,4 +20,17 @@ public class ConsumerCreditsMetadata implements Parcelable, Serializable {
         }
     };
 
+    /* default */ ConsumerCreditsMetadata(final Parcel in) {
+        displayInfo = in.readParcelable(ConsumerCreditsDisplayInfo.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeParcelable(displayInfo, flags);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

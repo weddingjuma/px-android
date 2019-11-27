@@ -12,18 +12,17 @@ import com.meli.android.carddrawer.model.CardDrawerView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.viewmodel.drawables.SavedCardDrawableFragmentItem;
-import com.mercadopago.android.px.model.PaymentTypes;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
-public class SavedCardFragment extends PaymentMethodFragment {
+public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFragmentItem> {
+
+    private CardDrawerView cardView;
 
     @NonNull
-    public static Fragment getInstance(final SavedCardDrawableFragmentItem savedCard) {
-        final SavedCardFragment savedCardFragment = new SavedCardFragment();
-        final Bundle bundle = new Bundle();
-        bundle.putSerializable(ARG_MODEL, savedCard);
-        bundle.putString(ARG_PM_TYPE, PaymentTypes.CREDIT_CARD);
-        savedCardFragment.setArguments(bundle);
-        return savedCardFragment;
+    public static Fragment getInstance(final SavedCardDrawableFragmentItem model) {
+        final SavedCardFragment instance = new SavedCardFragment();
+        instance.storeModel(model);
+        return instance;
     }
 
     @Nullable
@@ -36,21 +35,15 @@ public class SavedCardFragment extends PaymentMethodFragment {
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(ARG_MODEL)) {
-            final SavedCardDrawableFragmentItem drawableCard =
-                (SavedCardDrawableFragmentItem) arguments.getSerializable(ARG_MODEL);
-            final CardDrawerView cardView = view.findViewById(R.id.card);
-            setIssuerIcon(view.getContext(), drawableCard);
-            setPaymentMethodIcon(view.getContext(), drawableCard);
+        cardView = view.findViewById(R.id.card);
 
-            cardView.getCard().setName(drawableCard.card.getName());
-            cardView.getCard().setExpiration(drawableCard.card.getDate());
-            cardView.getCard().setNumber(drawableCard.card.getNumber());
-            cardView.show(drawableCard.card);
-        } else {
-            throw new IllegalStateException("SavedCardFragment does not contain card information");
-        }
+        setIssuerIcon(view.getContext(), model);
+        setPaymentMethodIcon(view.getContext(), model);
+
+        cardView.getCard().setName(model.card.getName());
+        cardView.getCard().setExpiration(model.card.getDate());
+        cardView.getCard().setNumber(model.card.getNumber());
+        cardView.show(model.card);
     }
 
     protected void setIssuerIcon(@NonNull final Context context,
@@ -69,5 +62,13 @@ public class SavedCardFragment extends PaymentMethodFragment {
         if (paymentMethodResource > 0) {
             drawableCard.card.setLogoRes(paymentMethodResource);
         }
+    }
+
+    @Override
+    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+        super.disable(disabledPaymentMethod);
+        model.card.disable();
+        storeModel(model);
+        cardView.show(model.card);
     }
 }

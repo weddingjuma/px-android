@@ -18,15 +18,22 @@ import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
+import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import java.util.List;
 
 public interface ExpressPayment {
 
     interface View extends MvpView {
 
-        void configureAdapters(@NonNull List<DrawableFragmentItem> items, @NonNull final Site site,
-            @NonNull final Currency currency, @NonNull HubAdapter.Model paymentMethodViewModel);
+        void clearAdapters();
+
+        void configureAdapters(@NonNull final Site site, @NonNull final Currency currency);
+
+        void updateAdapters(@NonNull HubAdapter.Model model);
+
+        void updatePaymentMethods(@NonNull List<DrawableFragmentItem> items);
 
         void cancel();
 
@@ -70,6 +77,9 @@ public interface ExpressPayment {
 
         void showDiscountDetailDialog(@NonNull final Currency currency,
             @NonNull final DiscountConfigurationModel discountModel);
+
+        void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod,
+            @NonNull final StatusMetadata currentStatus);
 
         boolean isExploding();
 

@@ -7,24 +7,7 @@ import java.io.Serializable;
 public class AccountMoneyDisplayInfo implements Serializable, Parcelable {
 
     public String message;
-
     public String sliderTitle;
-
-    protected AccountMoneyDisplayInfo(Parcel in) {
-        message = in.readString();
-        sliderTitle = in.readString();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(message);
-        dest.writeString(sliderTitle);
-    }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
     public static final Creator<AccountMoneyDisplayInfo> CREATOR = new Creator<AccountMoneyDisplayInfo>() {
         @Override
@@ -37,4 +20,20 @@ public class AccountMoneyDisplayInfo implements Serializable, Parcelable {
             return new AccountMoneyDisplayInfo[size];
         }
     };
+
+    protected AccountMoneyDisplayInfo(final Parcel in) {
+        message = in.readString();
+        sliderTitle = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeString(message);
+        dest.writeString(sliderTitle);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 }

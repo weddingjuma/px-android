@@ -8,7 +8,7 @@ import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
-public class TitlePagerAdapter extends ViewAdapter<List<PaymentMethodDescriptorView.Model>, TitlePager> {
+public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescriptorView.Model>, TitlePager> {
 
     private static final int NO_SELECTED = -1;
 
@@ -17,9 +17,8 @@ public class TitlePagerAdapter extends ViewAdapter<List<PaymentMethodDescriptorV
     private PaymentMethodDescriptorView nextView;
     private int currentIndex = NO_SELECTED;
 
-    public TitlePagerAdapter(@NonNull final List<PaymentMethodDescriptorView.Model> models,
-        @NonNull final TitlePager titlePager) {
-        super(models, titlePager);
+    public TitlePagerAdapter(@NonNull final TitlePager titlePager) {
+        super(titlePager);
     }
 
     @Override
@@ -65,5 +64,10 @@ public class TitlePagerAdapter extends ViewAdapter<List<PaymentMethodDescriptorV
             final PaymentMethodDescriptorView.Model nextModel = data.get(currentIndex + 1);
             nextView.update(nextModel);
         }
+    }
+
+    @Override
+    public List<PaymentMethodDescriptorView.Model> getNewModels(final HubAdapter.Model model) {
+        return model.paymentMethodDescriptorModels;
     }
 }

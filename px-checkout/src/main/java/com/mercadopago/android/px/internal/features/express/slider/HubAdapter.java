@@ -6,10 +6,11 @@ import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
-import java.util.ArrayList;
 import java.util.List;
 
-public class HubAdapter extends ViewAdapter<List<ViewAdapter<?, ? extends View>>, View> {
+public class HubAdapter extends ViewAdapter<HubAdapter.Model, View> {
+
+    @NonNull private final List<? extends HubableAdapter> adapters;
 
     public static class Model {
 
@@ -29,13 +30,14 @@ public class HubAdapter extends ViewAdapter<List<ViewAdapter<?, ? extends View>>
         }
     }
 
-    public HubAdapter() {
-        super(new ArrayList<>());
+    public HubAdapter(@NonNull final List<? extends HubableAdapter> adapters) {
+        super(null);
+        this.adapters = adapters;
     }
 
     @Override
     public void showInstallmentsList() {
-        for (final ViewAdapter adapter : data) {
+        for (final HubableAdapter adapter : adapters) {
             adapter.showInstallmentsList();
         }
     }
@@ -43,14 +45,14 @@ public class HubAdapter extends ViewAdapter<List<ViewAdapter<?, ? extends View>>
     @Override
     public void updateData(final int currentIndex, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
-        for (final ViewAdapter adapter : data) {
+        for (final HubableAdapter adapter : adapters) {
             adapter.updateData(currentIndex, payerCostSelected, splitSelectionState);
         }
     }
 
     @Override
     public void updatePosition(final float positionOffset, final int position) {
-        for (final ViewAdapter adapter : data) {
+        for (final HubableAdapter adapter : adapters) {
             adapter.updatePosition(positionOffset, position);
         }
     }
@@ -58,8 +60,17 @@ public class HubAdapter extends ViewAdapter<List<ViewAdapter<?, ? extends View>>
     @Override
     public void updateViewsOrder(@NonNull final View previousView, @NonNull final View currentView,
         @NonNull final View nextView) {
-        for (final ViewAdapter adapter : data) {
+        for (final HubableAdapter adapter : adapters) {
             adapter.updateViewsOrder(previousView, currentView, nextView);
+        }
+    }
+
+    @Override
+    public void update(@NonNull final Model newData) {
+        super.update(newData);
+        for (final HubableAdapter adapter : adapters) {
+            //noinspection unchecked
+            adapter.update(adapter.getNewModels(data));
         }
     }
 }

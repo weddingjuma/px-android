@@ -18,11 +18,13 @@ public class SelectMethodChildView extends ViewTracker {
     @NonNull private final Map<String, Object> data;
 
     public SelectMethodChildView(final PaymentMethodSearch paymentMethodSearch,
-        @NonNull final PaymentMethodSearchItem selected, @NonNull final CheckoutPreference preference) {
+        @NonNull final PaymentMethodSearchItem selected, @NonNull final CheckoutPreference preference,
+        final int disabledMethodsQuantity) {
         parentId = selected.getId();
-        List<PaymentMethodSearchItem> children = selected.getChildren();
+        final List<PaymentMethodSearchItem> children = selected.getChildren();
         data = new SelectMethodData(new FromPaymentMethodSearchItemToAvailableMethod(paymentMethodSearch).map(children),
-            new FromItemToItemInfo().map(preference.getItems()), preference.getTotalAmount()).toMap();
+            new FromItemToItemInfo().map(preference.getItems()), preference.getTotalAmount(), disabledMethodsQuantity)
+            .toMap();
     }
 
     @NonNull

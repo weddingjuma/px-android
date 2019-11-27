@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -191,7 +192,7 @@ public class PaymentMethodSearch implements Serializable {
 
             //Case like "pagofacil", without the payment type in the item id.
             if (itemMatchesPaymentMethod(currentItem, paymentMethod) &&
-                    currentItem.getId().equals(paymentMethod.getId())) {
+                currentItem.getId().equals(paymentMethod.getId())) {
                 requiredItem = currentItem;
                 break;
             }
@@ -257,7 +258,6 @@ public class PaymentMethodSearch implements Serializable {
     }
 
     /**
-     *
      * @return cards or empty arraylist.
      * @deprecated the card info has been moved to custom option items.
      */
@@ -270,16 +270,16 @@ public class PaymentMethodSearch implements Serializable {
     /**
      * @return the list of express options for the user to select.
      */
-    @Nullable
+    @NonNull
     public List<ExpressMetadata> getExpress() {
-        return express;
+        return express != null ? express : Collections.emptyList();
     }
 
     /**
      * @return boolean that represents if there is express information.
      */
     public boolean hasExpressCheckoutMetadata() {
-        return getExpress() != null && !getExpress().isEmpty();
+        return !getExpress().isEmpty();
     }
 
     public boolean hasCustomSearchItems() {

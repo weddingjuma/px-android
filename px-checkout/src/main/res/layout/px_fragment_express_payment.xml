@@ -68,14 +68,8 @@
         android:id="@+id/installments_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@id/badge_offset"
+        app:layout_constraintBottom_toTopOf="@id/container"
         app:layout_constraintTop_toBottomOf="@id/labeledSwitch"/>
-
-    <Space
-        android:id="@+id/badge_offset"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/px_badge_offset"
-        app:layout_constraintTop_toTopOf="@id/container"/>
 
     <LinearLayout
         android:id="@+id/container"

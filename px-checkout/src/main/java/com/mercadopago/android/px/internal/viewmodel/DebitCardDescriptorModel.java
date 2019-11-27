@@ -8,7 +8,6 @@ import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.textformatter.AmountLabeledFormatter;
-import com.mercadopago.android.px.internal.util.textformatter.SpannableFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.model.AmountConfiguration;
@@ -25,17 +24,15 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
     private final AmountConfiguration amountConfiguration;
 
     @NonNull
-    public static PaymentMethodDescriptorView.Model createFrom(
-        @NonNull final Currency currency,
-        @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
-        return new DebitCardDescriptorModel(currency, amountConfiguration, disabledPaymentMethod);
+    public static PaymentMethodDescriptorView.Model createFrom(@NonNull final Currency currency,
+        @NonNull final AmountConfiguration amountConfiguration) {
+        return new DebitCardDescriptorModel(currency, amountConfiguration);
     }
 
     private DebitCardDescriptorModel(@NonNull final Currency currency,
-        @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
+        @NonNull final AmountConfiguration amountConfiguration) {
         this.currency = currency;
         this.amountConfiguration = amountConfiguration;
-        this.disabledPaymentMethod = disabledPaymentMethod;
     }
 
     @Override
@@ -43,14 +40,7 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
         @NonNull final TextView textView) {
         final Context context = textView.getContext();
 
-        if (disabledPaymentMethod) {
-            final SpannableFormatter amountLabeledFormatter =
-                new SpannableFormatter(spannableStringBuilder, context)
-                    .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey));
-            amountLabeledFormatter.apply(R.string.px_payment_method_disable_card_title);
-        } else {
-            updateInstallment(spannableStringBuilder, context, textView);
-        }
+        updateInstallment(spannableStringBuilder, context, textView);
     }
 
     private void updateInstallment(@NonNull final SpannableStringBuilder spannableStringBuilder,

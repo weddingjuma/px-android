@@ -18,9 +18,11 @@ public class OneTapViewTracker extends ViewTracker {
         @NonNull final CheckoutPreference checkoutPreference,
         @NonNull final DiscountConfigurationModel discountModel,
         @NonNull final Set<String> cardsWithEsc,
-        @NonNull final Set<String> cardsWithSplit) {
+        @NonNull final Set<String> cardsWithSplit,
+        final int disabledMethodsQuantity) {
         data =
-            OneTapData.createFrom(expressMetadataList, checkoutPreference, discountModel, cardsWithEsc, cardsWithSplit)
+            OneTapData.createFrom(expressMetadataList, checkoutPreference, discountModel, cardsWithEsc, cardsWithSplit,
+                disabledMethodsQuantity)
                 .toMap();
     }
 

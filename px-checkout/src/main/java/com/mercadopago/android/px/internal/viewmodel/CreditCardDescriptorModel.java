@@ -11,7 +11,6 @@ import com.mercadopago.android.px.internal.util.textformatter.AmountLabeledForma
 import com.mercadopago.android.px.internal.util.textformatter.CFTFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.InterestFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.PayerCostFormatter;
-import com.mercadopago.android.px.internal.util.textformatter.SpannableFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.model.AmountConfiguration;
@@ -29,11 +28,9 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
     private final AmountConfiguration amountConfiguration;
 
     @NonNull
-    public static PaymentMethodDescriptorView.Model createFrom(
-        @NonNull final Currency currency,
-        @NonNull final AmountConfiguration amountConfiguration,
-        final boolean disabledPaymentMethod) {
-        return new CreditCardDescriptorModel(currency, amountConfiguration, disabledPaymentMethod);
+    public static PaymentMethodDescriptorView.Model createFrom(@NonNull final Currency currency,
+        @NonNull final AmountConfiguration amountConfiguration) {
+        return new CreditCardDescriptorModel(currency, amountConfiguration);
     }
 
     @Override
@@ -42,27 +39,19 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
     }
 
     private CreditCardDescriptorModel(@NonNull final Currency currency,
-        @NonNull final AmountConfiguration amountConfiguration, final boolean disabledPaymentMethod) {
+        @NonNull final AmountConfiguration amountConfiguration) {
         this.currency = currency;
         this.amountConfiguration = amountConfiguration;
-        this.disabledPaymentMethod = disabledPaymentMethod;
     }
 
     @Override
     public void updateSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final TextView textView) {
         final Context context = textView.getContext();
-        if (disabledPaymentMethod) {
-            final SpannableFormatter amountLabeledFormatter =
-                new SpannableFormatter(spannableStringBuilder, context)
-                    .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey));
-            amountLabeledFormatter.apply(R.string.px_payment_method_disable_card_title);
-        } else {
-            updateInstallment(spannableStringBuilder, context, textView);
-            updateTotalAmountDescriptionSpannable(spannableStringBuilder, context);
-            updateInterestDescriptionSpannable(spannableStringBuilder, context);
-            updateCFTSpannable(spannableStringBuilder, context);
-        }
+        updateInstallment(spannableStringBuilder, context, textView);
+        updateTotalAmountDescriptionSpannable(spannableStringBuilder, context);
+        updateInterestDescriptionSpannable(spannableStringBuilder, context);
+        updateCFTSpannable(spannableStringBuilder, context);
     }
 
     private void updateInstallment(@NonNull final SpannableStringBuilder spannableStringBuilder,
@@ -90,8 +79,7 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
         @NonNull final Context context) {
         if (BigDecimal.ZERO.compareTo(getCurrent().getInstallmentRate()) < 0) {
             final PayerCostFormatter payerCostFormatter =
-                new PayerCostFormatter(spannableStringBuilder, context,
-                    getCurrent(), currency)
+                new PayerCostFormatter(spannableStringBuilder, context, getCurrent(), currency)
                     .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey));
             payerCostFormatter.apply();
         }
@@ -100,8 +88,10 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
     private void updateInterestDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
         if (getCurrent().getInstallments() > 1 && BigDecimal.ZERO.compareTo(getCurrent().getInstallmentRate()) == 0) {
-            final InterestFormatter interestFormatter = new InterestFormatter(spannableStringBuilder, context)
-                .withTextColor(ContextCompat.getColor(context, R.color.px_discount_description));
+            final InterestFormatter interestFormatter =
+                new InterestFormatter(spannableStringBuilder, context)
+                    .withTextColor(
+                        ContextCompat.getColor(context, R.color.px_discount_description));
             interestFormatter.apply();
         }
     }

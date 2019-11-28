@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.services;
 
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import retrofit2.http.GET;
@@ -17,5 +18,5 @@ public interface PaymentRewardService {
         @Query("payment_ids") String paymentIds,
         @Query("platform") String platform,
         @Query("campaign_id") String campaignId,
-        @Query("flow_name") String flowName);
+        @Nullable @Query("flow_name") String flowName);
 }

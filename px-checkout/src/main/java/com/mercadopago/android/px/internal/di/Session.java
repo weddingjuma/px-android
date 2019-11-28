@@ -450,7 +450,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
             paymentRewardRepository =
                 new PaymentRewardRepositoryImpl(getPaymentRewardCache(), paymentRewardService,
                     paymentSettings.getPrivateKey(), getPlatform(applicationContext),
-                    LocaleUtil.getLanguage(getApplicationContext()));
+                    LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName());
         }
         return paymentRewardRepository;
     }

@@ -4,6 +4,7 @@
 ![GitHub tag](https://img.shields.io/github/tag/mercadopago/px-android.svg)
 ![GitHub top language](https://img.shields.io/github/languages/top/mercadopago/px-android.svg)
 
+#### ⚠️ PX-Android 4.28.0 is the last version with minimum API level 16 ⚠️
 
 ![Screenshot MercadoPago](https://i.imgur.com/ZaqavRJ.jpg)
 

@@ -14,6 +14,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.BuildConfig;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 
 public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
 
@@ -56,7 +57,8 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         @NonNull final Callback<PaymentReward> serviceCallback) {
         final String joinedPaymentIds = TextUtil.join(payment.getPaymentIds());
         paymentRewardService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, privateKey,
-            joinedPaymentIds, platform, campaignId).enqueue(serviceCallback);
+            joinedPaymentIds, platform, campaignId, MPTracker.getInstance().getFlowName())
+                .enqueue(serviceCallback);
     }
 
     private Callback<PaymentReward> getServiceCallback(@NonNull final IPaymentDescriptor payment,

@@ -16,5 +16,6 @@ public interface PaymentRewardService {
         @Query("access_token") String accessToken,
         @Query("payment_ids") String paymentIds,
         @Query("platform") String platform,
-        @Query("campaign_id") String campaignId);
+        @Query("campaign_id") String campaignId,
+        @Query("flow_name") String flowName);
 }

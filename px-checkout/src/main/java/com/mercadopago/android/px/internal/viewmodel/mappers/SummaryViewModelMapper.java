@@ -60,15 +60,6 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
             discountRepository.getConfigurationFor(expressPaymentMethod.getCustomOptionId()));
     }
 
-    //TODO remove when add card node comes from backend
-    @Override
-    public List<SummaryView.Model> map(@NonNull final Iterable<ExpressPaymentMethod> val) {
-        if (val instanceof Collection) {
-            ((Collection<ExpressPaymentMethod>) val).add(getAddCardNode());
-        }
-        return super.map(val);
-    }
-
     @NonNull
     private SummaryView.Model createModel(@NonNull final String paymentTypeId,
         @NonNull final DiscountConfigurationModel discountModel) {
@@ -83,37 +74,5 @@ public class SummaryViewModelMapper extends CacheableMapper<ExpressPaymentMethod
             new SummaryViewDefaultColor());
 
         return new SummaryView.Model(elementDescriptorModel, summaryDetailList, totalRow);
-    }
-
-    @NonNull
-    private ExpressPaymentMethod getAddCardNode() {
-        return new ExpressPaymentMethod() {
-            @Override
-            public String getPaymentMethodId() {
-                return "";
-            }
-
-            @Override
-            public String getPaymentTypeId() {
-                return "";
-            }
-
-            @Nullable
-            @Override
-            public CardMetadata getCard() {
-                return null;
-            }
-
-            @Override
-            public boolean isCard() {
-                return false;
-            }
-
-            @NonNull
-            @Override
-            public String getCustomOptionId() {
-                return getPaymentMethodId();
-            }
-        };
     }
 }

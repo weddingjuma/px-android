@@ -132,7 +132,6 @@ public class ExpressPaymentPresenterTest {
         when(expressMetadata.getCustomOptionId()).thenReturn("123");
         when(cardMetadata.getId()).thenReturn("123");
         when(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel);
-        when(discountRepository.getConfigurationFor(TextUtil.EMPTY)).thenReturn(discountConfigurationModel);
         when(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration);
 
         expressPaymentPresenter =

@@ -1,3 +1,11 @@
+## VERSION 4.28.0
+_28_11_2019_
+* FEATURE - Improved one tap flow
+* ENHANCEMENT - Added Order and Merchant Order Id into checkout preference
+* ENHANCEMENT - Added flow name to payment rewards call
+* ENHANCEMENT - Upgraded to meli ui 8
+* FIX - Fixed some congrats font sizes and styles
+
 ## VERSION 4.27.1
 _14_11_2019_
 * ENHANCEMENT - Added upward compatibility with picasso 2.7

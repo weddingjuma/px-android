@@ -31,6 +31,7 @@ import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Site;
+import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
@@ -130,6 +131,7 @@ public class ExpressPaymentPresenterTest {
         when(expressMetadata.getCard()).thenReturn(cardMetadata);
         when(expressMetadata.isCard()).thenReturn(true);
         when(expressMetadata.getCustomOptionId()).thenReturn("123");
+        when(expressMetadata.getStatus()).thenReturn(mock(StatusMetadata.class));
         when(cardMetadata.getId()).thenReturn("123");
         when(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel);
         when(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration);

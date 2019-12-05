@@ -1,3 +1,9 @@
+## VERSION 4.29.0
+_05_12_2019_
+* FEATURE - Benefits one tap flow
+* ENHANCEMENT - Upgraded to Android min API level 19
+* ENHANCEMENT - Upgraded to Meli card drawer 2
+
 ## VERSION 4.28.0
 _28_11_2019_
 * FEATURE - Improved one tap flow

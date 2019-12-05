@@ -356,9 +356,7 @@ public class ExplodingFragment extends Fragment {
 
         // lock the orientation during the loading
         previousOrientation = getResources().getConfiguration().orientation;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
-        }
+        getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
     }
 
     private void configureListener(final Context context) {

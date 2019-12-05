@@ -113,11 +113,7 @@ public class AccreditationTime extends CompactComponent<AccreditationTime.Props,
             drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
 
             messageTextView.setText(textSpan);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                messageTextView.setCompoundDrawablesRelative(drawable, null, null, null);
-            } else {
-                messageTextView.setCompoundDrawables(drawable, null, null, null);
-            }
+            messageTextView.setCompoundDrawablesRelative(drawable, null, null, null);
             messageTextView.setVisibility(View.VISIBLE);
         }
     }

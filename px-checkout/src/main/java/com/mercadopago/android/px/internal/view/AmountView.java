@@ -128,10 +128,7 @@ public class AmountView extends LinearLayoutCompat {
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) amountContainer.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.addRule(RelativeLayout.ALIGN_PARENT_END);
-        }
+        params.addRule(RelativeLayout.ALIGN_PARENT_END);
 
         amountContainer.setLayoutParams(params);
         arrow.setVisibility(GONE);
@@ -164,11 +161,8 @@ public class AmountView extends LinearLayoutCompat {
 
         final RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) amountContainer.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT, 0);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-            params.removeRule(RelativeLayout.ALIGN_PARENT_END);
-        }
+        params.removeRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.removeRule(RelativeLayout.ALIGN_PARENT_END);
 
         amountContainer.setLayoutParams(params);
     }

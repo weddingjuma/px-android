@@ -24,9 +24,9 @@ public class SavedCardDrawableFragmentItem extends DrawableFragmentItem {
     };
 
     public SavedCardDrawableFragmentItem(@NonNull final String paymentMethodId,
-        @NonNull final CardDrawerConfiguration card, @NonNull final String cardId,
+        @NonNull final CardDrawerConfiguration card, @NonNull final String cardId, final String highlightMessage,
         @NonNull final StatusMetadata status) {
-        super(cardId, status);
+        super(cardId, highlightMessage, status);
         this.paymentMethodId = paymentMethodId;
         this.card = card;
     }
@@ -47,11 +47,6 @@ public class SavedCardDrawableFragmentItem extends DrawableFragmentItem {
     @Override
     public Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer) {
         return drawer.draw(this);
-    }
-
-    @Override
-    public String getType() {
-        return getClass().getSimpleName();
     }
 
     @Override

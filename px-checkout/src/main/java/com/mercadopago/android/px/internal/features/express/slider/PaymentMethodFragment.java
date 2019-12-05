@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -14,13 +15,19 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BaseFragment;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
+import com.mercadopago.android.px.internal.features.express.animations.BottomSlideAnimationSet;
+import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import java.util.Arrays;
 
 public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
-    extends BaseFragment<PaymentMethodPresenter, T> implements PaymentMethod.View {
+    extends BaseFragment<PaymentMethodPresenter, T> implements PaymentMethod.View, Focusable {
 
     private CardView card;
+    private BottomSlideAnimationSet animation;
+    private boolean focused;
 
     @Override
     protected PaymentMethodPresenter createPresenter() {
@@ -28,10 +35,29 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
             Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(), model);
     }
 
+    @Override
+    public void onAttach(final Context context) {
+        super.onAttach(context);
+        animation = new BottomSlideAnimationSet();
+    }
+
+    @Override
+    public void onDetach() {
+        animation = null;
+        super.onDetach();
+    }
+
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         card = view.findViewById(R.id.payment_method);
+        final View highlightContainer = view.findViewById(R.id.highlight_container);
+        final MPTextView highlightText = view.findViewById(R.id.highlight_text);
+        highlightText.setText(model.getHighlightMessage());
+        animation.initialize(Arrays.asList(highlightContainer, highlightText));
+        if (hasFocus()) {
+            onFocusIn();
+        }
         presenter.attachView(this);
     }
 
@@ -39,6 +65,41 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     public void onResume() {
         super.onResume();
         presenter.onViewResumed();
+    }
+
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser) {
+            onFocusIn();
+        } else {
+            onFocusOut();
+        }
+    }
+
+    @Override
+    public void onFocusIn() {
+        focused = true;
+        if (hasToHighlight()) {
+            animation.slideUp();
+        }
+    }
+
+    @Override
+    public void onFocusOut() {
+        focused = false;
+        if (hasToHighlight()) {
+            animation.slideDown();
+        }
+    }
+
+    @Override
+    public boolean hasFocus() {
+        return focused;
+    }
+
+    private boolean hasToHighlight() {
+        return animation != null && TextUtil.isNotEmpty(model.getHighlightMessage());
     }
 
     @Override

@@ -66,6 +66,8 @@
                 app:layout_constraintVertical_chainStyle="spread"
                 tools:text="Al confirmar, aceptás los términos generales y las condiciones particulares de este préstamo." />
 
+            <include layout="@layout/highlight_text_low_res" />
+
         </android.support.constraint.ConstraintLayout>
     </android.support.v7.widget.CardView>
 </FrameLayout>

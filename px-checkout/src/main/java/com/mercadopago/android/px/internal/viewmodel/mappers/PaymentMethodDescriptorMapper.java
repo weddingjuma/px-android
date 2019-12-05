@@ -12,11 +12,8 @@ import com.mercadopago.android.px.internal.viewmodel.EmptyInstallmentsDescriptor
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PaymentTypes;
-import java.util.ArrayList;
-import java.util.List;
 
-public class PaymentMethodDescriptorMapper
-    extends Mapper<List<ExpressMetadata>, List<PaymentMethodDescriptorView.Model>> {
+public class PaymentMethodDescriptorMapper extends Mapper<ExpressMetadata, PaymentMethodDescriptorView.Model> {
 
     @NonNull private final Currency currency;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
@@ -31,23 +28,9 @@ public class PaymentMethodDescriptorMapper
     }
 
     @Override
-    public List<PaymentMethodDescriptorView.Model> map(@NonNull final List<ExpressMetadata> expressMetadataList) {
-        final List<PaymentMethodDescriptorView.Model> models = new ArrayList<>();
-
-        for (final ExpressMetadata expressMetadata : expressMetadataList) {
-            models.add(createInstallmentsDescriptorModel(expressMetadata));
-        }
-        //Last card is Add new payment method card
-        models.add(createAddNewPaymentModel());
-
-        return models;
-    }
-
-    private PaymentMethodDescriptorView.Model createInstallmentsDescriptorModel(
-        final ExpressMetadata expressMetadata) {
+    public PaymentMethodDescriptorView.Model map(@NonNull final ExpressMetadata expressMetadata) {
         final String paymentTypeId = expressMetadata.getPaymentTypeId();
-        final String customOptionId =
-            expressMetadata.isCard() ? expressMetadata.getCard().getId() : expressMetadata.getPaymentMethodId();
+        final String customOptionId = expressMetadata.getCustomOptionId();
 
         if (disabledPaymentMethodRepository.hasPaymentMethodId(customOptionId)) {
             return DisabledPaymentMethodDescriptorModel.createFrom(expressMetadata.getStatus().getMainMessage());
@@ -64,9 +47,5 @@ public class PaymentMethodDescriptorMapper
         } else {
             return EmptyInstallmentsDescriptorModel.create();
         }
-    }
-
-    private PaymentMethodDescriptorView.Model createAddNewPaymentModel() {
-        return EmptyInstallmentsDescriptorModel.create();
     }
 }

@@ -43,11 +43,13 @@
     <dimen name="px_xs_margin">12dp</dimen>
     <dimen name="px_xxs_margin">8dp</dimen>
     <dimen name="px_xxxs_margin">4dp</dimen>
+    <dimen name="px_xxxxs_margin">2dp</dimen>
 
     <dimen name="px_xl_alternative_margin">38dp</dimen>
     <dimen name="px_l_alternative_margin">30dp</dimen>
     <dimen name="px_m_alternative_margin">25dp</dimen>
     <dimen name="px_m_alternative_1_margin">22dp</dimen>
+    <dimen name="px_m_alternative_2_margin">18dp</dimen>
     <dimen name="px_s_alternative_margin">15dp</dimen>
     <dimen name="px_s_alternative_1_margin">14dp</dimen>
     <dimen name="px_xs_alternative_1_margin">11dp</dimen>

@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.model.AccountMoneyMetadata;
-import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.StatusMetadata;
 
 public class AccountMoneyDrawableFragmentItem extends DrawableFragmentItem {
@@ -25,8 +24,8 @@ public class AccountMoneyDrawableFragmentItem extends DrawableFragmentItem {
         };
 
     public AccountMoneyDrawableFragmentItem(@NonNull final AccountMoneyMetadata metadata,
-        @NonNull final String paymentMethodId, @NonNull final StatusMetadata status) {
-        super(paymentMethodId, status);
+        @NonNull final String paymentMethodId, final String highlightMessage, @NonNull final StatusMetadata status) {
+        super(paymentMethodId, highlightMessage, status);
         this.metadata = metadata;
     }
 
@@ -44,11 +43,6 @@ public class AccountMoneyDrawableFragmentItem extends DrawableFragmentItem {
     @Override
     public Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer) {
         return drawer.draw(this);
-    }
-
-    @Override
-    public String getType() {
-        return PaymentTypes.ACCOUNT_MONEY;
     }
 
     @Override

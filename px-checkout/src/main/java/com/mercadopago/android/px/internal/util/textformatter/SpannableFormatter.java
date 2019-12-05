@@ -5,16 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
-import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 
 public class SpannableFormatter extends ChainFormatter {
-
+    private static final String SEPARATOR = " ";
     private int textColor;
     private final Context context;
     private final SpannableStringBuilder spannableStringBuilder;
     private PxFont font;
+    private boolean hasSpace;
 
     public SpannableFormatter(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
@@ -38,6 +38,11 @@ public class SpannableFormatter extends ChainFormatter {
         return this;
     }
 
+    public SpannableFormatter withSpace() {
+        hasSpace = true;
+        return this;
+    }
+
     public Spannable apply(@StringRes final int resId) {
         return apply(context.getString(resId));
     }
@@ -46,19 +51,16 @@ public class SpannableFormatter extends ChainFormatter {
     public Spannable apply(final CharSequence text) {
         final int indexStart = spannableStringBuilder.length();
 
-        final int holder = R.string.px_string_holder;
-        final CharSequence charSequence = context.getResources().getString(holder, text);
-        spannableStringBuilder.append(charSequence);
+        if (hasSpace) {
+            spannableStringBuilder.append(SEPARATOR);
+        }
+        spannableStringBuilder.append(text);
 
-        final int length = charSequence.length();
+        final int length = hasSpace ? SEPARATOR.length() + text.length() : text.length();
 
         ViewUtils.setColorInSpannable(textColor, indexStart, indexStart + length, spannableStringBuilder);
-        updateTextStyle(indexStart, indexStart + length);
+        ViewUtils.setFontInSpannable(context, font, spannableStringBuilder, indexStart, indexStart + length);
 
         return spannableStringBuilder;
-    }
-
-    private void updateTextStyle(final int indexStart, final int indexEnd) {
-        ViewUtils.setFontInSpannable(context, font, spannableStringBuilder, indexStart, indexEnd);
     }
 }

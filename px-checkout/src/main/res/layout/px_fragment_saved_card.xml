@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -15,12 +16,24 @@
         app:cardElevation="2dp"
         app:cardPreventCornerOverlap="false">
 
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
         <com.meli.android.carddrawer.model.CardDrawerView
             android:id="@+id/card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:card_header_behaviour="responsive"
-            app:card_header_internal_padding="0dp" />
+            app:card_header_internal_padding="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+            <include layout="@layout/highlight_text" />
+
+        </android.support.constraint.ConstraintLayout>
 
     </android.support.v7.widget.CardView>
 </FrameLayout>

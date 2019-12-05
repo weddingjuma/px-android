@@ -254,7 +254,7 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     public void showInstallments(final List<PayerCost> payerCostList) {
         showHeader();
         final InstallmentsAdapter installmentsAdapter =
-            new InstallmentsAdapter(configuration.getSite(), configuration.getCurrency(), payerCostList, presenter);
+            new InstallmentsAdapter(configuration.getCurrency(), payerCostList, presenter);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
     }
 

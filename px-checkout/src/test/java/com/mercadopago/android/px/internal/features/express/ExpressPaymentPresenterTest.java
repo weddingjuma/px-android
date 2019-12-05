@@ -128,11 +128,9 @@ public class ExpressPaymentPresenterTest {
         when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
         when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(initResponse));
         when(initResponse.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
-        when(expressMetadata.getCard()).thenReturn(cardMetadata);
         when(expressMetadata.isCard()).thenReturn(true);
         when(expressMetadata.getCustomOptionId()).thenReturn("123");
         when(expressMetadata.getStatus()).thenReturn(mock(StatusMetadata.class));
-        when(cardMetadata.getId()).thenReturn("123");
         when(discountRepository.getConfigurationFor("123")).thenReturn(discountConfigurationModel);
         when(amountConfigurationRepository.getConfigurationFor("123")).thenReturn(amountConfiguration);
 

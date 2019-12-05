@@ -260,7 +260,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider(),
-            new PaymentMethodDrawableItemMapper(getContext()));
+            new PaymentMethodDrawableItemMapper(getContext(), session.getConfigurationModule().getChargeSolver(),
+                session.getAmountConfigurationRepository()));
     }
 
     @Override
@@ -325,7 +326,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void configureAdapters(@NonNull final Site site, @NonNull final Currency currency) {
-        installmentsAdapter = new InstallmentsAdapter(site, currency, new ArrayList<>(), PayerCost.NO_SELECTED, this);
+        installmentsAdapter = new InstallmentsAdapter(currency, new ArrayList<>(), this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
         installmentsRecyclerView.setVisibility(View.GONE);
 

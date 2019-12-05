@@ -8,49 +8,48 @@ import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.Site;
 import java.util.List;
 
+import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 import static com.mercadopago.android.px.model.PayerCost.NO_SELECTED;
 
 public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHolder> {
 
-    @NonNull private final Site site;
     @NonNull private final Currency currency;
     @NonNull private List<PayerCost> payerCosts;
     private int payerCostSelected;
     @NonNull private final ItemListener itemListener;
+    private boolean hasReimbursement;
 
     public interface ItemListener {
         void onClick(final PayerCost payerCostSelected);
     }
 
-    public InstallmentsAdapter(@NonNull final Site site, @NonNull final Currency currency,
-        @NonNull final List<PayerCost> payerCosts, @NonNull final ItemListener itemListener) {
-        this.site = site;
+    public InstallmentsAdapter(@NonNull final Currency currency, @NonNull final List<PayerCost> payerCosts,
+        @NonNull final ItemListener itemListener) {
         this.currency = currency;
         this.payerCosts = payerCosts;
         this.itemListener = itemListener;
         payerCostSelected = NO_SELECTED;
-    }
-
-    public InstallmentsAdapter(@NonNull final Site site, @NonNull final Currency currency,
-        @NonNull final List<PayerCost> payerCosts,
-        final int payerCostSelected,
-        @NonNull final ItemListener itemListener) {
-        this.site = site;
-        this.currency = currency;
-        this.payerCosts = payerCosts;
-        this.payerCostSelected = payerCostSelected;
-        this.itemListener = itemListener;
+        hasReimbursement = hasReimbursement(payerCosts);
     }
 
     public void setPayerCosts(@NonNull final List<PayerCost> payerCosts) {
         this.payerCosts = payerCosts;
+        hasReimbursement = hasReimbursement(payerCosts);
     }
 
     public void setPayerCostSelected(final int payerCostSelected) {
         this.payerCostSelected = payerCostSelected;
+    }
+
+    private boolean hasReimbursement(@NonNull final Iterable<PayerCost> payerCosts) {
+        boolean hasReimbursement = false;
+        for (final PayerCost payerCost : payerCosts) {
+            hasReimbursement |=
+                payerCost.getReimbursement() != null && !isEmpty(payerCost.getReimbursement().getMessage());
+        }
+        return hasReimbursement;
     }
 
     @NonNull
@@ -63,8 +62,7 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
 
     @Override
     public void onBindViewHolder(@NonNull final InstallmentRowHolder holder, final int position) {
-        holder.populate(itemListener, site, currency, payerCosts.get(position));
-
+        holder.populate(itemListener, currency, payerCosts.get(position), hasReimbursement);
         if (position == payerCostSelected) {
             holder.highLight();
         } else {

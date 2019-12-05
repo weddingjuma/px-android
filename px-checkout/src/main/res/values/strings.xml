@@ -278,6 +278,9 @@
     <!-- Disable payment method title pager -->
     <string name="px_payment_method_disable_title">You can not use this payment method</string>
 
+    <string name="px_installments_info">Pay in up to {0} installments</string>
+    <string name="px_installments_interest_free_info">Up to {0} installments without interest</string>
+
     <!-- Card Drawer -->
     <string name="px_card_aspect_ratio" translatable="false">H,256:158</string>
     <string name="px_card_aspect_ratio_lowres" translatable="false">H,256:94</string>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/highlight_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:visibility="invisible"
+    app:layout_constraintBottom_toBottomOf="parent"
+    tools:showIn="@layout/px_fragment_saved_card"
+    tools:visibility="visible"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/shadow_top">
+    </View>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/px_color_highlight">
+
+        <com.mercadopago.android.px.internal.view.MPTextView
+            android:id="@+id/highlight_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/px_xxxxs_margin"
+            android:textAlignment="center"
+            android:textColor="@color/ui_meli_white"
+            android:textSize="@dimen/px_xxxs_text"
+            android:visibility="invisible"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:customStyle="semi_bold"
+            tools:text="Ahorro con tu banco"
+            tools:visibility="visible" />
+    </FrameLayout>
+</LinearLayout>

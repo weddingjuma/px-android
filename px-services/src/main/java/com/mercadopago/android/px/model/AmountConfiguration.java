@@ -4,6 +4,7 @@ import android.support.annotation.Keep;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public final class AmountConfiguration implements Serializable {
     /**
      * Payer cost configuration for single payment method selection
      */
-    @NonNull private List<PayerCost> payerCosts;
+    private List<PayerCost> payerCosts;
 
     /**
      * Split payment node it it applies.
@@ -37,7 +38,7 @@ public final class AmountConfiguration implements Serializable {
 
     @NonNull
     public List<PayerCost> getPayerCosts() {
-        return payerCosts;
+        return payerCosts != null ? payerCosts : Collections.emptyList();
     }
 
     public boolean allowSplit() {

@@ -24,8 +24,8 @@ public class ConsumerCreditsDrawableFragmentItem extends DrawableFragmentItem {
         };
 
     public ConsumerCreditsDrawableFragmentItem(@NonNull final ConsumerCreditsMetadata metadata,
-        @NonNull final String paymentMethodId, @NonNull final StatusMetadata status) {
-        super(paymentMethodId, status);
+        @NonNull final String paymentMethodId, final String highlightMessage, @NonNull final StatusMetadata status) {
+        super(paymentMethodId, highlightMessage, status);
         this.metadata = metadata;
     }
 
@@ -43,11 +43,6 @@ public class ConsumerCreditsDrawableFragmentItem extends DrawableFragmentItem {
     @Override
     public Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer) {
         return drawer.draw(this);
-    }
-
-    @Override
-    public String getType() {
-        return getClass().getSimpleName();
     }
 
     @Override

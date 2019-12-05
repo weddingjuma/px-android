@@ -25,7 +25,7 @@ public class AddNewCardFragmentDrawableFragmentItem extends DrawableFragmentItem
 
     public AddNewCardFragmentDrawableFragmentItem(@NonNull final String id, @NonNull final StatusMetadata status,
         @NonNull final NewCardMetadata metadata) {
-        super(id, status);
+        super(id, null, status);
         this.metadata = metadata;
     }
 
@@ -43,11 +43,6 @@ public class AddNewCardFragmentDrawableFragmentItem extends DrawableFragmentItem
     @Override
     public Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer) {
         return drawer.draw(this);
-    }
-
-    @Override
-    public String getType() {
-        return getClass().getSimpleName();
     }
 
     @Override

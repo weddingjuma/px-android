@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.view;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.util.ChargeRuleHelper;
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.ChargeLocalized;
 import com.mercadopago.android.px.internal.viewmodel.DiscountAmountLocalized;
@@ -46,7 +47,7 @@ public class SummaryDetailDescriptorFactory {
         final List<AmountDescriptorView.Model> list = new ArrayList<>();
 
         addDiscountRow(list);
-        if (chargeRule != null) {
+        if (chargeRule != null && !ChargeRuleHelper.isHighlightCharge(chargeRule)) {
             addChargesRow(list);
         }
         addTotalRow(list);

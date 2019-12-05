@@ -14,7 +14,6 @@ import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewCompat;
 import android.text.Spannable;
 import android.text.style.ForegroundColorSpan;
@@ -34,8 +33,9 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.view.MPEditText;
+import com.mercadopago.android.px.internal.view.MPTextView;
+import com.mercadopago.android.px.model.internal.Text;
 import com.squareup.picasso.Callback;
-import com.squareup.picasso.Picasso;
 
 public final class ViewUtils {
 
@@ -79,6 +79,17 @@ public final class ViewUtils {
                 .into(logo, callback);
         } else {
             callback.onError();
+        }
+    }
+
+    public static boolean loadOrHide(final int visibility, @Nullable final Text text, @NonNull final MPTextView view) {
+        if (text == null || TextUtil.isEmpty(text.getMessage())) {
+            view.setVisibility(visibility);
+            return false;
+        } else {
+            view.setText(text);
+            view.setVisibility(View.VISIBLE);
+            return true;
         }
     }
 

@@ -36,7 +36,7 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
     }
 
     @Override
-    public void updateSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
+    public void updateLeftSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final TextView textView) {
         final Context context = textView.getContext();
 

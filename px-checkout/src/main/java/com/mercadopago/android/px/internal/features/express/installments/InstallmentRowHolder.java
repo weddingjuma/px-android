@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express.installments;
 
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -8,54 +9,69 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.font.FontHelper;
+import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
+import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.Site;
-import java.math.BigDecimal;
 import java.util.Locale;
 
 //TODO unify with normal installments.
 
 /* default */ class InstallmentRowHolder extends RecyclerView.ViewHolder {
 
-    private final TextView installmentsTextView;
-    private final TextView zeroRateText;
-    private final TextView totalText;
-    private final View highlight;
+    private final View container;
+    private final TextView installmentsText;
+    private final MPTextView reimbursement;
+    private final MPTextView installmentsInterestTop;
+    private final MPTextView installmentsInterestCenter;
 
     /* default */ InstallmentRowHolder(final View itemView) {
         super(itemView);
-        installmentsTextView = itemView.findViewById(R.id.mpsdkInstallmentsText);
-        zeroRateText = itemView.findViewById(R.id.mpsdkInstallmentsZeroRate);
-        totalText = itemView.findViewById(R.id.mpsdkInstallmentsWithRate);
-        highlight = itemView.findViewById(R.id.highlight);
+        container = itemView.findViewById(R.id.container);
+        installmentsText = itemView.findViewById(R.id.mpsdkInstallmentsText);
+        installmentsInterestTop = itemView.findViewById(R.id.mpsdkInstallmentsInterestTop);
+        reimbursement = itemView.findViewById(R.id.mpsdkReimbursement);
+        installmentsInterestCenter = itemView.findViewById(R.id.mpsdkInstallmentsInterest);
     }
 
-    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener, @NonNull final Site site,
-        @NonNull final Currency currency, @NonNull final PayerCost payerCost) {
+    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener, @NonNull final Currency currency,
+        @NonNull final PayerCost payerCost, final boolean hasBenefits) {
+        final int visibility = hasBenefits ? View.INVISIBLE : View.GONE;
         setInstallmentsText(currency, payerCost);
-
-        if (!site.shouldWarnAboutBankInterests()) {
-            if (BigDecimal.ZERO.equals(payerCost.getInstallmentRate())) {
-                totalText.setVisibility(View.GONE);
-                zeroRateText.setVisibility(payerCost.getInstallments() > 1 ? View.VISIBLE : View.GONE);
-            } else {
-                zeroRateText.setVisibility(View.GONE);
-                setAmountWithRateText(currency, payerCost);
-            }
-        }
-
+        final boolean hasReimbursement = loadReimbursement(payerCost, visibility);
+        loadInstallmentsInterest(payerCost, currency, hasReimbursement, visibility);
+        hideUnusedViews(hasReimbursement, visibility);
         itemView.setOnClickListener(v -> itemListener.onClick(payerCost));
     }
 
-    private void setAmountWithRateText(@NonNull final Currency currency, @NonNull final PayerCost payerCost) {
-        totalText.setVisibility(View.VISIBLE);
+    private boolean loadReimbursement(@NonNull final PayerCost payerCost, final int visibility) {
+        return ViewUtils.loadOrHide(visibility, payerCost.getReimbursement(), reimbursement);
+    }
 
+    private void loadInstallmentsInterest(@NonNull final PayerCost payerCost, @NonNull final Currency currency,
+        final boolean hasReimbursement, final int visibility) {
+        final MPTextView installmentsInterest = hasReimbursement ? installmentsInterestTop : installmentsInterestCenter;
+        final boolean interestFree = ViewUtils.loadOrHide(visibility, payerCost.getInterest(), installmentsInterest);
+        if (!interestFree) {
+            ViewUtils.loadOrGone(getAmountWithRateText(currency, payerCost), installmentsInterest);
+            installmentsInterest
+                .setTextColor(ContextCompat.getColor(installmentsInterest.getContext(), R.color.px_color_payer_costs));
+            FontHelper.setFont(installmentsInterest, PxFont.REGULAR);
+        }
+    }
+
+    private void hideUnusedViews(final boolean hasReimbursement, final int visibility) {
+        final MPTextView viewToHide = hasReimbursement ? installmentsInterestCenter : installmentsInterestTop;
+        viewToHide.setVisibility(visibility);
+    }
+
+    private CharSequence getAmountWithRateText(@NonNull final Currency currency, @NonNull final PayerCost payerCost) {
         final Spanned spannedInstallmentsText =
             CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getTotalAmount(), currency);
-
-        totalText.setText(TextUtils.concat("(", spannedInstallmentsText, ")"));
+        return TextUtils.concat("(", spannedInstallmentsText, ")");
     }
 
     private void setInstallmentsText(@NonNull final Currency currency, @NonNull final PayerCost payerCost) {
@@ -63,19 +79,19 @@ import java.util.Locale;
         final Spanned spannedInstallmentsText =
             CurrenciesUtil.getSpannedAmountWithCurrencySymbol(payerCost.getInstallmentAmount(), currency);
 
-        final String x = installmentsTextView.getContext().getString(R.string.px_installments_by);
+        final String text = installmentsText.getContext().getString(R.string.px_installments_by);
 
-        installmentsTextView.setText(
+        installmentsText.setText(
             new SpannableStringBuilder(String.format(Locale.getDefault(), "%d", payerCost.getInstallments()))
-                .append(x).append(" ")
+                .append(text).append(" ")
                 .append(spannedInstallmentsText));
     }
 
     /* default */ void highLight() {
-        highlight.setVisibility(View.VISIBLE);
+        container.setSelected(true);
     }
 
     /* default */ void noHighLight() {
-        highlight.setVisibility(View.GONE);
+        container.setSelected(false);
     }
 }

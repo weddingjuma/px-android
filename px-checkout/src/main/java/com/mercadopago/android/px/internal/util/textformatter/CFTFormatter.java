@@ -9,9 +9,10 @@ import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.PayerCost;
+import java.util.regex.Pattern;
 
 public class CFTFormatter extends ChainFormatter {
-
+    private static final Pattern REGEX_NON_ZERO_PATTERN = Pattern.compile(".*[1-9]+.*$");
     private final PayerCost payerCost;
     private int textColor;
     private final Context context;
@@ -35,7 +36,7 @@ public class CFTFormatter extends ChainFormatter {
 
     @Override
     public Spannable apply(@NonNull final CharSequence amount) {
-        if (TextUtil.isEmpty(amount)) {
+        if (TextUtil.isEmpty(amount) || !REGEX_NON_ZERO_PATTERN.matcher(amount).matches()) {
             return spannableStringBuilder;
         }
         final int initialIndex = spannableStringBuilder.length();

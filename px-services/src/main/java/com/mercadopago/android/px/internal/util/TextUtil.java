@@ -1,7 +1,9 @@
 package com.mercadopago.android.px.internal.util;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import com.mercadopago.android.px.internal.util.textformatter.MatcherUtil;
 import java.util.regex.Pattern;
@@ -34,6 +36,11 @@ public final class TextUtil {
     @NonNull
     public static String join(@Nullable final Iterable<String> values) {
         return values != null ? TextUtils.join(CSV_DELIMITER, values) : "";
+    }
+
+    public static String format(@NonNull final Context context, @StringRes final int resId,
+        @NonNull final String... args) {
+        return resId == 0 ? EMPTY : format(context.getString(resId), args);
     }
 
     public static String format(@NonNull final String text, @NonNull final String... args) {

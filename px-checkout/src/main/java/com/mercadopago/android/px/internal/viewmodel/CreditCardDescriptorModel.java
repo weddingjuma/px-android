@@ -103,7 +103,7 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
         if (payerCostSelected != PayerCost.NO_SELECTED) {
             return;
         }
-        final String text = TextUtil.format(context.getString(installmentsText), String.valueOf(installments));
+        final String text = TextUtil.format(context, installmentsText, String.valueOf(installments));
         new SpannableFormatter(spannableStringBuilder, context)
             .withStyle(PxFont.SEMI_BOLD)
             .withTextColor(ContextCompat.getColor(context, installmentsColor))

@@ -1,3 +1,7 @@
+## VERSION 4.29.1
+_06_12_2019_
+* FIX - benefit message building for max installments 1 flows
+
 ## VERSION 4.29.0
 _05_12_2019_
 * FEATURE - Benefits one tap flow

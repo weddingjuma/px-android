@@ -260,7 +260,4 @@
 
     <!-- Disable payment method title pager -->
     <string name="px_payment_method_disable_title">No puedes usar este medio de pago</string>
-
-    <string name="px_installments_info">Paga en hasta {0} cuotas</string>
-    <string name="px_installments_interest_free_info">Hasta {0} cuotas sin interés</string>
 </resources>

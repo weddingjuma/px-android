@@ -261,7 +261,4 @@
 
     <!-- Disable payment method title pager -->
     <string name="px_payment_method_disable_title">Não é possível pagar com essa opção</string>
-
-    <string name="px_installments_info">Pague em até {0}x!</string>
-    <string name="px_installments_interest_free_info">Até {0} vezes sem juros</string>
 </resources>

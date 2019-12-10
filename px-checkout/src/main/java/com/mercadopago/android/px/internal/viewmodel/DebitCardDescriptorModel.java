@@ -47,19 +47,17 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
         @NonNull final Context context,
         @NonNull final TextView textView) {
 
-        if (amountConfiguration.allowSplit()) {
-            final Spannable amount = TextFormatter.withCurrency(currency)
-                .amount(getCurrent().getInstallmentAmount())
-                .normalDecimals()
-                .into(textView)
-                .toSpannable();
+        final Spannable amount = TextFormatter.withCurrency(currency)
+            .amount(getCurrent().getInstallmentAmount())
+            .normalDecimals()
+            .into(textView)
+            .toSpannable();
 
-            final AmountLabeledFormatter amountLabeledFormatter =
-                new AmountLabeledFormatter(spannableStringBuilder, context)
-                    .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_black))
-                    .withSemiBoldStyle();
-            amountLabeledFormatter.apply(amount);
-        }
+        final AmountLabeledFormatter amountLabeledFormatter =
+            new AmountLabeledFormatter(spannableStringBuilder, context)
+                .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_black))
+                .withSemiBoldStyle();
+        amountLabeledFormatter.apply(amount);
     }
 
     @NonNull

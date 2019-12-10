@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.viewmodel.mappers;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,4 +17,8 @@ public abstract class NonNullMapper<T, V> extends Mapper<T, V> {
         }
         return returned;
     }
+
+    @Nullable
+    @Override
+    public abstract V map(@NonNull final T val);
 }

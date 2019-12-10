@@ -5,7 +5,6 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.VisibleForTesting;
-import com.mercadopago.android.px.model.internal.Text;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -25,8 +24,6 @@ public final class PayerCost implements Parcelable, Serializable {
     private BigDecimal installmentRate;
     private BigDecimal totalAmount;
     private BigDecimal installmentAmount;
-    private Text reimbursement;
-    private Text interest;
 
     // params to support hybrid mode.
     private ProcessingMode processingMode;
@@ -101,16 +98,6 @@ public final class PayerCost implements Parcelable, Serializable {
     @Nullable
     public String getPaymentMethodOptionId() {
         return paymentMethodOptionId;
-    }
-
-    @Nullable
-    public Text getReimbursement() {
-        return reimbursement;
-    }
-
-    @Nullable
-    public Text getInterest() {
-        return interest;
     }
 
     @Override

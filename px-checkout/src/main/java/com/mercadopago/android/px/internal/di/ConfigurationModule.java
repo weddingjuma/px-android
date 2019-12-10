@@ -4,10 +4,12 @@ import android.content.Context;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.datasource.ChargeService;
 import com.mercadopago.android.px.internal.datasource.DisabledPaymentMethodService;
+import com.mercadopago.android.px.internal.datasource.PayerCostSelectionRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.PaymentSettingService;
 import com.mercadopago.android.px.internal.datasource.UserSelectionService;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
+import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 
@@ -20,6 +22,7 @@ public final class ConfigurationModule extends ApplicationModule implements Conf
     private PaymentSettingRepository paymentSettingRepository;
     private ChargeRepository chargeRepository;
     private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
+    private PayerCostSelectionRepository payerCostSelectionRepository;
 
     public ConfigurationModule(final Context context) {
         super(context);
@@ -54,6 +57,13 @@ public final class ConfigurationModule extends ApplicationModule implements Conf
             disabledPaymentMethodRepository = new DisabledPaymentMethodService(getSharedPreferences());
         }
         return disabledPaymentMethodRepository;
+    }
+
+    public PayerCostSelectionRepository getPayerCostSelectionRepository() {
+        if (payerCostSelectionRepository == null) {
+            payerCostSelectionRepository = new PayerCostSelectionRepositoryImpl(getSharedPreferences());
+        }
+        return payerCostSelectionRepository;
     }
 
     public void reset() {

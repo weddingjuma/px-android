@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.installments;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
@@ -9,6 +10,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
+import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentViewModelMapper;
 import com.mercadopago.android.px.mocks.StubSummaryAmount;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -18,6 +20,7 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.SummaryAmount;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.utils.ReflectionArgumentMatchers;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.math.BigDecimal;
@@ -99,13 +102,15 @@ public class InstallmentsPresenterTest {
         when(summaryAmountRepository.getSummaryAmount(anyString())).thenReturn(new StubSuccessMpCall<>(response));
         final List<PayerCost> payerCosts = response.getAmountConfiguration(response.getDefaultAmountConfiguration())
             .getPayerCosts();
+        final List<InstallmentRowHolder.Model> models =
+            new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), null).map(payerCosts);
 
         presenter.initialize();
         presenter.onClick(payerCosts.get(0));
 
         verify(view).showLoadingView();
         verify(view).hideLoadingView();
-        verify(view).showInstallments(payerCosts);
+        verify(view).showInstallments(ReflectionArgumentMatchers.reflectionEquals(models));
         verify(view).showAmount(discountConfigurationModel, BigDecimal.TEN, paymentSettingRepository.getCurrency());
         verify(view).finishWithResult();
         verify(summaryAmountRepository).getSummaryAmount(anyString());
@@ -169,6 +174,8 @@ public class InstallmentsPresenterTest {
     @Test
     public void whenCardSelectedAndMultiplePayerCostThenDisplayThem() {
         final List<PayerCost> payerCosts = Arrays.asList(mock(PayerCost.class), mock(PayerCost.class));
+        final List<InstallmentRowHolder.Model> models =
+            new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), null).map(payerCosts);
         when(userSelectionRepository.hasCardSelected()).thenReturn(true);
         when(amountConfiguration.getPayerCosts()).thenReturn(payerCosts);
 
@@ -177,7 +184,7 @@ public class InstallmentsPresenterTest {
         verify(view).hideLoadingView();
         verify(view).showAmount(discountConfigurationModel, amountRepository.getItemsPlusCharges(anyString()),
             paymentSettingRepository.getCurrency());
-        verify(view).showInstallments(payerCosts);
+        verify(view).showInstallments(ReflectionArgumentMatchers.reflectionEquals(models));
         verifyNoMoreInteractions(view);
     }
 

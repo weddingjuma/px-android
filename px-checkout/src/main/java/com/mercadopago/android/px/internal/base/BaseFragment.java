@@ -39,6 +39,7 @@ public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable
     public void onDetach() {
         if (presenter != null) {
             presenter.detachView();
+            presenter = null;
         }
         super.onDetach();
     }

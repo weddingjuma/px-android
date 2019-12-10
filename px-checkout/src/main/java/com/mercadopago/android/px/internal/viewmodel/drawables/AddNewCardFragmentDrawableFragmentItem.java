@@ -25,7 +25,7 @@ public class AddNewCardFragmentDrawableFragmentItem extends DrawableFragmentItem
 
     public AddNewCardFragmentDrawableFragmentItem(@NonNull final String id, @NonNull final StatusMetadata status,
         @NonNull final NewCardMetadata metadata) {
-        super(id, null, status);
+        super(id, null, status, null);
         this.metadata = metadata;
     }
 

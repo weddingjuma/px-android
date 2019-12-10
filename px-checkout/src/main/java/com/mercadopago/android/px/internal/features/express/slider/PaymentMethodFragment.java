@@ -28,11 +28,15 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     private CardView card;
     private BottomSlideAnimationSet animation;
     private boolean focused;
+    private MPTextView highlightText;
 
     @Override
     protected PaymentMethodPresenter createPresenter() {
         return new PaymentMethodPresenter(
-            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(), model);
+            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(),
+            Session.getInstance().getConfigurationModule().getPayerCostSelectionRepository(),
+            Session.getInstance().getAmountConfigurationRepository(),
+            model);
     }
 
     @Override
@@ -52,19 +56,17 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
         card = view.findViewById(R.id.payment_method);
         final View highlightContainer = view.findViewById(R.id.highlight_container);
-        final MPTextView highlightText = view.findViewById(R.id.highlight_text);
-        highlightText.setText(model.getHighlightMessage());
+        highlightText = view.findViewById(R.id.highlight_text);
         animation.initialize(Arrays.asList(highlightContainer, highlightText));
+        presenter.attachView(this);
         if (hasFocus()) {
             onFocusIn();
         }
-        presenter.attachView(this);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onViewResumed();
+    public void updateHighlightText(@Nullable final String text) {
+        highlightText.setText(text);
     }
 
     @Override
@@ -80,16 +82,16 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     @Override
     public void onFocusIn() {
         focused = true;
-        if (hasToHighlight()) {
-            animation.slideUp();
+        if (presenter != null) {
+            presenter.onFocusIn();
         }
     }
 
     @Override
     public void onFocusOut() {
         focused = false;
-        if (hasToHighlight()) {
-            animation.slideDown();
+        if (presenter != null) {
+            presenter.onFocusOut();
         }
     }
 
@@ -98,8 +100,22 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         return focused;
     }
 
-    private boolean hasToHighlight() {
-        return animation != null && TextUtil.isNotEmpty(model.getHighlightMessage());
+    @Override
+    public void animateHighlightMessageIn() {
+        if (shouldAnimate()) {
+            animation.slideUp();
+        }
+    }
+
+    @Override
+    public void animateHighlightMessageOut() {
+        if (shouldAnimate()) {
+            animation.slideDown();
+        }
+    }
+
+    private boolean shouldAnimate() {
+        return animation != null && TextUtil.isNotEmpty(highlightText.getText());
     }
 
     @Override

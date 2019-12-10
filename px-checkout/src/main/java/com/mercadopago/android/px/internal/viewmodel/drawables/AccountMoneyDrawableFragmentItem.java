@@ -2,8 +2,10 @@ package com.mercadopago.android.px.internal.viewmodel.drawables;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.model.AccountMoneyMetadata;
+import com.mercadopago.android.px.model.Reimbursement;
 import com.mercadopago.android.px.model.StatusMetadata;
 
 public class AccountMoneyDrawableFragmentItem extends DrawableFragmentItem {
@@ -24,8 +26,9 @@ public class AccountMoneyDrawableFragmentItem extends DrawableFragmentItem {
         };
 
     public AccountMoneyDrawableFragmentItem(@NonNull final AccountMoneyMetadata metadata,
-        @NonNull final String paymentMethodId, final String highlightMessage, @NonNull final StatusMetadata status) {
-        super(paymentMethodId, highlightMessage, status);
+        @NonNull final String paymentMethodId, @Nullable final String chargeMessage,
+        @NonNull final StatusMetadata status, @Nullable final Reimbursement reimbursement) {
+        super(paymentMethodId, chargeMessage, status, reimbursement);
         this.metadata = metadata;
     }
 

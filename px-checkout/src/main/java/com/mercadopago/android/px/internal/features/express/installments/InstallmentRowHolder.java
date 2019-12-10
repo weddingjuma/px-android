@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express.installments;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
@@ -16,11 +17,12 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.internal.Text;
 import java.util.Locale;
 
 //TODO unify with normal installments.
 
-/* default */ class InstallmentRowHolder extends RecyclerView.ViewHolder {
+public class InstallmentRowHolder extends RecyclerView.ViewHolder {
 
     private final View container;
     private final TextView installmentsText;
@@ -37,26 +39,25 @@ import java.util.Locale;
         installmentsInterestCenter = itemView.findViewById(R.id.mpsdkInstallmentsInterest);
     }
 
-    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener, @NonNull final Currency currency,
-        @NonNull final PayerCost payerCost, final boolean hasBenefits) {
-        final int visibility = hasBenefits ? View.INVISIBLE : View.GONE;
-        setInstallmentsText(currency, payerCost);
-        final boolean hasReimbursement = loadReimbursement(payerCost, visibility);
-        loadInstallmentsInterest(payerCost, currency, hasReimbursement, visibility);
-        hideUnusedViews(hasReimbursement, visibility);
-        itemView.setOnClickListener(v -> itemListener.onClick(payerCost));
+    /* default */ void populate(final InstallmentsAdapter.ItemListener itemListener, @NonNull final Model model) {
+        final int hiddenVisibility = model.showBigRow ? View.INVISIBLE : View.GONE;
+        setInstallmentsText(model.currency, model.payerCost);
+        final boolean hasReimbursement = loadReimbursement(model.reimbursement, hiddenVisibility);
+        loadInstallmentsInterest(model, hasReimbursement, hiddenVisibility);
+        hideUnusedViews(hasReimbursement, hiddenVisibility);
+        itemView.setOnClickListener(v -> itemListener.onClick(model.payerCost));
     }
 
-    private boolean loadReimbursement(@NonNull final PayerCost payerCost, final int visibility) {
-        return ViewUtils.loadOrHide(visibility, payerCost.getReimbursement(), reimbursement);
+    private boolean loadReimbursement(@Nullable final Text reimbursementText, final int visibility) {
+        return ViewUtils.loadOrHide(visibility, reimbursementText, reimbursement);
     }
 
-    private void loadInstallmentsInterest(@NonNull final PayerCost payerCost, @NonNull final Currency currency,
+    private void loadInstallmentsInterest(@NonNull final Model model,
         final boolean hasReimbursement, final int visibility) {
         final MPTextView installmentsInterest = hasReimbursement ? installmentsInterestTop : installmentsInterestCenter;
-        final boolean interestFree = ViewUtils.loadOrHide(visibility, payerCost.getInterest(), installmentsInterest);
+        final boolean interestFree = ViewUtils.loadOrHide(visibility, model.interestFree, installmentsInterest);
         if (!interestFree) {
-            ViewUtils.loadOrGone(getAmountWithRateText(currency, payerCost), installmentsInterest);
+            ViewUtils.loadOrGone(getAmountWithRateText(model.currency, model.payerCost), installmentsInterest);
             installmentsInterest
                 .setTextColor(ContextCompat.getColor(installmentsInterest.getContext(), R.color.px_color_payer_costs));
             FontHelper.setFont(installmentsInterest, PxFont.REGULAR);
@@ -93,5 +94,22 @@ import java.util.Locale;
 
     /* default */ void noHighLight() {
         container.setSelected(false);
+    }
+
+    public static final class Model {
+        @NonNull /* default */ final PayerCost payerCost;
+        @NonNull /* default */ final Currency currency;
+        @Nullable /* default */ final Text interestFree;
+        @Nullable /* default */ final Text reimbursement;
+        /* default */ final boolean showBigRow;
+
+        public Model(@NonNull final PayerCost payerCost, @NonNull final Currency currency,
+            @Nullable final Text interestFree, @Nullable final Text reimbursement, final boolean showBigRow) {
+            this.payerCost = payerCost;
+            this.currency = currency;
+            this.interestFree = interestFree;
+            this.reimbursement = reimbursement;
+            this.showBigRow = showBigRow;
+        }
     }
 }

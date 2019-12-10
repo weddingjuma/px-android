@@ -15,6 +15,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
     private final ConsumerCreditsMetadata consumerCredits;
     private final NewCardMetadata newCard;
     private final StatusMetadata status;
+    private final OfflinePaymentTypesMetadata offlineMethods;
 
     public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
         @Override
@@ -60,6 +61,10 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return status;
     }
 
+    public OfflinePaymentTypesMetadata getOfflineMethods() {
+        return offlineMethods;
+    }
+
     public boolean isAccountMoney() {
         return accountMoney != null;
     }
@@ -90,6 +95,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         consumerCredits = in.readParcelable(ConsumerCreditsMetadata.class.getClassLoader());
         newCard = in.readParcelable(NewCardMetadata.class.getClassLoader());
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
+        offlineMethods = in.readParcelable(OfflinePaymentTypesMetadata.class.getClassLoader());
     }
 
     @Override
@@ -106,5 +112,6 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         dest.writeParcelable(consumerCredits, flags);
         dest.writeParcelable(newCard, flags);
         dest.writeParcelable(status, flags);
+        dest.writeParcelable(offlineMethods, flags);
     }
 }

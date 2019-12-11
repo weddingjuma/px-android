@@ -41,7 +41,7 @@ public class AmountConfigurationRepositoryImpl implements AmountConfigurationRep
         }
     }
 
-    @NonNull
+    @Nullable
     @Override
     public AmountConfiguration getConfigurationFor(@NonNull final String customOptionId) {
         init();

@@ -9,6 +9,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
@@ -17,6 +18,7 @@ import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
@@ -27,11 +29,11 @@ import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
-import com.mercadopago.android.px.internal.viewmodel.PayerCostSelection;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ConfirmButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
+import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
@@ -67,7 +69,6 @@ import java.util.Set;
     implements PostPaymentAction.ActionController, ExpressPayment.Actions,
     AmountDescriptorView.OnClickListener {
 
-    private static final String BUNDLE_STATE_PAYER_COST = "state_payer_cost";
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
 
@@ -82,10 +83,10 @@ import java.util.Set;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull /* default */ final InitRepository initRepository;
+    private final PayerCostSelectionRepository payerCostSelectionRepository;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
     private final PayButtonViewModel payButtonViewModel;
     /* default */ List<ExpressMetadata> expressMetadataList; //FIXME remove.
-    /* default */ PayerCostSelection payerCostSelection;
     /* default */ int paymentMethodIndex;
     private SplitSelectionState splitSelectionState;
     private Set<String> cardsWithSplit;
@@ -93,6 +94,7 @@ import java.util.Set;
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
+        @NonNull final PayerCostSelectionRepository payerCostSelectionRepository,
         @NonNull final DiscountRepository discountRepository,
         @NonNull final AmountRepository amountRepository,
         @NonNull final InitRepository initRepository,
@@ -105,6 +107,7 @@ import java.util.Set;
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
+        this.payerCostSelectionRepository = payerCostSelectionRepository;
         this.discountRepository = discountRepository;
         this.amountRepository = amountRepository;
         this.initRepository = initRepository;
@@ -176,8 +179,6 @@ import java.util.Set;
             @Override
             public void success(final InitResponse initResponse) {
                 expressMetadataList = initResponse.getExpress();
-                //Plus one to compensate for add new payment method
-                payerCostSelection = createNewPayerCostSelected();
                 cardsWithSplit = initResponse.getIdsWithSplitAllowed();
                 loadViewModel();
             }
@@ -197,7 +198,6 @@ import java.util.Set;
 
     @Override
     public void recoverFromBundle(@NonNull final Bundle bundle) {
-        payerCostSelection = bundle.getParcelable(BUNDLE_STATE_PAYER_COST);
         splitSelectionState = bundle.getParcelable(BUNDLE_STATE_SPLIT_PREF);
         paymentMethodIndex = bundle.getInt(BUNDLE_STATE_CURRENT_PM_INDEX);
     }
@@ -205,7 +205,6 @@ import java.util.Set;
     @NonNull
     @Override
     public Bundle storeInBundle(@NonNull final Bundle bundle) {
-        bundle.putParcelable(BUNDLE_STATE_PAYER_COST, payerCostSelection);
         bundle.putParcelable(BUNDLE_STATE_SPLIT_PREF, splitSelectionState);
         bundle.putInt(BUNDLE_STATE_CURRENT_PM_INDEX, paymentMethodIndex);
         return bundle;
@@ -243,9 +242,8 @@ import java.util.Set;
             amountConfigurationRepository.getConfigurationFor(customOptionId);
 
         if (expressMetadata.isCard() || expressMetadata.isConsumerCredits()) {
-            payerCost = amountConfiguration
-                .getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
-                    payerCostSelection.get(paymentMethodIndex));
+            payerCost = amountConfiguration.getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
+                payerCostSelectionRepository.get(customOptionId));
         }
 
         final boolean splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
@@ -328,7 +326,7 @@ import java.util.Set;
     }
 
     private void updateElementPosition(final int selectedPayerCost) {
-        payerCostSelection.save(paymentMethodIndex, selectedPayerCost);
+        payerCostSelectionRepository.save(getCurrentExpressMetadata().getCustomOptionId(), selectedPayerCost);
         updateElements();
     }
 
@@ -340,15 +338,17 @@ import java.util.Set;
     @Override
     public void onInstallmentsRowPressed() {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        final String customOptionId = expressMetadata.getCustomOptionId();
         final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(expressMetadata.getCustomOptionId());
-        final List<PayerCost> payerCostList = amountConfiguration.getAppliedPayerCost(
-            splitSelectionState.userWantsToSplit());
-        final int index = payerCostList.indexOf(
-            amountConfiguration.getCurrentPayerCost(
-                splitSelectionState.userWantsToSplit(), payerCostSelection.get(paymentMethodIndex)));
-
-        getView().showInstallmentsList(payerCostList, index);
+            amountConfigurationRepository.getConfigurationFor(customOptionId);
+        final List<PayerCost> payerCostList =
+            amountConfiguration.getAppliedPayerCost(splitSelectionState.userWantsToSplit());
+        final int selectedIndex = amountConfiguration.getCurrentPayerCostIndex(splitSelectionState.userWantsToSplit(),
+            payerCostSelectionRepository.get(customOptionId));
+        final List<InstallmentRowHolder.Model> models =
+            new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), expressMetadata.getBenefits())
+                .map(payerCostList);
+        getView().showInstallmentsList(selectedIndex, models);
         new InstallmentsEventTrack(expressMetadata, amountConfiguration).track();
     }
 
@@ -370,12 +370,12 @@ import java.util.Set;
     public void onSliderOptionSelected(final int paymentMethodIndex) {
         this.paymentMethodIndex = paymentMethodIndex;
         new SwipeOneTapEventTracker().track();
-        updateElementPosition(payerCostSelection.get(paymentMethodIndex));
+        updateElementPosition(payerCostSelectionRepository.get(getCurrentExpressMetadata().getCustomOptionId()));
     }
 
     private void updateElements() {
-        getView().updateViewForPosition(paymentMethodIndex, payerCostSelection.get(paymentMethodIndex),
-            splitSelectionState);
+        getView().updateViewForPosition(paymentMethodIndex,
+            payerCostSelectionRepository.get(getCurrentExpressMetadata().getCustomOptionId()), splitSelectionState);
     }
 
     /**
@@ -439,7 +439,7 @@ import java.util.Set;
     @Override
     public void onSplitChanged(final boolean isChecked) {
         if (splitSelectionState.userWantsToSplit() != isChecked) {
-            payerCostSelection = createNewPayerCostSelected();
+            resetPayerCostSelection();
         }
         splitSelectionState.setUserWantsToSplit(isChecked);
         // cancel also update the position.
@@ -458,15 +458,13 @@ import java.util.Set;
 
         if (dynamicDialogConfiguration.hasCreatorFor(DynamicDialogConfiguration.DialogLocation.TAP_ONE_TAP_HEADER)) {
             getView().showDynamicDialog(
-                dynamicDialogConfiguration
-                    .getCreatorFor(DynamicDialogConfiguration.DialogLocation.TAP_ONE_TAP_HEADER),
+                dynamicDialogConfiguration.getCreatorFor(DynamicDialogConfiguration.DialogLocation.TAP_ONE_TAP_HEADER),
                 checkoutData);
         }
     }
 
-    @NonNull
-        /* default */ PayerCostSelection createNewPayerCostSelected() {
-        return new PayerCostSelection(expressMetadataList.size() + 1);
+    /* default */ void resetPayerCostSelection() {
+        payerCostSelectionRepository.reset();
     }
 
     @Override
@@ -480,7 +478,7 @@ import java.util.Set;
             @Override
             public void success(final InitResponse initResponse) {
                 expressMetadataList = initResponse.getExpress();
-                payerCostSelection = createNewPayerCostSelected();
+                resetPayerCostSelection();
                 paymentMethodIndex = 0;
                 getView().clearAdapters();
                 loadViewModel();

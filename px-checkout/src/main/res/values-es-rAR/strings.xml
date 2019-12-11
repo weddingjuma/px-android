@@ -11,7 +11,4 @@
     <string name="px_dialog_detail_payment_method_disable_link">Pagar con otro medio</string>
 
     <string name="px_payment_method_disable_title">No podés usar este medio de pago</string>
-
-    <string name="px_installments_info">Pagá en hasta {0} cuotas</string>
-    <string name="px_installments_interest_free_info">Hasta {0} cuotas sin interés</string>
 </resources>

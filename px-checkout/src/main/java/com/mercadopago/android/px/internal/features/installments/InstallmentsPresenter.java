@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.features.uicontrollers.AmountRowController;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
@@ -16,9 +17,9 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountView;
+import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentViewModelMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.CardInfo;
-import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentMethod;
@@ -191,7 +192,9 @@ public class InstallmentsPresenter extends BasePresenter<InstallmentsView> imple
             onClick(payerCosts.get(0));
         } else {
             new InstallmentsViewTrack(payerCosts, userSelectionRepository).track();
-            getView().showInstallments(payerCosts);
+            final List<InstallmentRowHolder.Model> models =
+                new InstallmentViewModelMapper(paymentSettingRepository.getCurrency(), null).map(payerCosts);
+            getView().showInstallments(models);
         }
     }
 

@@ -20,7 +20,7 @@ import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.mocks.CurrencyStub;
 import com.mercadopago.android.px.mocks.SiteStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
@@ -89,9 +89,6 @@ public class ExpressPaymentPresenterTest {
 
     @Mock
     private ExpressMetadata expressMetadata;
-
-    @Mock
-    private CardMetadata cardMetadata;
 
     @Mock
     private AmountConfiguration amountConfiguration;

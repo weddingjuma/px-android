@@ -12,7 +12,6 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AccountMoneyDrawableFragmentItem;
-import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
 public class AccountMoneyFragment extends PaymentMethodFragment<AccountMoneyDrawableFragmentItem> {
 
@@ -31,13 +30,8 @@ public class AccountMoneyFragment extends PaymentMethodFragment<AccountMoneyDraw
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
-        super.disable(disabledPaymentMethod);
+    public void disable() {
+        super.disable();
         final DisableConfiguration disableConfiguration = new DisableConfiguration(getContext());
         final ViewGroup card = getView().findViewById(R.id.payment_method);
         final ImageView background = getView().findViewById(R.id.background);

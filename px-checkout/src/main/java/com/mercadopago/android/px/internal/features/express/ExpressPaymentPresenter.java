@@ -36,7 +36,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMa
 import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDescriptorMapper;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SplitHeaderMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryInfoMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;

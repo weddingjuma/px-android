@@ -19,7 +19,6 @@ import com.mercadopago.android.px.internal.features.express.animations.BottomSli
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import java.util.Arrays;
 
 public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
@@ -54,11 +53,18 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        initializeViews(view);
+        if (model.getDisabledPaymentMethod() != null) {
+            disable();
+        }
+    }
+
+    @CallSuper
+    public void initializeViews(@NonNull final View view) {
         card = view.findViewById(R.id.payment_method);
         final View highlightContainer = view.findViewById(R.id.highlight_container);
         highlightText = view.findViewById(R.id.highlight_text);
         animation.initialize(Arrays.asList(highlightContainer, highlightText));
-        presenter.attachView(this);
         if (hasFocus()) {
             onFocusIn();
         }
@@ -119,16 +125,20 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     }
 
     @Override
-    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+    public void disable() {
         final Fragment parentFragment = getParentFragment();
         if (!(parentFragment instanceof DisabledDetailDialogLauncher)) {
             throw new IllegalStateException(
                 "Parent fragment should implement " + DisabledDetailDialogLauncher.class.getSimpleName());
         }
+        if (model.getDisabledPaymentMethod() == null) {
+            throw new IllegalStateException(
+                "Should have a disabledPaymentMethod to disable");
+        }
         card.setOnClickListener(
             v -> DisabledPaymentMethodDetailDialog
                 .showDialog(parentFragment, ((DisabledDetailDialogLauncher) parentFragment).getRequestCode(),
-                    disabledPaymentMethod, model.getStatus()));
+                    model.getDisabledPaymentMethod(), model.getStatus()));
     }
 
     protected void tintBackground(@NonNull final ImageView background, @NonNull final String color) {

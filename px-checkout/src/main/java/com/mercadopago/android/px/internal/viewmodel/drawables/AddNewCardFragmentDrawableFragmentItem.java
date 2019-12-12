@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.model.NewCardMetadata;
-import com.mercadopago.android.px.model.StatusMetadata;
 
 public class AddNewCardFragmentDrawableFragmentItem extends DrawableFragmentItem {
 
@@ -23,9 +22,9 @@ public class AddNewCardFragmentDrawableFragmentItem extends DrawableFragmentItem
             }
         };
 
-    public AddNewCardFragmentDrawableFragmentItem(@NonNull final String id, @NonNull final StatusMetadata status,
+    public AddNewCardFragmentDrawableFragmentItem(@NonNull final Parameters parameters,
         @NonNull final NewCardMetadata metadata) {
-        super(id, null, status, null);
+        super(parameters);
         this.metadata = metadata;
     }
 

@@ -70,7 +70,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -261,8 +261,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider(),
-            new PaymentMethodDrawableItemMapper(getContext(), session.getConfigurationModule().getChargeSolver(),
-                session.getAmountConfigurationRepository()));
+            new PaymentMethodDrawableItemMapper(getContext(),
+                session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+                session.getConfigurationModule().getChargeSolver()));
     }
 
     @Override

@@ -1,3 +1,10 @@
+## VERSION 4.29.2
+_12_12_2019_
+* ENHANCEMENT - Removed backend driven texts
+* ENHANCEMENT - Improved logic for redraw disabled payment methods
+* FIX - Send locale toLanguageTag for Accept-Language in api call headers
+* FIX - Show one tap payment method highlight if current payer cost selected has benefits
+
 ## VERSION 4.29.1
 _06_12_2019_
 * FIX - benefit message building for max installments 1 flows

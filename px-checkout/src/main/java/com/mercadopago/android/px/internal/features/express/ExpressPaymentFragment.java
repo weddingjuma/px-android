@@ -60,6 +60,7 @@ import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
+import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
@@ -442,6 +443,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         } else {
             presenter.trackSecurityFriction();
         }
+        confirmButton.setState(MeliButton.State.NORMAL);
     }
 
     private void handleCardVaultResult(final int resultCode) {
@@ -496,6 +498,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
+        confirmButton.setState(MeliButton.State.DISABLED);
         BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 

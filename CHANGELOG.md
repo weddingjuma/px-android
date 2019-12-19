@@ -1,3 +1,7 @@
+## VERSION 4.29.3
+_19_12_2019_
+* FIX - Disable pay button when validating user biometrics to prevent double payments if validation is delayed
+
 ## VERSION 4.29.2
 _12_12_2019_
 * ENHANCEMENT - Removed backend driven texts

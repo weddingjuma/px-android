@@ -77,9 +77,11 @@ import java.util.List;
             new TaggedCallback<List<IdentificationType>>(ApiUtil.RequestOrigin.GET_IDENTIFICATION_TYPES) {
                 @Override
                 public void onSuccess(final List<IdentificationType> identificationTypes) {
-                    resolveIdentificationTypes(identificationTypes);
-                    getView().hideProgressBar();
-                    getView().showIdentificationNumberFocus();
+                    if(isViewAttached()) {
+                        resolveIdentificationTypes(identificationTypes);
+                        getView().hideProgressBar();
+                        getView().showIdentificationNumberFocus();
+                    }
                 }
 
                 @Override

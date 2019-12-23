@@ -205,6 +205,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         } else {
             presenter.trackSecurityFriction();
         }
+        confirmButton.setState(MeliButton.State.NORMAL);
     }
 
     /* default */ void resolvePayerInformationRequest(final int resultCode) {
@@ -265,6 +266,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
+        confirmButton.setState(MeliButton.State.DISABLED);
         BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 

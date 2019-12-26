@@ -11,7 +11,6 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
     private final Text name;
     private final Text description;
     private final boolean additionalInfoNeeded;
-    private final String imageUrl;
 
     public static final Creator<OfflinePaymentMethod> CREATOR = new Creator<OfflinePaymentMethod>() {
         @Override
@@ -30,7 +29,6 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         name = in.readParcelable(Text.class.getClassLoader());
         description = in.readParcelable(Text.class.getClassLoader());
         additionalInfoNeeded = in.readByte() != 0;
-        imageUrl = in.readString();
     }
 
     @Override
@@ -44,6 +42,5 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         dest.writeParcelable(name, flags);
         dest.writeParcelable(description, flags);
         dest.writeByte((byte) (additionalInfoNeeded ? 1 : 0));
-        dest.writeString(imageUrl);
     }
 }

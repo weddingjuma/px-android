@@ -9,6 +9,7 @@ import java.util.List;
 public final class OfflinePaymentTypesMetadata implements Parcelable, Serializable {
 
     private final Text label;
+    private final Text description;
     private final List<OfflinePaymentType> paymentTypes;
 
     public static final Creator<OfflinePaymentTypesMetadata> CREATOR = new Creator<OfflinePaymentTypesMetadata>() {
@@ -23,8 +24,17 @@ public final class OfflinePaymentTypesMetadata implements Parcelable, Serializab
         }
     };
 
+    public Text getLabel() {
+        return label;
+    }
+
+    public Text getDescription() {
+        return description;
+    }
+
     protected OfflinePaymentTypesMetadata(final Parcel in) {
         label = in.readParcelable(Text.class.getClassLoader());
+        description = in.readParcelable(Text.class.getClassLoader());
         paymentTypes = in.createTypedArrayList(OfflinePaymentType.CREATOR);
     }
 
@@ -36,6 +46,7 @@ public final class OfflinePaymentTypesMetadata implements Parcelable, Serializab
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeParcelable(label, flags);
+        dest.writeParcelable(description, flags);
         dest.writeTypedList(paymentTypes);
     }
 }

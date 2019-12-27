@@ -22,6 +22,7 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
     private static final String PREF_DISABLED_PAYMENT_METHODS = "PREF_DISABLED_PAYMENT_METHODS";
 
     @NonNull private final SharedPreferences sharedPreferences;
+    private Map<String, DisabledPaymentMethod> disabledPaymentMethods;
 
     public DisabledPaymentMethodService(@NonNull final SharedPreferences sharedPreferences) {
         this.sharedPreferences = sharedPreferences;
@@ -48,11 +49,16 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
     @NonNull
     @Override
     public Map<String, DisabledPaymentMethod> getDisabledPaymentMethods() {
-        final String disabledPaymentMethods =
-            sharedPreferences.getString(PREF_DISABLED_PAYMENT_METHODS, null);
-        final Type type = new TypeToken<HashMap<String, DisabledPaymentMethod>>() {
-        }.getType();
-        return disabledPaymentMethods != null ? JsonUtil.fromJson(disabledPaymentMethods, type) : new HashMap<>();
+        if (disabledPaymentMethods == null) {
+            final String disabledPaymentMethodsJson =
+                sharedPreferences.getString(PREF_DISABLED_PAYMENT_METHODS, null);
+            final Type type = new TypeToken<HashMap<String, DisabledPaymentMethod>>() {
+            }.getType();
+            disabledPaymentMethods =
+                disabledPaymentMethodsJson != null ? JsonUtil.fromJson(disabledPaymentMethodsJson, type)
+                    : new HashMap<>();
+        }
+        return disabledPaymentMethods;
     }
 
     @Override

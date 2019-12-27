@@ -12,7 +12,6 @@ import com.meli.android.carddrawer.model.CardDrawerView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.viewmodel.drawables.SavedCardDrawableFragmentItem;
-import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
 public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFragmentItem> {
 
@@ -33,8 +32,8 @@ public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFr
     }
 
     @Override
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void initializeViews(@NonNull final View view) {
+        super.initializeViews(view);
         cardView = view.findViewById(R.id.card);
 
         setIssuerIcon(view.getContext(), model);
@@ -65,8 +64,8 @@ public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFr
     }
 
     @Override
-    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
-        super.disable(disabledPaymentMethod);
+    public void disable() {
+        super.disable();
         model.card.disable();
         storeModel(model);
         cardView.show(model.card);

@@ -13,14 +13,14 @@ import com.mercadopago.android.px.internal.repository.ChargeRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.mocks.CurrencyStub;
 import com.mercadopago.android.px.mocks.SiteStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
@@ -47,6 +47,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyListOf;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -69,6 +70,9 @@ public class ExpressPaymentPresenterTest {
     private DisabledPaymentMethodRepository disabledPaymentMethodRepository;
 
     @Mock
+    private PayerCostSelectionRepository payerCostSelectionRepository;
+
+    @Mock
     private InitRepository initRepository;
 
     @Mock
@@ -85,9 +89,6 @@ public class ExpressPaymentPresenterTest {
 
     @Mock
     private ExpressMetadata expressMetadata;
-
-    @Mock
-    private CardMetadata cardMetadata;
 
     @Mock
     private AmountConfiguration amountConfiguration;
@@ -136,7 +137,7 @@ public class ExpressPaymentPresenterTest {
 
         expressPaymentPresenter =
             new ExpressPaymentPresenter(paymentRepository, paymentSettingRepository, disabledPaymentMethodRepository,
-                discountRepository, amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
+                payerCostSelectionRepository, discountRepository, amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
                 escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper);
 
         verifyAttachView();
@@ -200,8 +201,8 @@ public class ExpressPaymentPresenterTest {
 
     @Test
     public void whenSliderOptionSelectedThenShowInstallmentsRow() {
-        final int currentElementPosition = 1;
-
+        when(payerCostSelectionRepository.get(anyString())).thenReturn(PayerCost.NO_SELECTED);
+        final int currentElementPosition = 0;
         expressPaymentPresenter.onSliderOptionSelected(currentElementPosition);
 
         verify(view).updateViewForPosition(eq(currentElementPosition), eq(PayerCost.NO_SELECTED), any());
@@ -227,6 +228,7 @@ public class ExpressPaymentPresenterTest {
 
     private int mockPayerCosts() {
         final int selectedPayerCostIndex = 1;
+        when(payerCostSelectionRepository.get(anyString())).thenReturn(selectedPayerCostIndex);
         final PayerCost firstPayerCost = mock(PayerCost.class);
         final List<PayerCost> payerCostList =
             Arrays.asList(mock(PayerCost.class), firstPayerCost, mock(PayerCost.class));
@@ -248,8 +250,6 @@ public class ExpressPaymentPresenterTest {
 
     private void verifyOnViewResumed() {
         expressPaymentPresenter.onViewResumed();
-
         verify(paymentRepository).attach(expressPaymentPresenter);
-        verify(view).updateViewForPosition(eq(0), eq(PayerCost.NO_SELECTED), any(SplitSelectionState.class));
     }
 }

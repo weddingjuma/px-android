@@ -4,11 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import java.io.Serializable;
 
-public final class DisabledPaymentMethod implements Parcelable {
+public final class DisabledPaymentMethod implements Parcelable, Serializable {
 
-    @NonNull private String paymentMethodId;
-    @Nullable private String paymentStatusDetail;
+    @NonNull private final String paymentMethodId;
+    @Nullable private final String paymentStatusDetail;
 
     public static final Creator<DisabledPaymentMethod> CREATOR = new Creator<DisabledPaymentMethod>() {
         @Override
@@ -24,6 +25,7 @@ public final class DisabledPaymentMethod implements Parcelable {
 
     public DisabledPaymentMethod(@NonNull final String paymentMethodId) {
         this.paymentMethodId = paymentMethodId;
+        paymentStatusDetail = null;
     }
 
     public DisabledPaymentMethod(@NonNull final String paymentMethodId, @NonNull final String paymentStatusDetail) {

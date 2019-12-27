@@ -6,6 +6,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
@@ -69,7 +70,7 @@ public interface ExpressPayment {
             final int payerCostSelected,
             @NonNull final SplitSelectionState splitSelectionState);
 
-        void showInstallmentsList(List<PayerCost> payerCostList, final int payerCostSelected);
+        void showInstallmentsList(final int selectedIndex, @NonNull List<InstallmentRowHolder.Model> models);
 
         void showToolbarElementDescriptor(@NonNull final ElementDescriptorView.Model elementDescriptorModel);
 

@@ -16,7 +16,6 @@ import com.mercadopago.android.px.internal.view.LinkableTextView;
 import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.drawables.ConsumerCreditsDrawableFragmentItem;
 import com.mercadopago.android.px.model.ConsumerCreditsDisplayInfo;
-import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 
 public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCreditsDrawableFragmentItem> {
 
@@ -42,8 +41,8 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
 
     @Override
     @SuppressWarnings("ConstantConditions")
-    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void initializeViews(@NonNull final View view) {
+        super.initializeViews(view);
         creditsLagout = view.findViewById(R.id.credits_layout);
         background = view.findViewById(R.id.background);
         logo = view.findViewById(R.id.logo);
@@ -60,8 +59,8 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
     }
 
     @Override
-    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
-        super.disable(disabledPaymentMethod);
+    public void disable() {
+        super.disable();
         final DisableConfiguration disableConfiguration = new DisableConfiguration(getContext());
         ViewUtils.grayScaleViewGroup(creditsLagout);
         background.clearColorFilter();

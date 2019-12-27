@@ -27,7 +27,7 @@
     <dimen name="px_card_size_medium_height_no_border">141dp</dimen>
     <dimen name="px_payer_cost_small_text">20dp</dimen>
     <dimen name="px_payer_cost_total_small_text">14dp</dimen>
-    <dimen name="px_title_pager_padding_right">68dp</dimen>
+    <dimen name="px_title_pager_padding_right">54dp</dimen>
     <dimen name="px_badge_size">25dp</dimen>
     <dimen name="px_bigger_badge_size">52dp</dimen>
     <dimen name="px_badge_offset">16dp</dimen>

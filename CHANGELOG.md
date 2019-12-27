@@ -1,3 +1,18 @@
+## VERSION 4.29.3
+_19_12_2019_
+* FIX - Disable pay button when validating user biometrics to prevent double payments if validation is delayed
+
+## VERSION 4.29.2
+_12_12_2019_
+* ENHANCEMENT - Removed backend driven texts
+* ENHANCEMENT - Improved logic for redraw disabled payment methods
+* FIX - Send locale toLanguageTag for Accept-Language in api call headers
+* FIX - Show one tap payment method highlight if current payer cost selected has benefits
+
+## VERSION 4.29.1
+_06_12_2019_
+* FIX - benefit message building for max installments 1 flows
+
 ## VERSION 4.29.0
 _05_12_2019_
 * FEATURE - Benefits one tap flow

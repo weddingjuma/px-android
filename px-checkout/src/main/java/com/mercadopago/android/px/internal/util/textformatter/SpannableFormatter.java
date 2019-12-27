@@ -1,12 +1,16 @@
 package com.mercadopago.android.px.internal.util.textformatter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import com.mercadopago.android.px.internal.font.PxFont;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.model.internal.Text;
 
 public class SpannableFormatter extends ChainFormatter {
     private static final String SEPARATOR = " ";
@@ -43,8 +47,18 @@ public class SpannableFormatter extends ChainFormatter {
         return this;
     }
 
+    public Spannable apply(@Nullable final Text text) {
+        if (text == null) {
+            return apply(TextUtil.EMPTY);
+        }
+        withStyle(text.getWeight());
+        withTextColor(Color.parseColor(text.getTextColor()));
+        return apply(text.getMessage());
+    }
+
     public Spannable apply(@StringRes final int resId) {
-        return apply(context.getString(resId));
+        final String text = resId != 0 ? context.getString(resId) : TextUtil.EMPTY;
+        return apply(text);
     }
 
     @Override

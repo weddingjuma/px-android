@@ -41,6 +41,7 @@ import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.features.express.animations.ExpandAndCollapseAnimation;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimationListener;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimator;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.ConfirmButtonAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
@@ -59,6 +60,7 @@ import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
+import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
@@ -69,7 +71,7 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
@@ -80,7 +82,6 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -253,6 +254,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
             session.getConfigurationModule().getPaymentSettings(),
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+            session.getConfigurationModule().getPayerCostSelectionRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getInitRepository(),
@@ -260,8 +262,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider(),
-            new PaymentMethodDrawableItemMapper(getContext(), session.getConfigurationModule().getChargeSolver(),
-                session.getAmountConfigurationRepository()));
+            new PaymentMethodDrawableItemMapper(getContext(),
+                session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+                session.getConfigurationModule().getChargeSolver()));
     }
 
     @Override
@@ -326,7 +329,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void configureAdapters(@NonNull final Site site, @NonNull final Currency currency) {
-        installmentsAdapter = new InstallmentsAdapter(currency, new ArrayList<>(), this);
+        installmentsAdapter = new InstallmentsAdapter(this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
         installmentsRecyclerView.setVisibility(View.GONE);
 
@@ -371,11 +374,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void showInstallmentsList(final List<PayerCost> payerCostList, final int payerCostSelected) {
+    public void showInstallmentsList(final int selectedIndex, @NonNull final List<InstallmentRowHolder.Model> models) {
         animateViewPagerDown();
-        installmentsRecyclerView.scrollToPosition(payerCostSelected);
-        installmentsAdapter.setPayerCosts(payerCostList);
-        installmentsAdapter.setPayerCostSelected(payerCostSelected);
+        installmentsRecyclerView.scrollToPosition(selectedIndex);
+        installmentsAdapter.setModels(models);
+        installmentsAdapter.setPayerCostSelected(selectedIndex);
         installmentsAdapter.notifyDataSetChanged();
         hubAdapter.showInstallmentsList();
         expandAndCollapseAnimation.expand();
@@ -406,6 +409,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         fadeAnimation.fadeIn(confirmButton);
         fadeAnimation.fadeIn(indicator);
         expandAndCollapseAnimation.collapse();
+        paymentMethodFragmentAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -439,6 +443,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         } else {
             presenter.trackSecurityFriction();
         }
+        confirmButton.setState(MeliButton.State.NORMAL);
     }
 
     private void handleCardVaultResult(final int resultCode) {
@@ -493,6 +498,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void startSecurityValidation(@NonNull final SecurityValidationData data) {
+        confirmButton.setState(MeliButton.State.DISABLED);
         BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
     }
 

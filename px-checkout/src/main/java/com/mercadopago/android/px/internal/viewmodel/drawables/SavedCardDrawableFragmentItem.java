@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.internal.viewmodel.CardDrawerConfiguration;
-import com.mercadopago.android.px.model.StatusMetadata;
 
 public class SavedCardDrawableFragmentItem extends DrawableFragmentItem {
 
@@ -23,10 +22,9 @@ public class SavedCardDrawableFragmentItem extends DrawableFragmentItem {
         }
     };
 
-    public SavedCardDrawableFragmentItem(@NonNull final String paymentMethodId,
-        @NonNull final CardDrawerConfiguration card, @NonNull final String cardId, final String highlightMessage,
-        @NonNull final StatusMetadata status) {
-        super(cardId, highlightMessage, status);
+    public SavedCardDrawableFragmentItem(@NonNull final Parameters parameters, @NonNull final String paymentMethodId,
+        @NonNull final CardDrawerConfiguration card) {
+        super(parameters);
         this.paymentMethodId = paymentMethodId;
         this.card = card;
     }

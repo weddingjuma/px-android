@@ -19,7 +19,6 @@ import com.mercadopago.android.px.internal.features.express.animations.BottomSli
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
-import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import java.util.Arrays;
 
 public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
@@ -28,11 +27,15 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     private CardView card;
     private BottomSlideAnimationSet animation;
     private boolean focused;
+    private MPTextView highlightText;
 
     @Override
     protected PaymentMethodPresenter createPresenter() {
         return new PaymentMethodPresenter(
-            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(), model);
+            Session.getInstance().getConfigurationModule().getDisabledPaymentMethodRepository(),
+            Session.getInstance().getConfigurationModule().getPayerCostSelectionRepository(),
+            Session.getInstance().getAmountConfigurationRepository(),
+            model);
     }
 
     @Override
@@ -50,21 +53,26 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        initializeViews(view);
+        if (model.getDisabledPaymentMethod() != null) {
+            disable();
+        }
+    }
+
+    @CallSuper
+    public void initializeViews(@NonNull final View view) {
         card = view.findViewById(R.id.payment_method);
         final View highlightContainer = view.findViewById(R.id.highlight_container);
-        final MPTextView highlightText = view.findViewById(R.id.highlight_text);
-        highlightText.setText(model.getHighlightMessage());
+        highlightText = view.findViewById(R.id.highlight_text);
         animation.initialize(Arrays.asList(highlightContainer, highlightText));
         if (hasFocus()) {
             onFocusIn();
         }
-        presenter.attachView(this);
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        presenter.onViewResumed();
+    public void updateHighlightText(@Nullable final String text) {
+        highlightText.setText(text);
     }
 
     @Override
@@ -80,16 +88,16 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     @Override
     public void onFocusIn() {
         focused = true;
-        if (hasToHighlight()) {
-            animation.slideUp();
+        if (presenter != null) {
+            presenter.onFocusIn();
         }
     }
 
     @Override
     public void onFocusOut() {
         focused = false;
-        if (hasToHighlight()) {
-            animation.slideDown();
+        if (presenter != null) {
+            presenter.onFocusOut();
         }
     }
 
@@ -98,21 +106,39 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         return focused;
     }
 
-    private boolean hasToHighlight() {
-        return animation != null && TextUtil.isNotEmpty(model.getHighlightMessage());
+    @Override
+    public void animateHighlightMessageIn() {
+        if (shouldAnimate()) {
+            animation.slideUp();
+        }
     }
 
     @Override
-    public void disable(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
+    public void animateHighlightMessageOut() {
+        if (shouldAnimate()) {
+            animation.slideDown();
+        }
+    }
+
+    private boolean shouldAnimate() {
+        return animation != null && TextUtil.isNotEmpty(highlightText.getText());
+    }
+
+    @Override
+    public void disable() {
         final Fragment parentFragment = getParentFragment();
         if (!(parentFragment instanceof DisabledDetailDialogLauncher)) {
             throw new IllegalStateException(
                 "Parent fragment should implement " + DisabledDetailDialogLauncher.class.getSimpleName());
         }
+        if (model.getDisabledPaymentMethod() == null) {
+            throw new IllegalStateException(
+                "Should have a disabledPaymentMethod to disable");
+        }
         card.setOnClickListener(
             v -> DisabledPaymentMethodDetailDialog
                 .showDialog(parentFragment, ((DisabledDetailDialogLauncher) parentFragment).getRequestCode(),
-                    disabledPaymentMethod, model.getStatus()));
+                    model.getDisabledPaymentMethod(), model.getStatus()));
     }
 
     protected void tintBackground(@NonNull final ImageView background, @NonNull final String color) {

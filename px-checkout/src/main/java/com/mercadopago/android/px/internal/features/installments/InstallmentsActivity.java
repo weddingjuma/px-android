@@ -20,6 +20,7 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.controllers.CheckoutTimer;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentsAdapter;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.FrontCardView;
@@ -35,7 +36,6 @@ import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
-import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.math.BigDecimal;
@@ -251,10 +251,10 @@ public class InstallmentsActivity extends PXActivity<InstallmentsPresenter> impl
     }
 
     @Override
-    public void showInstallments(final List<PayerCost> payerCostList) {
+    public void showInstallments(final List<InstallmentRowHolder.Model> models) {
         showHeader();
-        final InstallmentsAdapter installmentsAdapter =
-            new InstallmentsAdapter(configuration.getCurrency(), payerCostList, presenter);
+        final InstallmentsAdapter installmentsAdapter = new InstallmentsAdapter(presenter);
+        installmentsAdapter.setModels(models);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
     }
 

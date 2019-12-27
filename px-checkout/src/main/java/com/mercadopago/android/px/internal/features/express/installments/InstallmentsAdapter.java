@@ -6,50 +6,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PayerCost;
+import java.util.ArrayList;
 import java.util.List;
 
-import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 import static com.mercadopago.android.px.model.PayerCost.NO_SELECTED;
 
 public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHolder> {
 
-    @NonNull private final Currency currency;
-    @NonNull private List<PayerCost> payerCosts;
+    @NonNull private List<InstallmentRowHolder.Model> models;
     private int payerCostSelected;
     @NonNull private final ItemListener itemListener;
-    private boolean hasReimbursement;
 
     public interface ItemListener {
         void onClick(final PayerCost payerCostSelected);
     }
 
-    public InstallmentsAdapter(@NonNull final Currency currency, @NonNull final List<PayerCost> payerCosts,
-        @NonNull final ItemListener itemListener) {
-        this.currency = currency;
-        this.payerCosts = payerCosts;
+    public InstallmentsAdapter(@NonNull final ItemListener itemListener) {
         this.itemListener = itemListener;
+        models = new ArrayList<>();
         payerCostSelected = NO_SELECTED;
-        hasReimbursement = hasReimbursement(payerCosts);
     }
 
-    public void setPayerCosts(@NonNull final List<PayerCost> payerCosts) {
-        this.payerCosts = payerCosts;
-        hasReimbursement = hasReimbursement(payerCosts);
+    public void setModels(@NonNull final List<InstallmentRowHolder.Model> models) {
+        this.models = models;
     }
 
     public void setPayerCostSelected(final int payerCostSelected) {
         this.payerCostSelected = payerCostSelected;
-    }
-
-    private boolean hasReimbursement(@NonNull final Iterable<PayerCost> payerCosts) {
-        boolean hasReimbursement = false;
-        for (final PayerCost payerCost : payerCosts) {
-            hasReimbursement |=
-                payerCost.getReimbursement() != null && !isEmpty(payerCost.getReimbursement().getMessage());
-        }
-        return hasReimbursement;
     }
 
     @NonNull
@@ -62,7 +46,7 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
 
     @Override
     public void onBindViewHolder(@NonNull final InstallmentRowHolder holder, final int position) {
-        holder.populate(itemListener, currency, payerCosts.get(position), hasReimbursement);
+        holder.populate(itemListener, models.get(position));
         if (position == payerCostSelected) {
             holder.highLight();
         } else {
@@ -72,6 +56,6 @@ public class InstallmentsAdapter extends RecyclerView.Adapter<InstallmentRowHold
 
     @Override
     public int getItemCount() {
-        return payerCosts.size();
+        return models.size();
     }
 }

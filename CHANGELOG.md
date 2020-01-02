@@ -1,3 +1,10 @@
+## VERSION 4.29.4
+_02_01_2019_
+* ENHANCEMENT - Changed debit payment methods assets
+* ENHANCEMENT - Compressed images
+* FIX - Validate view attached on api callback
+* FIX - Disable pay button when validating user biometrics (Review and Confirm)
+
 ## VERSION 4.29.3
 _19_12_2019_
 * FIX - Disable pay button when validating user biometrics to prevent double payments if validation is delayed

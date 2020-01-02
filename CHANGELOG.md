@@ -1,5 +1,5 @@
 ## VERSION 4.29.4
-_02_01_2019_
+_02_01_2020_
 * ENHANCEMENT - Changed debit payment methods assets
 * ENHANCEMENT - Compressed images
 * FIX - Validate view attached on api callback

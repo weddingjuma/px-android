@@ -10,6 +10,7 @@ import android.util.AttributeSet;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.internal.Text;
 
 public class MPTextView extends AppCompatTextView {
@@ -36,7 +37,11 @@ public class MPTextView extends AppCompatTextView {
 
     public void setText(@NonNull final Text text) {
         setText(text.getMessage());
-        setTextColor(Color.parseColor(text.getTextColor()));
-        FontHelper.setFont(this, PxFont.from(text.getWeight()));
+        if(TextUtil.isNotEmpty(text.getTextColor())) {
+            setTextColor(Color.parseColor(text.getTextColor()));
+        }
+        if(TextUtil.isNotEmpty(text.getWeight())) {
+            FontHelper.setFont(this, PxFont.from(text.getWeight()));
+        }
     }
 }

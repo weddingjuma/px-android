@@ -18,6 +18,7 @@ import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.Reason;
 import java.math.BigDecimal;
 
 public class AmountView extends LinearLayoutCompat {
@@ -26,7 +27,7 @@ public class AmountView extends LinearLayoutCompat {
     @Nullable
     OnClick callback;
 
-    private TextView amountDescription;
+    private MPTextView amountDescription;
     private View amountContainer;
     private TextView amountBeforeDiscount;
     private TextView maxCouponAmount;
@@ -101,8 +102,13 @@ public class AmountView extends LinearLayoutCompat {
     private void showNotAvailableDiscount(@NonNull final DiscountConfigurationModel discountModel,
         @NonNull final BigDecimal totalAmount, @NonNull final Currency currency) {
         configureViewsVisibilityWhenNotAvailableDiscount(discountModel);
-        amountDescription.setText(R.string.px_used_up_discount_row);
+        final Reason reason = discountModel.getReason();
         amountDescription.setTextColor(getResources().getColor(R.color.px_form_text));
+        if (reason != null) {
+            amountDescription.setText(reason.getSummary());
+        } else {
+            amountDescription.setText(R.string.px_used_up_discount_row);
+        }
         showEffectiveAmount(totalAmount, currency);
     }
 

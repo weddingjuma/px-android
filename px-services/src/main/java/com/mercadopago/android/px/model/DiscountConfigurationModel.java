@@ -12,19 +12,7 @@ public class DiscountConfigurationModel implements Parcelable {
     private final Discount discount;
     private final Campaign campaign;
     private final boolean isAvailable;
-
-    public DiscountConfigurationModel(@Nullable final Discount discount, @Nullable final Campaign campaign,
-        final boolean isAvailable) {
-        this.discount = discount;
-        this.campaign = campaign;
-        this.isAvailable = isAvailable;
-    }
-
-    protected DiscountConfigurationModel(final Parcel in) {
-        discount = in.readParcelable(Discount.class.getClassLoader());
-        campaign = in.readParcelable(Campaign.class.getClassLoader());
-        isAvailable = in.readByte() != 0;
-    }
+    private final Reason reason;
 
     public static final Creator<DiscountConfigurationModel> CREATOR = new Creator<DiscountConfigurationModel>() {
         @Override
@@ -38,6 +26,29 @@ public class DiscountConfigurationModel implements Parcelable {
         }
     };
 
+    public DiscountConfigurationModel(@Nullable final Discount discount, @Nullable final Campaign campaign,
+        final boolean isAvailable) {
+        this.discount = discount;
+        this.campaign = campaign;
+        this.isAvailable = isAvailable;
+        reason = null;
+    }
+
+    protected DiscountConfigurationModel(final Parcel in) {
+        discount = in.readParcelable(Discount.class.getClassLoader());
+        campaign = in.readParcelable(Campaign.class.getClassLoader());
+        isAvailable = in.readByte() != 0;
+        reason = in.readParcelable(Reason.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeParcelable(discount, flags);
+        dest.writeParcelable(campaign, flags);
+        dest.writeByte((byte) (isAvailable ? 1 : 0));
+        dest.writeParcelable(reason, flags);
+    }
+
     public Discount getDiscount() {
         return discount;
     }
@@ -48,6 +59,10 @@ public class DiscountConfigurationModel implements Parcelable {
 
     public boolean isAvailable() {
         return isAvailable;
+    }
+
+    public Reason getReason() {
+        return reason;
     }
 
     public boolean hasValidDiscount() {
@@ -66,12 +81,5 @@ public class DiscountConfigurationModel implements Parcelable {
     @Override
     public int describeContents() {
         return 0;
-    }
-
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(discount, flags);
-        dest.writeParcelable(campaign, flags);
-        dest.writeByte((byte) (isAvailable ? 1 : 0));
     }
 }

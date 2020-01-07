@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.Reason;
 import java.util.Locale;
 
 public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void> {
@@ -61,7 +62,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
     }
 
     private void configureDetailMessage(final View mainContainer) {
-        final TextView detailTextView = mainContainer.findViewById(R.id.detail);
+        final MPTextView detailTextView = mainContainer.findViewById(R.id.detail);
         if (!props.discountModel.isAvailable()) {
             configureNotAvailableDiscountDetail(detailTextView, mainContainer);
         } else if (isMaxCouponAmountApplicable(props.discountModel)) {
@@ -81,13 +82,13 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
             .start(mainContainer.getContext(), props.discountModel.getCampaign().getLegalTermsUrl()));
     }
 
-    private void configureNotAvailableDiscountDetail(final TextView detailTextView, final View mainContainer) {
+    private void configureNotAvailableDiscountDetail(final MPTextView detailTextView, final View mainContainer) {
         setDetailMessage(detailTextView, R.string.px_used_up_discount_detail, mainContainer);
         ViewUtils.setMarginBottomInView(detailTextView,
             mainContainer.getContext().getResources().getDimensionPixelSize(R.dimen.px_xxs_margin));
     }
 
-    private void setDetailMessage(final TextView detailTextView, final int detailId, final View view) {
+    private void setDetailMessage(final MPTextView detailTextView, final int detailId, final View view) {
         final String detailMessage = view.getResources().getString(detailId);
 
         if (isEndDateApplicable(props.discountModel)) {
@@ -95,7 +96,12 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
                 props.discountModel.getCampaign().getPrettyEndDate());
             detailTextView.setText(String.format(Locale.getDefault(), "%s %s", detailMessage, endDateMessage));
         } else {
-            detailTextView.setText(detailMessage);
+            final Reason reason = props.discountModel.getReason();
+            if (reason != null) {
+                detailTextView.setText(reason.getDescription());
+            } else {
+                detailTextView.setText(detailMessage);
+            }
         }
     }
 

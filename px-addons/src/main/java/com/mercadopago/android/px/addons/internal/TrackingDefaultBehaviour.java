@@ -7,6 +7,11 @@ import java.util.Map;
 public class TrackingDefaultBehaviour implements TrackingBehaviour {
 
     @Override
+    public void setApplicationContext(@NonNull final String applicationContext) {
+        //Do nothing
+    }
+
+    @Override
     public void onView(@NonNull final String path, @NonNull final Map<String, ?> data) {
         //Do nothing
     }

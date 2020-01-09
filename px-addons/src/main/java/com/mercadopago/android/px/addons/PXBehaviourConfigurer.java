@@ -6,6 +6,7 @@ public final class PXBehaviourConfigurer {
 
     private SecurityBehaviour securityBehaviour;
     private ESCManagerBehaviour escManagerBehaviour;
+    private TrackingBehaviour trackingBehaviour;
 
     public PXBehaviourConfigurer with(@NonNull final ESCManagerBehaviour escManagerBehaviour) {
         this.escManagerBehaviour = escManagerBehaviour;
@@ -17,8 +18,14 @@ public final class PXBehaviourConfigurer {
         return this;
     }
 
+    public PXBehaviourConfigurer with(@NonNull final TrackingBehaviour trackingBehaviour) {
+        this.trackingBehaviour = trackingBehaviour;
+        return this;
+    }
+
     public void configure() {
         BehaviourProvider.set(securityBehaviour);
         BehaviourProvider.set(escManagerBehaviour);
+        BehaviourProvider.set(trackingBehaviour);
     }
 }

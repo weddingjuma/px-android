@@ -1,3 +1,9 @@
+## VERSION 4.30.0
+_09_01_2020_
+* FEATURE - Added babel for translations
+* FEATURE - Redesign rejected and pending congrats
+* FEATURE - Backend driven discount unavailability information
+
 ## VERSION 4.29.4
 _02_01_2020_
 * ENHANCEMENT - Changed debit payment methods assets

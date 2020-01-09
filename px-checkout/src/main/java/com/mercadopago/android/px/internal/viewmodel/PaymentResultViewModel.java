@@ -10,7 +10,6 @@ import com.mercadopago.android.px.model.Action;
 public final class PaymentResultViewModel {
 
     private final int titleResId;
-    private final int labelResId;
     private final int bodyTitleResId;
     private final int titleDescriptionResId;
     private final boolean hasDetail;
@@ -31,7 +30,6 @@ public final class PaymentResultViewModel {
 
     /* default */ PaymentResultViewModel(final Builder builder) {
         titleResId = builder.titleResId;
-        labelResId = builder.labelResId;
         hasDetail = builder.hasDetail;
         mainAction = builder.mainAction;
         mainActionTitle = builder.mainActionTitle;
@@ -56,11 +54,6 @@ public final class PaymentResultViewModel {
     @StringRes
     public int getTitleResId() {
         return titleResId;
-    }
-
-    @StringRes
-    public int getLabelResId() {
-        return labelResId;
     }
 
     public boolean hasBodyError() {
@@ -130,7 +123,6 @@ public final class PaymentResultViewModel {
 
     public static class Builder {
         int titleResId;
-        int labelResId;
         int descriptionResId;
         int bodyTitleResId;
         int titleDescriptionResId;
@@ -149,11 +141,6 @@ public final class PaymentResultViewModel {
 
         @Nullable Action linkAction;
         int linkActionTitle;
-
-        public Builder setLabelResId(final int labelResId) {
-            this.labelResId = labelResId;
-            return this;
-        }
 
         public Builder setTitleResId(final int titleResId) {
             this.titleResId = titleResId;

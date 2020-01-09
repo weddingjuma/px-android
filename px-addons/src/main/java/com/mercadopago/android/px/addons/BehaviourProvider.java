@@ -3,11 +3,13 @@ package com.mercadopago.android.px.addons;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.internal.ESCManagerDefaultBehaviour;
 import com.mercadopago.android.px.addons.internal.SecurityDefaultBehaviour;
+import com.mercadopago.android.px.addons.internal.TrackingDefaultBehaviour;
 
 public final class BehaviourProvider {
 
     private static SecurityBehaviour securityBehaviour;
     private static ESCManagerBehaviour escManagerBehaviour;
+    private static TrackingBehaviour trackingBehaviour;
 
     private BehaviourProvider() {
     }
@@ -18,6 +20,10 @@ public final class BehaviourProvider {
 
     /* default */ static void set(final ESCManagerBehaviour escManagerBehaviour) {
         BehaviourProvider.escManagerBehaviour = escManagerBehaviour;
+    }
+
+    /* default */ static void set(final TrackingBehaviour trackingBehaviour) {
+        BehaviourProvider.trackingBehaviour = trackingBehaviour;
     }
 
     @NonNull
@@ -35,6 +41,16 @@ public final class BehaviourProvider {
         final ESCManagerBehaviour escManagerBehaviour = resolveEscImplementation(escEnabled);
         escManagerBehaviour.setSessionId(session);
         return escManagerBehaviour;
+    }
+
+    @NonNull
+    public static TrackingBehaviour getTrackingBehaviour(@NonNull final String applicationContext) {
+        if (trackingBehaviour != null) {
+            trackingBehaviour.setApplicationContext(applicationContext);
+            return trackingBehaviour;
+        } else {
+            return new TrackingDefaultBehaviour();
+        }
     }
 
     @NonNull

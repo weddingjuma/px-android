@@ -7,6 +7,7 @@ import android.support.constraint.ConstraintLayout;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -44,6 +45,6 @@ public final class PaymentResultReceipt extends ConstraintLayout {
             .append(divider).append(" ").append(year);
 
         date.setText(builder.toString());
-        description.setText(getResources().getString(R.string.px_receipt, receiptId));
+        description.setText(TextUtil.format(getContext(), R.string.px_receipt, receiptId));
     }
 }

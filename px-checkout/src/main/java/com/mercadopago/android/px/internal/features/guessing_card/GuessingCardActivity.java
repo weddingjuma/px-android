@@ -483,10 +483,10 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
             String paymentTypeText = getString(R.string.px_form_card_title);
             if (paymentTypeId != null) {
                 if (paymentTypeId.equals(PaymentTypes.CREDIT_CARD)) {
-                    paymentTypeText = getString(R.string.px_form_card_title_payment_type,
+                    paymentTypeText = TextUtil.format(this, R.string.px_form_card_title_payment_type,
                         getString(R.string.px_credit_payment_type));
                 } else if (paymentTypeId.equals(PaymentTypes.DEBIT_CARD)) {
-                    paymentTypeText = getString(R.string.px_form_card_title_payment_type,
+                    paymentTypeText = TextUtil.format(this, R.string.px_form_card_title_payment_type,
                         getString(R.string.px_debit_payment_type));
                 } else if (paymentTypeId.equals(PaymentTypes.PREPAID_CARD)) {
                     paymentTypeText = getString(R.string.px_form_card_title_payment_type_prepaid);
@@ -1130,7 +1130,7 @@ public class GuessingCardActivity extends PXActivity<GuessingCardPresenter> impl
         }
         mBlackInfoContainer.setVisibility(View.VISIBLE);
         mInfoTextView
-            .setText(getResources().getString(R.string.px_exclusion_one_element, supportedPaymentMethod.getName()));
+            .setText(TextUtil.format(this, R.string.px_exclusion_one_element, supportedPaymentMethod.getName()));
         if (!withAnimation) {
             mButtonContainer.setVisibility(View.GONE);
         }

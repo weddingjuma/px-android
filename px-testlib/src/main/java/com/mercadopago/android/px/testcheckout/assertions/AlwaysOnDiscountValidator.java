@@ -3,6 +3,7 @@ package com.mercadopago.android.px.testcheckout.assertions;
 import android.support.annotation.NonNull;
 import android.view.View;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.testcheckout.pages.DiscountDetailPage;
@@ -28,8 +29,8 @@ public class AlwaysOnDiscountValidator extends DiscountValidator {
             .check(matches(withText(com.mercadopago.android.px.R.string.px_always_on_discount_detail)));
         final Matcher<View> subtitle = withId(com.mercadopago.android.px.R.id.subtitle);
         final String maxCouponAmount = "$ " + campaign.getMaxCouponAmount();
-        final String maxCouponAmountSubtitle = getInstrumentation().getTargetContext()
-            .getString(R.string.px_max_coupon_amount, maxCouponAmount);
+        final String maxCouponAmountSubtitle =
+            TextUtil.format(getInstrumentation().getTargetContext(), R.string.px_max_coupon_amount, maxCouponAmount);
         onView(subtitle).check(matches(withText(maxCouponAmountSubtitle)));
     }
 }

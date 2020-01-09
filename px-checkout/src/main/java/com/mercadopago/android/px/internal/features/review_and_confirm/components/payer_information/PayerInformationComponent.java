@@ -57,9 +57,8 @@ public class PayerInformationComponent extends CompactComponent<Payer, PayerInfo
         if (TextUtil.isEmpty(props.getLastName())) {
             return props.getFirstName().toUpperCase();
         } else {
-            return context
-                .getString(R.string.px_payer_information_first_and_last_name, props.getFirstName(), props.getLastName())
-                .toUpperCase();
+            return TextUtil.format(context, R.string.px_payer_information_first_and_last_name, props.getFirstName(),
+                props.getLastName()).toUpperCase();
         }
     }
 
@@ -77,7 +76,7 @@ public class PayerInformationComponent extends CompactComponent<Payer, PayerInfo
         }
         final String maskedNumber =
             MPCardMaskUtil.buildIdentificationNumberWithMask(identificationNumber, identificationType);
-        return context.getString(res, identificationType.getId(), maskedNumber);
+        return TextUtil.format(context, res, identificationType.getId(), maskedNumber);
     }
 
     private void drawIconFromRes(@NonNull final ImageView imageView, @DrawableRes final int resource) {

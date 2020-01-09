@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.features.TermsAndConditionsActivity;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.Currency;
@@ -92,7 +93,7 @@ public class DiscountDetail extends CompactComponent<DiscountDetail.Props, Void>
         final String detailMessage = view.getResources().getString(detailId);
 
         if (isEndDateApplicable(props.discountModel)) {
-            final String endDateMessage = view.getResources().getString(R.string.px_discount_detail_end_date,
+            final String endDateMessage = TextUtil.format(view.getContext(), R.string.px_discount_detail_end_date,
                 props.discountModel.getCampaign().getPrettyEndDate());
             detailTextView.setText(String.format(Locale.getDefault(), "%s %s", detailMessage, endDateMessage));
         } else {

@@ -61,8 +61,8 @@ public class BankDealsAdapter extends RecyclerView.Adapter<BankDealsAdapter.View
         /* default */ void populate(final BankDeal bankDeal,
             final OnSelectedCallback<BankDeal> bankDealOnSelectedCallback) {
             final String prettyExpirationDate = bankDeal.getPrettyExpirationDate();
-            bankDescView.setText(
-                bankDescView.getContext().getString(R.string.bank_deal_details_date_format, prettyExpirationDate));
+            bankDescView.setText(TextUtil
+                .format(bankDescView.getContext(), R.string.bank_deal_details_date_format, prettyExpirationDate));
             final String issuerName = bankDeal.getIssuer() != null ? bankDeal.getIssuer().getName() : "";
             logoName.setText(issuerName);
             logoName.setVisibility(View.VISIBLE);

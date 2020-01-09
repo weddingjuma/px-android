@@ -94,7 +94,7 @@ public final class PaymentResultViewModelFactory {
         final PaymentResultViewModel.Builder builder = new PaymentResultViewModel.Builder();
         // defaults
         builder.setLinkAction(new NextAction());
-        builder.setLinkActionTitle(R.string.px_continue_shopping);
+        builder.setLinkActionTitle(R.string.px_button_continue);
         setApprovedResources(builder);
 
         switch (status) {
@@ -206,7 +206,8 @@ public final class PaymentResultViewModelFactory {
                 .setMainActionTitle(R.string.px_change_payment)
                 .setBodyTitleResId(R.string.px_what_can_do)
                 .setBodyDetailDescriptionResId(R.string.px_text_insufficient_amount_title_description)
-                .setDescriptionResId(R.string.px_error_description_rejected_by_insufficient_amount);
+                .setDescriptionResId(R.string.px_error_description_rejected_by_insufficient_amount_1)
+                .setSecondDescriptionResId(R.string.px_error_description_rejected_by_insufficient_amount_2);
         case STATUS_DETAIL_CC_REJECTED_CARD_DISABLED:
             setRecoverableErrorResources(builder);
             return builder
@@ -247,7 +248,7 @@ public final class PaymentResultViewModelFactory {
             setNonRecoverableErrorResources(builder);
             return builder
                 .setLinkAction(null)
-                .setMainActionTitle(R.string.px_continue_shopping)
+                .setMainActionTitle(R.string.px_button_continue)
                 .setMainAction(new NextAction())
                 .setTitleResId(R.string.px_title_rejection_fraud);
         case STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE:
@@ -258,7 +259,8 @@ public final class PaymentResultViewModelFactory {
                 .setLinkAction(new ChangePaymentMethodAction())
                 .setLinkActionTitle(R.string.px_text_pay_with_other_method)
                 .setBodyTitleResId(R.string.px_text_how_can_authorize)
-                .setDescriptionResId(R.string.px_error_description_call, paymentAmount);
+                .setDescriptionResId(R.string.px_error_description_call_1, paymentAmount)
+                .setSecondDescriptionResId(R.string.px_error_description_call_2);
 
         case STATUS_DETAIL_REJECTED_REJECTED_BY_BANK:
         case STATUS_DETAIL_REJECTED_REJECTED_INSUFFICIENT_DATA:
@@ -266,7 +268,7 @@ public final class PaymentResultViewModelFactory {
             return builder
                 .setTitleResId(R.string.px_bolbradesco_rejection)
                 .setBodyTitleResId(R.string.px_what_can_do)
-                .setDescriptionResId(getRejectedDescription(detail));
+                .setDescriptionResId(R.string.px_error_try_with_other_method);
 
         case STATUS_DETAIL_CC_REJECTED_BAD_FILLED_OTHER:
         case STATUS_DETAIL_CC_REJECTED_BAD_FILLED_CARD_NUMBER:
@@ -288,15 +290,6 @@ public final class PaymentResultViewModelFactory {
         }
     }
 
-    private static int getRejectedDescription(final String detail) {
-        switch (detail) {
-        case STATUS_DETAIL_REJECTED_REJECTED_BY_BANK:
-            return R.string.px_error_description_by_bank;
-        default:
-            return R.string.px_error_description_insufficient_data;
-        }
-    }
-
     private static PaymentResultViewModel.Builder getHighRiskBuilder(final PaymentResultViewModel.Builder builder,
         final int resId) {
         setNonRecoverableErrorResources(builder);
@@ -304,7 +297,7 @@ public final class PaymentResultViewModelFactory {
             .setTitleResId(resId)
             .setLinkAction(null)
             .setBodyTitleResId(R.string.px_what_can_do)
-            .setDescriptionResId(R.string.px_error_description_high_risk)
+            .setDescriptionResId(R.string.px_text_try_with_other_method)
             .setMainAction(new ChangePaymentMethodAction())
             .setMainActionTitle(R.string.px_change_payment)
             .setHasDetail(true);

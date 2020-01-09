@@ -1,9 +1,12 @@
 package com.mercadopago.android.px.internal.features.review_and_confirm.models;
 
+import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.PluralsRes;
+import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
@@ -28,24 +31,11 @@ public class SummaryModel implements Parcelable {
         }
     };
 
-    public static String resolveTitle(final List<Item> items, final String singularTitle, final String pluralTitle) {
-        final String title;
-
-        if (items.size() == 1) {
-            if (TextUtil.isEmpty(items.get(0).getTitle())) {
-                if (items.get(0).getQuantity() > 1) {
-                    title = pluralTitle;
-                } else {
-                    title = singularTitle;
-                }
-            } else {
-                title = items.get(0).getTitle();
-            }
-        } else {
-            title = pluralTitle;
-        }
-
-        return title;
+    public static String resolveTitle(@NonNull final List<Item> items, @NonNull final Resources resources) {
+        final int quantity = items.size() == 1 ? items.get(0).getQuantity() : items.size();
+        return quantity == 1 && TextUtil.isEmpty(items.get(0).getTitle()) ?
+            items.get(0).getTitle() : (resources.getString(quantity == 1 ?
+            R.string.px_review_summary_product : R.string.px_review_summary_products));
     }
 
     @NonNull private final String amount;

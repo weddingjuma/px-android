@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.util;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.PluralsRes;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import com.mercadopago.android.px.internal.util.textformatter.MatcherUtil;
@@ -11,6 +12,8 @@ import java.util.regex.Pattern;
 public final class TextUtil {
 
     public static final String EMPTY = "";
+    public static final String NL = "\n";
+    public static final String DOT = ".";
     public static final CharSequence SPACE = " ";
     private static final String CSV_DELIMITER = ",";
 
@@ -39,11 +42,16 @@ public final class TextUtil {
     }
 
     public static String format(@NonNull final Context context, @StringRes final int resId,
-        @NonNull final String... args) {
+        @NonNull final CharSequence... args) {
         return resId == 0 ? EMPTY : format(context.getString(resId), args);
     }
 
-    public static String format(@NonNull final String text, @NonNull final String... args) {
+    public static String format(@NonNull final Context context, @PluralsRes final int resId, final int quantity,
+        @NonNull final String... args) {
+        return resId == 0 ? EMPTY : format(context.getResources().getQuantityString(resId, quantity), args);
+    }
+
+    public static String format(@NonNull final String text, @NonNull final CharSequence... args) {
         if (args.length != MatcherUtil.count(PLACE_HOLDER_PATTERN, text)) {
             throw new IllegalStateException("There is a different amount of placeholder than arguments");
         }

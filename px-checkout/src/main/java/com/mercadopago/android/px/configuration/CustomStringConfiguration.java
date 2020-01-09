@@ -4,36 +4,38 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
-import com.mercadopago.android.px.R;
 import java.io.Serializable;
 
 public final class CustomStringConfiguration implements Serializable {
 
-    @StringRes private final int mainVerbStringResourceId;
     @Nullable private final String customPaymentVaultTitle;
     @Nullable private final String customPayButtonText;
     @Nullable private final String customPayButtonProgressText;
+    @Nullable private final String totalDescriptionText;
 
     /* default */ CustomStringConfiguration(@NonNull final Builder builder) {
-        mainVerbStringResourceId = builder.mainVerbStringResourceId;
         customPaymentVaultTitle = builder.customPaymentVaultTitle;
         customPayButtonText = builder.customPayButtonText;
         customPayButtonProgressText = builder.customPayButtonProgressText;
+        totalDescriptionText = builder.totalDescriptionText;
     }
 
     /**
      * Let us know what the main verb is
      *
      * @return custom main verb or the default one
+     * @deprecated is not used anymore in favor of {@link #getCustomPaymentVaultTitle()} and {@link
+     * #getTotalDescriptionText()}
      */
+    @Deprecated
     @StringRes
     public int getMainVerbStringResourceId() {
-        return mainVerbStringResourceId;
+        return 0;
     }
 
     /**
      * Check if a custom payment vault title is setted
-     * 
+     *
      * @return true/false if customPaymentVaultTitle is (or not) empty
      */
     public boolean hasCustomPaymentVaultTitle() {
@@ -70,25 +72,36 @@ public final class CustomStringConfiguration implements Serializable {
         return customPayButtonProgressText;
     }
 
+    /**
+     * Obtain customized pay button progress text
+     *
+     * @return Custom Pay Button Progress Text
+     */
+    @Nullable
+    public String getTotalDescriptionText() {
+        return totalDescriptionText;
+    }
+
     public static class Builder {
-        /* default */ int mainVerbStringResourceId;
         /* default */ String customPaymentVaultTitle;
         /* default */ String customPayButtonText;
         /* default */ String customPayButtonProgressText;
+        /* default */ String totalDescriptionText;
 
         public Builder() {
-            mainVerbStringResourceId = R.string.px_main_verb;
         }
 
         /**
-         * Used to replace the main verb in Payment Methods screen
+         * Used to replace the main verb in Payment Methods screen.
          *
          * @param mainVerbStringResId the string resource that will be used
          * @return builder to keep operating
+         * @deprecated You have to use setCustomPaymentVaultTitle or setTotalDescriptionText method depends on the
+         * screen
          */
         @SuppressWarnings("unused")
+        @Deprecated
         public Builder setMainVerbStringResourceId(@StringRes final int mainVerbStringResId) {
-            mainVerbStringResourceId = mainVerbStringResId;
             return this;
         }
 
@@ -125,6 +138,18 @@ public final class CustomStringConfiguration implements Serializable {
         @SuppressWarnings("unused")
         public Builder setCustomPayButtonProgressText(@NonNull final String text) {
             customPayButtonProgressText = text;
+            return this;
+        }
+
+        /**
+         * Set custom text to total description.
+         *
+         * @param text Custom text
+         * @return builder to keep operating
+         */
+        @SuppressWarnings("unused")
+        public Builder setTotalDescriptionText(@NonNull final String text) {
+            totalDescriptionText = text;
             return this;
         }
 

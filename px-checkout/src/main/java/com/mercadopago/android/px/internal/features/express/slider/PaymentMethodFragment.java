@@ -138,7 +138,7 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         card.setOnClickListener(
             v -> DisabledPaymentMethodDetailDialog
                 .showDialog(parentFragment, ((DisabledDetailDialogLauncher) parentFragment).getRequestCode(),
-                    model.getDisabledPaymentMethod(), model.getStatus()));
+                    model.getDisabledPaymentMethod().getPaymentStatusDetail(), model.getStatus()));
     }
 
     protected void tintBackground(@NonNull final ImageView background, @NonNull final String color) {

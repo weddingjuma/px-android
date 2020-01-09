@@ -22,7 +22,6 @@
             android:layout_height="@dimen/px_s_height"
             android:layout_gravity="center"
             android:adjustViewBounds="true"
-            android:contentDescription="@string/px_bank"
             android:scaleType="fitCenter"/>
 
         <com.mercadopago.android.px.internal.view.MPTextView

@@ -21,6 +21,8 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.Reason;
 import java.math.BigDecimal;
 
+import static com.mercadopago.android.px.internal.util.TextUtil.isNotEmpty;
+
 public class AmountView extends LinearLayoutCompat {
 
     /* default */
@@ -113,9 +115,15 @@ public class AmountView extends LinearLayoutCompat {
     }
 
     private void show(@NonNull final BigDecimal totalAmount, @NonNull final Currency currency) {
+        final String totalDescriptionText =
+            Session.getInstance().getConfigurationModule().getPaymentSettings().getAdvancedConfiguration()
+                .getCustomStringConfiguration().getTotalDescriptionText();
+
         configureViewsVisibilityDefault();
-        final String mainVerb = getContext().getString(Session.getInstance().getMainVerb());
-        amountDescription.setText(getContext().getString(R.string.px_total_to_pay, mainVerb));
+
+        amountDescription.setText(isNotEmpty(totalDescriptionText) ?
+            totalDescriptionText : getContext().getString(R.string.px_total_to_pay));
+
         amountDescription.setTextColor(getResources().getColor(R.color.px_form_text));
         showEffectiveAmount(totalAmount, currency);
     }

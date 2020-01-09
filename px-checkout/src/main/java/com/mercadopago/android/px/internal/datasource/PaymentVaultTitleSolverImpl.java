@@ -13,7 +13,8 @@ public final class PaymentVaultTitleSolverImpl implements PaymentVaultTitleSolve
     @NonNull
     private final CustomStringConfiguration stringConfiguration;
 
-    public PaymentVaultTitleSolverImpl(@NonNull final Context context, @NonNull final CustomStringConfiguration stringConfiguration) {
+    public PaymentVaultTitleSolverImpl(@NonNull final Context context,
+        @NonNull final CustomStringConfiguration stringConfiguration) {
         this.context = context;
         this.stringConfiguration = stringConfiguration;
     }
@@ -23,13 +24,7 @@ public final class PaymentVaultTitleSolverImpl implements PaymentVaultTitleSolve
         if (stringConfiguration.hasCustomPaymentVaultTitle()) {
             return stringConfiguration.getCustomPaymentVaultTitle();
         } else {
-            return getTitleWithMainVerb();
+            return context.getString(R.string.px_title_activity_payment_methods);
         }
-    }
-
-    @NonNull
-    private String getTitleWithMainVerb() {
-        String mainVerb = context.getString(stringConfiguration.getMainVerbStringResourceId());
-        return context.getString(R.string.px_title_activity_payment_vault, mainVerb);
     }
 }

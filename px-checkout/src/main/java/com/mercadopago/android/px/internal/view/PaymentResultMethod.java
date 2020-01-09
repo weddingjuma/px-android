@@ -60,7 +60,7 @@ public class PaymentResultMethod extends ConstraintLayout {
     @Nullable
     private String getStatement(@NonNull final Model model) {
         if (PaymentTypes.isCardPaymentType(model.paymentTypeId) && TextUtil.isNotEmpty(model.statement)) {
-            return getResources().getString(R.string.px_text_state_account_activity_congrats, model.statement);
+            return TextUtil.format(getContext(), R.string.px_text_state_account_activity_congrats, model.statement);
         }
         return null;
     }

@@ -18,6 +18,7 @@ public final class PaymentResultViewModel {
     private final boolean isPendingWarning;
     private final boolean isPendingSuccess;
     private final int descriptionResId;
+    private final int secondDescriptionResId;
     private final int backgroundResId;
     private final int badgeResId;
     private final String descriptionParam;
@@ -40,6 +41,7 @@ public final class PaymentResultViewModel {
         isPendingWarning = builder.isPendingWarning;
         isPendingSuccess = builder.isPendingSuccess;
         descriptionResId = builder.descriptionResId;
+        secondDescriptionResId = builder.secondDescriptionResId;
         bodyTitleResId = builder.bodyTitleResId;
         titleDescriptionResId = builder.titleDescriptionResId;
         backgroundResId = builder.backgroundResId;
@@ -96,12 +98,13 @@ public final class PaymentResultViewModel {
 
     @NonNull
     public String getDescription(@NonNull final Context context) {
-        return descriptionResId == 0 ? TextUtil.EMPTY : getDescriptionText(context);
+        return (descriptionResId == 0 ? TextUtil.EMPTY : getDescriptionText(context)) +
+            (secondDescriptionResId == 0 ? TextUtil.EMPTY : TextUtil.NL + context.getString(secondDescriptionResId));
     }
 
     @NonNull
     private String getDescriptionText(@NonNull final Context context) {
-        return descriptionParam != null ? context.getString(descriptionResId, descriptionParam)
+        return descriptionParam != null ? TextUtil.format(context, descriptionResId, descriptionParam)
             : context.getString(descriptionResId);
     }
 
@@ -124,6 +127,7 @@ public final class PaymentResultViewModel {
     public static class Builder {
         int titleResId;
         int descriptionResId;
+        int secondDescriptionResId;
         int bodyTitleResId;
         int titleDescriptionResId;
         boolean isRecoverable;
@@ -194,6 +198,11 @@ public final class PaymentResultViewModel {
 
         public Builder setDescriptionResId(final int descriptionResId) {
             this.descriptionResId = descriptionResId;
+            return this;
+        }
+
+        public Builder setSecondDescriptionResId(final int secondDescriptionResId) {
+            this.secondDescriptionResId = secondDescriptionResId;
             return this;
         }
 

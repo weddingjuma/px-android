@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout android:id="@+id/mpsdkCardFrontContainer"
+             xmlns:android="http://schemas.android.com/apk/res/android"
              xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/mpsdkCardFrontContainer"
              android:layout_width="@dimen/px_card_size_extra_big_width"
              android:layout_height="@dimen/px_card_size_extra_big_height">
 
@@ -179,27 +179,10 @@
                                 android:id="@+id/mpsdkCardHolderExpiryMonth"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@string/px_card_expiry_month_hint"
-                                android:textColor="@color/px_base_text"
-                                android:textSize="14dp"/>
-
-                            <com.mercadopago.android.px.internal.view.MPTextView
-                                android:id="@+id/mpsdkCardHolderDateDivider"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/px_card_expiry_divider_hint"
-                                android:textColor="@color/px_base_text"
-                                android:textSize="14dp"/>
-
-                            <com.mercadopago.android.px.internal.view.MPTextView
-                                android:id="@+id/mpsdkCardHolderExpiryYear"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="@string/px_card_expiry_year_hint"
+                                android:text="@string/px_card_expiry_date"
                                 android:textColor="@color/px_base_text"
                                 android:textSize="14dp"/>
                         </LinearLayout>
-
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
@@ -211,6 +194,5 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:src="@drawable/px_card_shadow_rounded"/>
-
     </FrameLayout>
 </FrameLayout>

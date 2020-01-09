@@ -6,5 +6,4 @@ public interface PaymentVaultTitleSolver {
 
     @NonNull
     String solveTitle();
-
 }

@@ -31,9 +31,9 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
     public static final String EXTRA_PAYMENT_METHOD = "paymentMethod";
 
     protected RecyclerView mRecyclerView;
-    protected Toolbar mToolbar;
-    protected TextView mBankDealsTextView;
-    protected TextView mTitle;
+    protected Toolbar toolbar;
+    protected TextView bankDealsTextView;
+    protected TextView title;
 
     private PaymentMethodsPresenter mPresenter;
 
@@ -93,20 +93,18 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
     }
 
     private void initializeToolbar() {
+        toolbar = findViewById(R.id.mpsdkToolbar);
+        bankDealsTextView = findViewById(R.id.mpsdkBankDeals);
 
-        mToolbar = findViewById(R.id.mpsdkToolbar);
-        mBankDealsTextView = findViewById(R.id.mpsdkBankDeals);
-        mTitle = findViewById(R.id.mpsdkToolbarTitle);
+        title = findViewById(R.id.mpsdkToolbarTitle);
+        title.setText(R.string.px_title_activity_payment_methods);
 
-        final String mainVerb = getString(Session.getInstance().getMainVerb());
-        mTitle.setText(getString(R.string.px_title_activity_payment_methods, mainVerb));
-
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(toolbar);
         ActionBar supportActionBar = getSupportActionBar();
         supportActionBar.setDisplayShowTitleEnabled(false);
         supportActionBar.setDisplayHomeAsUpEnabled(true);
         supportActionBar.setDisplayShowHomeEnabled(true);
-        mToolbar.setNavigationOnClickListener(v -> onBackPressed());
+        toolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
     @Override
@@ -161,7 +159,7 @@ public class PaymentMethodsActivity extends PXActivity<PaymentMethodsPresenter> 
 
     @Override
     public void showBankDeals() {
-        mBankDealsTextView.setVisibility(View.VISIBLE);
-        mBankDealsTextView.setOnClickListener(v -> BankDealsActivity.start(this));
+        bankDealsTextView.setVisibility(View.VISIBLE);
+        bankDealsTextView.setOnClickListener(v -> BankDealsActivity.start(this));
     }
 }

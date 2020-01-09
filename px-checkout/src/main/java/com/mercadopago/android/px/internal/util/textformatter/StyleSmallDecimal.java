@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.RelativeSizeSpan;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Currency;
 
 class StyleSmallDecimal extends Style {
@@ -20,7 +21,7 @@ class StyleSmallDecimal extends Style {
         final Spannable spanned = apply(null);
         final Currency currency = amountFormatter.currencyFormatter.currency;
         final Character decimalSeparator = currency.getDecimalSeparator();
-        final SpannableString spannableString = new SpannableString(context.getString(holder, spanned));
+        final SpannableString spannableString = new SpannableString(TextUtil.format(context, holder, spanned));
         final String totalText = spannableString.toString();
         return makeSmallAfterSeparator(decimalSeparator, totalText);
     }

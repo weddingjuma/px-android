@@ -1,9 +1,11 @@
 package com.mercadopago.android.px.testcheckout.assertions;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.testcheckout.pages.InstallmentsPage;
@@ -66,14 +68,15 @@ public abstract class DiscountValidator extends DefaultValidator {
 
     private String getAmountDescription() {
         final String amountDescriptionMessage;
+        final Context context = getInstrumentation().getTargetContext();
         if (discount.hasPercentOff()) {
-            amountDescriptionMessage = getInstrumentation().getTargetContext()
-                .getString(com.mercadopago.android.px.R.string.px_discount_percent_off,
-                    discount.getPercentOff());
+            amountDescriptionMessage = TextUtil
+                .format(context, com.mercadopago.android.px.R.string.px_discount_percent_off,
+                    discount.getPercentOff().toString());
         } else {
-            amountDescriptionMessage = getInstrumentation().getTargetContext()
-                .getString(com.mercadopago.android.px.R.string.px_discount_amount_off_with_minus,
-                    discount.getAmountOff());
+            amountDescriptionMessage = TextUtil
+                .format(context, com.mercadopago.android.px.R.string.px_discount_amount_off_with_minus,
+                    discount.getAmountOff().toString());
         }
         return amountDescriptionMessage;
     }

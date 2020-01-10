@@ -452,7 +452,8 @@ public class PaymentVaultActivity extends PXActivity<PaymentVaultPresenter> impl
 
     @Override
     public void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod) {
-        DisabledPaymentMethodDetailDialog.showDialog(getSupportFragmentManager(), disabledPaymentMethod, null);
+        DisabledPaymentMethodDetailDialog
+            .showDialog(getSupportFragmentManager(), disabledPaymentMethod.getPaymentStatusDetail(), null);
     }
 
     @Override

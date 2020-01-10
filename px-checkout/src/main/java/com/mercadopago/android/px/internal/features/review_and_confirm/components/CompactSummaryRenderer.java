@@ -55,6 +55,6 @@ public class CompactSummaryRenderer extends Renderer<CompactSummary> {
     }
 
     private String getDisclaimer(final CompactSummary component, final Context context) {
-        return context.getString(R.string.px_installments_cft, component.props.getCftPercent());
+        return TextUtil.format(context, R.string.px_installments_cft, component.props.getCftPercent());
     }
 }

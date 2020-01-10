@@ -10,6 +10,7 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.Reason;
 import javax.annotation.Nonnull;
 
 public class DiscountDetailContainer extends CompactComponent<DiscountDetailContainer.Props, Void> {
@@ -63,7 +64,12 @@ public class DiscountDetailContainer extends CompactComponent<DiscountDetailCont
     }
 
     private void configureNotAvailableDiscountTitle(final MPTextView textView) {
-        textView.setText(R.string.px_used_up_discount_title);
+        final Reason reason = props.discountModel.getReason();
+        if (reason != null) {
+            textView.setText(reason.getTitle());
+        } else {
+            textView.setText(R.string.px_used_up_discount_title);
+        }
     }
 
     private void configureOffTitle(final MPTextView textView, final Discount discount) {

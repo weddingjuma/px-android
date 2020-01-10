@@ -5,6 +5,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.text.Spannable;
 import android.text.SpannableString;
+import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 
 class StyleNormalDecimal extends Style {
 
@@ -14,7 +16,7 @@ class StyleNormalDecimal extends Style {
 
     @Override
     public Spannable apply(@StringRes final int holder, final Context context) {
-        return new SpannableString(context.getString(holder, apply(null)));
+        return new SpannableString(TextUtil.format(context, holder, apply(null)));
     }
 
     @Override

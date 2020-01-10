@@ -45,56 +45,54 @@ public class FrontCardView {
 
     public static final int EDITING_TEXT_VIEW_ALPHA = 255;
 
-    private final Context mContext;
-    private View mView;
-    private String mMode;
-    private String mSize;
+    private final Context context;
+    private View view;
+    private String mode;
+    private String size;
 
     //Card info
-    private PaymentMethod mPaymentMethod;
-    private int mCardNumberLength;
-    private int mSecurityCodeLength;
-    private String mLastFourDigits;
+    private PaymentMethod paymentMethod;
+    private int cardNumberLength;
+    private int securityCodeLength;
+    private String lastFourDigits;
 
     //View controls
-    private FrameLayout mCardContainer;
-    private ImageView mCardBorder;
-    private MPTextView mCardNumberTextView;
-    private MPTextView mCardholderNameTextView;
-    private MPTextView mCardExpiryMonthTextView;
-    private MPTextView mCardExpiryYearTextView;
-    private MPTextView mCardDateDividerTextView;
-    private MPTextView mCardSecurityCodeTextView;
-    private FrameLayout mBaseImageCard;
-    private ImageView mImageCardContainer;
-    private ImageView mCardLowApiImageView;
-    private ImageView mCardLollipopImageView;
-    private Animation mAnimFadeIn;
+    private FrameLayout cardContainer;
+    private ImageView cardBorder;
+    private MPTextView cardNumberTextView;
+    private MPTextView cardholderNameTextView;
+    private MPTextView cardExpiryMonthTextView;
+    private MPTextView cardSecurityCodeTextView;
+    private FrameLayout baseImageCard;
+    private ImageView imageCardContainer;
+    private ImageView cardLowApiImageView;
+    private ImageView cardLollipopImageView;
+    private Animation animFadeIn;
 
-    public FrontCardView(Context context, String mode) {
-        mContext = context;
-        mMode = mode;
-        mCardNumberLength = CARD_NUMBER_MAX_LENGTH;
-        mSecurityCodeLength = CARD_SECURITY_CODE_DEFAULT_LENGTH;
+    public FrontCardView(final Context context, final String mode) {
+        this.context = context;
+        this.mode = mode;
+        cardNumberLength = CARD_NUMBER_MAX_LENGTH;
+        securityCodeLength = CARD_SECURITY_CODE_DEFAULT_LENGTH;
     }
 
-    public void setPaymentMethod(@Nullable PaymentMethod paymentMethod) {
-        mPaymentMethod = paymentMethod;
+    public void setPaymentMethod(@Nullable final PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
 
-    public void setSize(String size) {
-        mSize = size;
+    public void setSize(final String size) {
+        this.size = size;
     }
 
-    public void setCardNumberLength(int cardNumberLength) {
-        mCardNumberLength = cardNumberLength;
+    public void setCardNumberLength(final int cardNumberLength) {
+        this.cardNumberLength = cardNumberLength;
     }
 
-    public void setSecurityCodeLength(int securityCodeLength) {
-        mSecurityCodeLength = securityCodeLength;
+    public void setSecurityCodeLength(final int securityCodeLength) {
+        this.securityCodeLength = securityCodeLength;
     }
 
-    public void hasToShowSecurityCode(boolean show) {
+    public void hasToShowSecurityCode(final boolean show) {
         if (show) {
             showEmptySecurityCode();
         } else {
@@ -102,70 +100,68 @@ public class FrontCardView {
         }
     }
 
-    public void setLastFourDigits(String lastFourDigits) {
-        mLastFourDigits = lastFourDigits;
+    public void setLastFourDigits(final String lastFourDigits) {
+        this.lastFourDigits = lastFourDigits;
     }
 
     public void initializeControls() {
-        mCardContainer = mView.findViewById(R.id.mpsdkCardFrontContainer);
-        mCardBorder = mView.findViewById(R.id.mpsdkCardShadowBorder);
-        mAnimFadeIn = AnimationUtils.loadAnimation(mContext, R.anim.px_fade_in);
-        mCardNumberTextView = mView.findViewById(R.id.mpsdkCardNumberTextView);
-        mCardholderNameTextView = mView.findViewById(R.id.mpsdkCardholderNameView);
-        mCardExpiryMonthTextView = mView.findViewById(R.id.mpsdkCardHolderExpiryMonth);
-        mCardExpiryYearTextView = mView.findViewById(R.id.mpsdkCardHolderExpiryYear);
-        mCardDateDividerTextView = mView.findViewById(R.id.mpsdkCardHolderDateDivider);
-        mCardSecurityCodeTextView = mView.findViewById(R.id.mpsdkCardSecurityCodeViewFront);
-        mBaseImageCard = mView.findViewById(R.id.mpsdkBaseImageCard);
-        mImageCardContainer = mView.findViewById(R.id.mpsdkImageCardContainer);
-        mCardLowApiImageView = mView.findViewById(R.id.mpsdkCardLowApiImageView);
-        mCardLollipopImageView = mView.findViewById(R.id.mpsdkCardLollipopImageView);
+        cardContainer = view.findViewById(R.id.mpsdkCardFrontContainer);
+        cardBorder = view.findViewById(R.id.mpsdkCardShadowBorder);
+        animFadeIn = AnimationUtils.loadAnimation(context, R.anim.px_fade_in);
+        cardNumberTextView = view.findViewById(R.id.mpsdkCardNumberTextView);
+        cardholderNameTextView = view.findViewById(R.id.mpsdkCardholderNameView);
+        cardExpiryMonthTextView = view.findViewById(R.id.mpsdkCardHolderExpiryMonth);
+        cardSecurityCodeTextView = view.findViewById(R.id.mpsdkCardSecurityCodeViewFront);
+        baseImageCard = view.findViewById(R.id.mpsdkBaseImageCard);
+        imageCardContainer = view.findViewById(R.id.mpsdkImageCardContainer);
+        cardLowApiImageView = view.findViewById(R.id.mpsdkCardLowApiImageView);
+        cardLollipopImageView = view.findViewById(R.id.mpsdkCardLollipopImageView);
 
-        if (mSize != null) {
+        if (size != null) {
             resize();
         }
     }
 
     public void hide() {
-        mCardContainer.setVisibility(View.GONE);
+        cardContainer.setVisibility(View.GONE);
     }
 
     public void show() {
-        mCardContainer.setVisibility(View.VISIBLE);
+        cardContainer.setVisibility(View.VISIBLE);
     }
 
     public View inflateInParent(final ViewGroup parent, final boolean attachToRoot) {
-        mView = LayoutInflater.from(mContext)
+        view = LayoutInflater.from(context)
             .inflate(R.layout.px_card_front, parent, attachToRoot);
-        return mView;
+        return view;
     }
 
     public View getView() {
-        return mView;
+        return view;
     }
 
-    public void decorateCardBorder(int borderColor) {
-        GradientDrawable cardShadowRounded =
-            (GradientDrawable) ContextCompat.getDrawable(mContext, R.drawable.px_card_shadow_rounded);
-        cardShadowRounded.setStroke(ScaleUtil.getPxFromDp(6, mContext), borderColor);
-        mCardBorder.setImageDrawable(cardShadowRounded);
+    public void decorateCardBorder(final int borderColor) {
+        final GradientDrawable cardShadowRounded =
+            (GradientDrawable) ContextCompat.getDrawable(context, R.drawable.px_card_shadow_rounded);
+        cardShadowRounded.setStroke(ScaleUtil.getPxFromDp(6, context), borderColor);
+        cardBorder.setImageDrawable(cardShadowRounded);
     }
 
     public void draw() {
-        if (mMode == null) {
-            mMode = CardRepresentationModes.SHOW_EMPTY_FRONT_ONLY;
+        if (mode == null) {
+            mode = CardRepresentationModes.SHOW_EMPTY_FRONT_ONLY;
         }
-        if (mMode.equals(CardRepresentationModes.SHOW_EMPTY_FRONT_ONLY)) {
+        if (mode.equals(CardRepresentationModes.SHOW_EMPTY_FRONT_ONLY)) {
             drawEmptyCard();
-        } else if (mMode.equals(CardRepresentationModes.SHOW_FULL_FRONT_ONLY)) {
+        } else if (mode.equals(CardRepresentationModes.SHOW_FULL_FRONT_ONLY)) {
             drawFullCard();
-        } else if (mMode.equals(CardRepresentationModes.EDIT_FRONT)) {
+        } else if (mode.equals(CardRepresentationModes.EDIT_FRONT)) {
             drawEmptyCard();
         }
     }
 
-    public void drawEditingCard(String cardNumber, String cardholderName, String expiryMonth,
-        String expiryYear, String securityCode) {
+    public void drawEditingCard(final String cardNumber, final String cardholderName, final String expiryMonth,
+        final String expiryYear, final String securityCode) {
         onPaymentMethodSet();
         drawEditingCardNumber(cardNumber);
         drawEditingCardHolderName(cardholderName);
@@ -176,199 +172,193 @@ public class FrontCardView {
         drawEditingExpiryYear(expiryYear);
     }
 
-    public void drawEditingCardNumber(String cardNumber) {
+    public void drawEditingCardNumber(final String cardNumber) {
         if (cardNumber == null || cardNumber.length() == 0) {
-            mCardNumberTextView.setText(BASE_NUMBER_CARDHOLDER);
-        } else if (cardNumber.length() < Bin.BIN_LENGTH || mPaymentMethod == null) {
-            mCardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(CARD_NUMBER_MAX_LENGTH, cardNumber));
+            cardNumberTextView.setText(BASE_NUMBER_CARDHOLDER);
+        } else if (cardNumber.length() < Bin.BIN_LENGTH || paymentMethod == null) {
+            cardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(CARD_NUMBER_MAX_LENGTH, cardNumber));
         } else {
-            mCardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(mCardNumberLength, cardNumber));
+            cardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(cardNumberLength, cardNumber));
         }
-        enableEditingFontColor(mCardNumberTextView);
-        disableEditingFontColor(mCardholderNameTextView);
-        disableEditingFontColor(mCardExpiryMonthTextView);
-        disableEditingFontColor(mCardExpiryYearTextView);
-        disableEditingFontColor(mCardDateDividerTextView);
-        disableEditingFontColor(mCardSecurityCodeTextView);
+        enableEditingFontColor(cardNumberTextView);
+        disableEditingFontColor(cardholderNameTextView);
+        disableEditingFontColor(cardExpiryMonthTextView);
+        disableEditingFontColor(cardSecurityCodeTextView);
     }
 
-    public void updateCardNumberMask(String cardNumber) {
-        mCardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(mCardNumberLength, cardNumber));
+    public void updateCardNumberMask(final String cardNumber) {
+        cardNumberTextView.setText(MPCardMaskUtil.buildNumberWithMask(cardNumberLength, cardNumber));
     }
 
-    public void drawEditingCardHolderName(String cardholderName) {
+    public void drawEditingCardHolderName(final String cardholderName) {
         if (cardholderName == null || cardholderName.length() == 0) {
-            mCardholderNameTextView.setText(mContext.getResources().getString(R.string.px_cardholder_name_short));
+            cardholderNameTextView.setText(context.getResources().getString(R.string.px_cardholder_name_short));
         } else {
-            mCardholderNameTextView.setText(cardholderName.toUpperCase());
+            cardholderNameTextView.setText(cardholderName.toUpperCase());
         }
-        enableEditingFontColor(mCardholderNameTextView);
-        disableEditingFontColor(mCardNumberTextView);
-        disableEditingFontColor(mCardExpiryMonthTextView);
-        disableEditingFontColor(mCardExpiryYearTextView);
-        disableEditingFontColor(mCardDateDividerTextView);
-        disableEditingFontColor(mCardSecurityCodeTextView);
+        enableEditingFontColor(cardholderNameTextView);
+        disableEditingFontColor(cardNumberTextView);
+        disableEditingFontColor(cardExpiryMonthTextView);
+        disableEditingFontColor(cardSecurityCodeTextView);
     }
 
-    public void drawEditingExpiryMonth(String cardMonth) {
+    public void drawEditingExpiryMonth(final String cardMonth) {
+        final String separator = "/";
+
         if (cardMonth == null || cardMonth.length() == 0) {
-            mCardExpiryMonthTextView.setText(mContext.getResources()
-                .getString(R.string.px_card_expiry_month_hint));
+            cardExpiryMonthTextView.setText(context.getResources().getString(R.string.px_card_expiry_date));
         } else {
-            mCardExpiryMonthTextView.setText(cardMonth);
+            final String message = cardMonth + separator +
+                context.getResources().getString(R.string.px_card_expiry_date).split(separator)[1];
+            cardExpiryMonthTextView.setText(message);
         }
-        enableEditingFontColor(mCardExpiryMonthTextView);
-        enableEditingFontColor(mCardExpiryYearTextView);
-        enableEditingFontColor(mCardDateDividerTextView);
-        disableEditingFontColor(mCardholderNameTextView);
-        disableEditingFontColor(mCardNumberTextView);
-        disableEditingFontColor(mCardSecurityCodeTextView);
+
+        enableEditingFontColor(cardExpiryMonthTextView);
+        disableEditingFontColor(cardholderNameTextView);
+        disableEditingFontColor(cardNumberTextView);
+        disableEditingFontColor(cardSecurityCodeTextView);
     }
 
-    public void drawEditingExpiryYear(String cardYear) {
+    public void drawEditingExpiryYear(final String cardYear) {
+        final String separator = "/";
+
         if (cardYear == null || cardYear.length() == 0) {
-            mCardExpiryYearTextView.setText(mContext.getResources().getString(R.string.px_card_expiry_year_hint));
+            final String message = cardExpiryMonthTextView.getText().toString().split(separator)[0] + separator +
+                context.getResources().getString(R.string.px_card_expiry_date).split(separator)[1];
+            cardExpiryMonthTextView.setText(message);
         } else {
-            mCardExpiryYearTextView.setText(cardYear);
+            final String message =
+                cardExpiryMonthTextView.getText().toString().split(separator)[0] + separator + cardYear;
+            cardExpiryMonthTextView.setText(message);
         }
-        enableEditingFontColor(mCardExpiryMonthTextView);
-        enableEditingFontColor(mCardExpiryYearTextView);
-        enableEditingFontColor(mCardDateDividerTextView);
-        disableEditingFontColor(mCardholderNameTextView);
-        disableEditingFontColor(mCardNumberTextView);
-        disableEditingFontColor(mCardSecurityCodeTextView);
+
+        enableEditingFontColor(cardExpiryMonthTextView);
+        disableEditingFontColor(cardholderNameTextView);
+        disableEditingFontColor(cardNumberTextView);
+        disableEditingFontColor(cardSecurityCodeTextView);
     }
 
-    public void drawEditingSecurityCode(String securityCode) {
+    public void drawEditingSecurityCode(final String securityCode) {
         if (securityCode == null || securityCode.length() == 0) {
-            mCardSecurityCodeTextView.setText(BASE_FRONT_SECURITY_CODE);
+            cardSecurityCodeTextView.setText(BASE_FRONT_SECURITY_CODE);
         } else {
-            mCardSecurityCodeTextView.setText(MPCardMaskUtil.buildSecurityCode(mSecurityCodeLength, securityCode));
+            cardSecurityCodeTextView.setText(MPCardMaskUtil.buildSecurityCode(securityCodeLength, securityCode));
         }
-        enableEditingFontColor(mCardSecurityCodeTextView);
-        disableEditingFontColor(mCardNumberTextView);
-        disableEditingFontColor(mCardholderNameTextView);
-        disableEditingFontColor(mCardExpiryMonthTextView);
-        disableEditingFontColor(mCardExpiryYearTextView);
-        disableEditingFontColor(mCardDateDividerTextView);
+        enableEditingFontColor(cardSecurityCodeTextView);
+        disableEditingFontColor(cardNumberTextView);
+        disableEditingFontColor(cardholderNameTextView);
+        disableEditingFontColor(cardExpiryMonthTextView);
     }
 
     public void transitionPaymentMethodSet() {
-        final String pmId = mPaymentMethod == null ? "" : mPaymentMethod.getId();
-        fadeInColor(ResourceUtil.getCardColor(mPaymentMethod.getId(), mContext));
+        final String pmId = paymentMethod == null ? "" : paymentMethod.getId();
+        fadeInColor(ResourceUtil.getCardColor(paymentMethod.getId(), context));
         final int fontColor =
-            ResourceUtil.getCardFontColor(pmId, mContext);
-        setFontColor(fontColor, mCardNumberTextView);
-        setFontColor(fontColor, mCardholderNameTextView);
-        setFontColor(fontColor, mCardExpiryMonthTextView);
-        setFontColor(fontColor, mCardDateDividerTextView);
-        setFontColor(fontColor, mCardExpiryYearTextView);
-        setFontColor(fontColor, mCardSecurityCodeTextView);
-        enableEditingFontColor(mCardNumberTextView);
-        transitionImage(ResourceUtil.getCardImage(mContext, pmId), true);
+            ResourceUtil.getCardFontColor(pmId, context);
+        setFontColor(fontColor, cardNumberTextView);
+        setFontColor(fontColor, cardholderNameTextView);
+        setFontColor(fontColor, cardExpiryMonthTextView);
+        setFontColor(fontColor, cardSecurityCodeTextView);
+        enableEditingFontColor(cardNumberTextView);
+        transitionImage(ResourceUtil.getCardImage(context, pmId), true);
     }
 
     public void fillCardHolderName(final String cardholderName) {
         if (TextUtil.isEmpty(cardholderName)) {
-            mCardholderNameTextView.setText(mContext.getResources().getString(R.string.px_cardholder_name_short));
+            cardholderNameTextView.setText(context.getResources().getString(R.string.px_cardholder_name_short));
         } else {
-            mCardholderNameTextView.setText(cardholderName.toUpperCase());
+            cardholderNameTextView.setText(cardholderName.toUpperCase());
         }
     }
 
     public void transitionClearPaymentMethod() {
-        mPaymentMethod = null;
+        paymentMethod = null;
         fadeOutColor(ResourceUtil.NEUTRAL_CARD_COLOR);
         clearCardImage();
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardNumberTextView);
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardholderNameTextView);
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardExpiryMonthTextView);
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardDateDividerTextView);
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardExpiryYearTextView);
-        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, mCardSecurityCodeTextView);
-        enableEditingFontColor(mCardNumberTextView);
-        mCardSecurityCodeTextView.setText("");
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, cardNumberTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, cardholderNameTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, cardExpiryMonthTextView);
+        setFontColor(ResourceUtil.FULL_TEXT_VIEW_COLOR, cardSecurityCodeTextView);
+        enableEditingFontColor(cardNumberTextView);
+        cardSecurityCodeTextView.setText("");
     }
 
     private void drawEmptyCard() {
         String number = BASE_NUMBER_CARDHOLDER;
-        mCardNumberTextView.setText(number);
-        mCardholderNameTextView.setText(mContext.getResources().getString(R.string.px_cardholder_name_short));
-        mCardExpiryMonthTextView.setText(mContext.getResources().getString(R.string.px_card_expiry_month_hint));
-        mCardExpiryYearTextView.setText(mContext.getResources().getString(R.string.px_card_expiry_year_hint));
-        mCardSecurityCodeTextView.setText("");
+        cardNumberTextView.setText(number);
+        cardholderNameTextView.setText(context.getResources().getString(R.string.px_cardholder_name_short));
+        cardExpiryMonthTextView.setText(context.getResources().getString(R.string.px_card_expiry_date));
+        cardSecurityCodeTextView.setText("");
         clearImage();
     }
 
     private void clearImage() {
-        mBaseImageCard.clearAnimation();
-        mImageCardContainer.clearAnimation();
-        mImageCardContainer.setVisibility(View.INVISIBLE);
-        if (mBaseImageCard.getVisibility() == View.INVISIBLE) {
-            mBaseImageCard.setVisibility(View.VISIBLE);
-            mBaseImageCard.startAnimation(mAnimFadeIn);
+        baseImageCard.clearAnimation();
+        imageCardContainer.clearAnimation();
+        imageCardContainer.setVisibility(View.INVISIBLE);
+        if (baseImageCard.getVisibility() == View.INVISIBLE) {
+            baseImageCard.setVisibility(View.VISIBLE);
+            baseImageCard.startAnimation(animFadeIn);
         }
     }
 
     public void drawFullCard() {
-        if (mLastFourDigits == null || mPaymentMethod == null) {
+        if (lastFourDigits == null || paymentMethod == null) {
             return;
         }
-        mCardNumberTextView.setText(MPCardMaskUtil.getCardNumberHidden(mCardNumberLength, mLastFourDigits));
-        mCardholderNameTextView.setVisibility(View.GONE);
-        mCardExpiryMonthTextView.setVisibility(View.GONE);
-        mCardDateDividerTextView.setVisibility(View.GONE);
-        mCardExpiryYearTextView.setVisibility(View.GONE);
+        cardNumberTextView.setText(MPCardMaskUtil.getCardNumberHidden(cardNumberLength, lastFourDigits));
+        cardholderNameTextView.setVisibility(View.GONE);
+        cardExpiryMonthTextView.setVisibility(View.GONE);
         onPaymentMethodSet();
     }
 
     private void setCardColor(final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mCardLowApiImageView.setVisibility(View.GONE);
-            mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.setImageViewColorLollipop(mCardLollipopImageView, color);
+            cardLowApiImageView.setVisibility(View.GONE);
+            cardLollipopImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.setImageViewColorLollipop(cardLollipopImageView, color);
         } else {
-            mCardLollipopImageView.setVisibility(View.GONE);
-            mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.setImageViewColor(mCardLowApiImageView, color);
+            cardLollipopImageView.setVisibility(View.GONE);
+            cardLowApiImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.setImageViewColor(cardLowApiImageView, color);
         }
     }
 
-    private void setCardImage(int image) {
+    private void setCardImage(final int image) {
         transitionImage(image, false);
     }
 
-    private void setFontColor(int color, TextView textView) {
-        textView.setTextColor(ContextCompat.getColor(mContext, color));
+    private void setFontColor(final int color, final TextView textView) {
+        textView.setTextColor(ContextCompat.getColor(context, color));
     }
 
     private void transitionImage(final int image, final boolean animate) {
-        mBaseImageCard.clearAnimation();
-        mImageCardContainer.clearAnimation();
-        mBaseImageCard.setVisibility(View.INVISIBLE);
-        mImageCardContainer.setImageResource(image);
-        mImageCardContainer.setVisibility(View.VISIBLE);
+        baseImageCard.clearAnimation();
+        imageCardContainer.clearAnimation();
+        baseImageCard.setVisibility(View.INVISIBLE);
+        imageCardContainer.setImageResource(image);
+        imageCardContainer.setVisibility(View.VISIBLE);
         if (animate) {
-            mImageCardContainer.startAnimation(mAnimFadeIn);
+            imageCardContainer.startAnimation(animFadeIn);
         }
     }
 
     private void resize() {
-        if (mSize == null) {
+        if (size == null) {
             return;
         }
-        if (mSize.equals(CardRepresentationModes.MEDIUM_SIZE)) {
-            resizeCard(mCardContainer, R.dimen.px_card_size_medium_height, R.dimen.px_card_size_medium_width,
+        if (size.equals(CardRepresentationModes.MEDIUM_SIZE)) {
+            resizeCard(cardContainer, R.dimen.px_card_size_medium_height, R.dimen.px_card_size_medium_width,
                 CardRepresentationModes.CARD_HOLDER_NAME_SIZE_MEDIUM,
                 CardRepresentationModes.CARD_EXPIRY_DATE_SIZE_MEDIUM,
                 CardRepresentationModes.CARD_SECURITY_CODE_FRONT_SIZE_MEDIUM);
-        } else if (mSize.equals(CardRepresentationModes.BIG_SIZE)) {
-            resizeCard(mCardContainer, R.dimen.px_card_size_big_height, R.dimen.px_card_size_big_width,
+        } else if (size.equals(CardRepresentationModes.BIG_SIZE)) {
+            resizeCard(cardContainer, R.dimen.px_card_size_big_height, R.dimen.px_card_size_big_width,
                 CardRepresentationModes.CARD_HOLDER_NAME_SIZE_BIG,
                 CardRepresentationModes.CARD_EXPIRY_DATE_SIZE_BIG,
                 CardRepresentationModes.CARD_SECURITY_CODE_FRONT_SIZE_BIG);
-        } else if (mSize.equals(CardRepresentationModes.EXTRA_BIG_SIZE)) {
-            resizeCard(mCardContainer, R.dimen.px_card_size_extra_big_height,
+        } else if (size.equals(CardRepresentationModes.EXTRA_BIG_SIZE)) {
+            resizeCard(cardContainer, R.dimen.px_card_size_extra_big_height,
                 R.dimen.px_card_size_extra_big_width,
                 CardRepresentationModes.CARD_HOLDER_NAME_SIZE_EXTRA_BIG,
                 CardRepresentationModes.CARD_EXPIRY_DATE_SIZE_EXTRA_BIG,
@@ -376,85 +366,86 @@ public class FrontCardView {
         }
     }
 
-    private void resizeCard(ViewGroup cardViewContainer, int cardHeight, int cardWidth,
-        int cardHolderNameFontSize, int cardExpiryDateSize, int cardSecurityCodeSize) {
+    private void resizeCard(final ViewGroup cardViewContainer, final int cardHeight, final int cardWidth,
+        final int cardHolderNameFontSize, final int cardExpiryDateSize, final int cardSecurityCodeSize) {
         ViewUtils.resizeViewGroupLayoutParams(cardViewContainer, cardHeight, cardWidth);
 
-        mCardholderNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardHolderNameFontSize);
-        mCardExpiryMonthTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardExpiryDateSize);
-        mCardDateDividerTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardExpiryDateSize);
-        mCardExpiryYearTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardExpiryDateSize);
-        mCardSecurityCodeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardSecurityCodeSize);
+        cardholderNameTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardHolderNameFontSize);
+        cardExpiryMonthTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardExpiryDateSize);
+        cardSecurityCodeTextView.setTextSize(TypedValue.COMPLEX_UNIT_DIP, cardSecurityCodeSize);
     }
 
     private void showEmptySecurityCode() {
-        mCardSecurityCodeTextView.setText(BASE_FRONT_SECURITY_CODE);
+        cardSecurityCodeTextView.setText(BASE_FRONT_SECURITY_CODE);
     }
 
     private void hideSecurityCode() {
-        mCardSecurityCodeTextView.setText("");
+        cardSecurityCodeTextView.setText("");
     }
 
     public void enableEditingCardNumber() {
-        enableEditingFontColor(mCardNumberTextView);
+        enableEditingFontColor(cardNumberTextView);
     }
 
-    private void enableEditingFontColor(TextView textView) {
-        int alpha = EDITING_TEXT_VIEW_ALPHA;
+    private void enableEditingFontColor(final TextView textView) {
+        final int alpha = EDITING_TEXT_VIEW_ALPHA;
 
-        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
-        int color = ContextCompat.getColor(mContext, fontColor);
-        int newColor = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
+        final int fontColor =
+            ResourceUtil.getCardFontColor(paymentMethod == null ? "" : paymentMethod.getId(), context);
+        final int color = ContextCompat.getColor(context, fontColor);
+        final int newColor = Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
         textView.setTextColor(newColor);
     }
 
-    private void disableEditingFontColor(TextView textView) {
-        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
+    private void disableEditingFontColor(final TextView textView) {
+        final int fontColor =
+            ResourceUtil.getCardFontColor(paymentMethod == null ? "" : paymentMethod.getId(), context);
         setFontColor(fontColor, textView);
     }
 
     private void onPaymentMethodSet() {
-        if (mPaymentMethod == null) {
+        if (paymentMethod == null) {
             return;
         }
-        final String pmId = mPaymentMethod.getId();
-        setCardColor(ResourceUtil.getCardColor(pmId, mContext));
-        setCardImage(ResourceUtil.getCardImage(mContext, pmId));
-        int fontColor = ResourceUtil.getCardFontColor(mPaymentMethod == null ? "" : mPaymentMethod.getId(), mContext);
-        setFontColor(fontColor, mCardNumberTextView);
+        final String pmId = paymentMethod.getId();
+        setCardColor(ResourceUtil.getCardColor(pmId, context));
+        setCardImage(ResourceUtil.getCardImage(context, pmId));
+        final int fontColor =
+            ResourceUtil.getCardFontColor(paymentMethod == null ? "" : paymentMethod.getId(), context);
+        setFontColor(fontColor, cardNumberTextView);
     }
 
-    private void fadeInColor(int color) {
+    private void fadeInColor(final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mCardLowApiImageView.setVisibility(View.GONE);
-            mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeInLollipop(color, mCardLollipopImageView);
+            cardLowApiImageView.setVisibility(View.GONE);
+            cardLollipopImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.fadeInLollipop(color, cardLollipopImageView);
         } else {
-            mCardLollipopImageView.setVisibility(View.GONE);
-            mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeIn(color, mCardLowApiImageView);
+            cardLollipopImageView.setVisibility(View.GONE);
+            cardLowApiImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.fadeIn(color, cardLowApiImageView);
         }
     }
 
     private void fadeOutColor(final int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mCardLowApiImageView.setVisibility(View.GONE);
-            mCardLollipopImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeOutLollipop(color, mCardLollipopImageView);
+            cardLowApiImageView.setVisibility(View.GONE);
+            cardLollipopImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.fadeOutLollipop(color, cardLollipopImageView);
         } else {
-            mCardLollipopImageView.setVisibility(View.GONE);
-            mCardLowApiImageView.setVisibility(View.VISIBLE);
-            MPAnimationUtils.fadeOut(color, mCardLowApiImageView);
+            cardLollipopImageView.setVisibility(View.GONE);
+            cardLowApiImageView.setVisibility(View.VISIBLE);
+            MPAnimationUtils.fadeOut(color, cardLowApiImageView);
         }
     }
 
     private void clearCardImage() {
-        mBaseImageCard.clearAnimation();
-        mImageCardContainer.clearAnimation();
-        mImageCardContainer.setVisibility(View.INVISIBLE);
-        if (mBaseImageCard.getVisibility() == View.INVISIBLE) {
-            mBaseImageCard.setVisibility(View.VISIBLE);
-            mBaseImageCard.startAnimation(mAnimFadeIn);
+        baseImageCard.clearAnimation();
+        imageCardContainer.clearAnimation();
+        imageCardContainer.setVisibility(View.INVISIBLE);
+        if (baseImageCard.getVisibility() == View.INVISIBLE) {
+            baseImageCard.setVisibility(View.VISIBLE);
+            baseImageCard.startAnimation(animFadeIn);
         }
     }
 }

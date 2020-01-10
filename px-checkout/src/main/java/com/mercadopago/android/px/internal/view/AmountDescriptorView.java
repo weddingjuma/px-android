@@ -19,12 +19,13 @@ import com.mercadopago.android.px.internal.viewmodel.IDetailColor;
 import com.mercadopago.android.px.internal.viewmodel.IDetailDrawable;
 import com.mercadopago.android.px.internal.viewmodel.ILocalizedCharSequence;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
+import com.mercadopago.android.px.model.internal.Text;
 
 import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
 public class AmountDescriptorView extends LinearLayout {
 
-    private TextView leftLabel;
+    private MPTextView leftLabel;
     private TextView rightLabel;
     private ImageView imageView;
     private boolean rightLabelSemiBold;
@@ -62,10 +63,10 @@ public class AmountDescriptorView extends LinearLayout {
     }
 
     public void update(@NonNull final AmountDescriptorView.Model model) {
+        updateTextColor(model.detailColor);
         updateLeftLabel(model);
         updateRightLabel(model);
         updateDrawable(model.detailDrawable, model.detailDrawableColor);
-        updateTextColor(model.detailColor);
         setOnClickListener(model.listener);
     }
 
@@ -74,7 +75,11 @@ public class AmountDescriptorView extends LinearLayout {
     }
 
     private void updateLeftLabel(@NonNull final AmountDescriptorView.Model model) {
-        updateLabel(model.left.get(getContext()), leftLabel, leftLabelSemiBold);
+        if (model.leftText != null) {
+            updateLabel(leftLabel, model.leftText);
+        } else {
+            updateLabel(model.left.get(getContext()), leftLabel, leftLabelSemiBold);
+        }
     }
 
     private void updateLabel(@NonNull final CharSequence charSequence, @NonNull final TextView textView,
@@ -91,6 +96,10 @@ public class AmountDescriptorView extends LinearLayout {
         }
 
         textView.setText(spannableStringBuilder);
+    }
+
+    private void updateLabel(@NonNull final MPTextView textView, @NonNull final Text text) {
+        ViewUtils.loadOrHide(View.GONE, text, textView);
     }
 
     public void setBold(@NonNull final Position label) {
@@ -135,6 +144,7 @@ public class AmountDescriptorView extends LinearLayout {
         /* default */ @NonNull final ILocalizedCharSequence left;
         /* default */ @NonNull final ILocalizedCharSequence right;
         /* default */ @NonNull final IDetailColor detailColor;
+        /* default */ @Nullable final Text leftText;
         /* default */ @Nullable IDetailDrawable detailDrawable;
         /* default */ @Nullable IDetailColor detailDrawableColor;
         /* default */ @Nullable View.OnClickListener listener;
@@ -144,11 +154,20 @@ public class AmountDescriptorView extends LinearLayout {
             this.left = left;
             this.right = right;
             this.detailColor = detailColor;
+            leftText = null;
         }
 
         public Model(@NonNull final ILocalizedCharSequence left, @NonNull final IDetailColor detailColor) {
             this.left = left;
             this.detailColor = detailColor;
+            right = new EmptyLocalized();
+            leftText = null;
+        }
+
+        public Model(@NonNull final Text leftText, @NonNull final IDetailColor detailColor) {
+            this.leftText = leftText;
+            this.detailColor = detailColor;
+            left = new EmptyLocalized();
             right = new EmptyLocalized();
         }
 

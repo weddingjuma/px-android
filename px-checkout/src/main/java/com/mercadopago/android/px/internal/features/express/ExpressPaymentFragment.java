@@ -60,7 +60,6 @@ import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.LabeledSwitch;
-import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.internal.view.OnSingleClickListener;
 import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
@@ -400,7 +399,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod,
         @NonNull final StatusMetadata currentStatus) {
         DisabledPaymentMethodDetailDialog
-            .showDialog(this, REQ_CODE_DISABLE_DIALOG, disabledPaymentMethod, currentStatus);
+            .showDialog(this, REQ_CODE_DISABLE_DIALOG, disabledPaymentMethod.getPaymentStatusDetail(), currentStatus);
     }
 
     @Override

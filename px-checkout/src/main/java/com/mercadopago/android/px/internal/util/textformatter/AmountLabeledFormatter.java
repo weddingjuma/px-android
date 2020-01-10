@@ -6,6 +6,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.PxFont;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import java.util.Locale;
 
@@ -44,18 +45,15 @@ public class AmountLabeledFormatter extends ChainFormatter {
         final int indexStart = spannableStringBuilder.length();
         final int length;
         if (installment != 0) {
-
             final int holder = R.string.px_amount_with_installments_holder;
             final String installmentAmount = String.format(Locale.getDefault(), "%d", installment);
             final int holderFixedCharactersLength = 2;
             length = installmentAmount.length() + holderFixedCharactersLength + amount.length();
-
-            final CharSequence charSequence = context.getResources().getString(holder, installmentAmount, amount);
+            final CharSequence charSequence = TextUtil.format(context, holder, installmentAmount, amount);
             spannableStringBuilder.append(charSequence);
         } else {
-
             final int holder = R.string.px_string_holder;
-            final CharSequence charSequence = context.getResources().getString(holder, amount);
+            final CharSequence charSequence = TextUtil.format(context, holder, amount);
             spannableStringBuilder.append(charSequence);
             length = charSequence.length();
         }

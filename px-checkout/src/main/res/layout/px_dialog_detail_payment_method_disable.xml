@@ -23,7 +23,7 @@
         android:layout_marginBottom="@dimen/px_l_alternative_margin"
         android:textColor="@color/px_disablePaymentMethodDetailDialogDetail"
         android:textSize="@dimen/px_s_text"
-        tools:text="@string/px_dialog_detail_payment_method_disable_high_risk" />
+        tools:text="@string/px_dialog_detail_payment_method_disable_insufficient_amount" />
 
     <com.mercadolibre.android.ui.widgets.MeliButton
         android:id="@+id/px_dialog_detail_payment_method_disable_link"
@@ -31,5 +31,5 @@
         android:layout_height="wrap_content"
         app:button_size="small"
         android:textSize="@dimen/px_s_text"
-        android:text="@string/px_dialog_detail_payment_method_disable_link"/>
+        android:text="@string/px_text_pay_with_other_method"/>
 </LinearLayout>

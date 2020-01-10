@@ -104,7 +104,7 @@ public class ReviewItemRenderer extends Renderer<ReviewItem> {
                     props.unitPriceLabel,
                     props.itemModel.getPrice());
             } else {
-                priceText = context.getString(R.string.px_review_product_price, props.itemModel.getPrice());
+                priceText = TextUtil.format(context, R.string.px_review_product_price, props.itemModel.getPrice());
             }
             itemPrice.setText(priceText);
 

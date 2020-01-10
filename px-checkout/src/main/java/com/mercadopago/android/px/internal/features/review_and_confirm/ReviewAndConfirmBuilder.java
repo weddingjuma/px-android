@@ -61,15 +61,14 @@ public class ReviewAndConfirmBuilder {
         final DiscountConfigurationModel discountModel = session.getDiscountRepository().getCurrentConfiguration();
         final List<Item> items = checkoutPreference.getItems();
 
-        final String title = SummaryModel.resolveTitle(items, resources.getString(R.string.px_review_summary_product),
-            resources.getString(R.string.px_review_summary_products));
+        final String title = SummaryModel.resolveTitle(items, resources);
 
         final boolean termsAndConditionsEnabled = TextUtil.isEmpty(paymentSettings.getPrivateKey());
 
         final TermsAndConditionsModel mercadoPagoTermsAndConditions =
             termsAndConditionsEnabled ? new TermsAndConditionsModel(site.getTermsAndConditionsUrl(),
                 resources.getString(R.string.px_terms_and_conditions_message),
-                resources.getString(R.string.px_terms_and_conditions_linked_message),
+                resources.getString(R.string.px_terms_and_conditions) + TextUtil.DOT,
                 LineSeparatorType.TOP_LINE_SEPARATOR) : null;
 
         final TermsAndConditionsModel discountTermsAndConditions =

@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.model.Currency;
 import java.math.BigDecimal;
@@ -29,7 +30,7 @@ public class DiscountAmountLocalized implements ILocalizedCharSequence {
                 .amount(amount)
                 .normalDecimals()
                 .toSpannable();
-        spannableStringBuilder.append(context.getResources().getString(R.string.px_prefix_discount_amount, spannable));
+        spannableStringBuilder.append(TextUtil.format(context, R.string.px_prefix_discount_amount, spannable));
         return spannableStringBuilder;
     }
 }

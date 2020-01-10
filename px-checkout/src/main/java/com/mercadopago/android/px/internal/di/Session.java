@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.di;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.annotation.StringRes;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
@@ -284,12 +283,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
                     getConfigurationModule().getUserSelectionRepository());
         }
         return amountConfigurationRepository;
-    }
-
-    @StringRes
-    public int getMainVerb() {
-        return getConfigurationModule().getPaymentSettings().getAdvancedConfiguration()
-            .getCustomStringConfiguration().getMainVerbStringResourceId();
     }
 
     @NonNull

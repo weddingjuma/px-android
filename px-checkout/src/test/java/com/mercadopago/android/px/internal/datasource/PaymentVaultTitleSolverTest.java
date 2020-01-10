@@ -24,14 +24,10 @@ public class PaymentVaultTitleSolverTest {
     @Mock private Context context;
     @Mock private CustomStringConfiguration stringConfiguration;
 
-    private int mainVerbResourceId;
-
     @Before
     public void setUp() {
-        mainVerbResourceId = R.string.px_main_verb;
         paymentVaultTitleSolver = new PaymentVaultTitleSolverImpl(context, stringConfiguration);
         when(stringConfiguration.getCustomPaymentVaultTitle()).thenReturn(CUSTOM_TITLE);
-        when(stringConfiguration.getMainVerbStringResourceId()).thenReturn(mainVerbResourceId);
     }
 
     @Test
@@ -50,6 +46,6 @@ public class PaymentVaultTitleSolverTest {
         String title = paymentVaultTitleSolver.solveTitle();
 
         verify(stringConfiguration, never()).getCustomPaymentVaultTitle();
-        assertEquals(context.getString(R.string.px_title_activity_payment_vault, mainVerbResourceId),title);
+        assertEquals(context.getString(R.string.px_title_activity_payment_methods),title);
     }
 }

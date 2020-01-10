@@ -58,7 +58,10 @@ public class SummaryDetailDescriptorFactory {
     private void addDiscountRow(@NonNull final Collection<AmountDescriptorView.Model> list) {
         final Discount discount = discountModel.getDiscount();
         if (!discountModel.isAvailable()) {
-            list.add(new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new SummaryViewDefaultColor())
+            final AmountDescriptorView.Model model = discountModel.getReason() != null ?
+                new AmountDescriptorView.Model(discountModel.getReason().getSummary(), new SummaryViewDefaultColor()) :
+                new AmountDescriptorView.Model(new SoldOutDiscountLocalized(), new SummaryViewDefaultColor());
+            list.add(model
                 .setDetailDrawable(new SummaryViewDetailDrawable(), new SummaryViewDefaultColor())
                 .setListener(v -> listener.onDiscountAmountDescriptorClicked(discountModel)));
         } else if (discount != null) {

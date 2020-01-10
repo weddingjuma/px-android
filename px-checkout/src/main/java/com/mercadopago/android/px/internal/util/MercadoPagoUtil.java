@@ -10,6 +10,8 @@ import com.mercadopago.android.px.model.Bin;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.BinException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,35 +68,16 @@ public final class MercadoPagoUtil {
     }
 
     public static String getAccreditationTimeMessage(final Context context, final int milliseconds) {
-        final String accreditationMessage;
-
         if (milliseconds == 0) {
-            accreditationMessage = context.getString(R.string.px_instant_accreditation_time);
+            return context.getString(R.string.px_instant_accreditation_time);
+        } else if (milliseconds <= 1380) {
+            final int hours = new BigDecimal(milliseconds / 60f).setScale(0, RoundingMode.UP).intValue();
+            return TextUtil.format(context, R.plurals.px_accreditation_time_hour, hours,
+                String.valueOf(hours));
         } else {
-            final StringBuilder accreditationTimeMessageBuilder = new StringBuilder();
-            if (milliseconds >= 1440 && milliseconds < 2880) {
-
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_accreditation_time));
-                accreditationTimeMessageBuilder.append(" 1 ");
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_working_day));
-            } else if (milliseconds < 1440) {
-
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_accreditation_time));
-                accreditationTimeMessageBuilder.append(" ");
-                accreditationTimeMessageBuilder.append(milliseconds / 60);
-                accreditationTimeMessageBuilder.append(" ");
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_hour));
-            } else {
-
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_accreditation_time));
-                accreditationTimeMessageBuilder.append(" ");
-                accreditationTimeMessageBuilder.append(milliseconds / (60 * 24));
-                accreditationTimeMessageBuilder.append(" ");
-                accreditationTimeMessageBuilder.append(context.getString(R.string.px_working_days));
-            }
-            accreditationMessage = accreditationTimeMessageBuilder.toString();
+            final int days = new BigDecimal(milliseconds / (60f * 24f)).setScale(0, RoundingMode.UP).intValue();
+            return TextUtil.format(context, R.plurals.px_accreditation_time_working_day, days, String.valueOf(days));
         }
-        return accreditationMessage;
     }
 
     public static List<PaymentMethod> getValidPaymentMethodsForBin(final String bin,

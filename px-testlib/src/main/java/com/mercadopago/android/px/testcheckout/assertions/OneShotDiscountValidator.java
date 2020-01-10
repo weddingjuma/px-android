@@ -3,6 +3,7 @@ package com.mercadopago.android.px.testcheckout.assertions;
 import android.support.annotation.NonNull;
 import android.view.View;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.testcheckout.pages.DiscountDetailPage;
@@ -28,7 +29,7 @@ public class OneShotDiscountValidator extends DiscountValidator {
         final Matcher<View> subtitle = withId(com.mercadopago.android.px.R.id.subtitle);
         final String maxCouponAmount = "$ " + campaign.getMaxCouponAmount();
         final String maxCouponAmountSubtitle =
-            getInstrumentation().getTargetContext().getString(R.string.px_max_coupon_amount, maxCouponAmount);
+            TextUtil.format(getInstrumentation().getTargetContext(), R.string.px_max_coupon_amount, maxCouponAmount);
         onView(subtitle).check(matches(withText(maxCouponAmountSubtitle)));
     }
 }

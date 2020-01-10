@@ -43,7 +43,7 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testApproved() {
-        when(context.getString(R.string.px_continue_shopping)).thenReturn(LABEL_CONTINUE);
+        when(context.getString(R.string.px_button_continue)).thenReturn(LABEL_CONTINUE);
         final PaymentResult paymentResult = PaymentResults.getStatusApprovedPaymentResult();
         final FooterPaymentResult footerPaymentResult =
             new FooterPaymentResult(paymentResult, actionDispatcher);
@@ -262,7 +262,7 @@ public class FooterPaymentResultTest {
 
     @Test
     public void testRejectedFraudPaymentResult() {
-        when (context.getString(R.string.px_continue_shopping)).thenReturn(LABEL_CONTINUE);
+        when (context.getString(R.string.px_button_continue)).thenReturn(LABEL_CONTINUE);
 
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedFraud();
         final FooterPaymentResult footerPaymentResult =

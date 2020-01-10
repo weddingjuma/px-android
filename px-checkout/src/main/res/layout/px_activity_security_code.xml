@@ -163,7 +163,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
-                                android:text="@string/px_input_button_back"
+                                android:text="@string/px_button_back"
                                 android:textColor="@color/px_active_button"/>
                         </FrameLayout>
                     </FrameLayout>
@@ -181,7 +181,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="@string/px_input_button_next"
+                            android:text="@string/px_button_continue"
                             android:textColor="@color/px_active_button"/>
                     </FrameLayout>
                 </LinearLayout>

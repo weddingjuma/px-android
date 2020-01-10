@@ -19,6 +19,7 @@ import com.mercadopago.android.px.model.PaymentTypes;
 
 public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, PaymentResultHeader.Model> {
 
+    private static final int DEFAULT_LABEL = 0;
     private static final int DEFAULT_ICON_IMAGE = R.drawable.px_icon_default;
     private static final int ITEM_ICON_IMAGE = R.drawable.px_icon_product;
     private static final int CARD_ICON_IMAGE = R.drawable.px_icon_card;
@@ -53,8 +54,7 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
             .setBadgeImage(getBadgeImage(paymentResult, viewModel))
             .setTitle(new GenericLocalized(TextUtil.isNotEmpty(getInstructionsTitle()) ? getInstructionsTitle() : null,
                 viewModel.getTitleResId()))
-            .setLabel(new GenericLocalized(null, viewModel.getLabelResId()))
-            .setSuccess(viewModel.isApprovedSuccess())
+            .setLabel(new GenericLocalized(null, DEFAULT_LABEL))
             .build();
     }
 

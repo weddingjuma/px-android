@@ -101,7 +101,7 @@ public class FullSummaryRenderer extends Renderer<FullSummary> {
         return amount != null ? CurrenciesUtil.getSpannedAmountWithCurrencySymbol(amount, currency) : null;
     }
 
-    private String getDisclaimer(FullSummary component, Context context) {
-        return context.getString(R.string.px_installments_cft, component.props.summaryModel.getCftPercent());
+    private String getDisclaimer(final FullSummary component, final Context context) {
+        return TextUtil.format(context, R.string.px_installments_cft, component.props.summaryModel.getCftPercent());
     }
 }

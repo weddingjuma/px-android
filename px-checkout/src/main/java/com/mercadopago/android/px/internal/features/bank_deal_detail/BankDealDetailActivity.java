@@ -15,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.BankDeal;
 
@@ -56,7 +57,7 @@ public class BankDealDetailActivity extends PXActivity<BankDealDetailPresenter> 
         logoName = findViewById(R.id.logo_name);
         final TextView expDate = findViewById(R.id.exp_date);
         final TextView legals = findViewById(R.id.legals);
-        expDate.setText(getString(R.string.bank_deal_details_date_format, model.formattedExpirationDate));
+        expDate.setText(TextUtil.format(this, R.string.bank_deal_details_date_format, model.formattedExpirationDate));
         ViewUtils.loadOrGone(Html.fromHtml(model.dealTitle), title);
         ViewUtils.loadOrGone(model.legal, legals);
         logoName.setText(model.issuerName);

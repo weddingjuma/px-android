@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.payment_result.components;
 
 import android.content.Context;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.features.payment_result.components.BodyError;
 import com.mercadopago.android.px.internal.features.payment_result.props.BodyErrorProps;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
@@ -26,9 +25,11 @@ public class BodyErrorTest {
     private static final String CALL_FOR_AUTH_ERROR_TITLE = "error_title";
     private static final String CONTINGENCY_DESCRIPTION = "contingency_description";
     private static final String REVIEW_MANUAL_DESCRIPTION = "review_manual_description";
-    private static final String CALL_FOR_AUTH_DESCRIPTION = "call_for_auth_description";
+    private static final String CALL_FOR_AUTH_DESCRIPTION_1 = "call_for_auth_description_1";
+    private static final String CALL_FOR_AUTH_DESCRIPTION_2 = "call_for_auth_description_2";
     private static final String REJECTED_INSUFFICIENT_DATA = "insufficient_data_description";
-    private static final String REJECTED_INSUFFICIENT_AMOUNT = "insufficient_amount_description";
+    private static final String REJECTED_INSUFFICIENT_AMOUNT_1 = "insufficient_amount_description_1";
+    private static final String REJECTED_INSUFFICIENT_AMOUNT_2 = "insufficient_amount_description_2";
     private static final String DUPLICATED_DESCRIPTION = "duplicated_description";
     private static final String MAX_ATTEMPTS_DESCRIPTION = "max_attempt_description";
     private static final String EMPTY_DESCRIPTION = TextUtil.EMPTY;
@@ -41,15 +42,17 @@ public class BodyErrorTest {
         dispatcher = mock(ActionDispatcher.class);
         when(context.getString(R.string.px_error_description_contingency)).thenReturn(CONTINGENCY_DESCRIPTION);
         when(context.getString(R.string.px_error_description_review_manual)).thenReturn(REVIEW_MANUAL_DESCRIPTION);
-        when(context.getString(R.string.px_error_description_insufficient_data)).thenReturn(REJECTED_INSUFFICIENT_DATA);
+        when(context.getString(R.string.px_error_try_with_other_method)).thenReturn(REJECTED_INSUFFICIENT_DATA);
         when(context.getString(R.string.px_what_can_do)).thenReturn(ERROR_TITLE);
         when(context.getString(R.string.px_text_how_can_authorize)).thenReturn(CALL_FOR_AUTH_ERROR_TITLE);
-        when(context.getString(R.string.px_error_description_call)).thenReturn(CALL_FOR_AUTH_DESCRIPTION);
+        when(context.getString(R.string.px_error_description_call_1)).thenReturn(CALL_FOR_AUTH_DESCRIPTION_1);
+        when(context.getString(R.string.px_error_description_call_2)).thenReturn(CALL_FOR_AUTH_DESCRIPTION_2);
         when(context.getString(R.string.px_error_description_duplicated_payment)).thenReturn(DUPLICATED_DESCRIPTION);
         when(context.getString(R.string.px_error_description_max_attempts)).thenReturn(MAX_ATTEMPTS_DESCRIPTION);
-        when(context.getString(R.string.px_error_description_rejected_by_insufficient_amount)).thenReturn(REJECTED_INSUFFICIENT_AMOUNT);
-
-
+        when(context.getString(R.string.px_error_description_rejected_by_insufficient_amount_1))
+            .thenReturn(REJECTED_INSUFFICIENT_AMOUNT_1);
+        when(context.getString(R.string.px_error_description_rejected_by_insufficient_amount_2))
+            .thenReturn(REJECTED_INSUFFICIENT_AMOUNT_2);
     }
 
     @Test
@@ -129,7 +132,8 @@ public class BodyErrorTest {
         final PaymentResult paymentResult = PaymentResults.getStatusCallForAuthPaymentResult();
         final BodyError bodyError = new BodyError(getBodyErrorProps(paymentResult), dispatcher);
 
-        assertEquals(CALL_FOR_AUTH_DESCRIPTION, bodyError.getDescription(context));
+        assertEquals(CALL_FOR_AUTH_DESCRIPTION_1 + TextUtil.NL + CALL_FOR_AUTH_DESCRIPTION_2,
+            bodyError.getDescription(context));
     }
 
     @Test
@@ -137,7 +141,8 @@ public class BodyErrorTest {
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedInsufficientAmountPaymentResult();
         final BodyError bodyError = new BodyError(getBodyErrorProps(paymentResult), dispatcher);
 
-        assertEquals(REJECTED_INSUFFICIENT_AMOUNT, bodyError.getDescription(context));
+        assertEquals(REJECTED_INSUFFICIENT_AMOUNT_1 + TextUtil.NL + REJECTED_INSUFFICIENT_AMOUNT_2,
+            bodyError.getDescription(context));
     }
 
     @Test
@@ -176,16 +181,17 @@ public class BodyErrorTest {
     public void testBodyErrorHasActionForCallForAuth() {
         final PaymentResult paymentResult = PaymentResults.getStatusCallForAuthPaymentResult();
         final BodyError bodyError = new BodyError(getBodyErrorProps(paymentResult), dispatcher);
-        assertEquals(bodyError.getDescription(context), CALL_FOR_AUTH_DESCRIPTION);
+        assertEquals(CALL_FOR_AUTH_DESCRIPTION_1 + TextUtil.NL + CALL_FOR_AUTH_DESCRIPTION_2,
+            bodyError.getDescription(context));
     }
 
     @Test
     public void testBodyErrorDoestHaveActionForOtherRejected() {
         final PaymentResult paymentResult = PaymentResults.getStatusRejectedOtherPaymentResult();
         final BodyError bodyError = new BodyError(getBodyErrorProps(paymentResult), dispatcher);
-        assertNotEquals(bodyError.getDescription(context), CALL_FOR_AUTH_DESCRIPTION);
+        assertNotEquals(CALL_FOR_AUTH_DESCRIPTION_1 + TextUtil.NL + CALL_FOR_AUTH_DESCRIPTION_2,
+            bodyError.getDescription(context));
     }
-
 
     @Test
     public void testBodyErrorDescriptionForRejectedMaxAttempts() {
@@ -194,7 +200,6 @@ public class BodyErrorTest {
 
         assertEquals(MAX_ATTEMPTS_DESCRIPTION, bodyError.getDescription(context));
     }
-
 
     private BodyErrorProps getBodyErrorProps(final PaymentResult paymentResult) {
         return new BodyErrorProps.Builder()

@@ -2,6 +2,7 @@ package com.mercadopago.android.px.model.exceptions;
 
 import android.content.Context;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 
 public class ExceptionHandler {
 
@@ -50,7 +51,7 @@ public class ExceptionHandler {
             break;
 
         case CardTokenException.INVALID_CARD_LENGTH:
-            errorMessage = context.getString(R.string.px_invalid_card_length, exception.getExtraParams());
+            errorMessage = TextUtil.format(context, R.string.px_invalid_card_length, exception.getExtraParams());
             break;
 
         case CardTokenException.INVALID_CARD_LUHN:
@@ -58,7 +59,7 @@ public class ExceptionHandler {
             break;
 
         case CardTokenException.INVALID_CVV_LENGTH:
-            errorMessage = context.getString(R.string.px_invalid_cvv_length, exception.getExtraParams());
+            errorMessage = TextUtil.format(context, R.string.px_invalid_cvv_length, exception.getExtraParams());
             break;
 
         case CardTokenException.INVALID_FIELD:

@@ -40,7 +40,7 @@ public class CFTFormatter extends ChainFormatter {
             return spannableStringBuilder;
         }
         final int initialIndex = spannableStringBuilder.length();
-        final String cftDescription = context.getString(R.string.px_installments_cft, amount);
+        final String cftDescription = TextUtil.format(context, R.string.px_installments_cft, amount);
         final String separator = " ";
         spannableStringBuilder.append(separator).append(cftDescription);
         final int textLength = separator.length() + cftDescription.length();

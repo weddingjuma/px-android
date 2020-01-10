@@ -47,7 +47,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/px_xxxs_margin"
             android:gravity="center_horizontal"
-            android:text="@string/px_card_association_result_error_icon_text"
+            android:text="@string/px_error_title"
             android:textColor="@color/px_white"
             android:textSize="@dimen/px_xs_text"/>
 

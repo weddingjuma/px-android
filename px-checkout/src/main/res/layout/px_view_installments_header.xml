@@ -77,7 +77,9 @@
         android:layout_gravity="center_vertical|end|right"
         android:layout_marginEnd="@dimen/px_l_margin"
         android:layout_marginRight="@dimen/px_l_margin"
-        android:src="@drawable/px_shape_arrow_down" />
+        android:scaleType="center"
+        android:src="@drawable/px_arrow_down"
+        android:tint="@color/ui_components_primary_color"/>
 
     <ImageView
         android:id="@+id/helper"

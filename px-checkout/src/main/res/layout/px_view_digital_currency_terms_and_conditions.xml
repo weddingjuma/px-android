@@ -14,7 +14,7 @@
     android:paddingTop="@dimen/px_s_margin">
 
     <com.mercadopago.android.px.internal.view.LinkableTextView
-        android:id="@+id/message"
+        android:id="@+id/top_button_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

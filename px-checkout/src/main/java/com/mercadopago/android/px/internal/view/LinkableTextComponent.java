@@ -21,7 +21,7 @@ public class LinkableTextComponent extends CompactComponent<LinkableText, Void> 
         final Context context = parent.getContext();
         final LinearLayout linearContainer = ViewUtils.createLinearContainer(context);
         final View view = ViewUtils.inflate(parent, R.layout.px_view_digital_currency_terms_and_conditions);
-        ((LinkableTextView) view.findViewById(R.id.message)).updateModel(props);
+        ((LinkableTextView) view.findViewById(R.id.top_button_message)).updateModel(props);
         final LineSeparator lineSeparator = new LineSeparator(new LineSeparator.Props(R.color.px_med_light_gray));
         linearContainer.addView(lineSeparator.render(linearContainer));
         linearContainer.addView(view);

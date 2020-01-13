@@ -57,7 +57,7 @@ public class AmountDescriptorView extends LinearLayout {
 
     private void init() {
         inflate(getContext(), R.layout.px_view_amount_descriptor, this);
-        leftLabel = findViewById(R.id.label);
+        leftLabel = findViewById(R.id.bottom_button_message);
         rightLabel = findViewById(R.id.amount);
         imageView = findViewById(R.id.icon_descriptor_amount);
     }

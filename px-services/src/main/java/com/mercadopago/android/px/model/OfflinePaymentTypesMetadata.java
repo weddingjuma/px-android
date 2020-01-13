@@ -36,6 +36,10 @@ public final class OfflinePaymentTypesMetadata implements Parcelable, Serializab
         return description;
     }
 
+    public List<OfflinePaymentType> getPaymentTypes() {
+        return paymentTypes;
+    }
+
     protected OfflinePaymentTypesMetadata(final Parcel in) {
         label = in.readParcelable(Text.class.getClassLoader());
         description = in.readParcelable(Text.class.getClassLoader());

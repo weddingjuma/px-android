@@ -1,37 +1,60 @@
 package com.mercadopago.android.px.internal.features.express.add_new_card;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.model.OfflinePaymentType;
 import java.util.List;
 
-class OfflineMethodsAdapter extends RecyclerView.Adapter<OfflineMethodsRowHolder> {
+/* default */ final class OfflineMethodsAdapter extends RecyclerView.Adapter<OfflineMethodsRowHolder> {
 
-    private List<OfflinePaymentType> paymentTypes;
+    private final List<OfflineMethodItem> offlineItems;
+    private OfflineMethodsRowHolder lastHolder;
+    private int lastPositionSelected = -1;
+    private OfflineMethodsFragment.OnMethodSelectedListener onMethodSelectedListener;
 
-    public OfflineMethodsAdapter() {
-        this.paymentTypes = paymentTypes;
+    public OfflineMethodsAdapter(@NonNull final List<OfflineMethodItem> offlineItems,
+        final OfflineMethodsFragment.OnMethodSelectedListener onMethodSelectedListener) {
+        this.offlineItems = offlineItems;
+        this.onMethodSelectedListener = onMethodSelectedListener;
     }
 
     @NonNull
     @Override
     public OfflineMethodsRowHolder onCreateViewHolder(@NonNull final ViewGroup parent, final int i) {
-        final View offlineMethodView = LayoutInflater.from(parent.getContext()).inflate(R.layout.px_view_offline_payment_method_item, parent, false);
+        final View offlineMethodView = LayoutInflater.from(parent.getContext())
+            .inflate(R.layout.px_view_offline_item, parent, false);
+
         return new OfflineMethodsRowHolder(offlineMethodView);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final OfflineMethodsRowHolder offlineMethodsRowHolder, final int i) {
+    public void onBindViewHolder(@NonNull final OfflineMethodsRowHolder holder,
+        @SuppressLint("RecyclerView") final int position) {
+        holder.setChecked(lastPositionSelected >= 0 && lastPositionSelected == position);
 
+        holder.populate(offlineItems.get(position), () -> {
+            if (lastHolder != null) {
+                lastHolder.setChecked(false);
+            }
 
+            holder.setChecked(true);
+            lastHolder = holder;
+            lastPositionSelected = position;
+
+            onMethodSelectedListener.onClick();
+        });
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return offlineItems.size();
+    }
+
+    interface OnItemClicked {
+        void onClick();
     }
 }

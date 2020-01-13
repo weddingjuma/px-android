@@ -30,6 +30,14 @@ public final class OfflinePaymentType implements Parcelable, Serializable {
         paymentMethods = in.createTypedArrayList(OfflinePaymentMethod.CREATOR);
     }
 
+    public Text getName() {
+        return name;
+    }
+
+    public List<OfflinePaymentMethod> getPaymentMethods() {
+        return paymentMethods;
+    }
+
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeString(id);

@@ -31,6 +31,18 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
         additionalInfoNeeded = in.readByte() != 0;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public Text getName() {
+        return name;
+    }
+
+    public Text getDescription() {
+        return description;
+    }
+
     @Override
     public int describeContents() {
         return 0;

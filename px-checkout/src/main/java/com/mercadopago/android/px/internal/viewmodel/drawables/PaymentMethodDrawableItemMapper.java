@@ -33,12 +33,13 @@ public class PaymentMethodDrawableItemMapper extends NonNullMapper<ExpressMetada
         if (expressMetadata.isCard()) {
             return new SavedCardDrawableFragmentItem(parameters, expressMetadata.getPaymentMethodId(),
                 new CardDrawerConfiguration(expressMetadata.getCard().getDisplayInfo(), disableConfiguration));
-        } else if (PaymentTypes.isAccountMoney(expressMetadata.getPaymentMethodId())) {
+        } else if (expressMetadata.isAccountMoney()) {
             return new AccountMoneyDrawableFragmentItem(parameters);
         } else if (expressMetadata.isConsumerCredits()) {
             return new ConsumerCreditsDrawableFragmentItem(parameters, expressMetadata.getConsumerCredits());
-        } else if (expressMetadata.isNewCard()) {
-            return new AddNewCardFragmentDrawableFragmentItem(parameters, expressMetadata.getNewCard());
+        } else if (expressMetadata.isNewCard() || expressMetadata.isOfflineMethods()) {
+            return new OtherPaymentMethodFragmentItem(parameters, expressMetadata.getNewCard(),
+                expressMetadata.getOfflineMethods());
         }
         return null;
     }

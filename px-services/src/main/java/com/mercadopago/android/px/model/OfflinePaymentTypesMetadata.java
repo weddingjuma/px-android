@@ -2,6 +2,8 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.internal.Text;
 import java.io.Serializable;
 import java.util.List;
@@ -24,10 +26,12 @@ public final class OfflinePaymentTypesMetadata implements Parcelable, Serializab
         }
     };
 
+    @NonNull
     public Text getLabel() {
         return label;
     }
 
+    @Nullable
     public Text getDescription() {
         return description;
     }

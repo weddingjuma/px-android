@@ -31,7 +31,8 @@
     <color name="px_very_light_gray">#EEEEEE</color>
     <color name="px_gray">#D6D6D6</color>
     <color name="px_darker_gray">#ABABAB</color>
-    <color name="px_warm_grey_with_alpha">#b7999999</color>
+    <color name="px_darkest_gray">#999999</color>
+    <color name="px_warm_grey_with_alpha">@color/px_darkest_gray</color>
     <color name="px_transparent">#00000000</color>
     <color name="px_color_light_grey">#F0F0F0</color>
     <color name="px_active_button">@color/px_input</color>
@@ -40,7 +41,7 @@
     <color name="px_color_congrats_background">#0DB478</color>
     <color name="px_color_new_card_form_background_light_alpha">#4DFFFFFF</color>
     <color name="px_color_new_card_form_background_dark_alpha">#B3FFFFFF</color>
-    <color name="px_color_new_card_text">#999999</color>
+    <color name="px_color_new_card_text">@color/px_darkest_gray</color>
     <color name="px_color_red_error">#FF2B2B</color>
     <color name="px_mp_blue">#009EE3</color>
     <color name="px_review_payment_methods_background">#474747</color>
@@ -112,7 +113,7 @@
     <color name="px_font_cargavirtual">#B3333333</color>
 
     <color name="px_summary_top_color">@color/ui_components_light_grey_color</color>
-    <color name="px_color_terms_and_conditions">#999999</color>
+    <color name="px_color_terms_and_conditions">@color/px_darkest_gray</color>
     <color name="px_color_payer_costs">#40000000</color>
     <color name="px_color_payer_costs_selected_background">#f5f5f5</color>
     <color name="px_review_gray_background">#F7F7F7</color>
@@ -172,15 +173,15 @@
     <color name="px_expressCheckoutInstallmentTitle">#73000000</color>
 
     <!-- Disable payment method detail dialog -->
-    <color name="px_disablePaymentMethodDetailDialogTitle">#CC000000</color>
+    <color name="px_disablePaymentMethodDetailDialogTitle">@color/px_color_translucent_black</color>
     <color name="px_disablePaymentMethodDetailDialogDetail">@color/px_disablePaymentMethodDetailDialogTitle</color>
     <color name="px_disablePaymentMethodDetailDialogLink">#3483FA</color>
 
     <!-- Payment result -->
-    <color name="px_payment_result_component_title">#cc000000</color>
+    <color name="px_payment_result_component_title">@color/px_color_translucent_black</color>
     <color name="px_payment_result_component_subtitle">#73000000</color>
     <color name="px_payment_result_header_ring">#11000000</color>
-    <color name="px_payment_result_method_detail">#999999</color>
+    <color name="px_payment_result_method_detail">@color/px_darkest_gray</color>
     <color name="px_payment_result_method_ring">#ededed</color>
 
     <!-- Colors used by Money in -->
@@ -191,6 +192,7 @@
 
     <!-- One tap colors -->
     <color name="px_color_highlight">#00a650</color>
+    <color name="px_color_translucent_black">#cc000000</color>
 
     <!-- Colors disabled payment method -->
     <color name="px_disabled_background">#ededed</color>

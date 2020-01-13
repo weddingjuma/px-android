@@ -10,13 +10,13 @@ import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
-public class AddNewCardPresenter extends BasePresenter<AddNewCard.View> implements AddNewCard.Actions {
+public class ChangePaymentMethodPresenter extends BasePresenter<AddNewCard.View> implements AddNewCard.Actions {
 
     private static final String TYPE_TO_DRIVE = "cards";
 
     private final InitRepository initRepository;
 
-    /* default */ AddNewCardPresenter(@NonNull final InitRepository initRepository) {
+    /* default */ ChangePaymentMethodPresenter(@NonNull final InitRepository initRepository) {
         this.initRepository = initRepository;
     }
 
@@ -35,7 +35,7 @@ public class AddNewCardPresenter extends BasePresenter<AddNewCard.View> implemen
 
             @Override
             public void failure(final ApiException apiException) {
-                throw new IllegalStateException("AddNewCardPresenter could not retrieve PaymentMethodSearch");
+                throw new IllegalStateException("ChangePaymentMethodPresenter could not retrieve PaymentMethodSearch");
             }
         });
     }

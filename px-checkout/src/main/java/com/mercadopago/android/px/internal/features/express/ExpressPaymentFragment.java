@@ -38,6 +38,7 @@ import com.mercadopago.android.px.internal.features.disable_payment_method.Disab
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
+import com.mercadopago.android.px.internal.features.express.add_new_card.OfflineMethodsFragment;
 import com.mercadopago.android.px.internal.features.express.animations.ExpandAndCollapseAnimation;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimationListener;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimator;
@@ -75,6 +76,7 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
@@ -97,6 +99,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     PaymentMethodFragment.DisabledDetailDialogLauncher {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
+    private static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
     private static final String EXTRA_RENDER_MODE = "render_mode";
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 101;
@@ -673,5 +676,18 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public int getRequestCode() {
         return REQ_CODE_DISABLE_DIALOG;
+    }
+
+    public void onBottomButtonClicked() {
+        presenter.onOfflineMethodsClicked();
+    }
+
+    @Override
+    public void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata metadata) {
+        final OfflineMethodsFragment fragment = OfflineMethodsFragment.getInstance(metadata);
+        getChildFragmentManager().beginTransaction()
+            .replace(R.id.offline_methods_frame, fragment, TAG_OFFLINE_METHODS_FRAGMENT)
+            .addToBackStack(null)
+            .commit();
     }
 }

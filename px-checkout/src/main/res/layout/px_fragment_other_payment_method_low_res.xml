@@ -22,41 +22,23 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/background"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:adjustViewBounds="true"
                 android:scaleType="fitXY"
                 android:src="@drawable/px_change_payment_method_shape"
-                app:layout_constraintDimensionRatio="@string/px_card_aspect_ratio"
+                app:layout_constraintDimensionRatio="@string/px_card_aspect_ratio_lowres"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/floating_change"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:elevation="@dimen/px_xxxs_margin"
-                android:tint="@color/ui_components_primary_color"
-                app:backgroundTint="@color/px_white"
-                app:elevation="@dimen/px_xxxs_margin"
-                app:fabSize="mini"
-                app:layout_constraintBottom_toTopOf="@id/message"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_chainStyle="packed"
-                app:srcCompat="@android:drawable/ic_input_add" />
-
             <com.mercadolibre.android.ui.widgets.MeliButton
-                android:id="@+id/message"
+                android:id="@+id/other_payment_method_primary_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/px_xxs_margin"
-                app:layout_constraintBottom_toBottomOf="@id/background"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/floating_change"
-                app:layout_constraintVertical_chainStyle="packed"
+                app:layout_constraintTop_toTopOf="parent"
                 app:type="optionPrimary"
                 tools:text="Agregar nueva tarjeta" />
 

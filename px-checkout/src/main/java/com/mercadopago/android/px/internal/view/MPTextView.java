@@ -37,10 +37,10 @@ public class MPTextView extends AppCompatTextView {
 
     public void setText(@NonNull final Text text) {
         setText(text.getMessage());
-        if(TextUtil.isNotEmpty(text.getTextColor())) {
+        if (TextUtil.isNotEmpty(text.getTextColor())) {
             setTextColor(Color.parseColor(text.getTextColor()));
         }
-        if(TextUtil.isNotEmpty(text.getWeight())) {
+        if (TextUtil.isNotEmpty(text.getWeight())) {
             FontHelper.setFont(this, PxFont.from(text.getWeight()));
         }
     }

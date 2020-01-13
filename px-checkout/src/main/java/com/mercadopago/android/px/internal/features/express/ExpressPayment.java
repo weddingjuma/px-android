@@ -16,6 +16,7 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
@@ -88,6 +89,8 @@ public interface ExpressPayment {
 
         void showDynamicDialog(@NonNull final DynamicDialogCreator creatorFor,
             @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
+
+        void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata metadata);
 
         void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel);
     }

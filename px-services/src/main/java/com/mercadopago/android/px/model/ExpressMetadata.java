@@ -91,6 +91,10 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return benefits != null;
     }
 
+    public boolean isOfflineMethods() {
+        return offlineMethods != null;
+    }
+
     @Override
     public String getCustomOptionId() {
         return isCard() ? getCard().getId() : getPaymentMethodId();

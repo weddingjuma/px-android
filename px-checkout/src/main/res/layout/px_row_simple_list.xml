@@ -52,8 +52,9 @@
             android:layout_width="15dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:src="@drawable/px_arrow_right_grey"
+            android:scaleType="center"
+            android:src="@drawable/px_arrow_right"
+            android:tint="@color/px_darkest_gray"
             android:adjustViewBounds="true"/>
     </LinearLayout>
 </FrameLayout>
-

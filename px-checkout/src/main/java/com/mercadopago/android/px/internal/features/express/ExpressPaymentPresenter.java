@@ -71,6 +71,7 @@ import java.util.Set;
 
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
+    private static final String BUNDLE_STATE_OFFLINE_METHODS = "state_offline_methods";
 
     @NonNull private final PaymentRepository paymentRepository;
     @NonNull private final AmountRepository amountRepository;
@@ -495,5 +496,13 @@ import java.util.Set;
     public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
         cancelLoading();
         getView().showCardFlow(paymentRepository.createPaymentRecovery());
+    }
+
+    public void onOfflineMethodsClicked() {
+        for (final ExpressMetadata expressMetadata : expressMetadataList) {
+            if (expressMetadata.getOfflineMethods() != null) {
+                getView().showOfflineMethods(expressMetadata.getOfflineMethods());
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -93,7 +94,9 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     private void configureRecycler(@NonNull final RecyclerView recycler) {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recycler.setLayoutManager(linearLayoutManager);
-        recycler.addItemDecoration(new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation()));
+        final DividerItemDecoration decoration = new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation());
+        decoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.px_item_decorator_divider));
+        recycler.addItemDecoration(decoration);
 
         final OnMethodSelectedListener onMethodSelectedListener = selectedItem -> {
             presenter.selectMethod(selectedItem);

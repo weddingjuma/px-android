@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -684,10 +685,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata metadata) {
+        final View offMethodsSheet = getActivity().findViewById(R.id.off_methods_fragment);
+        offMethodsSheet.setVisibility(VISIBLE);
+
+        final BottomSheetBehavior<View> bottomSheetBehavior = BottomSheetBehavior.from(offMethodsSheet);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
         final OfflineMethodsFragment fragment = OfflineMethodsFragment.getInstance(metadata);
         getActivity().getSupportFragmentManager().beginTransaction()
             .setCustomAnimations(R.animator.px_slide_up, 0, 0, R.animator.px_slide_down)
-            .add(R.id.one_tap_fragment, fragment, TAG_OFFLINE_METHODS_FRAGMENT)
+            .add(R.id.off_methods_fragment, fragment, TAG_OFFLINE_METHODS_FRAGMENT)
             .addToBackStack(null)
             .commit();
     }

@@ -45,7 +45,7 @@ import java.util.List;
             lastHolder = holder;
             lastPositionSelected = position;
 
-            onMethodSelectedListener.onClick();
+            onMethodSelectedListener.onItemSelected(offlineItems.get(position));
         });
     }
 

@@ -7,6 +7,8 @@ import com.mercadopago.android.px.model.internal.Text;
 /* default */ final class OfflineMethodItem {
 
     @NonNull private final Text name;
+    @Nullable private String paymentMethodId;
+    @Nullable private String paymentTypeId;
     @Nullable private Text description;
     private int iconId;
 
@@ -14,10 +16,23 @@ import com.mercadopago.android.px.model.internal.Text;
         this.name = name;
     }
 
-    public OfflineMethodItem(@NonNull final Text name, @NonNull final Text description, final int iconId) {
+    public OfflineMethodItem(@NonNull final String paymentMethodId, @NonNull final String paymentTypeId,
+        @NonNull final Text name, @NonNull final Text description, final int iconId) {
+        this.paymentMethodId = paymentMethodId;
+        this.paymentTypeId = paymentTypeId;
         this.name = name;
         this.description = description;
         this.iconId = iconId;
+    }
+
+    @Nullable
+    public String getPaymentMethodId() {
+        return paymentMethodId;
+    }
+
+    @Nullable
+    public String getPaymentTypeId() {
+        return paymentTypeId;
     }
 
     @NonNull

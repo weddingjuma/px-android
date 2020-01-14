@@ -25,10 +25,10 @@ import static com.mercadopago.android.px.internal.util.TextUtil.isNotEmpty;
 
         for (final OfflinePaymentType offlinePaymentType : metadata.getPaymentTypes()) {
             offlineMethodItems.add(new OfflineMethodItem(offlinePaymentType.getName()));
-
             for (final OfflinePaymentMethod offlinePaymentMethod : offlinePaymentType.getPaymentMethods()) {
                 offlineMethodItems.add(
-                    new OfflineMethodItem(offlinePaymentMethod.getName(), offlinePaymentMethod.getDescription(),
+                    new OfflineMethodItem(offlinePaymentMethod.getId(), offlinePaymentType.getId(),
+                        offlinePaymentMethod.getName(), offlinePaymentMethod.getDescription(),
                         getIconResourceId(offlinePaymentMethod.getId())));
             }
         }

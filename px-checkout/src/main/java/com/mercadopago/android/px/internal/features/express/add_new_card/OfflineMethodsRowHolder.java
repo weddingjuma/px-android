@@ -15,7 +15,7 @@ import com.mercadopago.android.px.internal.view.MPTextView;
     private final MPTextView paymentTypeName;
     private final MPTextView paymentMethodName;
     private final MPTextView description;
-    private final ImageView methodImage;
+    private final ImageView methodImageView;
     private final RadioButton radioButton;
     private final ConstraintLayout container;
 
@@ -25,27 +25,30 @@ import com.mercadopago.android.px.internal.view.MPTextView;
         paymentTypeName = itemView.findViewById(R.id.payment_type_name);
         paymentMethodName = itemView.findViewById(R.id.payment_method_name);
         description = itemView.findViewById(R.id.description);
-        methodImage = itemView.findViewById(R.id.method_image);
+        methodImageView = itemView.findViewById(R.id.method_image);
         radioButton = itemView.findViewById(R.id.radio_button);
     }
 
-    public void populate(final OfflineMethodItem offlineItem,
+    /* default */ void populate(final OfflineMethodItem offlineItem,
         final OfflineMethodsAdapter.OnItemClicked onItemClicked) {
         if (offlineItem.isOfflinePaymentTypeItem()) {
             ViewUtils.loadOrHide(View.GONE, offlineItem.getName(), paymentTypeName);
             paymentMethodName.setVisibility(View.GONE);
             description.setVisibility(View.GONE);
-            methodImage.setVisibility(View.GONE);
+            methodImageView.setVisibility(View.GONE);
             radioButton.setVisibility(View.GONE);
+            container.setOnClickListener(null);
         } else {
-            container.setOnClickListener(v -> onItemClicked.onClick());
+            paymentTypeName.setVisibility(View.GONE);
             ViewUtils.loadOrHide(View.GONE, offlineItem.getName(), paymentMethodName);
             ViewUtils.loadOrHide(View.GONE, offlineItem.getDescription(), description);
-            ViewUtils.loadOrGone(offlineItem.getIconId(), methodImage);
+            ViewUtils.loadOrGone(offlineItem.getIconId(), methodImageView);
+            radioButton.setVisibility(View.VISIBLE);
+            container.setOnClickListener(v -> onItemClicked.onClick());
         }
     }
 
-    public void setChecked(final boolean checked) {
+    /* default */ void setChecked(final boolean checked) {
         radioButton.setChecked(checked);
     }
 }

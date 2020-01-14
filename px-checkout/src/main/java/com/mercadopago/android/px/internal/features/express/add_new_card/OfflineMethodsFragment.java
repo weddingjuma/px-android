@@ -94,7 +94,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     private void configureRecycler(@NonNull final RecyclerView recycler) {
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recycler.setLayoutManager(linearLayoutManager);
-        final DividerItemDecoration decoration = new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation());
+        final DividerItemDecoration decoration =
+            new DividerItemDecoration(getContext(), linearLayoutManager.getOrientation());
         decoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.px_item_decorator_divider));
         recycler.addItemDecoration(decoration);
 
@@ -221,5 +222,14 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     interface OnMethodSelectedListener {
         void onItemSelected(@NonNull final OfflineMethodItem selectedMethod);
+    }
+
+    @Override
+    public void onDetach() {
+        getActivity().findViewById(R.id.off_methods_fragment).setVisibility(View.GONE);
+        if (presenter != null) {
+            presenter.detachView();
+        }
+        super.onDetach();
     }
 }

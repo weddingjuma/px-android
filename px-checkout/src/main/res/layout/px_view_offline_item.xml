@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout android:id="@+id/offline_item_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/offline_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true">
@@ -12,15 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.5"/>
+        app:layout_constraintGuide_percent="0.5" />
 
     <ImageView
         android:id="@+id/method_image"
         android:layout_width="@dimen/px_m_height"
         android:layout_height="@dimen/px_m_height"
-        android:layout_marginBottom="@dimen/px_s_margin"
         android:layout_marginStart="@dimen/px_xs_margin"
         android:layout_marginTop="@dimen/px_s_margin"
+        android:layout_marginBottom="@dimen/px_s_margin"
         android:adjustViewBounds="true"
         android:background="@drawable/px_ring_shape"
         android:padding="@dimen/px_xxs_margin"
@@ -49,8 +49,8 @@
         android:textColor="@color/px_base_text"
         android:textSize="@dimen/px_s_text"
         app:layout_constraintBottom_toBottomOf="@id/guideline"
-        app:layout_constraintStart_toEndOf="@id/method_image"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/method_image"
         app:layout_constraintTop_toTopOf="@id/method_image"
         tools:text="Rapipago" />
 
@@ -62,8 +62,8 @@
         android:layout_marginEnd="@dimen/px_s_margin"
         android:textSize="@dimen/px_xs_text"
         app:layout_constraintBottom_toBottomOf="@id/method_image"
-        app:layout_constraintStart_toEndOf="@id/method_image"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/method_image"
         app:layout_constraintTop_toTopOf="@id/guideline"
         tools:text="El pago se acreditara al instante" />
 

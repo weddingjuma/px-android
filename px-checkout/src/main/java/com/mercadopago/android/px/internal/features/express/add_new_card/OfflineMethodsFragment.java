@@ -78,7 +78,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
             if (ApiUtil.checkConnection(getActivity().getApplicationContext())) {
                 presenter.startPayment();
             } else {
-                // TODO manage no connection
+                presenter.manageNoConnection();
             }
         });
         totalAmountTextView = view.findViewById(R.id.total_amount);

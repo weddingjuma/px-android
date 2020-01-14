@@ -685,9 +685,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata metadata) {
         final OfflineMethodsFragment fragment = OfflineMethodsFragment.getInstance(metadata);
-        getChildFragmentManager().beginTransaction()
+        getActivity().getSupportFragmentManager().beginTransaction()
             .setCustomAnimations(R.animator.px_slide_up, 0, 0, R.animator.px_slide_down)
-            .add(R.id.offline_methods_frame, fragment, TAG_OFFLINE_METHODS_FRAGMENT)
+            .add(R.id.one_tap_fragment, fragment, TAG_OFFLINE_METHODS_FRAGMENT)
             .addToBackStack(null)
             .commit();
     }

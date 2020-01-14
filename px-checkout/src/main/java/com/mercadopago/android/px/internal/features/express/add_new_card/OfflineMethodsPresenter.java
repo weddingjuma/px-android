@@ -3,17 +3,20 @@ package com.mercadopago.android.px.internal.features.express.add_new_card;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
-import com.mercadopago.android.px.internal.repository.AmountRepository;
-import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.util.ApiUtil;
+import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentRecovery;
+import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
 
@@ -138,5 +141,16 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
         // do nothing
+    }
+
+    public void manageNoConnection() {
+        final NoConnectivityException exception = new NoConnectivityException();
+        final ApiException apiException = ApiUtil.getApiException(exception);
+        final MercadoPagoError mercadoPagoError = new MercadoPagoError(apiException, null);
+        FrictionEventTracker.with(OneTapViewTracker.PATH_REVIEW_ONE_TAP_VIEW,
+            FrictionEventTracker.Id.GENERIC, FrictionEventTracker.Style.CUSTOM_COMPONENT,
+            mercadoPagoError)
+            .track();
+        getView().showErrorSnackBar(mercadoPagoError);
     }
 }

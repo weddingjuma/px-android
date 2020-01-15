@@ -62,6 +62,36 @@
             android:background="@drawable/px_short_line_rounded" />
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/floating_indicator"
+        android:layout_width="168dp"
+        android:layout_height="28dp"
+        android:layout_marginBottom="@dimen/px_s_margin"
+        android:background="@drawable/px_rounded_rectangle"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@id/confirm_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/methods">
+
+        <com.mercadopago.android.px.internal.view.MPTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:textSize="12dp"
+            tool:text="Transferencia Bancaria">
+        </com.mercadopago.android.px.internal.view.MPTextView>
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        </ImageView>
+
+    </LinearLayout>
+
+
     <com.mercadolibre.android.ui.widgets.MeliButton
         android:id="@+id/confirm_button"
         android:layout_width="match_parent"

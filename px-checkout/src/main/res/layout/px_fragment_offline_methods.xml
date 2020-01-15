@@ -12,7 +12,7 @@
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/px_colorPrimaryDark"
+        android:background="@color/px_colorPrimary"
         android:paddingStart="@dimen/px_s_margin"
         android:paddingTop="@dimen/px_s_margin"
         android:paddingEnd="@dimen/px_s_margin"

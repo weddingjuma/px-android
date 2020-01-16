@@ -10,9 +10,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.SummaryAmount;
-import com.mercadopago.android.px.model.exceptions.ApiException;
-import com.mercadopago.android.px.model.internal.InitResponse;
-import com.mercadopago.android.px.services.Callback;
 import java.util.Map;
 
 public class DiscountServiceImp implements DiscountRepository {
@@ -21,21 +18,21 @@ public class DiscountServiceImp implements DiscountRepository {
     /* default */ Map<String, DiscountConfigurationModel> discountsConfigurations;
 
     @Nullable private String defaultSelectedGuessingConfiguration;
-    @NonNull private final InitRepository initRepository;
     private final UserSelectionRepository userSelectionRepository;
 
     public DiscountServiceImp(@NonNull final InitRepository initRepository,
         @NonNull final UserSelectionRepository userSelectionRepository) {
-        this.initRepository = initRepository;
         this.userSelectionRepository = userSelectionRepository;
+        initRepository.addOnChangedListener(initResponse -> {
+            configurationSolver = new ConfigurationSolverImpl(initResponse.getDefaultAmountConfiguration(),
+                initResponse.getCustomSearchItems());
+            discountsConfigurations = initResponse.getDiscountsConfigurations();
+        });
     }
 
     @NonNull
     @Override
     public DiscountConfigurationModel getCurrentConfiguration() {
-        // TODO: remove
-        init();
-
         final Card card = userSelectionRepository.getCard();
         // Remember to prioritize the selected discount over the rest when the selector feature is added.
         if (card != null) {
@@ -65,13 +62,10 @@ public class DiscountServiceImp implements DiscountRepository {
 
     @Override
     public DiscountConfigurationModel getConfigurationFor(@NonNull final String customOptionId) {
-        init();
         return getConfiguration(configurationSolver.getConfigurationHashFor(customOptionId));
     }
 
     private DiscountConfigurationModel getConfiguration(@Nullable final String hash) {
-        // TODO: remove
-        init();
         final DiscountConfigurationModel discountModel = discountsConfigurations.get(hash);
         final DiscountConfigurationModel defaultConfig =
             discountsConfigurations.get(configurationSolver.getDefaultSelectedAmountConfiguration());
@@ -81,31 +75,8 @@ public class DiscountServiceImp implements DiscountRepository {
         return discountModel == null ? defaultConfig : discountModel;
     }
 
-    //TODO: remove init call.
-    private void init() {
-        if (configurationSolver != null && discountsConfigurations != null) {
-            return;
-        }
-
-        initRepository.init().execute(new Callback<InitResponse>() {
-            @Override
-            public void success(final InitResponse initResponse) {
-                configurationSolver = new ConfigurationSolverImpl(initResponse.getDefaultAmountConfiguration(),
-                    initResponse.getCustomSearchItems());
-                discountsConfigurations = initResponse.getDiscountsConfigurations();
-            }
-
-            @Override
-            public void failure(final ApiException apiException) {
-                //TODO
-            }
-        });
-    }
-
     @Override
     public void addConfigurations(@NonNull final SummaryAmount summaryAmount) {
-        // TODO: remove
-        init();
         discountsConfigurations.putAll(summaryAmount.getDiscountsConfigurations());
         defaultSelectedGuessingConfiguration = summaryAmount.getDefaultAmountConfiguration();
     }

@@ -10,4 +10,12 @@ public interface InitRepository {
     MPCall<InitResponse> init();
 
     MPCall<InitResponse> refresh();
+
+    MPCall<InitResponse> refreshWithNewCard(@NonNull final String cardId);
+
+    void addOnChangedListener(@NonNull final OnChangedListener listener);
+
+    interface OnChangedListener {
+        void onInitResponseChanged(@NonNull final InitResponse response);
+    }
 }

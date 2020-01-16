@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
+import com.mercadolibre.android.cardform.internal.LifecycleListener;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
@@ -50,7 +52,7 @@ import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
 
 public class CheckoutActivity extends PXActivity<CheckoutPresenter>
-    implements Checkout.View, ExpressPaymentFragment.CallBack {
+    implements Checkout.View, ExpressPaymentFragment.CallBack, LifecycleListener {
 
     private static final String EXTRA_PAYMENT_METHOD_CHANGED = "paymentMethodChanged";
     private static final String EXTRA_PRIVATE_KEY = "extra_private_key";
@@ -140,6 +142,15 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     @Override
     public void onBackPressed() {
+        final Fragment cardFormFragment = getSupportFragmentManager().findFragmentByTag(CardFormWithFragment.TAG);
+        if (cardFormFragment != null && cardFormFragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
+            cardFormFragment.getChildFragmentManager().popBackStack();
+            return;
+        }
+        if (getSupportFragmentManager() != null && getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+            return;
+        }
         final ExpressPaymentFragment fragment = FragmentUtil
             .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
         if (fragment == null || !fragment.isExploding()) {
@@ -553,5 +564,10 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     public void cancelCheckout() {
         overrideTransitionOut();
         exitCheckout(RESULT_CANCELED);
+    }
+
+    @Override
+    public void onCardAdded(@NonNull final String cardId, @NonNull final LifecycleListener.Callback callback) {
+        presenter.onCardAdded(cardId, callback);
     }
 }

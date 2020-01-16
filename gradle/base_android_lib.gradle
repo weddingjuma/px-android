@@ -26,11 +26,6 @@ android {
             resConfigs("en", "xxhdpi")
             aaptOptions.cruncherEnabled = false
         }
-
-    }
-
-    dexOptions {
-        preDexLibraries !(travisBuild)
     }
 
     testOptions {

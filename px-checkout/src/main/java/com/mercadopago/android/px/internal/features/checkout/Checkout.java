@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.checkout;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadolibre.android.cardform.internal.LifecycleListener;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
@@ -110,5 +111,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 
         //TODO separate with better navigation when we have a proper driver.
         void onChangePaymentMethodFromReviewAndConfirm();
+
+        void onCardAdded(@NonNull final String cardId, @NonNull final LifecycleListener.Callback callback);
     }
 }

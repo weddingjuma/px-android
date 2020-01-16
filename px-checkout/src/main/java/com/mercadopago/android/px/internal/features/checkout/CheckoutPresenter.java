@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.checkout;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadolibre.android.cardform.internal.LifecycleListener;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
@@ -449,5 +450,20 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     @Override
     public void onChangePaymentMethodFromReviewAndConfirm() {
         onChangePaymentMethod();
+    }
+
+    @Override
+    public void onCardAdded(@NonNull final String cardId, @NonNull final LifecycleListener.Callback callback) {
+        initRepository.refreshWithNewCard(cardId).enqueue(new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                callback.onSuccess();
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                callback.onError();
+            }
+        });
     }
 }

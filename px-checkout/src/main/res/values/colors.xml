@@ -2,24 +2,35 @@
 <resources>
 
     <!-- Colors needed fot UILib V5 -->
-    <color name="ui_components_android_color_primary">#009EE3</color>
-    <color name="ui_components_android_color_primary_dark">#008AD6</color>
+    <color name="ui_components_primary_color">#009EE3</color>
+    <color name="ui_components_primary_color_pressed">#157FAE</color>
+    <color name="ui_components_primary_color_disabled">@color/ui_components_mid_grey_color</color>
+    <color name="ui_components_primary_color_text_disabled">@color/ui_components_mid_grey_color</color>
+    <color name="ui_components_secondary_color">#009EE3</color>
+    <color name="ui_components_secondary_color_pressed">#157FAE</color>
+    <color name="ui_components_secondary_color_disabled">@color/ui_components_mid_grey_color</color>
+    <color name="ui_components_secondary_color_text_disabled">@color/ui_components_mid_grey_color</color>
     <color name="ui_components_success_color">#00a650</color>
     <color name="ui_components_error_color">#ff6e6e</color>
     <color name="ui_components_black_color">#333333</color>
     <color name="ui_components_dark_grey_color">#666666</color>
+    <color name="ui_components_grey_color">#999999</color>
     <color name="ui_components_mid_grey_color">#CCCCCC</color>
     <color name="ui_components_light_grey_color">#EEEEEE</color>
     <color name="ui_components_white_color">#FFFFFF</color>
-
-    <color name="ui_components_primary_color">@color/ui_components_android_color_primary</color>
+    <color name="ui_components_melidialog_background">#cc000000</color>
+    <color name="ui_components_melidialog_tint">@color/ui_components_white_color</color>
+    <color name="ui_second_action_button_pressed">#1e009ee3</color>
     <color name="ui_components_spinner_primary_color">@color/ui_components_primary_color</color>
     <color name="ui_components_spinner_secondary_color">@color/ui_components_primary_color</color>
-    <color name="ui_components_primary_color_pressed">#157FAE</color>
-
-    <color name="ui_components_android_color_accent">@color/ui_components_android_color_primary</color>
-
-    <color name="ui_components_primary_color_disabled">@color/ui_components_mid_grey_color</color>
+    <color name="ui_components_android_color_primary">@color/design_mp_blue</color>
+    <color name="ui_components_android_color_primary_dark">@color/design_blue_mp_dark</color>
+    <color name="ui_components_android_color_accent">@color/design_mp_blue</color>
+    <color name="ui_components_actionModeBackground">@color/design_mp_blue</color>
+    <color name="ui_components_action_bar_text_color">@color/ui_components_white_color</color>
+    <color name="ui_background_security_screen_lock">#f2f2f2</color>
+    <color name="design_mp_blue">#009EE3</color>
+    <color name="design_blue_mp_dark">#0294D4</color>
 
     <color name="px_real_black">#000000</color>
     <color name="px_comment_color">#999</color>

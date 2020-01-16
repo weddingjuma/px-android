@@ -6,7 +6,6 @@ android {
 
     testBuildType "release"
 
-
     defaultConfig {
         applicationId "com.mercadopago.example"
         minSdkVersion min_api_level as int
@@ -15,11 +14,8 @@ android {
         versionName version_to_deploy as String
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        // only on development
-        if (!project.hasProperty('production')) {
-            resConfigs("en", "xxhdpi")
-            aaptOptions.cruncherEnabled = false
-        }
+
+        multiDexEnabled true
     }
 
     compileOptions {
@@ -27,16 +23,11 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    dexOptions {
-        preDexLibraries !(travisBuild)
-    }
-
     lintOptions {
         abortOnError false
     }
 
     buildTypes {
-
         debug {
             versionNameSuffix ".debug"
             debuggable true
@@ -62,15 +53,14 @@ android {
     }
 }
 
-
 dependencies {
     implementation project(':px-checkout')
+    implementation "com.android.support:multidex:$multidex"
     implementation "com.google.code.gson:gson:$gson"
     implementation "com.facebook.stetho:stetho:$stetho"
     implementation "com.facebook.stetho:stetho-okhttp3:$stetho"
     implementation "com.android.support:appcompat-v7:$support_library_version"
     implementation "com.android.support:design:$support_library_version"
-    implementation "com.squareup.picasso:picasso:2.71828" // intended to maintain compatibility
 
     implementation "com.android.support.constraint:constraint-layout:$constraint_layout"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$leak_cannary"

@@ -8,6 +8,7 @@ import java.io.Serializable;
 public final class NewCardMetadata implements Parcelable, Serializable {
 
     private final Text label;
+    private final String version;
 
     public static final Creator<NewCardMetadata> CREATOR = new Creator<NewCardMetadata>() {
         @Override
@@ -25,13 +26,19 @@ public final class NewCardMetadata implements Parcelable, Serializable {
         return label;
     }
 
-    protected NewCardMetadata(final Parcel in) {
+    public String getVersion() {
+        return version;
+    }
+
+    /* default */ NewCardMetadata(final Parcel in) {
         label = in.readParcelable(Text.class.getClassLoader());
+        version = in.readString();
     }
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeParcelable(label, flags);
+        dest.writeString(version);
     }
 
     @Override

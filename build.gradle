@@ -19,7 +19,6 @@ buildscript {
 }
 
 ext {
-    travisBuild = System.getenv("TRAVIS") as boolean
     dateNow = project.hasProperty('production') ? "" : new Date().format("ddMMyyyyHHmmssS")
 }
 

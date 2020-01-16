@@ -3,12 +3,12 @@ package com.mercadopago.android.px.internal.view;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
@@ -23,7 +23,7 @@ import com.mercadopago.android.px.model.internal.Text;
 
 import static com.mercadopago.android.px.internal.util.TextUtil.isEmpty;
 
-public class AmountDescriptorView extends LinearLayout {
+public class AmountDescriptorView extends ConstraintLayout {
 
     private MPTextView leftLabel;
     private TextView rightLabel;

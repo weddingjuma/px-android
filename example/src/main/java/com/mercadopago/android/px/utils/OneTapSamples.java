@@ -126,7 +126,7 @@ public final class OneTapSamples {
             PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
 
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
-            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
+            .setPrivateKey("APP_USR-7092-122619-fc2376471063df48cf0c9fcd26e00729-506902649")
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }
 

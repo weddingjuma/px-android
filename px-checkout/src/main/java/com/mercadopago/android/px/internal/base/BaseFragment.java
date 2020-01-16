@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import com.mercadopago.android.px.R;
 
 public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable> extends Fragment implements MvpView {
 
@@ -14,6 +17,25 @@ public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable
     protected M model;
 
     protected abstract P createPresenter();
+
+    @Nullable
+    @Override
+    public Animation onCreateAnimation(final int transit, final boolean enter, final int nextAnim) {
+        final Fragment parent = getParentFragment();
+        // Apply the workaround only if this is a child fragment, and the parent
+        // is being removed.
+        if (!enter && parent != null && parent.isRemoving()) {
+            // This is a workaround for the bug where child fragments disappear when
+            // the parent is removed (as all children are first removed from the parent)
+            // See https://code.google.com/p/android/issues/detail?id=55228
+            final Animation doNothingAnim = new AlphaAnimation(1, 1);
+            doNothingAnim.setStartOffset(getResources().getInteger(R.integer.cf_anim_duration));
+            doNothingAnim.setDuration(getResources().getInteger(R.integer.cf_anim_duration));
+            return doNothingAnim;
+        } else {
+            return super.onCreateAnimation(transit, enter, nextAnim);
+        }
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -49,5 +71,4 @@ public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable
         bundle.putParcelable(ARG_MODEL, model);
         setArguments(bundle);
     }
-
 }

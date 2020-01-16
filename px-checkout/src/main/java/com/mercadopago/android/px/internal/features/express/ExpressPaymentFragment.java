@@ -12,17 +12,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
@@ -91,7 +90,6 @@ import static android.view.View.VISIBLE;
 
 public class ExpressPaymentFragment extends Fragment implements ExpressPayment.View, ViewPager.OnPageChangeListener,
     InstallmentsAdapter.ItemListener,
-    SummaryView.OnFitListener,
     ExplodingFragment.ExplodingAnimationListener,
     SplitPaymentHeaderAdapter.SplitListener,
     PaymentMethodFragment.DisabledDetailDialogLauncher {
@@ -104,14 +102,13 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private static final int REQ_CODE_SECURITY_CODE = 103;
     private static final int REQ_CODE_BIOMETRICS = 104;
     private static final int REQ_CODE_DISABLE_DIALOG = 105;
+    public static final int REQ_CODE_CARD_FORM = 106;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
 
     @Nullable private CallBack callback;
 
     /* default */ ExpressPaymentPresenter presenter;
 
-    private ActionBar actionBar;
-    private ElementDescriptorView toolbarElementDescriptor;
     private SummaryView summaryView;
     private MeliButton confirmButton;
     private RecyclerView installmentsRecyclerView;
@@ -123,8 +120,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Nullable private Animation slideUpAndFadeAnimation;
     @Nullable private Animation slideDownAndFadeAnimation;
     private InstallmentsAdapter installmentsAdapter;
-    private Animation toolbarAppearAnimation;
-    private Animation toolbarDisappearAnimation;
     private TitlePager titlePager;
     private PaymentMethodHeaderView paymentMethodHeaderView;
     private LabeledSwitch splitPaymentView;
@@ -148,6 +143,46 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Nullable
     @Override
+    public Animation onCreateAnimation(final int transit, final boolean enter, final int nextAnim) {
+        final FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager != null && fragmentManager.findFragmentByTag(CardFormWithFragment.TAG) != null) {
+            final int duration = getResources().getInteger(R.integer.cf_anim_duration);
+            final int offset = getResources().getInteger(R.integer.px_card_form_animation_offset);
+            if (enter) {
+                final Animation slideUp = AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_up_in);
+                slideUp.setStartOffset(offset);
+                paymentMethodPager.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_up_in));
+
+                final Animation fadeIn = AnimationUtils.loadAnimation(getContext(), R.anim.px_fade_in);
+                fadeIn.setDuration(duration);
+                fadeIn.setStartOffset(offset);
+
+                paymentMethodHeaderView.startAnimation(fadeIn);
+                splitPaymentView.startAnimation(fadeIn);
+                indicator.startAnimation(fadeIn);
+                confirmButton.startAnimation(slideUp);
+
+                summaryView.animateEnter();
+            } else {
+                final Animation slideDown = AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_down_out);
+                paymentMethodPager.startAnimation(slideDown);
+
+                final Animation fadeOut = AnimationUtils.loadAnimation(getContext(), R.anim.px_fade_out);
+                fadeOut.setDuration(duration);
+
+                paymentMethodHeaderView.startAnimation(fadeOut);
+                splitPaymentView.startAnimation(fadeOut);
+                indicator.startAnimation(fadeOut);
+                confirmButton.startAnimation(slideDown);
+
+                summaryView.animateExit();
+            }
+        }
+        return super.onCreateAnimation(transit, enter, nextAnim);
+    }
+
+    @Nullable
+    @Override
     public View onCreateView(@NonNull final LayoutInflater inflater,
         @Nullable final ViewGroup container,
         @Nullable final Bundle savedInstanceState) {
@@ -156,7 +191,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
-
         configureViews(view);
 
         presenter = createPresenter();
@@ -168,14 +202,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             presenter.recoverFromBundle(savedInstanceState);
         }
 
-        // Order is important - On click and events should be wired AFTER view is attached.
-        summaryView.setOnFitListener(this);
-        final View.OnClickListener listener = v -> presenter.onHeaderClicked();
-        summaryView.setBigHeaderListener(listener);
-        toolbarElementDescriptor.setOnClickListener(listener);
-
-        toolbarAppearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_appear);
-        toolbarDisappearAnimation = AnimationUtils.loadAnimation(view.getContext(), R.anim.px_toolbar_disappear);
+        summaryView.setOnLogoClickListener(v -> presenter.onHeaderClicked());
 
         confirmButton.setOnClickListener(new OnSingleClickListener() {
             @Override
@@ -195,8 +222,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         splitPaymentView = view.findViewById(R.id.labeledSwitch);
         titlePager = view.findViewById(R.id.title_pager);
         summaryView = view.findViewById(R.id.summary_view);
-
-        toolbarElementDescriptor = view.findViewById(R.id.element_descriptor_toolbar);
 
         pagerAndConfirmButtonContainer = view.findViewById(R.id.container);
         paymentMethodPager = view.findViewById(R.id.payment_method_pager);
@@ -235,7 +260,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             }
         });
 
-        configureToolbar(view);
+        if (getActivity() instanceof AppCompatActivity) {
+            summaryView.configureToolbar((AppCompatActivity) getActivity(), v -> presenter.cancel());
+        }
 
         final TitlePagerAdapter titlePagerAdapter = new TitlePagerAdapter(titlePager);
         titlePager.setAdapter(titlePagerAdapter);
@@ -391,8 +418,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showToolbarElementDescriptor(@NonNull final ElementDescriptorView.Model elementDescriptorModel) {
-        toolbarElementDescriptor.update(elementDescriptorModel);
-        toolbarElementDescriptor.setVisibility(VISIBLE);
+        summaryView.showToolbarElementDescriptor(elementDescriptorModel);
     }
 
     @Override
@@ -421,10 +447,18 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             handleBiometricsResult(resultCode);
         } else if (requestCode == REQ_CODE_DISABLE_DIALOG) {
             resetPagerIndex();
+        } else if (requestCode == REQ_CODE_CARD_FORM) {
+            handleCardFormResult(resultCode);
         } else if (resultCode == Constants.RESULT_ACTION) {
             handleAction(data);
         } else {
             super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    public void handleCardFormResult(final int resultCode) {
+        if (resultCode == RESULT_OK) {
+            presenter.onChangePaymentMethod();
         }
     }
 
@@ -542,24 +576,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         }
     }
 
-    private void configureToolbar(final View view) {
-        final AppCompatActivity activity = (AppCompatActivity) getActivity();
-
-        if (activity != null) {
-            final Toolbar toolbar = view.findViewById(R.id.toolbar);
-            activity.setSupportActionBar(toolbar);
-
-            actionBar = activity.getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.setDisplayShowTitleEnabled(false);
-                actionBar.setDisplayHomeAsUpEnabled(true);
-                actionBar.setDisplayShowHomeEnabled(true);
-                enableToolbarBack();
-            }
-            toolbar.setNavigationOnClickListener(v -> presenter.cancel());
-        }
-    }
-
     private void showConfirmButton() {
         confirmButton.clearAnimation();
         confirmButton.setVisibility(VISIBLE);
@@ -572,12 +588,16 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void enableToolbarBack() {
-        actionBar.setHomeButtonEnabled(true);
+        if (getActivity() instanceof AppCompatActivity) {
+            summaryView.enableToolbarBack((AppCompatActivity) getActivity());
+        }
     }
 
     @Override
     public void disableToolbarBack() {
-        actionBar.setHomeButtonEnabled(false);
+        if (getActivity() instanceof AppCompatActivity) {
+            summaryView.disableToolbarBack((AppCompatActivity) getActivity());
+        }
     }
 
     @Override
@@ -623,16 +643,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onPageScrollStateChanged(final int state) {
         // do nothing.
-    }
-
-    @Override
-    public void onBigHeaderOverlaps() {
-        toolbarElementDescriptor.startAnimation(toolbarAppearAnimation);
-    }
-
-    @Override
-    public void onBigHeaderDoesNotOverlaps() {
-        toolbarElementDescriptor.startAnimation(toolbarDisappearAnimation);
     }
 
     @Override

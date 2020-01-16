@@ -9,7 +9,7 @@ import com.mercadopago.android.px.model.BusinessPayment;
 
 public enum PaymentResultType {
     APPROVED("APPROVED", R.color.ui_components_success_color, R.drawable.px_badge_check, 0),
-    REJECTED("REJECTED", R.color.ui_components_error_color, R.drawable.px_badge_error, R.string.px_error_title),
+    REJECTED("REJECTED", R.color.ui_components_error_color, R.drawable.px_badge_error, 0),
     PENDING("PENDING", R.color.ui_components_warning_color, R.drawable.px_badge_pending_orange, 0);
 
     public final String name;

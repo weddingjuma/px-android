@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout android:id="@+id/offline_methods"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tool="http://schemas.android.com/tools"
-    android:id="@+id/offline_methods"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/transparent"
     android:orientation="vertical">
 
     <LinearLayout
@@ -13,10 +13,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/px_colorPrimary"
-        android:paddingStart="@dimen/px_s_margin"
-        android:paddingTop="@dimen/px_s_margin"
-        android:paddingEnd="@dimen/px_s_margin"
         android:paddingBottom="@dimen/px_s_margin"
+        android:paddingEnd="@dimen/px_s_margin"
+        android:paddingStart="@dimen/px_xs_margin"
+        android:paddingTop="@dimen/px_s_margin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -40,36 +40,59 @@
             tool:text="Total $ 10.000" />
     </LinearLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/methods"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginBottom="@dimen/px_m_margin"
-        app:layout_constraintBottom_toTopOf="@id/confirm_button"
-        app:layout_constraintTop_toBottomOf="@id/header" />
+        app:layout_constraintTop_toBottomOf="@id/header"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:background="@drawable/px_top_rounded_container">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/px_top_rounded_container"
-        app:layout_constraintTop_toBottomOf="@id/header">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/methods"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/confirm_button_container"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/pan_indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/px_m_margin"
+            android:paddingEnd="@dimen/px_m_margin"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View
+                android:layout_width="32dp"
+                android:layout_height="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/px_s_margin"
+                android:background="@drawable/px_short_line_rounded" />
+        </FrameLayout>
 
         <View
-            android:layout_width="32dp"
-            android:layout_height="4dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/px_s_margin"
-            android:background="@drawable/px_short_line_rounded" />
-    </FrameLayout>
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            app:layout_constraintBottom_toTopOf="@id/confirm_button_container"
+            android:background="@drawable/shadow_top">
+        </View>
 
-    <com.mercadolibre.android.ui.widgets.MeliButton
-        android:id="@+id/confirm_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/px_m_margin"
-        android:text="@string/px_pay"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <FrameLayout
+            android:id="@+id/confirm_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.mercadolibre.android.ui.widgets.MeliButton
+                android:id="@+id/confirm_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/px_m_margin"
+                android:background="@color/white"
+                android:text="@string/px_pay" />
+        </FrameLayout>
+    </android.support.constraint.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/exploding_frame"

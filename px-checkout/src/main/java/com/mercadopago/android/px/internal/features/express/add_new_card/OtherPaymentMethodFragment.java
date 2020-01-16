@@ -13,7 +13,6 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BaseFragment;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
-import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
@@ -74,16 +73,21 @@ public class OtherPaymentMethodFragment
             v -> presenter.onAddNewCardSelected());
     }
 
-    private void configureOffMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethodsMetadata) {
+    private void configureOffMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethods) {
         offPaymentMethodView.setVisibility(View.VISIBLE);
         configureViews(
             offPaymentMethodView,
             R.drawable.px_ico_off_method,
-            offlineMethodsMetadata.getLabel(),
-            offlineMethodsMetadata.getDescription(),
+            offlineMethods.getLabel(),
+            offlineMethods.getDescription(),
             v -> {
-                final ExpressPaymentFragment parentFragment = ((ExpressPaymentFragment) getParentFragment());
-                parentFragment.onBottomButtonClicked();
+                final Fragment parentFragment = getParentFragment();
+                if (parentFragment instanceof OnOtherPaymentMethodClickListener) {
+                    ((OnOtherPaymentMethodClickListener) parentFragment).onOtherPaymentMethodClicked(offlineMethods);
+                } else {
+                    throw new IllegalStateException(
+                        "Parent fragment must implement " + OnOtherPaymentMethodClickListener.class.getSimpleName());
+                }
             });
     }
 
@@ -110,5 +114,9 @@ public class OtherPaymentMethodFragment
         //TODO refactor
         PaymentVaultActivity
             .startWithPaymentMethodSelected(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT, paymentMethodSearchItem);
+    }
+
+    public interface OnOtherPaymentMethodClickListener {
+        void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
     }
 }

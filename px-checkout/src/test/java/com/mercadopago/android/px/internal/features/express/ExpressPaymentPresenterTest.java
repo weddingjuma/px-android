@@ -245,6 +245,7 @@ public class ExpressPaymentPresenterTest {
         verify(view).updateViewForPosition(anyInt(), anyInt(), any(SplitSelectionState.class));
         verify(view).configureAdapters(any(Site.class), any(Currency.class));
         verify(view).updatePaymentMethods(anyListOf(DrawableFragmentItem.class));
+        verify(view).updateBottomSheetStatus(false);
         verify(view).setPayButtonText(any(PayButtonViewModel.class));
     }
 

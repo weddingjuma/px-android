@@ -90,9 +90,11 @@ public interface ExpressPayment {
         void showDynamicDialog(@NonNull final DynamicDialogCreator creatorFor,
             @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
 
-        void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata metadata);
-
         void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel);
+
+        void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
+
+        void updateBottomSheetStatus(final boolean hasToExpand);
     }
 
     interface Actions extends PaymentServiceHandler {
@@ -130,5 +132,9 @@ public interface ExpressPayment {
         void onSplitChanged(boolean isChecked);
 
         void onHeaderClicked();
+
+        void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
+
+        void onOtherPaymentMethodClickableStateChanged(boolean state);
     }
 }

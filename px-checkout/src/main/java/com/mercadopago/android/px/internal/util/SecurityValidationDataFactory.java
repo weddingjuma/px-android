@@ -9,7 +9,6 @@ import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
-import java.util.HashMap;
 
 public final class SecurityValidationDataFactory {
 
@@ -25,6 +24,10 @@ public final class SecurityValidationDataFactory {
         final EscValidationData escValidationData = new EscValidationData.Builder(customOptionId, isCard, escEnable)
             .build();
         return new SecurityValidationData.Builder(productId).setEscValidationData(escValidationData).build();
+    }
+
+    public static SecurityValidationData create(@NonNull final ProductIdProvider productIdProvider) {
+        return new SecurityValidationData.Builder(productIdProvider.getProductId()).build();
     }
 
     public static SecurityValidationData create(@NonNull final ProductIdProvider productIdProvider, @NonNull final

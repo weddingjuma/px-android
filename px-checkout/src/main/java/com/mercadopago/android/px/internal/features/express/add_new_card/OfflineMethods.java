@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.express.add_new_card;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
@@ -29,6 +30,14 @@ public interface OfflineMethods {
         void showPaymentProcessor();
 
         void updateTotalView(@NonNull final AmountLocalized amountLocalized);
+
+        void onExpandedSheet();
+
+        void onDragSheet();
+
+        void onSheetStateChanged(int newSheetState);
+
+        void startSecurityValidation(SecurityValidationData data);
     }
 
     interface Actions extends PaymentServiceHandler {
@@ -40,5 +49,11 @@ public interface OfflineMethods {
         void loadViewModel();
 
         void selectMethod(@NonNull final OfflineMethodItem selectedItem);
+
+        void startSecuredPayment();
+
+        void startPayment();
+
+        void trackSecurityFriction();
     }
 }

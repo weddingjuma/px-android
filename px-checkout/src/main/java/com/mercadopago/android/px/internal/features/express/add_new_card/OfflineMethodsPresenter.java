@@ -1,13 +1,16 @@
 package com.mercadopago.android.px.internal.features.express.add_new_card;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.internal.base.BasePresenter;
+import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
+import com.mercadopago.android.px.internal.util.SecurityValidationDataFactory;
 import com.mercadopago.android.px.internal.viewmodel.AmountLocalized;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
@@ -28,6 +31,7 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
     @NonNull private final PayButtonViewModel payButtonViewModel;
     @NonNull private final AmountRepository amountRepository;
     @NonNull private final DiscountRepository discountRepository;
+    private ProductIdProvider productIdProvider;
     @NonNull private final String defaultPaymentTypeId;
 
     private OfflineMethodItem selectedItem;
@@ -36,11 +40,13 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
         @NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final AmountRepository amountRepository,
         @NonNull final DiscountRepository discountRepository,
+        @NonNull final ProductIdProvider productIdProvider,
         @NonNull final String defaultPaymentTypeId) {
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
         this.amountRepository = amountRepository;
         this.discountRepository = discountRepository;
+        this.productIdProvider = productIdProvider;
         this.defaultPaymentTypeId = defaultPaymentTypeId;
 
         payButtonViewModel = new PayButtonViewModelMapper().map(
@@ -86,6 +92,13 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
         this.selectedItem = selectedItem;
     }
 
+    @Override
+    public void startSecuredPayment() {
+        final SecurityValidationData data = SecurityValidationDataFactory.create(productIdProvider);
+        getView().startSecurityValidation(data);
+    }
+
+    @Override
     public void startPayment() {
         // TODO add securityValidation
         refreshExplodingState();
@@ -93,6 +106,14 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
         //noinspection ConstantConditions
         paymentRepository
             .startExpressPaymentWithOffMethod(selectedItem.getPaymentMethodId(), selectedItem.getPaymentTypeId());
+    }
+
+    @Override
+    public void trackSecurityFriction() {
+        // TODO Review ID
+        FrictionEventTracker
+            .with(OneTapViewTracker.PATH_REVIEW_ONE_TAP_VIEW, FrictionEventTracker.Id.GENERIC,
+                FrictionEventTracker.Style.CUSTOM_COMPONENT).track();
     }
 
     private void refreshExplodingState() {

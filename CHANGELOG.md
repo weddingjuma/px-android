@@ -1,3 +1,7 @@
+## VERSION 4.32.0
+_16_01_2020_
+* FEATURE - New card form
+
 ## VERSION 4.31.0
 _09_01_2020_
 * ENHANCEMENT - Added tracking behaviour to addons

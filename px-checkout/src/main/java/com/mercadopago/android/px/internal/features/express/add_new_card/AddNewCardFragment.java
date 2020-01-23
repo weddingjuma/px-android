@@ -9,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.mercadolibre.android.cardform.CardForm;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
@@ -24,7 +23,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearchItem;
 public class AddNewCardFragment extends BaseFragment<AddNewCardPresenter, AddNewCardFragmentDrawableFragmentItem>
     implements AddNewCard.View, View.OnClickListener {
 
-    private static final String OLD_VERSION = "v11111";
+    private static final String OLD_VERSION = "v1";
 
     @NonNull
     public static Fragment getInstance(@NonNull final AddNewCardFragmentDrawableFragmentItem model) {

@@ -7,6 +7,7 @@ import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.services.PaymentRewardService;
 import com.mercadopago.android.px.internal.util.StatusHelper;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -41,7 +42,8 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         final Callback<PaymentReward> serviceCallback =
             getServiceCallback(payment, paymentResult, paymentRewardCallback);
         final boolean hasAccessToken = TextUtil.isNotEmpty(privateKey);
-        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payment);
+        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payment) ||
+            (payment instanceof BusinessPayment && !StatusHelper.isBusinessSuccess((BusinessPayment) payment));
         final Campaign campaign = paymentResult.getPaymentData().getCampaign();
         final String campaignId = campaign != null ? campaign.getId() : "";
 

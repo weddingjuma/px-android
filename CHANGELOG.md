@@ -1,6 +1,6 @@
 ## VERSION 4.33.1
 _29_01_2020_
-* FIX - Added header for terms and conditions
+* FIX - Added header for terms and conditions.
 * FIX - Reduce margins of MLBusinessDiscountBoxView in congrats.
 
 ## VERSION 4.33.0

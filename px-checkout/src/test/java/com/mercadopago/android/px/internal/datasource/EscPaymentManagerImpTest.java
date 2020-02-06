@@ -19,9 +19,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import static com.mercadopago.android.px.internal.util.ApiUtil.StatusCodes.BAD_REQUEST;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -100,25 +103,36 @@ public class EscPaymentManagerImpTest {
     }
 
     @Test
-    public void whenManageEscForPaymentHasValidPaymentDataAndIsRejectedDoNothingReturnFalse() {
+    public void whenManageEscForPaymentHasValidPaymentDataAndIsRejectedInvalidEscSaveESCReturnTrue() {
+        final PaymentData paymentData = validCardPaymentData();
+        final boolean invalid =
+            escPaymentManager.manageEscForPayment(Collections.singletonList(paymentData), Payment.StatusCodes.STATUS_REJECTED,
+                Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC);
+        verify(escManagerBehaviour).saveESCWith(eq(paymentData.getToken().getCardId()), anyString());
+        verifyNoMoreInteractions(escManagerBehaviour);
+        assertTrue(invalid);
+    }
+
+    @Test
+    public void whenManageEscForPaymentHasValidPaymentDataAndIsRejectedSaveEscReturnFalse() {
         final PaymentData paymentData = validCardPaymentData();
         final boolean invalid =
             escPaymentManager.manageEscForPayment(Collections.singletonList(paymentData), Payment.StatusCodes.STATUS_REJECTED,
                 Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_DATE);
-        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId());
+        verify(escManagerBehaviour).saveESCWith(eq(paymentData.getToken().getCardId()), anyString());
         verifyNoMoreInteractions(escManagerBehaviour);
         assertFalse(invalid);
     }
 
     @Test
-    public void whenManageEscForPaymentHasValidPaymentDataAndIsRejectedEscInvalidDeleteESCReturnTrue() {
+    public void whenManageEscForPaymentHasValidPaymentDataAndIsRejectedBadFilledSecurityCodeDeleteESCReturnFalse() {
         final PaymentData paymentData = validCardPaymentData();
         final boolean invalid =
             escPaymentManager.manageEscForPayment(Collections.singletonList(paymentData), Payment.StatusCodes.STATUS_REJECTED,
-                Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC);
+                Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_SECURITY_CODE);
         verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId());
         verifyNoMoreInteractions(escManagerBehaviour);
-        assertTrue(invalid);
+        assertFalse(invalid);
     }
 
     @Test

@@ -18,4 +18,19 @@ public final class StatusHelper {
     public static boolean isSuccess(@NonNull final IPaymentDescriptor payment) {
         return isSuccess(payment.getPaymentStatus(), payment.getPaymentStatusDetail());
     }
+
+    /* default */
+    static boolean isValidStatusForEsc(final String paymentDetail) {
+        switch (paymentDetail) {
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_SECURITY_CODE:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_OTHER:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK:
+        case Payment.StatusDetail.STATUS_DETAIL_REJECTED_HIGH_RISK:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CALL_FOR_AUTHORIZE:
+        case Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_MAX_ATTEMPTS:
+            return false;
+        default:
+            return true;
+        }
+    }
 }

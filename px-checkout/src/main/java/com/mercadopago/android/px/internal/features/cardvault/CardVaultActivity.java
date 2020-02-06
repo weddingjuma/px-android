@@ -170,12 +170,8 @@ public class CardVaultActivity extends PXActivity<CardVaultPresenter> implements
     }
 
     private void resolveErrorRequest(final int resultCode, final Intent data) {
-        if (resultCode == RESULT_OK) {
-            presenter.recoverFromFailure();
-        } else {
-            setResult(resultCode, data);
-            finish();
-        }
+        setResult(resultCode, data);
+        finish();
     }
 
     protected void resolveIssuersRequest(final int resultCode) {

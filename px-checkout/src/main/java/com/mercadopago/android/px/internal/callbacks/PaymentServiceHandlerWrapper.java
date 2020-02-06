@@ -8,6 +8,7 @@ import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.IPayment;
@@ -31,6 +32,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     @NonNull private final EscPaymentManager escPaymentManager;
     @NonNull private final InstructionsRepository instructionsRepository;
     @NonNull private final PaymentRewardRepository paymentRewardRepository;
+    private UserSelectionRepository userSelectionRepository;
     @NonNull private final Queue<Message> messages;
     @NonNull /* default */ final PaymentRepository paymentRepository;
     @NonNull /* default */ final DisabledPaymentMethodRepository disabledPaymentMethodRepository;
@@ -81,12 +83,14 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final EscPaymentManager escPaymentManager,
         @NonNull final InstructionsRepository instructionsRepository,
-        @NonNull final PaymentRewardRepository paymentRewardRepository) {
+        @NonNull final PaymentRewardRepository paymentRewardRepository,
+        @NonNull final UserSelectionRepository userSelectionRepository) {
         this.paymentRepository = paymentRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         this.escPaymentManager = escPaymentManager;
         this.instructionsRepository = instructionsRepository;
         this.paymentRewardRepository = paymentRewardRepository;
+        this.userSelectionRepository = userSelectionRepository;
         messages = new LinkedList<>();
     }
 
@@ -118,7 +122,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
 
     private boolean verifyAndHandleEsc(@NonNull final IPaymentDescriptor genericPayment) {
         boolean shouldRecoverEsc = false;
-        final String paymentTypeId = genericPayment.getPaymentTypeId();
+        final String paymentTypeId = userSelectionRepository.getPaymentMethod().getPaymentTypeId();
         if (paymentTypeId == null || PaymentTypes.isCardPaymentType(paymentTypeId)) {
             shouldRecoverEsc = handleEsc(genericPayment);
         }
@@ -146,6 +150,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     @Override
     public void onPaymentError(@NonNull final MercadoPagoError error) {
         if (handleEsc(error)) {
+            // TODO we should not have this error anymore with cap check backend side.
             onRecoverPaymentEscInvalid(paymentRepository.createRecoveryForInvalidESC());
         } else {
             addAndProcess(new ErrorMessage(error));

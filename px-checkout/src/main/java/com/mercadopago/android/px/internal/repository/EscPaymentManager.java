@@ -22,7 +22,7 @@ public interface EscPaymentManager {
      * @param paymentDataList list of payment data
      * @param paymentStatus the payment status
      * @param paymentStatusDetail the payment detail related with the status
-     * @return isInvalidEsc
+     * @return true if esc is invalid
      */
     boolean manageEscForPayment(final List<PaymentData> paymentDataList,
         final String paymentStatus,

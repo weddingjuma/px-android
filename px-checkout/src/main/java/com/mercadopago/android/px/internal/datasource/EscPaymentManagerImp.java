@@ -10,6 +10,7 @@ import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.util.List;
 
+
 public class EscPaymentManagerImp implements EscPaymentManager {
 
     @NonNull private final ESCManagerBehaviour escManager;
@@ -27,7 +28,7 @@ public class EscPaymentManagerImp implements EscPaymentManager {
     public boolean manageEscForPayment(final List<PaymentData> paymentDataList, final String paymentStatus,
         final String paymentStatusDetail) {
 
-        boolean result = false;
+        boolean isInvalidEsc = false;
         for (final PaymentData paymentData : paymentDataList) {
             if (EscUtil.shouldDeleteEsc(paymentData, paymentStatus,
                 paymentStatusDetail)) {
@@ -36,10 +37,10 @@ public class EscPaymentManagerImp implements EscPaymentManager {
                 escManager.saveESCWith(paymentData.getToken().getCardId(), paymentData.getToken().getEsc());
             }
 
-            result |= EscUtil.isInvalidEscPayment(paymentData, paymentStatus, paymentStatusDetail);
+            isInvalidEsc |= EscUtil.isInvalidEscPayment(paymentData, paymentStatus, paymentStatusDetail);
         }
 
-        return result;
+        return isInvalidEsc;
     }
 
     @Override

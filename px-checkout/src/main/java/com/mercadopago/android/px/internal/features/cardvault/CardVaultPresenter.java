@@ -5,7 +5,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.internal.base.BasePresenter;
-import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
 import com.mercadopago.android.px.internal.controllers.PaymentMethodGuessingController;
 import com.mercadopago.android.px.internal.features.guessing_card.GuessingCardActivity;
@@ -36,7 +35,6 @@ import java.util.List;
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
     @NonNull private final CardTokenRepository cardTokenRepository;
 
-    private FailureRecovery failureRecovery;
     private String bin;
 
     //Activity parameters
@@ -84,11 +82,6 @@ import java.util.List;
     @Override
     public void setCard(@Nullable final Card card) {
         this.card = card;
-    }
-
-    @Override
-    public void setFailureRecovery(@NonNull final FailureRecovery failureRecovery) {
-        this.failureRecovery = failureRecovery;
     }
 
     @Override
@@ -160,13 +153,6 @@ import java.util.List;
             getView().startIssuersActivity(GuessingCardActivity.extractIssuersFromIntent(data));
         } else {
             checkStartInstallmentsActivity();
-        }
-    }
-
-    @Override
-    public void recoverFromFailure() {
-        if (failureRecovery != null) {
-            failureRecovery.recover();
         }
     }
 
@@ -271,26 +257,18 @@ import java.util.List;
             @Override
             public void onFailure(final MercadoPagoError error) {
                 if (error.isApiException() && EscUtil.isInvalidEscForApiException(error.getApiException())) {
+                    // Just limit the tracking to esc api exception
                     EscFrictionEventTracker.create(escCardToken.getCardId(), esc, error.getApiException()).track();
-                    escManagerBehaviour.deleteESCWith(escCardToken.getCardId());
-                    esc = null;
-                    //Start CVV screen if fail
-                    if (isViewAttached()) {
-                        getView().startSecurityCodeActivity(Reason.SAVED_CARD);
-                    }
-                } else {
-                    //Retry with error screen
-                    recoverCreateESCToken(error);
+                }
+
+                escManagerBehaviour.deleteESCWith(escCardToken.getCardId());
+                esc = null;
+                //Start CVV screen if fail
+                if (isViewAttached()) {
+                    getView().startSecurityCodeActivity(Reason.SAVED_CARD);
                 }
             }
         });
-    }
-
-    private void recoverCreateESCToken(final MercadoPagoError error) {
-        if (isViewAttached()) {
-            getView().showError(error, ApiUtil.RequestOrigin.CREATE_TOKEN);
-            setFailureRecovery(this::createESCToken);
-        }
     }
 
     private void onPayerCosts(@NonNull final List<PayerCost> payerCosts) {

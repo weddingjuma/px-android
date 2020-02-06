@@ -46,11 +46,11 @@ public class EscUtilTest {
     }
 
     @Test
-    public void whenPaymentHasCardInfoAndStatusRejectedShouldDeleteEscTrue() {
+    public void whenPaymentHasCardInfoAndStatusRejectedHighRiskShouldDeleteEscTrue() {
         when(paymentData.containsCardInfo()).thenReturn(true);
         final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(paymentData,
             Payment.StatusCodes.STATUS_REJECTED,
-            Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
+            Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK);
         assertTrue(shouldDeleteEsc);
     }
 

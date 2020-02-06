@@ -13,6 +13,7 @@ public final class CustomSearchItemToCardMapper extends Mapper<CustomSearchItem,
         card.setIssuer(val.getIssuer());
         card.setLastFourDigits(val.getLastFourDigits());
         card.setFirstSixDigits(val.getFirstSixDigits());
+        card.setEscStatus(val.getEscStatus());
         return card;
     }
 }

@@ -62,10 +62,11 @@ public class TokenizeService implements TokenRepository {
 
             @Override
             public void failure(final ApiException apiException) {
-                //TODO move to esc manager  / Token repo
+                //TODO move to esc manager / Token repo
+                paymentSettingRepository.configure((Token) null);
+                escManagerBehaviour.deleteESCWith(card.getId());
                 if (EscUtil.isInvalidEscForApiException(apiException)) {
-                    paymentSettingRepository.configure((Token) null);
-                    escManagerBehaviour.deleteESCWith(card.getId());
+                    // Just limit the tracking to esc api exception
                     EscFrictionEventTracker.create(card.getId(), esc, apiException).track();
                 }
 

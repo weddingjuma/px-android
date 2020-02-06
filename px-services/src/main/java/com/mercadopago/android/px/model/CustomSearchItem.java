@@ -33,10 +33,24 @@ public class CustomSearchItem implements Serializable, Parcelable {
     @Nullable private String lastFourDigits;
     @Nullable private String firstSixDigits;
 
+    private String escStatus;
+
     @Deprecated
     public CustomSearchItem() {
         amountConfigurations = new HashMap<>();
     }
+
+    public static final Creator<CustomSearchItem> CREATOR = new Creator<CustomSearchItem>() {
+        @Override
+        public CustomSearchItem createFromParcel(final Parcel in) {
+            return new CustomSearchItem(in);
+        }
+
+        @Override
+        public CustomSearchItem[] newArray(final int size) {
+            return new CustomSearchItem[size];
+        }
+    };
 
     protected CustomSearchItem(final Parcel in) {
         description = in.readString();
@@ -51,19 +65,24 @@ public class CustomSearchItem implements Serializable, Parcelable {
         lastFourDigits = in.readString();
         firstSixDigits = in.readString();
         issuer = in.readParcelable(Issuer.class.getClassLoader());
+        escStatus = in.readString();
     }
 
-    public static final Creator<CustomSearchItem> CREATOR = new Creator<CustomSearchItem>() {
-        @Override
-        public CustomSearchItem createFromParcel(final Parcel in) {
-            return new CustomSearchItem(in);
-        }
-
-        @Override
-        public CustomSearchItem[] newArray(final int size) {
-            return new CustomSearchItem[size];
-        }
-    };
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeString(description);
+        dest.writeString(id);
+        dest.writeString(type);
+        dest.writeString(paymentMethodId);
+        dest.writeString(comment);
+        dest.writeString(discountInfo);
+        dest.writeString(defaultAmountConfiguration);
+        dest.writeMap(amountConfigurations);
+        dest.writeString(lastFourDigits);
+        dest.writeString(firstSixDigits);
+        dest.writeParcelable(issuer, 0);
+        dest.writeString(escStatus);
+    }
 
     public String getDescription() {
         return description;
@@ -103,21 +122,6 @@ public class CustomSearchItem implements Serializable, Parcelable {
         return 0;
     }
 
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeString(description);
-        dest.writeString(id);
-        dest.writeString(type);
-        dest.writeString(paymentMethodId);
-        dest.writeString(comment);
-        dest.writeString(discountInfo);
-        dest.writeString(defaultAmountConfiguration);
-        dest.writeMap(amountConfigurations);
-        dest.writeString(lastFourDigits);
-        dest.writeString(firstSixDigits);
-        dest.writeParcelable(issuer, 0);
-    }
-
     @Deprecated
     public void setDescription(final String description) {
         this.description = description;
@@ -155,5 +159,9 @@ public class CustomSearchItem implements Serializable, Parcelable {
     @Nullable
     public String getFirstSixDigits() {
         return firstSixDigits;
+    }
+
+    public String getEscStatus() {
+        return escStatus;
     }
 }

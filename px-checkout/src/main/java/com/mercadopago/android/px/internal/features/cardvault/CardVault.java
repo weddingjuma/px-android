@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.base.MvpView;
-import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.Issuer;
@@ -55,8 +54,6 @@ import java.util.List;
 
         void setCard(@Nullable Card card);
 
-        void setFailureRecovery(@NonNull FailureRecovery failureRecovery);
-
         @Nullable
         Token getToken();
 
@@ -80,8 +77,6 @@ import java.util.List;
         CardInfo getCardInfo();
 
         int getCardNumberLength();
-
-        void recoverFromFailure();
 
         void resolveInstallmentsRequest();
 

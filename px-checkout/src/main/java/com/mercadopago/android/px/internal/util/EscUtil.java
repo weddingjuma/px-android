@@ -23,20 +23,19 @@ public final class EscUtil {
     public static boolean shouldDeleteEsc(@Nullable final PaymentData paymentData,
         @Nullable final String paymentStatus, @Nullable final String paymentDetail) {
         return hasValidParametersForESC(paymentData, paymentStatus, paymentDetail) &&
-            !Payment.StatusCodes.STATUS_APPROVED.equals(paymentStatus);
+            !StatusHelper.isValidStatusForEsc(paymentDetail);
     }
 
     public static boolean shouldStoreESC(@Nullable final PaymentData paymentData,
         @Nullable final String paymentStatus, @Nullable final String paymentDetail) {
         return hasValidParametersForESC(paymentData, paymentStatus, paymentDetail) &&
-            Payment.StatusCodes.STATUS_APPROVED.equals(paymentStatus) &&
+            StatusHelper.isValidStatusForEsc(paymentDetail) &&
             !TextUtil.isEmpty(paymentData.getToken().getEsc());
     }
 
     public static boolean isInvalidEscPayment(@Nullable final PaymentData paymentData,
         @Nullable final String paymentStatus, @Nullable final String paymentDetail) {
         return hasValidParametersForESC(paymentData, paymentStatus, paymentDetail) &&
-            Payment.StatusCodes.STATUS_REJECTED.equals(paymentStatus) &&
             Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC.equals(paymentDetail);
     }
 

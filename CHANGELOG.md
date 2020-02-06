@@ -1,3 +1,9 @@
+## VERSION 4.34.0
+_06_02_2020_
+* FEATURE - Off Methods in One Tap
+* FEATURE - Esc validation before payment
+* ENHANCEMENT - Check business payment decorator on payment rewards
+
 ## VERSION 4.33.1
 _29_01_2020_
 * FIX - Added header for terms and conditions

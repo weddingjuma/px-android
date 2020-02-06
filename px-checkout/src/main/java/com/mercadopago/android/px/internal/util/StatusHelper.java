@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.Payment;
 
@@ -32,5 +33,9 @@ public final class StatusHelper {
         default:
             return true;
         }
+    }
+
+    public static boolean isBusinessSuccess(@NonNull final BusinessPayment payment) {
+        return BusinessPayment.Decorator.APPROVED == payment.getDecorator();
     }
 }

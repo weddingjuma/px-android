@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:id="@+id/main_container"
-              android:orientation="vertical"
-              android:clickable="true"
-              android:focusable="true"
-              tools:parentTag="android.support.v7.widget.LinearLayoutCompat">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="center"
+    android:id="@+id/main_container"
+    android:orientation="vertical"
+    android:clickable="true"
+    android:focusable="true"
+    tools:parentTag="android.support.v7.widget.LinearLayoutCompat">
 
     <View
         android:id="@+id/line"
@@ -90,12 +91,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_gravity="right|end|center_vertical"
-            android:layout_marginLeft="@dimen/px_s_margin"
-            android:layout_marginStart="@dimen/px_s_margin"
-            android:background="@drawable/px_arrow_right_grey"
+            android:layout_marginStart="@dimen/px_xxs_margin"
+            android:background="@drawable/px_arrow_right"
+            app:backgroundTint="@color/px_darkest_gray"
             android:orientation="vertical"
             android:visibility="visible"/>
 

@@ -15,6 +15,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
     private final ConsumerCreditsMetadata consumerCredits;
     private final NewCardMetadata newCard;
     private final StatusMetadata status;
+    private final OfflinePaymentTypesMetadata offlineMethods;
     private final BenefitsMetadata benefits;
 
     public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
@@ -61,6 +62,10 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return status;
     }
 
+    public OfflinePaymentTypesMetadata getOfflineMethods() {
+        return offlineMethods;
+    }
+
     public BenefitsMetadata getBenefits() {
         return benefits;
     }
@@ -86,6 +91,10 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return benefits != null;
     }
 
+    public boolean isOfflineMethods() {
+        return offlineMethods != null;
+    }
+
     @Override
     public String getCustomOptionId() {
         return isCard() ? getCard().getId() : getPaymentMethodId();
@@ -99,6 +108,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         consumerCredits = in.readParcelable(ConsumerCreditsMetadata.class.getClassLoader());
         newCard = in.readParcelable(NewCardMetadata.class.getClassLoader());
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
+        offlineMethods = in.readParcelable(OfflinePaymentTypesMetadata.class.getClassLoader());
         benefits = in.readParcelable(BenefitsMetadata.class.getClassLoader());
     }
 
@@ -116,6 +126,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         dest.writeParcelable(consumerCredits, flags);
         dest.writeParcelable(newCard, flags);
         dest.writeParcelable(status, flags);
+        dest.writeParcelable(offlineMethods, flags);
         dest.writeParcelable(benefits, flags);
     }
 }

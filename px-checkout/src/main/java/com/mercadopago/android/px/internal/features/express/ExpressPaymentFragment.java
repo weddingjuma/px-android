@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -37,6 +38,8 @@ import com.mercadopago.android.px.internal.features.disable_payment_method.Disab
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
+import com.mercadopago.android.px.internal.features.express.add_new_card.OfflineMethodsFragment;
+import com.mercadopago.android.px.internal.features.express.add_new_card.OtherPaymentMethodFragment;
 import com.mercadopago.android.px.internal.features.express.animations.ExpandAndCollapseAnimation;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimationListener;
 import com.mercadopago.android.px.internal.features.express.animations.FadeAnimator;
@@ -74,6 +77,7 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
@@ -85,6 +89,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 
@@ -92,9 +97,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     InstallmentsAdapter.ItemListener,
     ExplodingFragment.ExplodingAnimationListener,
     SplitPaymentHeaderAdapter.SplitListener,
-    PaymentMethodFragment.DisabledDetailDialogLauncher {
+    PaymentMethodFragment.DisabledDetailDialogLauncher,
+    OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
+    OfflineMethodsFragment.SheetHidability {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
+    public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
     private static final String EXTRA_RENDER_MODE = "render_mode";
     private static final int REQ_CODE_PAYMENT_PROCESSOR = 101;
@@ -127,6 +135,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @RenderMode private String renderMode;
 
     private HubAdapter hubAdapter;
+    /* default */ View bottomSheet;
+    private BottomSheetBehavior<View> bottomSheetBehavior;
 
     public static Fragment getInstance() {
         return new ExpressPaymentFragment();
@@ -135,6 +145,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onSplitChanged(final boolean isChecked) {
         presenter.onSplitChanged(isChecked);
+    }
+
+    @Override
+    public void setSheetHidability(final boolean b) {
+        bottomSheetBehavior.setHideable(b);
     }
 
     public interface CallBack {
@@ -151,7 +166,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             if (enter) {
                 final Animation slideUp = AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_up_in);
                 slideUp.setStartOffset(offset);
-                paymentMethodPager.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_up_in));
+                paymentMethodPager
+                    .startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_up_in));
 
                 final Animation fadeIn = AnimationUtils.loadAnimation(getContext(), R.anim.px_fade_in);
                 fadeIn.setDuration(duration);
@@ -164,7 +180,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
                 summaryView.animateEnter(duration);
             } else {
-                final Animation slideDown = AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_down_out);
+                final Animation slideDown =
+                    AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_slide_down_out);
                 paymentMethodPager.startAnimation(slideDown);
 
                 final Animation fadeOut = AnimationUtils.loadAnimation(getContext(), R.anim.px_fade_out);
@@ -194,12 +211,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         configureViews(view);
 
         presenter = createPresenter();
-        presenter.attachView(this);
-        if (savedInstanceState == null) {
-            presenter.trackExpressView();
-        } else {
+        if (savedInstanceState != null) {
             renderMode = savedInstanceState.getString(EXTRA_RENDER_MODE);
             presenter.recoverFromBundle(savedInstanceState);
+        }
+        presenter.attachView(this);
+        if (savedInstanceState == null) {
+            //TODO if we need the view attached for tracking, then it should be done in another place
+            presenter.trackExpressView();
         }
 
         summaryView.setOnLogoClickListener(v -> presenter.onHeaderClicked());
@@ -273,6 +292,60 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             new PaymentMethodHeaderAdapter(paymentMethodHeaderView),
             new ConfirmButtonAdapter(confirmButton)
         ));
+
+        configureBottomSheet();
+    }
+
+    private void configureBottomSheet() {
+        bottomSheet = getActivity().findViewById(R.id.off_methods_fragment);
+        bottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        bottomSheetBehavior.setHideable(true);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull final View view, final int state) {
+                final OfflineMethodsFragment fragment = FragmentUtil
+                    .getFragmentByTag(getFragmentManager(), TAG_OFFLINE_METHODS_FRAGMENT,
+                        OfflineMethodsFragment.class);
+                if (state == BottomSheetBehavior.STATE_HIDDEN) {
+                    presenter.trackAbort();
+                    getFragmentManager().popBackStackImmediate();
+                }
+
+                if (fragment != null) {
+                    fragment.onSheetStateChanged(state);
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull final View view, final float v) {
+                final OfflineMethodsFragment fragment = FragmentUtil
+                    .getFragmentByTag(getFragmentManager(), TAG_OFFLINE_METHODS_FRAGMENT,
+                        OfflineMethodsFragment.class);
+                fragment.onSlideSheet(v);
+            }
+        });
+
+        getFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+            @Override
+            public void onFragmentAttached(@NonNull final FragmentManager fm, @NonNull final Fragment fragment,
+                @NonNull final Context context) {
+                if (fragment instanceof OfflineMethodsFragment) {
+                    presenter.onOtherPaymentMethodClickableStateChanged(false);
+                }
+                super.onFragmentAttached(fm, fragment, context);
+            }
+
+            @Override
+            public void onFragmentDetached(@NonNull final FragmentManager fm, @NonNull final Fragment fragment) {
+                if (fragment instanceof ExpressPaymentFragment) {
+                    getFragmentManager().unregisterFragmentLifecycleCallbacks(this);
+                } else if (fragment instanceof OfflineMethodsFragment) {
+                    bottomSheet.setVisibility(GONE);
+                    presenter.onOtherPaymentMethodClickableStateChanged(true);
+                }
+                super.onFragmentDetached(fm, fragment);
+            }
+        }, false);
     }
 
     private ExpressPaymentPresenter createPresenter() {
@@ -357,7 +430,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void configureAdapters(@NonNull final Site site, @NonNull final Currency currency) {
         installmentsAdapter = new InstallmentsAdapter(this);
         installmentsRecyclerView.setAdapter(installmentsAdapter);
-        installmentsRecyclerView.setVisibility(View.GONE);
+        installmentsRecyclerView.setVisibility(GONE);
 
         // Order is important, should update all others adapters before update paymentMethodAdapter
 
@@ -683,5 +756,37 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public int getRequestCode() {
         return REQ_CODE_DISABLE_DIALOG;
+    }
+
+    @Override
+    public void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods) {
+        presenter.onOtherPaymentMethodClicked(offlineMethods);
+    }
+
+    @Override
+    public void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethods) {
+        bottomSheet.setVisibility(VISIBLE);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+
+        if (FragmentUtil.getFragmentByTag(getFragmentManager(), TAG_OFFLINE_METHODS_FRAGMENT) == null) {
+            OfflineMethodsFragment instance = OfflineMethodsFragment.getInstance(offlineMethods);
+            getFragmentManager().beginTransaction()
+                .setCustomAnimations(R.anim.px_off_methods_slide_up_in, 0, 0, R.anim.px_off_methods_slide_down_out)
+                .replace(R.id.off_methods_fragment, instance,
+                    TAG_OFFLINE_METHODS_FRAGMENT)
+                .addToBackStack(TAG_OFFLINE_METHODS_FRAGMENT)
+                .commit();
+            instance.setTargetFragment(this, 1);
+        } else {
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
+    }
+
+    @Override
+    public void updateBottomSheetStatus(final boolean hasToExpand) {
+        if (hasToExpand) {
+            bottomSheet.setVisibility(VISIBLE);
+            bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+        }
     }
 }

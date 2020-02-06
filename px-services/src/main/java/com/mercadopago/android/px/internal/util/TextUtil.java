@@ -15,6 +15,7 @@ public final class TextUtil {
     public static final String NL = "\n";
     public static final String DOT = ".";
     public static final CharSequence SPACE = " ";
+    public static final CharSequence UNDERSCORE = "_";
     private static final String CSV_DELIMITER = ",";
 
     private static final Pattern DIGIT_PATTERN = Pattern.compile("\\d+");

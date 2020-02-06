@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadolibre.android.cardform.internal.LifecycleListener;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.core.BackHandler;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
@@ -47,6 +48,7 @@ import static com.mercadopago.android.px.internal.features.Constants.RESULT_ERRO
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_FAIL_ESC;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_PAYMENT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_SILENT_ERROR;
+import static com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment.TAG_OFFLINE_METHODS_FRAGMENT;
 import static com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity.EXTRA_RESULT_CODE;
 import static com.mercadopago.android.px.internal.util.ErrorUtil.isErrorResult;
 import static com.mercadopago.android.px.model.ExitAction.EXTRA_CLIENT_RES_CODE;
@@ -142,19 +144,34 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     @Override
     public void onBackPressed() {
-        final Fragment cardFormFragment = getSupportFragmentManager().findFragmentByTag(CardFormWithFragment.TAG);
-        if (cardFormFragment != null && cardFormFragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
-            cardFormFragment.getChildFragmentManager().popBackStack();
-            return;
-        }
-        if (getSupportFragmentManager() != null && getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            getSupportFragmentManager().popBackStack();
-            return;
-        }
-        final ExpressPaymentFragment fragment = FragmentUtil
-            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-        if (fragment == null || !fragment.isExploding()) {
-            super.onBackPressed();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null) {
+            final int backStackEntryCount = fragmentManager.getBackStackEntryCount();
+            Fragment fragment = fragmentManager.findFragmentByTag(TAG_OFFLINE_METHODS_FRAGMENT);
+
+            if (fragment instanceof BackHandler) {
+                boolean shouldHandleBack = ((BackHandler) fragment).handleBack();
+                if (!shouldHandleBack) {
+                    return;
+                }
+            }
+
+            fragment = fragmentManager.findFragmentByTag(CardFormWithFragment.TAG);
+            if (fragment != null && fragment.getChildFragmentManager().getBackStackEntryCount() > 0) {
+                fragment.getChildFragmentManager().popBackStack();
+                return;
+            }
+
+            if (backStackEntryCount > 0) {
+                fragmentManager.popBackStack();
+                return;
+            }
+
+            fragment =
+                FragmentUtil.getFragmentByTag(fragmentManager, TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
+            if (fragment == null || !((ExpressPaymentFragment) fragment).isExploding()) {
+                super.onBackPressed();
+            }
         }
     }
 

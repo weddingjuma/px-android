@@ -16,6 +16,7 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
@@ -90,6 +91,10 @@ public interface ExpressPayment {
             @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
 
         void setPayButtonText(@NonNull final PayButtonViewModel payButtonViewModel);
+
+        void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
+
+        void updateBottomSheetStatus(final boolean hasToExpand);
     }
 
     interface Actions extends PaymentServiceHandler {
@@ -127,5 +132,9 @@ public interface ExpressPayment {
         void onSplitChanged(boolean isChecked);
 
         void onHeaderClicked();
+
+        void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
+
+        void onOtherPaymentMethodClickableStateChanged(boolean state);
     }
 }

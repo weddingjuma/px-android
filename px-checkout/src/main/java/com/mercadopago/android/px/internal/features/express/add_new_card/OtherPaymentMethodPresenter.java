@@ -7,11 +7,11 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
-public class AddNewCardPresenter extends BasePresenter<AddNewCard.View> implements AddNewCard.Actions {
+public class OtherPaymentMethodPresenter extends BasePresenter<AddNewCard.View> implements AddNewCard.Actions {
 
     private final PaymentSettingRepository settingRepository;
 
-    /* default */ AddNewCardPresenter(@NonNull final PaymentSettingRepository settingRepository) {
+    /* default */ OtherPaymentMethodPresenter(@NonNull final PaymentSettingRepository settingRepository) {
         this.settingRepository = settingRepository;
     }
 

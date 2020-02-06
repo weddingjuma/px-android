@@ -3,6 +3,7 @@ package com.mercadopago.android.px.model.internal;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.Currency;
+import com.mercadopago.android.px.model.PayerCompliance;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -17,6 +18,8 @@ public final class InitResponse extends PaymentMethodSearch {
     private Currency currency;
 
     private List<Experiment> experiments;
+
+    private PayerCompliance payerCompliance;
 
     @Nullable
     public CheckoutPreference getCheckoutPreference() {
@@ -36,5 +39,10 @@ public final class InitResponse extends PaymentMethodSearch {
     @Nullable
     public List<Experiment> getExperiments() {
         return experiments;
+    }
+
+    @Nullable
+    public PayerCompliance getPayerCompliance() {
+        return payerCompliance;
     }
 }

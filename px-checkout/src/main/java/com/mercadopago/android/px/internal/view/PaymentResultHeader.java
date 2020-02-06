@@ -15,7 +15,6 @@ import com.mercadopago.android.px.internal.util.ScaleUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
-import com.squareup.picasso.Picasso;
 
 public class PaymentResultHeader extends ConstraintLayout {
 

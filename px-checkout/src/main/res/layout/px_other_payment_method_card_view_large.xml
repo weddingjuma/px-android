@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/new_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/px_m_margin"
+    android:layout_marginRight="@dimen/px_m_margin"
+    android:layout_marginBottom="@dimen/px_s_margin"
+    app:cardCornerRadius="@dimen/px_xs_margin"
+    app:cardElevation="2dp"
+    app:cardPreventCornerOverlap="false"
+    tools:showIn="@layout/px_fragment_other_payment_method_large">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintDimensionRatio="@string/px_card_aspect_ratio"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/other_payment_method_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/px_ico_new_card"
+            app:layout_constraintBottom_toTopOf="@id/guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <com.mercadopago.android.px.internal.view.MPTextView
+            android:id="@+id/other_payment_method_primary_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px_s_margin"
+            android:textColor="@color/px_color_translucent_black"
+            android:textSize="@dimen/px_s_text"
+            app:customStyle="regular"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/other_payment_method_image"
+            tools:text="Agregar nueva tarjeta" />
+
+        <com.mercadopago.android.px.internal.view.MPTextView
+            android:id="@+id/other_payment_method_secondary_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/px_xxxs_margin"
+            android:textColor="@color/px_color_highlight"
+            android:textSize="@dimen/px_xs_text"
+            app:customStyle="regular"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/other_payment_method_primary_message"
+            tools:text="Hasta 6 cuotas sin interés" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v7.widget.CardView>

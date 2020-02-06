@@ -9,6 +9,7 @@ import com.mercadopago.android.px.tracking.internal.mapper.FromSelectedExpressMe
 import com.mercadopago.android.px.tracking.internal.mapper.FromUserSelectionToAvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,7 +35,20 @@ public final class ConfirmEvent extends EventTracker {
         @Nullable final PayerCost selectedPayerCost,
         final boolean isSplit, final int paymentMethodSelectedIndex) {
         return new ConfirmEvent(new ConfirmData(ReviewType.ONE_TAP, paymentMethodSelectedIndex,
-            new FromSelectedExpressMetadataToAvailableMethods(cardsWithEsc, selectedPayerCost,isSplit).map(expressMetadata)));
+            new FromSelectedExpressMetadataToAvailableMethods(cardsWithEsc, selectedPayerCost, isSplit)
+                .map(expressMetadata)));
+    }
+
+    @NonNull
+    public static ConfirmEvent from(@Nullable final String paymentTypeId, @Nullable final String paymentMethodId,
+        final boolean isCompliant, final boolean isAdditionalInfoNeeded) {
+        final Map<String, Object> extraInfo = new HashMap<>();
+        extraInfo.put("has_payer_information", isCompliant);
+        extraInfo.put("additional_information_needed", isAdditionalInfoNeeded);
+
+        final AvailableMethod availableMethod = new AvailableMethod(paymentMethodId, paymentTypeId, extraInfo);
+
+        return new ConfirmEvent(new ConfirmData(ReviewType.ONE_TAP, availableMethod));
     }
 
     @NonNull

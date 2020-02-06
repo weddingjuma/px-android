@@ -45,6 +45,7 @@ import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
@@ -64,6 +65,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>
     implements PostPaymentAction.ActionController, ExpressPayment.Actions,
@@ -71,6 +73,7 @@ import java.util.Set;
 
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
+    private static final String BUNDLE_STATE_OTHER_PM_CLICKABLE = "state_other_pm_clickable";
 
     @NonNull private final PaymentRepository paymentRepository;
     @NonNull private final AmountRepository amountRepository;
@@ -90,6 +93,8 @@ import java.util.Set;
     /* default */ int paymentMethodIndex;
     private SplitSelectionState splitSelectionState;
     private Set<String> cardsWithSplit;
+    private boolean otherPaymentMethodClickable = true;
+    @Nullable private Runnable unattendedEvent;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -159,7 +164,7 @@ import java.util.Set;
         updateElements();
         getView().configureAdapters(paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency());
         getView().updatePaymentMethods(paymentMethodDrawableItemMapper.map(expressMetadataList));
-
+        getView().updateBottomSheetStatus(!otherPaymentMethodClickable);
         getView().setPayButtonText(payButtonViewModel);
     }
 
@@ -200,6 +205,7 @@ import java.util.Set;
     public void recoverFromBundle(@NonNull final Bundle bundle) {
         splitSelectionState = bundle.getParcelable(BUNDLE_STATE_SPLIT_PREF);
         paymentMethodIndex = bundle.getInt(BUNDLE_STATE_CURRENT_PM_INDEX);
+        otherPaymentMethodClickable = bundle.getBoolean(BUNDLE_STATE_OTHER_PM_CLICKABLE);
     }
 
     @NonNull
@@ -207,6 +213,7 @@ import java.util.Set;
     public Bundle storeInBundle(@NonNull final Bundle bundle) {
         bundle.putParcelable(BUNDLE_STATE_SPLIT_PREF, splitSelectionState);
         bundle.putInt(BUNDLE_STATE_CURRENT_PM_INDEX, paymentMethodIndex);
+        bundle.putBoolean(BUNDLE_STATE_OTHER_PM_CLICKABLE, otherPaymentMethodClickable);
         return bundle;
     }
 
@@ -275,8 +282,12 @@ import java.util.Set;
 
     @Override
     public void cancel() {
-        tracker.trackAbort();
+        trackAbort();
         getView().cancel();
+    }
+
+    public void trackAbort(){
+        tracker.trackAbort();
     }
 
     @Override
@@ -495,5 +506,30 @@ import java.util.Set;
     public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
         cancelLoading();
         getView().showCardFlow(paymentRepository.createPaymentRecovery());
+    }
+
+    @Override
+    public void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods) {
+        final Runnable event = () -> getView().showOfflineMethods(offlineMethods);
+        if (otherPaymentMethodClickable) {
+            event.run();
+        } else {
+            unattendedEvent = event;
+        }
+    }
+
+    @Override
+    public void onOtherPaymentMethodClickableStateChanged(final boolean state) {
+        otherPaymentMethodClickable = state;
+        if (otherPaymentMethodClickable) {
+            executeUnattendedEvent();
+        }
+    }
+
+    private void executeUnattendedEvent() {
+        if (unattendedEvent != null) {
+            unattendedEvent.run();
+            unattendedEvent = null;
+        }
     }
 }

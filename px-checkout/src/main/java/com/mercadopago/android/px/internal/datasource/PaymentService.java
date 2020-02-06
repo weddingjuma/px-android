@@ -19,6 +19,7 @@ import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
+import com.mercadopago.android.px.internal.util.PaymentMethodHelper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
@@ -146,6 +147,28 @@ public class PaymentService implements PaymentRepository {
     }
 
     /**
+     * This method presets the payment method only for payments with offline methods.
+     */
+    @Override
+    public void startExpressPaymentWithOffMethod(@NonNull final String paymentMethodId,
+        @NonNull final String paymentTypeId) {
+        initRepository.init().enqueue(new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                userSelectionRepository.select(PaymentMethodHelper
+                    .assembleOfflinePaymentMethod(initResponse.getPaymentMethods(), paymentMethodId,
+                        paymentTypeId), null);
+                startPayment();
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                throw new IllegalStateException("empty payment methods");
+            }
+        });
+    }
+
+    /**
      * This method presets all user information ahead before the payment is processed.
      *
      * @param expressMetadata model
@@ -153,8 +176,7 @@ public class PaymentService implements PaymentRepository {
      */
     @Override
     public void startExpressPayment(@NonNull final ExpressMetadata expressMetadata,
-        @Nullable final PayerCost payerCost,
-        final boolean splitPayment) {
+        @Nullable final PayerCost payerCost, final boolean splitPayment) {
 
         initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override

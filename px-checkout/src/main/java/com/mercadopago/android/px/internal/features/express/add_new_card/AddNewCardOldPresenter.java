@@ -9,7 +9,7 @@ import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.services.Callback;
 import java.util.List;
 
-public class AddNewCardOldPresenter extends AddNewCardPresenter {
+public class AddNewCardOldPresenter extends OtherPaymentMethodPresenter {
 
     private static final String TYPE_TO_DRIVE = "cards";
 

@@ -303,6 +303,7 @@ public class ExplodingFragment extends Fragment {
 
         //try to avoid reveal detached view
         reveal.post(() -> {
+            final int endColor = explodeDecorator.getPrimaryColor(getContext());
             final Animator anim;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 anim = ViewAnimationUtils.createCircularReveal(reveal, cx, cy, startRadius, finalRadius);
@@ -321,21 +322,20 @@ public class ExplodingFragment extends Fragment {
                         reveal.setVisibility(View.VISIBLE);
 
                         final int startColor = explodeDecorator.getDarkPrimaryColor(getContext());
-                        final int endColor = explodeDecorator.getPrimaryColor(getContext());
                         final Drawable[] switchColors =
                             { new ColorDrawable(startColor), new ColorDrawable(endColor) };
                         final TransitionDrawable colorSwitch = new TransitionDrawable(switchColors);
                         reveal.setBackgroundDrawable(colorSwitch);
                         colorSwitch.startTransition((int) animation.getDuration());
-                        tintStatusBar(endColor);
                     }
                 }
 
                 @Override
                 public void onAnimationEnd(final Animator animation) {
+                    tintStatusBar(endColor);
+                    animation.removeAllListeners();
+                    explodeDecorator = null;
                     if (listener != null) {
-                        explodeDecorator = null;
-                        animation.removeAllListeners();
                         listener.onAnimationFinished();
                     }
                 }

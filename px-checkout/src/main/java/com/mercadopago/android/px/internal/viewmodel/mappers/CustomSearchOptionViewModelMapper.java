@@ -71,7 +71,7 @@ public class CustomSearchOptionViewModelMapper
 
             @Override
             public int getBadgeResourceId(@NonNull final Context context) {
-                return disabled ? R.drawable.px_badge_warning : 0;
+                return disabled ? R.drawable.px_badge_pending_orange : 0;
             }
 
             @Override

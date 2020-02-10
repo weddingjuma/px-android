@@ -39,7 +39,7 @@
                 android:layout_width="@dimen/px_badge_size"
                 android:layout_height="@dimen/px_badge_size"
                 android:layout_gravity="top|right"
-                android:src="@drawable/px_badge_warning"/>
+                android:src="@drawable/px_badge_pending_orange"/>
         </FrameLayout>
 
         <LinearLayout

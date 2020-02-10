@@ -44,6 +44,16 @@ public final class EscValidationData {
             this.escEnable = escEnable;
         }
 
+        /**
+         * @param cardId to check if has esc, could be null if is a new card
+         * @param isCard indicates if current payment method is card or not
+         */
+        public Builder(@Nullable final String cardId, final boolean isCard) {
+            this.cardId = cardId;
+            this.isCard = isCard;
+            escEnable = true;
+        }
+
         public EscValidationData build() {
             return new EscValidationData(this);
         }

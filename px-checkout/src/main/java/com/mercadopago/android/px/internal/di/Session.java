@@ -237,9 +237,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
 
     @NonNull
     public ESCManagerBehaviour getMercadoPagoESC() {
-        final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId(),
-            paymentSettings.getAdvancedConfiguration().isEscEnabled());
+        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId());
     }
 
     @NonNull

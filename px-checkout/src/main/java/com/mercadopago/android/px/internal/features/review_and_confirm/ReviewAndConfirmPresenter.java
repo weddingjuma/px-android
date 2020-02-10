@@ -142,7 +142,7 @@ import java.util.Set;
     @Override
     public void startSecuredPayment() {
         final SecurityValidationData data =
-            SecurityValidationDataFactory.create(productIdProvider, paymentSettings, userSelectionRepository);
+            SecurityValidationDataFactory.create(productIdProvider, userSelectionRepository);
         getView().startSecurityValidation(data);
     }
 

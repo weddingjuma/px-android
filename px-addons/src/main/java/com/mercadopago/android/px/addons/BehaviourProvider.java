@@ -49,6 +49,17 @@ public final class BehaviourProvider {
         return escManagerBehaviour;
     }
 
+    /**
+     * @param session session id for tracking purpose
+     * @return EscManagerBehaviour implementation.
+     */
+    @NonNull
+    public static ESCManagerBehaviour getEscManagerBehaviour(@NonNull final String session) {
+        final ESCManagerBehaviour escManagerBehaviour = resolveEscImplementation(true);
+        escManagerBehaviour.setSessionId(session);
+        return escManagerBehaviour;
+    }
+
     @NonNull
     public static TrackingBehaviour getTrackingBehaviour(@NonNull final String applicationContext) {
         if (trackingBehaviour != null) {

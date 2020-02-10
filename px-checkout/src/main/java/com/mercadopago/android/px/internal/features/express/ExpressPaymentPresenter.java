@@ -229,7 +229,7 @@ import org.jetbrains.annotations.Nullable;
     @Override
     public void startSecuredPayment() {
         final SecurityValidationData data = SecurityValidationDataFactory
-            .create(productIdProvider, paymentSettingRepository, getCurrentExpressMetadata());
+            .create(productIdProvider, getCurrentExpressMetadata());
         getView().startSecurityValidation(data);
     }
 

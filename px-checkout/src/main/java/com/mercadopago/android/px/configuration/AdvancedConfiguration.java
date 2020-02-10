@@ -15,7 +15,6 @@ public final class AdvancedConfiguration implements Serializable {
      * Instores usage / money in usage. use case : not all bank deals apply right now to all preferences.
      */
     private final boolean bankDealsEnabled;
-    private final boolean escEnabled;
     private final boolean expressEnabled;
     private final boolean amountRowEnabled;
     @NonNull private final PaymentResultScreenConfiguration paymentResultScreenConfiguration;
@@ -28,7 +27,6 @@ public final class AdvancedConfiguration implements Serializable {
 
     /* default */ AdvancedConfiguration(final Builder builder) {
         bankDealsEnabled = builder.bankDealsEnabled;
-        escEnabled = builder.escEnabled;
         expressEnabled = builder.expressEnabled;
         amountRowEnabled = builder.amountRowEnabled;
         paymentResultScreenConfiguration = builder.paymentResultScreenConfiguration;
@@ -45,7 +43,7 @@ public final class AdvancedConfiguration implements Serializable {
     }
 
     public boolean isEscEnabled() {
-        return escEnabled;
+        return true;
     }
 
     public boolean isAmountRowEnabled() {
@@ -94,7 +92,6 @@ public final class AdvancedConfiguration implements Serializable {
     @SuppressWarnings("unused")
     public static class Builder {
         /* default */ boolean bankDealsEnabled = true;
-        /* default */ boolean escEnabled = false;
         /* default */ boolean expressEnabled = false;
         /* default */ boolean amountRowEnabled = true;
         /* default */ @NonNull PaymentResultScreenConfiguration paymentResultScreenConfiguration =
@@ -129,9 +126,10 @@ public final class AdvancedConfiguration implements Serializable {
          *
          * @param escEnabled bool that reflects it's behaviour
          * @return builder to keep operating
+         * @deprecated despite of this setter, escEnabled will be always true.
          */
+        @Deprecated
         public Builder setEscEnabled(final boolean escEnabled) {
-            this.escEnabled = escEnabled;
             return this;
         }
 
@@ -250,5 +248,4 @@ public final class AdvancedConfiguration implements Serializable {
             return new AdvancedConfiguration(this);
         }
     }
-
 }

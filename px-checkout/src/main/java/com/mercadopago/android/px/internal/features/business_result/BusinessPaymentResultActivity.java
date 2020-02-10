@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.util.Logger;
@@ -51,8 +52,8 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     @NonNull
     private BusinessPaymentResultPresenter createPresenter() {
         final BusinessPaymentModel model = getIntent().getParcelableExtra(EXTRA_BUSINESS_PAYMENT_MODEL);
-        return new BusinessPaymentResultPresenter(
-            Session.getInstance().getConfigurationModule().getPaymentSettings(), model);
+        return new BusinessPaymentResultPresenter(Session.getInstance().getConfigurationModule().getPaymentSettings(),
+            model, BehaviourProvider.getFlowBehaviour());
     }
 
     @Override

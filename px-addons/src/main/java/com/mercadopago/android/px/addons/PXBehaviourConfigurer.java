@@ -8,6 +8,7 @@ public final class PXBehaviourConfigurer {
     private ESCManagerBehaviour escManagerBehaviour;
     private TrackingBehaviour trackingBehaviour;
     private LocaleBehaviour localeBehaviour;
+    private FlowBehaviour flowBehaviour;
 
     public PXBehaviourConfigurer with(@NonNull final ESCManagerBehaviour escManagerBehaviour) {
         this.escManagerBehaviour = escManagerBehaviour;
@@ -29,10 +30,16 @@ public final class PXBehaviourConfigurer {
         return this;
     }
 
+    public PXBehaviourConfigurer with(@NonNull final FlowBehaviour flowBehaviour) {
+        this.flowBehaviour = flowBehaviour;
+        return this;
+    }
+
     public void configure() {
         BehaviourProvider.set(securityBehaviour);
         BehaviourProvider.set(escManagerBehaviour);
         BehaviourProvider.set(trackingBehaviour);
         BehaviourProvider.set(localeBehaviour);
+        BehaviourProvider.set(flowBehaviour);
     }
 }

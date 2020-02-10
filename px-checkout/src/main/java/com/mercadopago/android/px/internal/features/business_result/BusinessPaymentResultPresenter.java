@@ -2,11 +2,13 @@ package com.mercadopago.android.px.internal.features.business_result;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.addons.FlowBehaviour;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
 import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.mappers.FlowBehaviourResultMapper;
 import com.mercadopago.android.px.model.Action;
 import com.mercadopago.android.px.model.ExitAction;
 import com.mercadopago.android.px.model.internal.PrimaryExitAction;
@@ -26,10 +28,12 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
     private final BusinessPaymentModel model;
     private final ResultViewTrack viewTracker;
+    private final FlowBehaviour flowBehaviour;
 
     /* default */ BusinessPaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final BusinessPaymentModel model) {
+        @NonNull final BusinessPaymentModel model, @NonNull final FlowBehaviour flowBehaviour) {
         this.model = model;
+        this.flowBehaviour = flowBehaviour;
         viewTracker = new ResultViewTrack(model, paymentSettings);
     }
 
@@ -42,6 +46,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
     @Override
     public void onFreshStart() {
         viewTracker.track();
+        flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(model.getPayment()));
     }
 
     @Override

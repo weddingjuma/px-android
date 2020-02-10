@@ -42,8 +42,7 @@ public class PaymentRewardRepositoryImpl implements PaymentRewardRepository {
         final Callback<PaymentReward> serviceCallback =
             getServiceCallback(payment, paymentResult, paymentRewardCallback);
         final boolean hasAccessToken = TextUtil.isNotEmpty(privateKey);
-        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payment) ||
-            (payment instanceof BusinessPayment && !StatusHelper.isBusinessSuccess((BusinessPayment) payment));
+        final boolean hasToReturnEmptyResponse = !hasAccessToken || !StatusHelper.isSuccess(payment);
         final Campaign campaign = paymentResult.getPaymentData().getCampaign();
         final String campaignId = campaign != null ? campaign.getId() : "";
 

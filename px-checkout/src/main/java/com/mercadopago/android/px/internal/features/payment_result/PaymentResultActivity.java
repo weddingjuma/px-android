@@ -16,6 +16,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
@@ -71,7 +72,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final Session session = Session.getInstance();
 
         return new PaymentResultPresenter(session.getConfigurationModule().getPaymentSettings(),
-            session.getInstructionsRepository(), paymentModel);
+            session.getInstructionsRepository(), paymentModel, BehaviourProvider.getFlowBehaviour());
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.addons.FlowBehaviour;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
 import com.mercadopago.android.px.internal.base.BasePresenter;
@@ -19,7 +20,9 @@ import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
 import com.mercadopago.android.px.internal.view.RecoverPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.mappers.FlowBehaviourResultMapper;
 import com.mercadopago.android.px.model.Action;
+import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.Instruction;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.services.Callback;
@@ -41,13 +44,16 @@ import java.util.List;
     private final InstructionsRepository instructionsRepository;
     private final ResultViewTrack resultViewTrack;
     private final PaymentResultScreenConfiguration screenConfiguration;
+    private final FlowBehaviour flowBehaviour;
 
     private FailureRecovery failureRecovery;
 
     /* default */ PaymentResultPresenter(@NonNull final PaymentSettingRepository paymentSettings,
-        @NonNull final InstructionsRepository instructionsRepository, @NonNull final PaymentModel paymentModel) {
+        @NonNull final InstructionsRepository instructionsRepository, @NonNull final PaymentModel paymentModel,
+        @NonNull final FlowBehaviour flowBehaviour) {
         this.paymentModel = paymentModel;
         this.instructionsRepository = instructionsRepository;
+        this.flowBehaviour = flowBehaviour;
         screenConfiguration =
             paymentSettings.getAdvancedConfiguration().getPaymentResultScreenConfiguration();
         resultViewTrack =
@@ -68,6 +74,12 @@ import java.util.List;
     @Override
     public void onFreshStart() {
         setCurrentViewTracker(resultViewTrack);
+        final IPaymentDescriptor payment = paymentModel.getPayment();
+        if (payment != null) {
+            flowBehaviour.trackConversion(new FlowBehaviourResultMapper().map(payment));
+        } else {
+            flowBehaviour.trackConversion();
+        }
     }
 
     @Override

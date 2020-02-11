@@ -183,9 +183,11 @@ import org.jetbrains.annotations.Nullable;
         initRepository.init().execute(new Callback<InitResponse>() {
             @Override
             public void success(final InitResponse initResponse) {
-                expressMetadataList = initResponse.getExpress();
-                cardsWithSplit = initResponse.getIdsWithSplitAllowed();
-                loadViewModel();
+                if (isViewAttached()) {
+                    expressMetadataList = initResponse.getExpress();
+                    cardsWithSplit = initResponse.getIdsWithSplitAllowed();
+                    loadViewModel();
+                }
             }
 
             @Override
@@ -286,7 +288,7 @@ import org.jetbrains.annotations.Nullable;
         getView().cancel();
     }
 
-    public void trackAbort(){
+    public void trackAbort() {
         tracker.trackAbort();
     }
 
@@ -488,11 +490,13 @@ import org.jetbrains.annotations.Nullable;
         initRepository.refresh().enqueue(new Callback<InitResponse>() {
             @Override
             public void success(final InitResponse initResponse) {
-                expressMetadataList = initResponse.getExpress();
-                resetPayerCostSelection();
-                paymentMethodIndex = 0;
-                getView().clearAdapters();
-                loadViewModel();
+                if (isViewAttached()) {
+                    expressMetadataList = initResponse.getExpress();
+                    resetPayerCostSelection();
+                    paymentMethodIndex = 0;
+                    getView().clearAdapters();
+                    loadViewModel();
+                }
             }
 
             @Override

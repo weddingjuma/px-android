@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.payment_result.mappers;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultTracker;
 import com.mercadopago.android.px.internal.features.business_result.PaymentRewardMapper;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultMethod;
@@ -30,7 +31,8 @@ public class PaymentResultBodyModelMapper extends Mapper<PaymentModel, PaymentRe
 
         return new PaymentResultBody.Model.Builder()
             .setMethodModels(methodModels)
-            .setRewardViewModel(new PaymentRewardMapper().map(model.getPaymentReward()))
+            .setRewardViewModel(new PaymentRewardMapper(new BusinessPaymentResultTracker())
+                .map(model.getPaymentReward()))
             .setReceiptId(String.valueOf(paymentResult.getPaymentId()))
             .setTopFragment(configuration.getTopFragment())
             .setBottomFragment(configuration.getBottomFragment())

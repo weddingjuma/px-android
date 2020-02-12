@@ -6,14 +6,29 @@ import com.mercadolibre.android.mlbusinesscomponents.components.common.downloada
 import com.mercadolibre.android.mlbusinesscomponents.components.common.downloadapp.MLBusinessDownloadAppView;
 import com.mercadolibre.android.mlbusinesscomponents.components.crossselling.MLBusinessCrossSellingBoxData;
 import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountBoxData;
+import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountTracker;
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.internal.PaymentReward;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 
 public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardViewModel> {
+
+    /* default */ final MLBusinessDiscountTracker discountTracker;
+
+    /**
+     * Constructor
+     *
+     * @param discountTracker A {@link MLBusinessDiscountTracker}
+     */
+    public PaymentRewardMapper(final MLBusinessDiscountTracker discountTracker) {
+        this.discountTracker = discountTracker;
+    }
 
     @Override
     public PaymentRewardViewModel map(@NonNull final PaymentReward paymentReward) {
@@ -92,6 +107,12 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
             public List<MLBusinessSingleItem> getItems() {
                 return getDisCountItems(discount.getItems());
             }
+
+            @NonNull
+            @Override
+            public MLBusinessDiscountTracker getTracker() {
+                return discountTracker;
+            }
         };
     }
 
@@ -128,6 +149,15 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
                 @Override
                 public String getTrackId() {
                     return item.getCampaignId();
+                }
+
+                @Nullable
+                @Override
+                public Map<String, Object> getEventData() {
+                    if (item.getCampaignId() != null && !item.getCampaignId().isEmpty()) {
+                        return new HashMap<>(Collections.singletonMap("tracking_id", item.getCampaignId()));
+                    }
+                    return null;
                 }
             });
         }

@@ -44,7 +44,7 @@ Add this line to your app's `build.gradle` inside the `dependencies` section:
 
 With this command you can generate a local version for testing:
 
-    ./gradlew publishLocal
+    ./gradlew publishAar
 
 ## 🐒 How to use?
 

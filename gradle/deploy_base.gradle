@@ -4,10 +4,6 @@ apply plugin:'maven-publish'
 apply plugin:'com.jfrog.bintray'
 apply plugin:'com.github.dcendents.android-maven'
 
-def versionLocation = "build/last_deployed_version.txt"
-version = project.hasProperty('production') ? version_to_deploy :
-    "EXPERIMENTAL-${version_to_deploy}-${dateNow}"
-
 task javadoc(type:Javadoc) {
     failOnError = false
     options.encoding = 'UTF-8'
@@ -29,23 +25,17 @@ task androidSourcesJar(type:Jar) {
 }
 
 task publishAar {
-    dependsOn bintrayUpload
+    def versionLocation = "build/last_deployed_version.txt"
+    def isExperimental = project.hasProperty('experimental')
+    def isProduction = project.hasProperty('production')
 
-    doLast {
-        println "Deployed ${project.name} version: ${version}"
-        file(versionLocation).text = version
+    if (isExperimental || isProduction) {
+        dependsOn bintrayUpload
+        version = isProduction ? version_to_deploy : "EXPERIMENTAL-$version_to_deploy-$dateNow"
+    } else {
+        dependsOn publishToMavenLocal
+        version = "LOCAL-$version_to_deploy-$dateNow"
     }
-}
-
-task publishLocalInit {
-    doLast {
-        version = "LOCAL-${version_to_deploy}-${dateNow}"
-    }
-}
-
-task publishLocal {
-    publishToMavenLocal.mustRunAfter(publishLocalInit)
-    dependsOn publishToMavenLocal, publishLocalInit
 
     doLast {
         println "Deployed ${project.name} version: ${version}"

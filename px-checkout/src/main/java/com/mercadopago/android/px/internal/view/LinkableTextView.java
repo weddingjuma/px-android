@@ -15,10 +15,13 @@ import android.view.View;
 import com.mercadopago.android.px.internal.features.TermsAndConditionsActivity;
 import com.mercadopago.android.px.model.display_info.LinkablePhrase;
 import com.mercadopago.android.px.model.display_info.LinkableText;
+import java.util.Collections;
+import java.util.Map;
 
 public class LinkableTextView extends android.support.v7.widget.AppCompatTextView {
 
     private LinkableText model;
+    private int installmentSelected = -1;
 
     public LinkableTextView(@NonNull final Context context, @NonNull final AttributeSet attrs) {
         super(context, attrs);
@@ -29,6 +32,10 @@ public class LinkableTextView extends android.support.v7.widget.AppCompatTextVie
             this.model = model;
             render();
         }
+    }
+
+    public void updateInstallment(final int installmentSelected) {
+        this.installmentSelected = installmentSelected;
     }
 
     private void render() {
@@ -59,7 +66,13 @@ public class LinkableTextView extends android.support.v7.widget.AppCompatTextVie
     }
 
     /* default */ void onLinkClicked(@NonNull final LinkablePhrase linkablePhrase) {
-        final String data = linkablePhrase.getLink() != null ? linkablePhrase.getLink() : linkablePhrase.getHtml();
+        String data = "";
+        Map<String, String> links = model.getLinks() != null ? model.getLinks() : Collections.emptyMap();
+        if (!links.isEmpty() && installmentSelected != -1) {
+            data = links.get(linkablePhrase.getLinkId(installmentSelected));
+        } else if (linkablePhrase.getLink() != null || linkablePhrase.getHtml() != null) {
+            data = linkablePhrase.getLink() != null ? linkablePhrase.getLink() : linkablePhrase.getHtml();
+        }
         TermsAndConditionsActivity.start(getContext(), data);
     }
 }

@@ -2,7 +2,12 @@ package com.mercadopago.android.px.model.display_info;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.util.ParcelableUtil;
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class LinkablePhrase implements Parcelable, Serializable {
 
@@ -10,6 +15,7 @@ public final class LinkablePhrase implements Parcelable, Serializable {
     private final String textColor;
     private final String link;
     private final String html;
+    private final Map<String, String> installments;
 
     public String getPhrase() {
         return phrase;
@@ -27,11 +33,18 @@ public final class LinkablePhrase implements Parcelable, Serializable {
         return html;
     }
 
+    @Nullable
+    public String getLinkId(final int installments) {
+        return this.installments.get(String.valueOf(installments));
+    }
+
     protected LinkablePhrase(final Parcel in) {
         phrase = in.readString();
         textColor = in.readString();
         link = in.readString();
         html = in.readString();
+        installments = new HashMap<>();
+        ParcelableUtil.readSerializableMap(installments, in, String.class, String.class);
     }
 
     @Override
@@ -40,6 +53,7 @@ public final class LinkablePhrase implements Parcelable, Serializable {
         dest.writeString(textColor);
         dest.writeString(link);
         dest.writeString(html);
+        ParcelableUtil.writeSerializableMap(dest, installments != null ? installments : Collections.emptyMap());
     }
 
     @Override

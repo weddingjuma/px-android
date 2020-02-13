@@ -16,9 +16,15 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
     private PaymentMethodDescriptorView currentView;
     private PaymentMethodDescriptorView nextView;
     private int currentIndex = NO_SELECTED;
+    private InstallmentChanged installmentChanged;
 
-    public TitlePagerAdapter(@NonNull final TitlePager titlePager) {
+    public interface InstallmentChanged {
+        void installmentSelectedChanged(final int installment);
+    }
+
+    public TitlePagerAdapter(@NonNull final TitlePager titlePager, @NonNull final InstallmentChanged installmentChanged) {
         super(titlePager);
+        this.installmentChanged = installmentChanged;
     }
 
     @Override
@@ -59,6 +65,10 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
         currentModel.setCurrentPayerCost(payerCostSelected);
         currentModel.setSplit(splitSelectionState.userWantsToSplit());
         currentView.update(currentModel);
+
+        if (installmentChanged != null) {
+            installmentChanged.installmentSelectedChanged(currentModel.getCurrentInstalment());
+        }
 
         if (currentIndex + 1 < data.size()) {
             final PaymentMethodDescriptorView.Model nextModel = data.get(currentIndex + 1);

@@ -32,4 +32,10 @@ public class ConsumerCreditsLowResFragment extends ConsumerCreditsFragment {
     protected void showDisplayInfo(final View view, @NonNull final ConsumerCreditsDisplayInfo displayInfo) {
         ((LinkableTextView) view.findViewById(R.id.bottom_text)).updateModel(displayInfo.bottomText);
     }
+
+    @Override
+    protected void setInstallment(final View view, final int installmentSelected) {
+        installment = installmentSelected;
+        ((LinkableTextView) view.findViewById(R.id.bottom_text)).updateInstallment(installment);
+    }
 }

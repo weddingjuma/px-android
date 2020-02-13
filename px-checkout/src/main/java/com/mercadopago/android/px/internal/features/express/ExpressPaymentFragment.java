@@ -99,7 +99,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     SplitPaymentHeaderAdapter.SplitListener,
     PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
-    OfflineMethodsFragment.SheetHidability {
+    OfflineMethodsFragment.SheetHidability, TitlePagerAdapter.InstallmentChanged {
 
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
@@ -283,7 +283,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             summaryView.configureToolbar((AppCompatActivity) getActivity(), v -> presenter.cancel());
         }
 
-        final TitlePagerAdapter titlePagerAdapter = new TitlePagerAdapter(titlePager);
+        final TitlePagerAdapter titlePagerAdapter = new TitlePagerAdapter(titlePager, this);
         titlePager.setAdapter(titlePagerAdapter);
 
         hubAdapter = new HubAdapter(Arrays.asList(titlePagerAdapter,
@@ -481,6 +481,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         installmentsAdapter.notifyDataSetChanged();
         hubAdapter.showInstallmentsList();
         expandAndCollapseAnimation.expand();
+    }
+
+    @Override
+    public void installmentSelectedChanged(final int installment) {
+        paymentMethodFragmentAdapter.updateInstallment(installment);
     }
 
     private void animateViewPagerDown() {

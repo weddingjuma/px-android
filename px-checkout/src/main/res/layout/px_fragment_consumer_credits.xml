@@ -73,6 +73,8 @@
                 app:layout_constraintBottom_toTopOf="@id/highlight_container"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/top_text"
+                app:layout_constraintVertical_bias="1.0"
                 tools:text="Al confirmar, aceptás los términos generales y las condiciones particulares de este préstamo." />
 
             <include layout="@layout/highlight_text" />

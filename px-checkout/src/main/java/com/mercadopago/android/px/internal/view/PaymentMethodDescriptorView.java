@@ -56,6 +56,10 @@ public class PaymentMethodDescriptorView extends ConstraintLayout {
             this.payerCostSelected = payerCostSelected;
         }
 
+        public int getCurrentInstalment() {
+          return PayerCost.NO_SELECTED;
+        }
+
         public final void setSplit(final boolean split) {
             userWantToSplit = split;
         }

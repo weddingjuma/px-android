@@ -64,4 +64,9 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
     private PayerCost getCurrent() {
         return amountConfiguration.getCurrentPayerCost(userWantToSplit, payerCostSelected);
     }
+
+    @Override
+    public int getCurrentInstalment() {
+        return getCurrent().getInstallments();
+    }
 }

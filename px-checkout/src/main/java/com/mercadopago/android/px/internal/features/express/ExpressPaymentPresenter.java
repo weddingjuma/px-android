@@ -160,9 +160,9 @@ import org.jetbrains.annotations.Nullable;
 
         getView().showToolbarElementDescriptor(elementDescriptorModel);
 
+        getView().configureAdapters(paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency());
         getView().updateAdapters(model);
         updateElements();
-        getView().configureAdapters(paymentSettingRepository.getSite(), paymentSettingRepository.getCurrency());
         getView().updatePaymentMethods(paymentMethodDrawableItemMapper.map(expressMetadataList));
         getView().updateBottomSheetStatus(!otherPaymentMethodClickable);
         getView().setPayButtonText(payButtonViewModel);

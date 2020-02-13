@@ -24,6 +24,9 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
     private ImageView logo;
     private LinkableTextView topText;
     private LinkableTextView bottomText;
+    protected Integer installment = -1;
+
+    private static String INSTALLMENT_SELECTED_EXTRA = "installment_selected";
 
     @NonNull
     public static Fragment getInstance(final ConsumerCreditsDrawableFragmentItem model) {
@@ -37,6 +40,15 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
         @Nullable final Bundle savedInstanceState) {
         return inflater.inflate(R.layout.px_fragment_consumer_credits, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        if (savedInstanceState != null) {
+            installment = savedInstanceState.getInt(INSTALLMENT_SELECTED_EXTRA, -1);
+            setInstallment(view, installment);
+        }
     }
 
     @Override
@@ -56,6 +68,29 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
     protected void showDisplayInfo(final View view, @NonNull final ConsumerCreditsDisplayInfo displayInfo) {
         topText.updateModel(displayInfo.topText);
         bottomText.updateModel(displayInfo.bottomText);
+    }
+
+    public void updateInstallment(final int installmentSelected) {
+        final View view = getView();
+        if (view != null) {
+            view.post(() -> {
+                if (installment != installmentSelected) {
+                    setInstallment(view, installmentSelected);
+                }
+            });
+        }
+    }
+
+    protected void setInstallment(final View view, final int installmentSelected) {
+        installment = installmentSelected;
+        topText.updateInstallment(installment);
+        bottomText.updateInstallment(installment);
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull final Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(INSTALLMENT_SELECTED_EXTRA, installment);
     }
 
     @Override

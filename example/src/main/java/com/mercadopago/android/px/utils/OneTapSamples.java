@@ -24,7 +24,7 @@ import static com.mercadopago.android.px.utils.PaymentUtils.getGenericPaymentApp
 public final class OneTapSamples {
 
     private static final String ONE_TAP_PAYER_1_ACCESS_TOKEN =
-        "APP_USR-6519316523937252-070516-964fafa7e2c91a2c740155fcb5474280__LA_LD__-261748045";
+        "APP_USR-7092-122619-fc2376471063df48cf0c9fcd26e00729-506902649";
     private static final String ONE_TAP_PAYER_2_ACCESS_TOKEN =
         "APP_USR-3456261032857473-073011-c49291f53879f65accfaf28764e55f3e-340764447";
     private static final String ONE_TAP_PAYER_3_ACCESS_TOKEN =
@@ -126,7 +126,7 @@ public final class OneTapSamples {
             PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
 
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
-            .setPrivateKey("APP_USR-7092-122619-fc2376471063df48cf0c9fcd26e00729-506902649")
+            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
     }
 

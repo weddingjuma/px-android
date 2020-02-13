@@ -1,3 +1,11 @@
+## VERSION 4.35.0
+_13_02_2020_
+* FEATURE - Credits custom terms by installment.
+* FEATURE - Ignoring esc flag. Now always enabled.
+* ENHANCEMENT - Business components tracker.
+* ENHANCEMENT - Conversion tracker.
+* FIX - View not attached call propagation.
+
 ## VERSION 4.34.0
 _06_02_2020_
 * FEATURE - Off Methods in One Tap

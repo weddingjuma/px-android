@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BusinessPaymentResultTracker implements MLBusinessDiscountTracker {
 
-    private static final String BASE_PATH = "/discount_center/payers/touchpoint/px-congrats/";
+    private static final String BASE_PATH = "/discount_center/payers/touchpoint/px_congrats/";
 
     @Override
     public void track(@Nullable final String action, @Nullable final Map<String, Object> eventData) {

@@ -318,14 +318,6 @@ public class ReviewAndConfirmPresenterTest {
         verifyNoMoreInteractions(view);
     }
 
-    @Test
-    public void whenPayerInformationResponseThenReloadBody() {
-        reviewAndConfirmPresenter.onPayerInformationResponse();
-
-        verify(view).reloadBody();
-        verifyNoMoreInteractions(view);
-    }
-
     private void verifyPaymentFinished() {
         verify(view).hideConfirmButton();
         verify(view).finishLoading(any(ExplodeDecorator.class));

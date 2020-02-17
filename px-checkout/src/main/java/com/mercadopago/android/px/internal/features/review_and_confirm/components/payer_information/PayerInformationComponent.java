@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.util.MPCardMaskUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -16,14 +15,10 @@ import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.IdentificationType;
 import com.mercadopago.android.px.model.Payer;
 
-public class PayerInformationComponent extends CompactComponent<Payer, PayerInformationComponent.Actions> {
+public class PayerInformationComponent extends CompactComponent<Payer, Void> {
 
-    public interface Actions {
-        void onModifyPayerInformationClicked();
-    }
-
-    public PayerInformationComponent(@NonNull final Payer props, @NonNull final Actions actions) {
-        super(props, actions);
+    public PayerInformationComponent(@NonNull final Payer props) {
+        super(props);
     }
 
     @Override
@@ -37,18 +32,8 @@ public class PayerInformationComponent extends CompactComponent<Payer, PayerInfo
         ViewUtils.loadOrGone(getIdentificationTypeAndNumber(context), docTypeAndNumber);
         ViewUtils.loadOrGone(getPayerAppellation(context), payerAppellation);
         drawIconFromRes(icon, R.drawable.px_payer_information);
-        drawModifyButton(payerInfoView);
 
         return payerInfoView;
-    }
-
-    private void drawModifyButton(@NonNull final ViewGroup payerInfoView) {
-        final MeliButton buttonLink = payerInfoView.findViewById(R.id.payer_information_modify_button);
-        buttonLink.setOnClickListener(v -> {
-            if (getActions() != null) {
-                getActions().onModifyPayerInformationClicked();
-            }
-        });
     }
 
     @NonNull

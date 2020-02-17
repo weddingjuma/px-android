@@ -34,12 +34,10 @@ import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
-import com.mercadopago.android.px.internal.features.payer_information.PayerInformationActivity;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.ReviewAndConfirmContainer;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.CancelPaymentAction;
-import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePayerInformationAction;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.ItemsModel;
 import com.mercadopago.android.px.internal.features.review_and_confirm.models.PaymentModel;
@@ -87,7 +85,6 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
     private static final String EXTRA_ITEMS = "extra_items";
     private static final String EXTRA_DISCOUNT_TERMS_AND_CONDITIONS = "extra_discount_terms_and_conditions";
     private static final String TAG_DYNAMIC_DIALOG = "tag_dynamic_dialog";
-    private static final int PAYER_INFORMATION_REQUEST_CODE = 22;
     private static final String TAG_EXPLODING_FRAGMENT = "TAG_EXPLODING_FRAGMENT";
 
     private MeliButton confirmButton;
@@ -190,9 +187,6 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
         case ErrorUtil.ERROR_REQUEST_CODE:
             getWindow().getDecorView().post(() -> resolveErrorRequest(resultCode, data));
             break;
-        case PAYER_INFORMATION_REQUEST_CODE:
-            getWindow().getDecorView().post(() -> resolvePayerInformationRequest(resultCode));
-            break;
         default:
             //Do nothing
             break;
@@ -206,19 +200,6 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             presenter.trackSecurityFriction();
         }
         confirmButton.setState(MeliButton.State.NORMAL);
-    }
-
-    /* default */ void resolvePayerInformationRequest(final int resultCode) {
-        if (resultCode == RESULT_OK) {
-            presenter.onPayerInformationResponse();
-        }
-    }
-
-    @Override
-    public void reloadBody() {
-        final ViewGroup mainContent = findViewById(R.id.scroll_view);
-        mainContent.removeAllViews();
-        initBody();
     }
 
     private void initializeViews() {
@@ -370,21 +351,11 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             presenter.changePaymentMethod();
         } else if (action instanceof CancelPaymentAction) {
             onBackPressed();
-        } else if (action instanceof ChangePayerInformationAction) {
-            changePayerInformation();
         } else if (action instanceof ExitAction) {
             processCustomExit((ExitAction) action);
         } else {
             throw new UnsupportedOperationException("action not allowed");
         }
-    }
-
-    /**
-     * Start the Payer Information flow to modify existing payer's data
-     */
-    private void changePayerInformation() {
-        overrideTransitionIn();
-        PayerInformationActivity.start(this, PAYER_INFORMATION_REQUEST_CODE);
     }
 
     /**

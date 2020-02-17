@@ -11,7 +11,6 @@ import com.mercadopago.android.px.configuration.DynamicFragmentConfiguration;
 import com.mercadopago.android.px.core.DynamicFragmentCreator;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
-import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePayerInformationAction;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.actions.ChangePaymentMethodAction;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.items.ReviewItems;
 import com.mercadopago.android.px.internal.features.review_and_confirm.components.payer_information.PayerInformationComponent;
@@ -59,14 +58,15 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
         final DefaultPayerInformationDriver defaultPayerInformationDriver =
             new DefaultPayerInformationDriver(component.props.payer, paymentMethod);
         if (defaultPayerInformationDriver.hasToShowPayer()) {
-            addPayerInformation(component.props.payer, component.getDispatcher(), linearLayout);
+            addPayerInformation(component.props.payer, linearLayout);
         }
 
         final CheckoutPreference checkoutPreference =
             configurationModule.getPaymentSettings().getCheckoutPreference();
 
         final DynamicFragmentCreator.CheckoutData data =
-            new DynamicFragmentCreator.CheckoutData(checkoutPreference, session.getPaymentRepository().getPaymentDataList());
+            new DynamicFragmentCreator.CheckoutData(checkoutPreference,
+                session.getPaymentRepository().getPaymentDataList());
 
         if (component.props.dynamicFragments
             .hasCreatorFor(DynamicFragmentConfiguration.FragmentLocation.TOP_PAYMENT_METHOD_REVIEW_AND_CONFIRM)) {
@@ -111,10 +111,8 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
         return parent;
     }
 
-    private void addPayerInformation(final Payer payer, final ActionDispatcher dispatcher,
-        final LinearLayout linearLayout) {
-        final PayerInformationComponent payerInformationComponent =
-            new PayerInformationComponent(payer, () -> dispatcher.dispatch(new ChangePayerInformationAction()));
+    private void addPayerInformation(final Payer payer, final LinearLayout linearLayout) {
+        final PayerInformationComponent payerInformationComponent = new PayerInformationComponent(payer);
         final View payerView = payerInformationComponent.render(linearLayout);
         linearLayout.addView(payerView);
     }
@@ -149,12 +147,7 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
         final ActionDispatcher dispatcher,
         final ViewGroup parent) {
         final PaymentMethodComponent paymentMethodComponent =
-            new PaymentMethodComponent(paymentModel, new PaymentMethodComponent.Actions() {
-                @Override
-                public void onPaymentMethodChangeClicked() {
-                    dispatcher.dispatch(new ChangePaymentMethodAction());
-                }
-            });
+            new PaymentMethodComponent(paymentModel, () -> dispatcher.dispatch(new ChangePaymentMethodAction()));
 
         final View paymentView = paymentMethodComponent.render(parent);
         parent.addView(paymentView);
@@ -176,7 +169,7 @@ public class ReviewAndConfirmRenderer extends Renderer<ReviewAndConfirmContainer
 
         final TermsAndConditionsComponent termsAndConditionsComponent =
             new TermsAndConditionsComponent(component.props.mercadoPagoTermsAndConditionsModel);
-        
+
         final View termsAndConditionsView = termsAndConditionsComponent.render(parent);
         parent.addView(termsAndConditionsView);
     }

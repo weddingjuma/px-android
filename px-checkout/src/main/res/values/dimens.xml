@@ -58,6 +58,7 @@
     <dimen name="px_xxxs_alternative_margin">3dp</dimen>
 
     <!-- Height -->
+    <dimen name="px_height_low_res">24dp</dimen>
     <dimen name="px_xxxl_height">98dp</dimen>
     <dimen name="px_xxl_height">90dp</dimen>
     <dimen name="px_xl_height">80dp</dimen>

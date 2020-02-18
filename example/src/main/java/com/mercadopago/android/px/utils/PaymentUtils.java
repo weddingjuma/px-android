@@ -28,4 +28,12 @@ public final class PaymentUtils {
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED
         ).setPaymentId(123L).createGenericPayment();
     }
+
+    @NonNull
+    public static GenericPayment getGenericPaymentRejected() {
+        return new GenericPayment.Builder(
+            Payment.StatusCodes.STATUS_REJECTED,
+            Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK
+        ).setPaymentId(123L).createGenericPayment();
+    }
 }

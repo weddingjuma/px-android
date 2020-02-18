@@ -1,10 +1,12 @@
 package com.mercadopago.android.px.internal.features.express.add_new_card;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,28 +105,46 @@ public class OtherPaymentMethodFragment
     private void configureViews(@NonNull final View view, @DrawableRes final int imageResId,
         @NonNull final Text primaryMessage, @Nullable final Text secondaryMessage,
         final View.OnClickListener listener) {
-        final MPTextView primaryMessageView = view.findViewById(R.id.other_payment_method_primary_message);
-        final MPTextView secondaryMessageView = view.findViewById(R.id.other_payment_method_secondary_message);
-        final ImageView image = view.findViewById(R.id.other_payment_method_image);
-        ViewUtils.loadOrHide(View.GONE, primaryMessage, primaryMessageView);
-        ViewUtils.loadOrHide(View.GONE, secondaryMessage, secondaryMessageView);
-        ViewUtils.loadOrGone(imageResId, image);
+        loadPrimaryMessageView(view, primaryMessage);
+        loadSecondaryMessageView(view, secondaryMessage);
+        loadImage(view, imageResId);
         view.setOnClickListener(listener);
+    }
+
+    protected void loadPrimaryMessageView(@NonNull final View view, @Nullable final Text primaryMessage) {
+        final MPTextView primaryMessageView = view.findViewById(R.id.other_payment_method_primary_message);
+        ViewUtils.loadOrHide(View.GONE, primaryMessage, primaryMessageView);
+    }
+
+    protected void loadSecondaryMessageView(@NonNull final View view, @Nullable final Text secondaryMessage) {
+        final MPTextView secondaryMessageView = view.findViewById(R.id.other_payment_method_secondary_message);
+        ViewUtils.loadOrHide(View.GONE, secondaryMessage, secondaryMessageView);
+    }
+
+    protected void loadImage(@NonNull final View view, @DrawableRes final int imageResId) {
+        final ImageView image = view.findViewById(R.id.other_payment_method_image);
+        ViewUtils.loadOrGone(imageResId, image);
     }
 
     @Override
     public void startCardForm(@NonNull final CardFormWithFragment cardForm) {
-        cardForm.start(getParentFragment().getFragmentManager(), ExpressPaymentFragment.REQ_CODE_CARD_FORM,
-            R.id.one_tap_fragment);
+        FragmentManager manager;
+        if(getParentFragment() != null && (manager = getParentFragment().getFragmentManager()) != null) {
+            cardForm.start(manager, ExpressPaymentFragment.REQ_CODE_CARD_FORM,
+                R.id.one_tap_fragment);
+        }
     }
 
     @Override
     public void showPaymentMethods(@Nullable final PaymentMethodSearchItem paymentMethodSearchItem) {
-        if (paymentMethodSearchItem == null) {
-            PaymentVaultActivity.start(getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT);
-        } else {
-            PaymentVaultActivity.startWithPaymentMethodSelected(
-                getActivity(), CheckoutActivity.REQ_PAYMENT_VAULT, paymentMethodSearchItem);
+        final Activity activity = getActivity();
+        if (activity != null) {
+            if (paymentMethodSearchItem == null) {
+                PaymentVaultActivity.start(activity, CheckoutActivity.REQ_PAYMENT_VAULT);
+            } else {
+                PaymentVaultActivity.startWithPaymentMethodSelected(
+                    activity, CheckoutActivity.REQ_PAYMENT_VAULT, paymentMethodSearchItem);
+            }
         }
     }
 

@@ -11,7 +11,9 @@ import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.model.GenericPayment;
 import com.mercadopago.android.px.model.Item;
 import com.mercadopago.android.px.model.Payment;
+import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Sites;
+import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import static com.mercadopago.android.px.utils.PaymentUtils.getBusinessPaymentApproved;
 import static com.mercadopago.android.px.utils.PaymentUtils.getGenericPaymentApproved;
+import static com.mercadopago.android.px.utils.PaymentUtils.getGenericPaymentRejected;
 
 public final class OneTapSamples {
 
@@ -41,6 +44,8 @@ public final class OneTapSamples {
         "TEST-1458038826212807-062020-ff9273c67bc567320eae1a07d1c2d5b5-246046416";
     private static final String ONE_TAP_PAYER_9_ACCESS_TOKEN =
         "APP_USR-1031243024729642-070215-4ce0d8f4d71d238fa10c33ac79428e85-332848643";
+    private static final String ONE_TAP_PAYER_10_ACCESS_TOKEN =
+        "TEST-7169122440478352-062213-d23fa9fb38e4b3e94feee29864f0fae2-443064294";
     private static final String ONE_TAP_MERCHANT_PUBLIC_KEY = "APP_USR-648a260d-6fd9-4ad7-9284-90f22262c18d";
     private static final String ONE_TAP_DIRECT_DISCOUNT_MERCHANT_PUBLIC_KEY =
         "APP_USR-ef65214d-59a2-4c82-be23-6cf6eb945d4c";
@@ -48,6 +53,8 @@ public final class OneTapSamples {
     private static final String SAVED_CARD_MERCHANT_PUBLIC_KEY_1 = "TEST-92f16019-1533-4f21-aaf9-70482692f41e";
     private static final String SAVED_CARD_PAYER_PRIVATE_KEY_1 =
         "TEST-4008515596580497-071112-4d6622f6fb95cb093fd38760751ec98d-335851940";
+    // Product id for show credits
+    private static final String PRODUCT_ID = "bh31umv10flg01nmhg60";
 
     private OneTapSamples() {
         //Do nothing
@@ -60,6 +67,8 @@ public final class OneTapSamples {
             startOneTapWithAccountMoneyNoCards()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards)",
             startOneTapWithAccountMoneyAndCardsDebitCredit()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest account money (debit and credit cards) and rejected",
+            startOneTapWithAccountMoneyAndCardsDebitCreditAndRejectedPayment()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest debit card (excluded account money)",
             startOneTapWithAccountMoneyAndCardsDebitCreditAndExcludedAccountMoney()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card (excluded account money and debit)",
@@ -95,6 +104,16 @@ public final class OneTapSamples {
                 startOneTapNoAccountMoneyWithCreditCardAndNoAvailableDiscount()));
         options.add(new Pair<>(i++ + " - One tap - Should suggest credit card and get call for authorize result",
             startOneTapWithCreditCardAndShowCallForAuthorize()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest consumer credits",
+            startOneTapWithConsumerCredits()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest consumer credits with charges",
+            startOneTapWithConsumerCreditsWithCharges()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest consumer credits with charges in brazil",
+            startOneTapWithConsumerCreditsWithChargesInBrazil()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest consumer credits and rejected",
+            startOneTapWithConsumerCreditsAndRejectedPayment()));
+        options.add(new Pair<>(i++ + " - One tap - Should suggest one tap with offline methods",
+            startOneTapWithOfflineMethods()));
     }
 
     // It should suggest one tap with credit card, call for authorize
@@ -134,6 +153,19 @@ public final class OneTapSamples {
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyAndCardsDebitCredit() {
 
         final GenericPayment payment = getGenericPaymentApproved();
+        final SplitPaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
+        final CheckoutPreference preference = getCheckoutPreferenceWithPayerEmail(120);
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference,
+            PaymentConfigurationUtils
+                .create(samplePaymentProcessor))
+            .setPrivateKey(ONE_TAP_PAYER_2_ACCESS_TOKEN)
+            .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
+    }
+
+    // It should suggest one tap with account money
+    private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyAndCardsDebitCreditAndRejectedPayment() {
+
+        final GenericPayment payment = getGenericPaymentRejected();
         final SplitPaymentProcessor samplePaymentProcessor = new SamplePaymentProcessorNoView(payment);
         final CheckoutPreference preference = getCheckoutPreferenceWithPayerEmail(120);
         return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference,
@@ -354,6 +386,21 @@ public final class OneTapSamples {
             .build();
     }
 
+    private static CheckoutPreference getCheckoutPreferenceWithPayerEmailInBrazil(
+        @NonNull final Collection<String> excludedPaymentTypes, final int amount) {
+        final List<Item> items = new ArrayList<>();
+        final Item item = new Item.Builder("Android", 1, new BigDecimal(amount))
+            .setDescription("Androide")
+            .setPictureUrl("https://www.androidsis.com/wp-content/uploads/2015/08/marshmallow.png")
+            .setId("1234")
+            .build();
+        items.add(item);
+        return new CheckoutPreference.Builder(Sites.BRASIL,
+            PAYER_EMAIL_DUMMY, items)
+            .addExcludedPaymentTypes(excludedPaymentTypes)
+            .build();
+    }
+
     private static CheckoutPreference getCheckoutPreferenceWithPayerEmail(
         @NonNull final Collection<String> excludedPaymentTypes, final int amount, final int defaultInstallments) {
         final List<Item> items = new ArrayList<>();
@@ -380,5 +427,121 @@ public final class OneTapSamples {
             PaymentConfigurationUtils.create(samplePaymentProcessor))
             .setPrivateKey(SAVED_CARD_PAYER_PRIVATE_KEY_1)
             .setAdvancedConfiguration(new AdvancedConfiguration.Builder().setExpressPaymentEnable(true).build());
+    }
+
+    // It should suggest one tap with credits
+    private static MercadoPagoCheckout.Builder startOneTapWithConsumerCredits() {
+
+        final GenericPayment payment = getGenericPaymentApproved();
+
+        final Collection<String> excludedPaymentTypes = new ArrayList<>();
+        excludedPaymentTypes.add("ticket");
+        final CheckoutPreference preference =
+            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
+        final PaymentConfiguration paymentConfiguration =
+            PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
+
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
+            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
+            .setAdvancedConfiguration(
+                new AdvancedConfiguration.Builder().setProductId(PRODUCT_ID).setExpressPaymentEnable(true)
+                    .build());
+    }
+
+    // It should suggest one tap with credits with charges
+    private static MercadoPagoCheckout.Builder startOneTapWithConsumerCreditsWithCharges() {
+
+        final GenericPayment payment = getGenericPaymentApproved();
+
+        final Collection<String> excludedPaymentTypes = new ArrayList<>();
+        excludedPaymentTypes.add("ticket");
+        final CheckoutPreference preference =
+            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
+
+        final ArrayList<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
+        chargeRules.add(PaymentTypeChargeRule.createChargeFreeRule(PaymentTypes.DIGITAL_CURRENCY, "consumer credits"));
+        chargeRules.add(PaymentTypeChargeRule.createChargeFreeRule(PaymentTypes.ACCOUNT_MONEY, "account money"));
+
+        final PaymentConfiguration paymentConfiguration = new PaymentConfiguration
+            .Builder(new SamplePaymentProcessorNoView(payment))
+            .addChargeRules(chargeRules)
+            .build();
+
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
+            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
+            .setAdvancedConfiguration(
+                new AdvancedConfiguration.Builder().setProductId(PRODUCT_ID).setExpressPaymentEnable(true)
+                    .build());
+    }
+
+    // It should suggest one tap with credits with charges in brazil
+    private static MercadoPagoCheckout.Builder startOneTapWithConsumerCreditsWithChargesInBrazil() {
+
+        final GenericPayment payment = getGenericPaymentApproved();
+
+        final Collection<String> excludedPaymentTypes = new ArrayList<>();
+        excludedPaymentTypes.add("ticket");
+        final CheckoutPreference preference =
+            getCheckoutPreferenceWithPayerEmailInBrazil(excludedPaymentTypes, 120);
+
+        final ArrayList<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
+        chargeRules.add(new PaymentTypeChargeRule(PaymentTypes.DIGITAL_CURRENCY, BigDecimal.TEN));
+        chargeRules.add(PaymentTypeChargeRule.createChargeFreeRule(PaymentTypes.ACCOUNT_MONEY, "account money"));
+
+        final PaymentConfiguration paymentConfiguration = new PaymentConfiguration
+            .Builder(new SamplePaymentProcessorNoView(payment))
+            .addChargeRules(chargeRules)
+            .build();
+
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
+            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
+            .setAdvancedConfiguration(
+                new AdvancedConfiguration.Builder().setProductId(PRODUCT_ID).setExpressPaymentEnable(true)
+                    .build());
+    }
+
+    // It should suggest one tap with credits and rejected
+    private static MercadoPagoCheckout.Builder startOneTapWithConsumerCreditsAndRejectedPayment() {
+
+        final GenericPayment payment = getGenericPaymentRejected();
+
+        final Collection<String> excludedPaymentTypes = new ArrayList<>();
+        excludedPaymentTypes.add("ticket");
+        final CheckoutPreference preference =
+            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
+        final PaymentConfiguration paymentConfiguration =
+            PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
+
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
+            .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)
+            .setAdvancedConfiguration(
+                new AdvancedConfiguration.Builder().setProductId(PRODUCT_ID).setExpressPaymentEnable(true)
+                    .build());
+    }
+
+    // It should suggest one tap with offline methods
+    private static MercadoPagoCheckout.Builder startOneTapWithOfflineMethods() {
+
+        final GenericPayment payment = getGenericPaymentApproved();
+
+        final Collection<String> excludedPaymentTypes = new ArrayList<>();
+        excludedPaymentTypes.add("ticket");
+        final CheckoutPreference preference =
+            getCheckoutPreferenceWithPayerEmail(excludedPaymentTypes, 120);
+
+        final ArrayList<PaymentTypeChargeRule> chargeRules = new ArrayList<>();
+        chargeRules.add(new PaymentTypeChargeRule(PaymentTypes.DIGITAL_CURRENCY, BigDecimal.TEN));
+        chargeRules.add(PaymentTypeChargeRule.createChargeFreeRule(PaymentTypes.ACCOUNT_MONEY, "account money"));
+
+        final PaymentConfiguration paymentConfiguration = new PaymentConfiguration
+            .Builder(new SamplePaymentProcessorNoView(payment))
+            .addChargeRules(chargeRules)
+            .build();
+
+        return new MercadoPagoCheckout.Builder(ONE_TAP_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
+            .setPrivateKey(ONE_TAP_PAYER_10_ACCESS_TOKEN)
+            .setAdvancedConfiguration(
+                new AdvancedConfiguration.Builder().setProductId(PRODUCT_ID).setExpressPaymentEnable(true)
+                    .build());
     }
 }

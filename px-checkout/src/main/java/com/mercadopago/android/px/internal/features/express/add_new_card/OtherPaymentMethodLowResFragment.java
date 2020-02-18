@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.viewmodel.drawables.OtherPaymentMethodFragmentItem;
+import com.mercadopago.android.px.model.internal.Text;
 
 public class OtherPaymentMethodLowResFragment extends OtherPaymentMethodFragment {
 
@@ -23,7 +24,12 @@ public class OtherPaymentMethodLowResFragment extends OtherPaymentMethodFragment
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, @Nullable final ViewGroup container,
         @Nullable final Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.px_fragment_other_payment_method_low_res, container, false);
+        final boolean smallMode = model.getNewCardMetadata() != null && model.getOfflineMethodsMetadata() != null;
+
+        return smallMode ? inflater.inflate(R.layout.px_fragment_other_payment_method_small_low_res, container, false) :
+            inflater.inflate(R.layout.px_fragment_other_payment_method_large_low_res, container, false);
     }
 
+    @Override
+    protected void loadSecondaryMessageView(@NonNull final View view, @Nullable final Text secondaryMessage) { }
 }

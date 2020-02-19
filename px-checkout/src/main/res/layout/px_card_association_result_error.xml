@@ -37,7 +37,7 @@
                 android:layout_height="@dimen/px_l_alternative_margin"
                 android:layout_gravity="bottom|end"
                 android:layout_marginBottom="@dimen/px_xs_alternative_1_margin"
-                android:src="@drawable/px_badge_warning"
+                android:src="@drawable/px_badge_pending_orange"
                 tools:ignore="ContentDescription"/>
 
         </FrameLayout>

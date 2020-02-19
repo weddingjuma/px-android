@@ -9,8 +9,13 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import com.mercadopago.android.px.internal.util.ViewUtils;
+import com.mercadopago.android.px.internal.viewmodel.PaymentResultType;
 
 public final class ExplodeDecorator implements Parcelable {
+
+    public static ExplodeDecorator from(@NonNull final PaymentResultType type) {
+        return new ExplodeDecorator(type.resColor, type.icon);
+    }
 
     private final int primaryColor;
     private final int statusIcon;

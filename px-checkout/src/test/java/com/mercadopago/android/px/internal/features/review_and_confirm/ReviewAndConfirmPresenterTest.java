@@ -308,9 +308,7 @@ public class ReviewAndConfirmPresenterTest {
     @Test
     public void whenBusinessPaymentFinishedThenFinishLoadingWithExplodeDecorator() {
         final BusinessPayment businessPayment = mock(BusinessPayment.class);
-        when(businessPayment.getPaymentStatus()).thenReturn(Payment.StatusCodes.STATUS_APPROVED);
-        when(businessPayment.getPaymentStatusDetail())
-            .thenReturn(Payment.StatusDetail.STATUS_DETAIL_PENDING_WAITING_PAYMENT);
+        when(businessPayment.getDecorator()).thenReturn(BusinessPayment.Decorator.APPROVED);
 
         reviewAndConfirmPresenter.onPaymentFinished(businessPayment);
 

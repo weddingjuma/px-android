@@ -319,7 +319,7 @@ public final class PaymentResultViewModelFactory {
     private static void setRecoverableErrorResources(@NonNull final PaymentResultViewModel.Builder builder) {
         builder
             .setIsErrorRecoverable(true)
-            .setBadgeResId(R.drawable.px_badge_warning)
+            .setBadgeResId(R.drawable.px_badge_pending_orange)
             .setBackgroundColor(R.color.ui_components_warning_color);
     }
 

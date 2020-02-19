@@ -2,6 +2,7 @@ package com.mercadopago.android.px.addons;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Set;
 
 public class FakeEscManagerBehaviourImpl implements ESCManagerBehaviour {
 
+    private static final String TAG = FakeEscManagerBehaviourImpl.class.getSimpleName();
     private final Map<String, String> storage = new HashMap<>();
 
     @Override
@@ -20,18 +22,29 @@ public class FakeEscManagerBehaviourImpl implements ESCManagerBehaviour {
     public String getESC(@Nullable final String cardId, @Nullable final String firstDigits,
         @Nullable final String lastDigits) {
         if (cardId != null && !cardId.isEmpty()) {
+            Log.d(TAG, "get esc with card id: " + cardId);
             return storage.get(cardId);
         } else if (TextUtil.isNotEmpty(firstDigits) && TextUtil.isNotEmpty(lastDigits)) {
+            Log.d(TAG, "get esc with first digits: " + firstDigits + " and last digits: " + lastDigits);
             return storage.get(getKey(firstDigits, lastDigits));
         } else {
+            Log.d(TAG, "get esc with invalid parameters");
             return TextUtil.EMPTY;
         }
     }
 
     @Override
     public boolean saveESCWith(@NonNull final String cardId, @NonNull final String esc) {
-        storage.put(cardId, esc);
-        return true;
+        if(TextUtil.isNotEmpty(cardId) && TextUtil.isNotEmpty(esc)) {
+            storage.put(cardId, esc);
+            return true;
+        } else if (TextUtil.isNotEmpty(cardId) && TextUtil.isEmpty(esc)) {
+            Log.d(TAG, "save esc with invalid esc");
+            deleteESCWith(cardId);
+        } else {
+            Log.d(TAG, "save esc with invalid key");
+        }
+        return false;
     }
 
     @Override

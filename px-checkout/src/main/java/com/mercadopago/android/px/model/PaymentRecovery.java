@@ -8,19 +8,30 @@ public class PaymentRecovery implements Serializable {
 
     private final String statusDetail;
     private final Token token;
+    private final Card card;
 
+    @Deprecated
     public PaymentRecovery(final String paymentStatusDetail) {
-        statusDetail = paymentStatusDetail;
-        token = null;
+        this(paymentStatusDetail, null, null);
     }
 
+    @Deprecated
     public PaymentRecovery(@NonNull final String statusDetail, @NonNull final Token token) {
+        this(statusDetail, token, null);
+    }
+
+    public PaymentRecovery(@NonNull final String statusDetail, @NonNull final Token token, @NonNull final Card card) {
         this.statusDetail = statusDetail;
         this.token = token;
+        this.card = card;
     }
 
     public Token getToken() {
         return token;
+    }
+
+    public Card getCard() {
+        return card;
     }
 
     public boolean isTokenRecoverable() {

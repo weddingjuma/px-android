@@ -143,8 +143,9 @@ public class PaymentService implements PaymentRepository {
     @NonNull
     private PaymentRecovery createPaymentRecovery(@NonNull final String statusDetail) {
         final Token token = paymentSettingRepository.getToken();
+        final Card card = userSelectionRepository.getCard();
         paymentSettingRepository.clearToken();
-        return new PaymentRecovery(statusDetail, token);
+        return new PaymentRecovery(statusDetail, token, card);
     }
 
     /**

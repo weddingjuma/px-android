@@ -335,7 +335,7 @@ import org.jetbrains.annotations.Nullable;
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
         cancelLoading();
-        getView().showCardFlow(recovery);
+        getView().showSecurityCodeScreenForRecovery(recovery);
     }
 
     private void updateElementPosition(final int selectedPayerCost) {
@@ -509,7 +509,7 @@ import org.jetbrains.annotations.Nullable;
     @Override
     public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
         cancelLoading();
-        getView().showCardFlow(paymentRepository.createPaymentRecovery());
+        getView().showSecurityCodeScreenForRecovery(paymentRepository.createPaymentRecovery());
     }
 
     @Override

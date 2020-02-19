@@ -262,7 +262,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     public void startPayment() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
         final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-        if (fragment != null && fragment instanceof ExpressPaymentFragment) {
+        if (fragment instanceof ExpressPaymentFragment) {
             ((ExpressPaymentFragment) fragment).startPayment();
         }
     }
@@ -465,7 +465,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         final ExpressPaymentFragment fragment = FragmentUtil
             .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
         //noinspection ConstantConditions
-        fragment.showCardFlow(paymentRecovery);
+        fragment.showSecurityCodeScreenForRecovery(paymentRecovery);
     }
 
     private void resolveErrorRequest(final int resultCode, final Intent data) {

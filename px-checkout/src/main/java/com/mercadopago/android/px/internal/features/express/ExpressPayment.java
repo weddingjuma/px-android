@@ -41,7 +41,7 @@ public interface ExpressPayment {
 
         void showSecurityCodeScreen(@NonNull final Card card);
 
-        void showCardFlow(@NonNull PaymentRecovery paymentRecovery);
+        void showSecurityCodeScreenForRecovery(@NonNull PaymentRecovery paymentRecovery);
 
         void showPaymentProcessor();
 

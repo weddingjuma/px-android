@@ -32,7 +32,6 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
-import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
@@ -694,12 +693,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void showSecurityCodeScreen(@NonNull final Card card) {
-        SecurityCodeActivity.startForSavedCard(card, this, REQ_CODE_SECURITY_CODE);
+        SecurityCodeActivity.startForSavedCard(this, card, REQ_CODE_SECURITY_CODE);
     }
 
     @Override
-    public void showCardFlow(@NonNull final PaymentRecovery paymentRecovery) {
-        CardVaultActivity.startActivityForRecovery(this, REQ_CODE_CARD_VAULT, paymentRecovery);
+    public void showSecurityCodeScreenForRecovery(@NonNull final PaymentRecovery paymentRecovery) {
+        SecurityCodeActivity.startForRecovery(this, paymentRecovery, REQ_CODE_CARD_VAULT);
     }
 
     @Override

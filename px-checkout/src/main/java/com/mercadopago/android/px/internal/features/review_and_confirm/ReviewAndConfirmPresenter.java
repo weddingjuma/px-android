@@ -263,10 +263,6 @@ import java.util.Set;
         });
     }
 
-    public void onPayerInformationResponse() {
-        getView().reloadBody();
-    }
-
     public void removeUserSelection() {
         userSelectionRepository.reset();
     }

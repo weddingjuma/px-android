@@ -16,7 +16,6 @@
     <string name="px_card_issuers_title">Which is your bank?</string>
     <string name="px_card_installments_title">In how many installments?</string>
     <string name="px_select_installments_title">Select the installment plan</string>
-    <string name="px_payer_information_modify">Modify</string>
     <string name="px_terms_and_conditions_message">By paying, I declare I\'m an adult and accept the</string>
     <string name="px_terms_and_conditions">Terms and conditions</string>
     <string name="px_discount_terms_and_conditions_message">Mercado Libre and Mercado Pago\'s exclusive discount.</string>

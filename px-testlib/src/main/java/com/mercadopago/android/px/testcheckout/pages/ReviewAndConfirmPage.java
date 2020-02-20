@@ -75,13 +75,15 @@ public class ReviewAndConfirmPage extends PageObject<CheckoutValidator> {
     @Deprecated
     @NonNull
     public PayerInformationPage pressModifyPayerInformation() {
-        onView(withText(R.string.px_payer_information_modify)).perform(NestedScroll.nestedScrollTo()).perform(click());
         return new PayerInformationPage(validator);
     }
 
+    /**
+     * @deprecated no longer able to modify payer information
+     */
+    @Deprecated
     @NonNull
     public PayerInformationIdentificationPage clickModifyPayerInformation() {
-        onView(withText(R.string.px_payer_information_modify)).perform(NestedScroll.nestedScrollTo()).perform(click());
         return new PayerInformationIdentificationPage(validator);
     }
 }

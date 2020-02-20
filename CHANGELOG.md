@@ -1,3 +1,9 @@
+## VERSION 4.35.2
+_20_02_2020_
+* ENHANCEMENT - Removed button to change payer information
+* FIX - Exploding color for business payments
+* FIX - Low res for offline payment methods in one tap
+
 ## VERSION 4.35.0
 _13_02_2020_
 * FEATURE - Credits custom terms by installment.

@@ -16,7 +16,6 @@
     <string name="px_card_issuers_title">Quem emitiu o seu cartão?</string>
     <string name="px_card_installments_title">Em quantas vezes?</string>
     <string name="px_select_installments_title">Selecione o parcelamento</string>
-    <string name="px_payer_information_modify">Alterar</string>
     <string name="px_terms_and_conditions_message">Ao pagar, declaro que sou maior de idade e aceito os</string>
     <string name="px_terms_and_conditions">Termos e condições</string>
     <string name="px_discount_terms_and_conditions_message">Desconto exclusivo do Mercado Livre e Mercado Pago.</string>

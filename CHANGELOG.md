@@ -1,3 +1,7 @@
+## VERSION 4.35.3
+_20_02_2020_
+* FIX - Restored deleted colors used by Money In
+
 ## VERSION 4.35.2
 _20_02_2020_
 * ENHANCEMENT - Removed button to change payer information

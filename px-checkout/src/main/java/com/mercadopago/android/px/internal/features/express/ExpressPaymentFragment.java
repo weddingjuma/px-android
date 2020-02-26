@@ -188,9 +188,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 fadeOut.setDuration(duration);
 
                 paymentMethodHeaderView.startAnimation(fadeOut);
-                splitPaymentView.startAnimation(fadeOut);
                 indicator.startAnimation(fadeOut);
                 confirmButton.startAnimation(slideDown);
+                if (splitPaymentView.getVisibility() == VISIBLE) {
+                    splitPaymentView.startAnimation(fadeOut);
+                }
 
                 summaryView.animateExit(offset);
             }

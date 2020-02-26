@@ -35,6 +35,7 @@ public class SplitPaymentHeaderAdapter extends HubableAdapter<List<SplitPaymentH
     public static final class Empty extends Model {
         @Override
         public void visit(final LabeledSwitch labeledSwitch) {
+            labeledSwitch.clearAnimation();
             labeledSwitch.setVisibility(View.GONE);
         }
 

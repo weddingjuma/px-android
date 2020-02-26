@@ -95,6 +95,7 @@ public class InitService implements InitRepository {
                         }
                         paymentSettingRepository.configure(initResponse.getSite());
                         paymentSettingRepository.configure(initResponse.getCurrency());
+                        paymentSettingRepository.configure(initResponse.getConfiguration());
                         experimentsRepository.configure(initResponse.getExperiments());
 
                         disabledPaymentMethodRepository.storeDisabledPaymentMethodsIds(

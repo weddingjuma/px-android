@@ -8,6 +8,7 @@ import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
+import com.mercadopago.android.px.model.internal.Configuration;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
 
@@ -26,6 +27,8 @@ public interface PaymentSettingRepository {
     void configure(@Nullable final CheckoutPreference checkoutPreference);
 
     void configure(@Nullable final PaymentConfiguration paymentConfiguration);
+
+    void configure(@NonNull Configuration configuration);
 
     void configure(@NonNull Token token);
 
@@ -64,6 +67,9 @@ public interface PaymentSettingRepository {
 
     @Nullable
     String getPrivateKey();
+
+    @NonNull
+    Configuration getConfiguration();
 
     @Nullable
     Token getToken();

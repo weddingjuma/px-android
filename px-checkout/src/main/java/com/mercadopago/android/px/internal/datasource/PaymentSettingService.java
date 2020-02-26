@@ -12,6 +12,7 @@ import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
+import com.mercadopago.android.px.model.internal.Configuration;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.Calendar;
 import java.util.Collections;
@@ -30,6 +31,7 @@ public class PaymentSettingService implements PaymentSettingRepository {
     private static final String PREF_PRODUCT_ID = "PREF_PRODUCT_ID";
     private static final String PREF_LABELS = "PREF_LABELS";
     private static final String PREF_AMOUNT_ROW_ENABLED = "PREF_AMOUNT_ROW_ENABLED";
+    private static final String PREF_CONFIGURATION = "PREF_CONFIGURATION";
 
     @NonNull private final SharedPreferences sharedPreferences;
 
@@ -49,6 +51,13 @@ public class PaymentSettingService implements PaymentSettingRepository {
         pref = null;
         paymentConfiguration = null;
         advancedConfiguration = null;
+    }
+
+    @Override
+    public void configure(@NonNull final Configuration configuration) {
+        final SharedPreferences.Editor edit = sharedPreferences.edit();
+        edit.putString(PREF_CONFIGURATION, JsonUtil.toJson(configuration));
+        edit.apply();
     }
 
     @Override
@@ -175,6 +184,17 @@ public class PaymentSettingService implements PaymentSettingRepository {
             throw new IllegalStateException("Unable to retrieve currency from storage");
         }
         return currency;
+    }
+
+    @NonNull
+    @Override
+    public Configuration getConfiguration() {
+        final Configuration configuration =
+            JsonUtil.fromJson(sharedPreferences.getString(PREF_CONFIGURATION, null), Configuration.class);
+        if (configuration == null) {
+            throw new IllegalStateException("Unable to retrieve configuration from storage");
+        }
+        return configuration;
     }
 
     @Nullable

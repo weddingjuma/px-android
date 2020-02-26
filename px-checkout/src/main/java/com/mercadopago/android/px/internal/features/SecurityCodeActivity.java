@@ -77,9 +77,20 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     protected CardView mCardView;
     protected MPTextView mTimerTextView;
 
-    public static void startForSavedCard(@NonNull final Card card, final Fragment fragment, final int reqCode) {
+    public static void startForSavedCard(@NonNull final Fragment fragment, @NonNull final Card card, final int reqCode) {
         //noinspection ConstantConditions
         final Intent intent = createIntent(fragment.getContext(), card);
+        intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
+        fragment.startActivityForResult(intent, reqCode);
+    }
+
+    public static void startForRecovery(@NonNull final Fragment fragment, @NonNull final PaymentRecovery recovery,
+        final int reqCode) {
+        //noinspection ConstantConditions
+        final Intent intent = createIntent(fragment.getContext(), recovery.getCard());
+        intent.putExtra(EXTRA_PAYMENT_RECOVERY, recovery);
+        intent.putExtra(EXTRA_TOKEN, recovery.getToken());
+        intent.putExtra(EXTRA_REASON, Reason.from(recovery).name());
         fragment.startActivityForResult(intent, reqCode);
     }
 
@@ -88,7 +99,6 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         intent.putExtra(EXTRA_CARD_INFO, new CardInfo(card));
         intent.putExtra(EXTRA_CARD, card);
         intent.putExtra(EXTRA_PAYMENT_METHOD, (Parcelable) card.getPaymentMethod());
-        intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
         return intent;
     }
 

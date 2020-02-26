@@ -174,7 +174,7 @@ public class CardVaultPresenterTest {
 
         presenter.initialize();
 
-        verify(view).startSecurityCodeActivity(Reason.SAVED_CARD);
+        verify(view).startSecurityCodeActivity(Reason.LEGACY);
         verifyNoMoreInteractions(view);
     }
 

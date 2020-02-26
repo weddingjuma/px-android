@@ -23,12 +23,12 @@ import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Setting;
-import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.preferences.PaymentPreference;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.ArrayList;
@@ -600,7 +600,7 @@ public class CheckoutPresenterTest {
     @Test
     public void whenCvvRequiredThenShowSavedCardFlow() {
         final Card card = mock(Card.class);
-        presenter.onCvvRequired(card);
+        presenter.onCvvRequired(card, mock(Reason.class));
         verify(checkoutView).showSavedCardFlow(card);
         verifyNoMoreInteractions(checkoutView);
     }

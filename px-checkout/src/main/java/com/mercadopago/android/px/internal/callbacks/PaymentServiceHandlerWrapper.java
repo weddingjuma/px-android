@@ -21,6 +21,7 @@ import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.lang.ref.WeakReference;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,8 +107,8 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     }
 
     @Override
-    public void onCvvRequired(@NonNull final Card card) {
-        addAndProcess(new CVVRequiredMessage(card));
+    public void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason) {
+        addAndProcess(new CVVRequiredMessage(card, reason));
     }
 
     @Override
@@ -192,14 +193,16 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     private static class CVVRequiredMessage implements Message {
 
         @NonNull private final Card card;
+        @NonNull private final Reason reason;
 
-        /* default */ CVVRequiredMessage(@NonNull final Card card) {
+        /* default */ CVVRequiredMessage(@NonNull final Card card, @NonNull final Reason reason) {
             this.card = card;
+            this.reason = reason;
         }
 
         @Override
         public void processMessage(@NonNull final PaymentServiceHandler handler) {
-            handler.onCvvRequired(card);
+            handler.onCvvRequired(card, reason);
         }
     }
 

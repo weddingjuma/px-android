@@ -42,6 +42,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -267,7 +268,8 @@ public class PaymentService implements PaymentRepository {
         //Paying with saved card without token
         final Card card = userSelectionRepository.getCard();
 
-        if (escPaymentManager.hasEsc(card) && !shouldInvalidateEsc(card.getEscStatus())) {
+        final boolean shouldInvalidateEsc = shouldInvalidateEsc(card.getEscStatus());
+        if (escPaymentManager.hasEsc(card) && !shouldInvalidateEsc) {
             //Saved card has ESC - Try to tokenize
             tokenRepository.createToken(card).enqueue(new Callback<Token>() {
                 @Override
@@ -278,12 +280,12 @@ public class PaymentService implements PaymentRepository {
                 @Override
                 public void failure(final ApiException apiException) {
                     //Start CVV screen if fail
-                    handlerWrapper.onCvvRequired(card);
+                    handlerWrapper.onCvvRequired(card, Reason.from(apiException));
                 }
             });
         } else {
             //Saved card has no ESC saved - CVV is requiered.
-            handlerWrapper.onCvvRequired(card);
+            handlerWrapper.onCvvRequired(card, shouldInvalidateEsc ? Reason.ESC_CAP : Reason.SAVED_CARD);
         }
     }
 

@@ -32,6 +32,7 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
 import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
@@ -158,7 +159,7 @@ public final class PaymentProcessorActivity extends PXActivity
     private PaymentServiceHandler createWrapper() {
         return new PaymentServiceHandler() {
             @Override
-            public void onCvvRequired(@NonNull final Card card) {
+            public void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason) {
                 // do nothing
             }
 

@@ -16,6 +16,7 @@ import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,8 +72,9 @@ public class PaymentServiceHandlerWrapperTest {
     @Test
     public void whenOnCvvRequiredVerifyOnCvvRequired() {
         final Card mock = mock(Card.class);
-        paymentServiceHandlerWrapper.onCvvRequired(mock);
-        verify(wrapped).onCvvRequired(mock);
+        final Reason reason = mock(Reason.class);
+        paymentServiceHandlerWrapper.onCvvRequired(mock, reason);
+        verify(wrapped).onCvvRequired(mock, reason);
         noMoreInteractions();
     }
 

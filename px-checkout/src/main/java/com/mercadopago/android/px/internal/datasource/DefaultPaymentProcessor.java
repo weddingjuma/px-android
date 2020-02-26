@@ -59,8 +59,8 @@ public final class DefaultPaymentProcessor implements SplitPaymentProcessor {
     }
 
     @Override
-    public boolean supportsSplitPayment(@NonNull final CheckoutPreference checkoutPreference) {
-        return true;
+    public boolean supportsSplitPayment(@Nullable final CheckoutPreference checkoutPreference) {
+        return false;
     }
 
     @Nullable

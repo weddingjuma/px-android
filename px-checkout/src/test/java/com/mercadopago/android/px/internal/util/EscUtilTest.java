@@ -3,6 +3,8 @@ package com.mercadopago.android.px.internal.util;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.Token;
+import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -18,10 +20,12 @@ public class EscUtilTest {
     private static final String STUB_ESC = "fake esc";
     @Mock private PaymentData paymentData;
     @Mock private Token token;
+    private static final List<String> ESC_BLACKLISTED_STATUS =
+        Collections.singletonList(Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK);
 
     @Test
     public void whenNullPaymentDataShouldDeleteEscFalse() {
-        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(null,
+        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(ESC_BLACKLISTED_STATUS, null,
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
         assertFalse(shouldDeleteEsc);
@@ -30,7 +34,7 @@ public class EscUtilTest {
     @Test
     public void whenPaymentDoesNotHasCardInfoShouldDeleteEscFalse() {
         when(paymentData.containsCardInfo()).thenReturn(false);
-        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(paymentData,
+        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
         assertFalse(shouldDeleteEsc);
@@ -39,7 +43,7 @@ public class EscUtilTest {
     @Test
     public void whenPaymentHasCardInfoAndStatusNotApprovedShouldDeleteEscFalse() {
         when(paymentData.containsCardInfo()).thenReturn(true);
-        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(paymentData,
+        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_REJECTED,
             null);
         assertFalse(shouldDeleteEsc);
@@ -48,7 +52,7 @@ public class EscUtilTest {
     @Test
     public void whenPaymentHasCardInfoAndStatusRejectedHighRiskShouldDeleteEscTrue() {
         when(paymentData.containsCardInfo()).thenReturn(true);
-        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(paymentData,
+        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_REJECTED,
             Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_HIGH_RISK);
         assertTrue(shouldDeleteEsc);
@@ -57,7 +61,7 @@ public class EscUtilTest {
     @Test
     public void whenPaymentHasCardInfoAndStatusApprovedShouldDeleteEscFalse() {
         when(paymentData.containsCardInfo()).thenReturn(true);
-        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(paymentData,
+        final boolean shouldDeleteEsc = EscUtil.shouldDeleteEsc(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
         assertFalse(shouldDeleteEsc);
@@ -68,7 +72,7 @@ public class EscUtilTest {
         when(token.getEsc()).thenReturn(STUB_ESC);
         when(paymentData.getToken()).thenReturn(token);
         when(paymentData.containsCardInfo()).thenReturn(true);
-        final boolean shouldStoreESC = EscUtil.shouldStoreESC(paymentData,
+        final boolean shouldStoreESC = EscUtil.shouldStoreESC(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
         assertTrue(shouldStoreESC);
@@ -79,7 +83,7 @@ public class EscUtilTest {
         when(token.getEsc()).thenReturn(null);
         when(paymentData.getToken()).thenReturn(token);
         when(paymentData.containsCardInfo()).thenReturn(true);
-        final boolean shouldStoreESC = EscUtil.shouldStoreESC(paymentData,
+        final boolean shouldStoreESC = EscUtil.shouldStoreESC(ESC_BLACKLISTED_STATUS, paymentData,
             Payment.StatusCodes.STATUS_APPROVED,
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED);
         assertFalse(shouldStoreESC);

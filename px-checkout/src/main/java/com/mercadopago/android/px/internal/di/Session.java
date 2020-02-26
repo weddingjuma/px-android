@@ -41,6 +41,7 @@ import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
+import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
 import com.mercadopago.android.px.internal.repository.IdentificationRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
@@ -102,6 +103,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private PaymentMethodsRepository paymentMethodsRepository;
     private PaymentRewardRepository paymentRewardRepository;
     private ExperimentsRepository experimentsRepository;
+    private EscPaymentManagerImp escPaymentManager;
 
     private Session(@NonNull final Context context) {
         super(context);
@@ -198,6 +200,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         cardTokenRepository = null;
         paymentMethodsRepository = null;
         paymentRewardRepository = null;
+        escPaymentManager = null;
         initialized = false;
     }
 
@@ -331,7 +334,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 getDiscountRepository(), getAmountRepository(),
                 paymentProcessor,
                 getApplicationContext(),
-                new EscPaymentManagerImp(getMercadoPagoESC()),
+                getEscPaymentManager(),
                 getTokenRepository(),
                 getInstructionsRepository(),
                 getInitRepository(),
@@ -340,6 +343,15 @@ public final class Session extends ApplicationModule implements AmountComponent 
         }
 
         return paymentRepository;
+    }
+
+    @NonNull
+    public EscPaymentManager getEscPaymentManager() {
+        if (escPaymentManager == null) {
+            escPaymentManager =
+                new EscPaymentManagerImp(getMercadoPagoESC(), getConfigurationModule().getPaymentSettings());
+        }
+        return escPaymentManager;
     }
 
     @NonNull

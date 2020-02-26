@@ -17,7 +17,6 @@ import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandlerWrapper;
-import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -100,7 +99,7 @@ public final class PaymentProcessorActivity extends PXActivity
 
         paymentServiceHandlerWrapper = new PaymentServiceHandlerWrapper(session.getPaymentRepository(),
             session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-            new EscPaymentManagerImp(session.getMercadoPagoESC()), session.getInstructionsRepository(),
+            session.getEscPaymentManager(), session.getInstructionsRepository(),
             session.getPaymentRewardRepository(), session.getConfigurationModule().getUserSelectionRepository());
 
         if (getFragmentByTag() == null) { // if fragment is not added, then create it.

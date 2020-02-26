@@ -1,11 +1,13 @@
 package com.mercadopago.android.px.internal.util;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import java.util.Collection;
 import java.util.List;
 
 public final class EscUtil {
@@ -20,16 +22,18 @@ public final class EscUtil {
             && !TextUtil.isEmpty(paymentDetail);
     }
 
-    public static boolean shouldDeleteEsc(@Nullable final PaymentData paymentData,
-        @Nullable final String paymentStatus, @Nullable final String paymentDetail) {
+    public static boolean shouldDeleteEsc(@NonNull final Collection<String> escBlacklistedStatus,
+        @Nullable final PaymentData paymentData, @Nullable final String paymentStatus,
+        @Nullable final String paymentDetail) {
         return hasValidParametersForESC(paymentData, paymentStatus, paymentDetail) &&
-            !StatusHelper.isValidStatusForEsc(paymentDetail);
+            ListUtil.contains(escBlacklistedStatus, paymentDetail, ListUtil.CONTAIN_IGNORE_CASE);
     }
 
-    public static boolean shouldStoreESC(@Nullable final PaymentData paymentData,
-        @Nullable final String paymentStatus, @Nullable final String paymentDetail) {
+    public static boolean shouldStoreESC(@NonNull final Collection<String> escBlacklistedStatus,
+        @Nullable final PaymentData paymentData, @Nullable final String paymentStatus,
+        @Nullable final String paymentDetail) {
         return hasValidParametersForESC(paymentData, paymentStatus, paymentDetail) &&
-            StatusHelper.isValidStatusForEsc(paymentDetail) &&
+            !ListUtil.contains(escBlacklistedStatus, paymentDetail, ListUtil.CONTAIN_IGNORE_CASE) &&
             !TextUtil.isEmpty(paymentData.getToken().getEsc());
     }
 

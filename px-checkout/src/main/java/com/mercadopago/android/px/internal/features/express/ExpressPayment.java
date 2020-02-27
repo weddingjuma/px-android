@@ -43,6 +43,8 @@ public interface ExpressPayment {
         void showSecurityCodeScreen(@NonNull final Card card,
             final Reason reason);
 
+        void handlePaymentRecovery(@NonNull PaymentRecovery paymentRecovery);
+
         void showSecurityCodeScreenForRecovery(@NonNull PaymentRecovery paymentRecovery);
 
         void showPaymentProcessor();
@@ -138,5 +140,7 @@ public interface ExpressPayment {
         void onOtherPaymentMethodClicked(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
 
         void onOtherPaymentMethodClickableStateChanged(boolean state);
+
+        void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery);
     }
 }

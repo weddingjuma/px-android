@@ -700,6 +700,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
+    public void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery) {
+        presenter.handlePaymentRecovery(paymentRecovery);
+    }
+
+    @Override
     public void showSecurityCodeScreenForRecovery(@NonNull final PaymentRecovery paymentRecovery) {
         SecurityCodeActivity.startForRecovery(this, paymentRecovery, REQ_CODE_CARD_VAULT);
     }

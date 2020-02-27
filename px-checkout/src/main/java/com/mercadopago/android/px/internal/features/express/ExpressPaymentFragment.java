@@ -83,6 +83,7 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.Arrays;
 import java.util.List;
 
@@ -694,8 +695,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void showSecurityCodeScreen(@NonNull final Card card) {
-        SecurityCodeActivity.startForSavedCard(this, card, REQ_CODE_SECURITY_CODE);
+    public void showSecurityCodeScreen(@NonNull final Card card, final Reason reason) {
+        SecurityCodeActivity.startForSavedCard(this, card, reason, REQ_CODE_SECURITY_CODE);
     }
 
     @Override

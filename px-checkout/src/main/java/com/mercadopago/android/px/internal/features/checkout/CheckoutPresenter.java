@@ -35,6 +35,7 @@ import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
 public class CheckoutPresenter extends BasePresenter<Checkout.View> implements PaymentServiceHandler,
@@ -356,7 +357,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
     }
 
     @Override
-    public void onCvvRequired(@NonNull final Card card) {
+    public void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason) {
         getView().showSavedCardFlow(card);
     }
 

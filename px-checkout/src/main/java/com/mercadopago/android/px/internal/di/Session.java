@@ -357,8 +357,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     @NonNull
     private TokenRepository getTokenRepository() {
         return new TokenizeService(getRetrofitClient().create(GatewayService.class),
-            getConfigurationModule().getPaymentSettings(),
-            getMercadoPagoESC(), getDevice());
+            getConfigurationModule().getPaymentSettings(), getMercadoPagoESC(), getDevice());
     }
 
     @NonNull

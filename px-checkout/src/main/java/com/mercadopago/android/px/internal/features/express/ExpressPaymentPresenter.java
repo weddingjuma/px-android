@@ -60,6 +60,7 @@ import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
 import com.mercadopago.android.px.tracking.internal.events.InstallmentsEventTrack;
 import com.mercadopago.android.px.tracking.internal.events.SwipeOneTapEventTracker;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -328,14 +329,16 @@ import org.jetbrains.annotations.Nullable;
     }
 
     @Override
-    public void onCvvRequired(@NonNull final Card card) {
-        getView().showSecurityCodeScreen(card);
+    public void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason) {
+        getView().showSecurityCodeScreen(card, reason);
     }
 
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
         cancelLoading();
-        getView().showSecurityCodeScreenForRecovery(recovery);
+        if (recovery.shouldAskForCvv()) {
+            getView().showSecurityCodeScreenForRecovery(recovery);
+        }
     }
 
     private void updateElementPosition(final int selectedPayerCost) {

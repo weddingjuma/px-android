@@ -77,10 +77,11 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     protected CardView mCardView;
     protected MPTextView mTimerTextView;
 
-    public static void startForSavedCard(@NonNull final Fragment fragment, @NonNull final Card card, final int reqCode) {
+    public static void startForSavedCard(@NonNull final Fragment fragment, @NonNull final Card card,
+        final Reason reason, final int reqCode) {
         //noinspection ConstantConditions
         final Intent intent = createIntent(fragment.getContext(), card);
-        intent.putExtra(EXTRA_REASON, Reason.SAVED_CARD.name());
+        intent.putExtra(EXTRA_REASON, reason.name());
         fragment.startActivityForResult(intent, reqCode);
     }
 

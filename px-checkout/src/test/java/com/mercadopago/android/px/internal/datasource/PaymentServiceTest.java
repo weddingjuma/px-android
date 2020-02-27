@@ -28,6 +28,7 @@ import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.utils.StubFailMpCall;
 import com.mercadopago.android.px.utils.StubSuccessMpCall;
 import java.util.List;
@@ -143,7 +144,7 @@ public class PaymentServiceTest {
         verifyNoMoreInteractions(tokenRepository);
 
         // if api call to tokenize fails, then ask for CVV.
-        verify(handler).onCvvRequired(card);
+        verify(handler).onCvvRequired(card, Reason.UNKNOWN_TOKENIZATION_ERROR);
         verifyNoMoreInteractions(handler);
     }
 

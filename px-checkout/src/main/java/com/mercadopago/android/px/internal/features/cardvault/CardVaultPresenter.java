@@ -165,7 +165,7 @@ import java.util.List;
         if (getCard() == null) {
             getView().finishWithResult();
         } else {
-            startSecurityCodeFlowIfNeeded();
+            startSecurityCodeFlowIfNeeded(Reason.SAVED_CARD);
         }
     }
 
@@ -208,7 +208,7 @@ import java.util.List;
             onPayerCosts(amountConfigurationRepository.getCurrentConfiguration().getPayerCosts());
         } else {
             // This could happen on one tap flows
-            startSecurityCodeFlowIfNeeded();
+            startSecurityCodeFlowIfNeeded(Reason.LEGACY);
         }
     }
 
@@ -220,11 +220,11 @@ import java.util.List;
         return paymentRecovery != null && paymentRecovery.isTokenRecoverable();
     }
 
-    private void startSecurityCodeFlowIfNeeded() {
+    private void startSecurityCodeFlowIfNeeded(@NonNull final Reason reason) {
         if (isESCSaved()) {
             createESCToken();
         } else {
-            getView().startSecurityCodeActivity(Reason.SAVED_CARD);
+            getView().startSecurityCodeActivity(reason);
         }
     }
 
@@ -265,7 +265,8 @@ import java.util.List;
                 esc = null;
                 //Start CVV screen if fail
                 if (isViewAttached()) {
-                    getView().startSecurityCodeActivity(Reason.SAVED_CARD);
+                    getView().startSecurityCodeActivity(
+                        error.isApiException() ? Reason.from(error.getApiException()) : Reason.LEGACY);
                 }
             }
         });
@@ -276,7 +277,7 @@ import java.util.List;
             getView().showEmptyPayerCostScreen();
         } else if (payerCosts.size() == 1) {
             userSelectionRepository.select(payerCosts.get(0));
-            startSecurityCodeFlowIfNeeded();
+            startSecurityCodeFlowIfNeeded(Reason.SAVED_CARD);
         } else {
             getView().askForInstallments(getCardInfo());
         }

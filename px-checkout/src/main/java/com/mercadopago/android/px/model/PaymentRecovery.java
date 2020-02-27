@@ -49,4 +49,8 @@ public class PaymentRecovery implements Serializable {
     public boolean isStatusDetailInvalidESC() {
         return Payment.StatusDetail.STATUS_DETAIL_INVALID_ESC.equals(statusDetail);
     }
+
+    public boolean shouldAskForCvv() {
+        return !Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_CARD_DISABLED.equals(statusDetail);
+    }
 }

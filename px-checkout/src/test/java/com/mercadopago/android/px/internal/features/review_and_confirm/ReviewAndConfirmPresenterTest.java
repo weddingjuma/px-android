@@ -27,6 +27,7 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.Collections;
 import org.junit.Before;
 import org.junit.Test;
@@ -250,7 +251,7 @@ public class ReviewAndConfirmPresenterTest {
     public void whenCvvRequiredThenShowCardCvvRequired() {
         final Card card = mock(Card.class);
 
-        reviewAndConfirmPresenter.onCvvRequired(card);
+        reviewAndConfirmPresenter.onCvvRequired(card, mock(Reason.class));
 
         verify(view).cancelLoadingButton();
         verify(view).showConfirmButton();

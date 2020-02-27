@@ -34,6 +34,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEvent;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.tracking.internal.views.ReviewAndConfirmViewTracker;
 import java.util.Set;
 
@@ -192,7 +193,8 @@ import java.util.Set;
     }
 
     @Override
-    public void onCvvRequired(@NonNull final Card card) {
+    public void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason) {
+        // We are not going to propagate reason y legacy flow
         getView().cancelLoadingButton();
         getView().showConfirmButton();
         getView().showCardCVVRequired(card);

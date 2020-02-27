@@ -4,6 +4,7 @@ import android.support.annotation.NonNull;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PaymentRecovery;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 
 public interface PaymentServiceHandler extends SplitPaymentProcessor.OnPaymentListener {
 
@@ -11,7 +12,7 @@ public interface PaymentServiceHandler extends SplitPaymentProcessor.OnPaymentLi
      * When flow is a saved card that does not have token saved this method will be called to re-enter CVV and create
      * the token again.
      */
-    void onCvvRequired(@NonNull final Card card);
+    void onCvvRequired(@NonNull final Card card, @NonNull final Reason reason);
 
     /**
      * When payment processor has visual interaction this method will be called.

@@ -23,6 +23,7 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;
 
 public interface ExpressPayment {
@@ -39,7 +40,8 @@ public interface ExpressPayment {
 
         void cancel();
 
-        void showSecurityCodeScreen(@NonNull final Card card);
+        void showSecurityCodeScreen(@NonNull final Card card,
+            final Reason reason);
 
         void showSecurityCodeScreenForRecovery(@NonNull PaymentRecovery paymentRecovery);
 

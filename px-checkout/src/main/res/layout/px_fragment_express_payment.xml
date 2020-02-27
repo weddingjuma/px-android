@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipChildren="false"
-        android:orientation="vertical"
         app:layout_constraintBottom_toTopOf="@id/labeledSwitch"
         app:layout_constraintTop_toTopOf="parent" />
 

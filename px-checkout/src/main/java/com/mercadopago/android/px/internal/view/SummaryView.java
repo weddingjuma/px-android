@@ -14,17 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import com.mercadopago.android.px.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SummaryView extends FrameLayout {
+public class SummaryView extends LinearLayout {
 
     @NonNull private final ElementDescriptorView bigHeaderDescriptor;
     @NonNull private final AmountDescriptorView totalAmountDescriptor;
     @NonNull private final ElementDescriptorView toolbarElementDescriptor;
-    @NonNull private final FrameLayout itemsContainer;
+    @NonNull private final View itemsMaxSize;
     /* default */ final DetailAdapter detailAdapter;
 
     /* default */ final RecyclerView detailRecyclerView;
@@ -52,8 +52,10 @@ public class SummaryView extends FrameLayout {
 
     public SummaryView(final Context context, @Nullable final AttributeSet attrs, final int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setOrientation(VERTICAL);
+        setBackgroundResource(R.color.px_background);
         inflate(getContext(), R.layout.px_view_express_summary, this);
-        itemsContainer = findViewById(R.id.items_container);
+        itemsMaxSize = findViewById(R.id.itemsMaxSize);
         bigHeaderDescriptor = findViewById(R.id.bigElementDescriptor);
         bigHeaderDescriptor.setVisibility(INVISIBLE);
         totalAmountDescriptor = findViewById(R.id.total);
@@ -117,8 +119,7 @@ public class SummaryView extends FrameLayout {
         shouldAnimateReturnFromCardForm = true;
         detailAdapter.customAnimation = true;
 
-        findViewById(R.id.container).startAnimation(
-            AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_translate_in));
+        startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_translate_in));
 
         final Animation fadeIn = AnimationUtils.loadAnimation(getContext(), R.anim.px_fade_in);
         fadeIn.setStartOffset(duration);
@@ -159,8 +160,7 @@ public class SummaryView extends FrameLayout {
 
         findViewById(R.id.separator).startAnimation(fadeOut);
 
-        findViewById(R.id.container).startAnimation(
-            AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_translate_out));
+        startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.px_summary_translate_out));
 
         totalAmountDescriptor.startAnimation(fadeOut);
     }
@@ -242,7 +242,7 @@ public class SummaryView extends FrameLayout {
             toolbarElementDescriptor.startAnimation(toolbarDisappearAnimation);
         }
         if (measureListener != null) {
-            final int availableSummaryHeight = itemsContainer.getMeasuredHeight();
+            final int availableSummaryHeight = itemsMaxSize.getMeasuredHeight();
             final float singleItemHeight = AmountDescriptorView.getDesiredHeight(getContext());
             final int expectedItemsHeight = Math.round(singleItemHeight * maxElementsToShow);
             measureListener.onSummaryMeasured(expectedItemsHeight > availableSummaryHeight);

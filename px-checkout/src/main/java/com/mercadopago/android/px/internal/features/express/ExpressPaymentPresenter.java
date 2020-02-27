@@ -335,10 +335,7 @@ import org.jetbrains.annotations.Nullable;
 
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
-        cancelLoading();
-        if (recovery.shouldAskForCvv()) {
-            getView().showSecurityCodeScreenForRecovery(recovery);
-        }
+        handlePaymentRecovery(recovery);
     }
 
     private void updateElementPosition(final int selectedPayerCost) {
@@ -511,8 +508,16 @@ import org.jetbrains.annotations.Nullable;
 
     @Override
     public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
+        final PaymentRecovery paymentRecovery = paymentRepository.createPaymentRecovery();
+        handlePaymentRecovery(paymentRecovery);
+    }
+
+    @Override
+    public void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery) {
         cancelLoading();
-        getView().showSecurityCodeScreenForRecovery(paymentRepository.createPaymentRecovery());
+        if (paymentRecovery.shouldAskForCvv()) {
+            getView().showSecurityCodeScreenForRecovery(paymentRecovery);
+        }
     }
 
     @Override

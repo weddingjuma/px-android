@@ -1,3 +1,8 @@
+## VERSION 4.36.0
+_28_02_2020_
+* ENHANCEMENT - Adapt new signature of ESC Manager in PX Addons
+* ENHANCEMENT - Use new signature to improve delete ESC Tracking
+
 ## VERSION 4.35.4
 _27_02_2020_
 * ENHANCEMENT - Removed card vault dependency in one tap.

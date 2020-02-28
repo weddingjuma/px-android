@@ -240,7 +240,9 @@ public final class Session extends ApplicationModule implements AmountComponent 
 
     @NonNull
     public ESCManagerBehaviour getMercadoPagoESC() {
-        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId());
+        //noinspection ConstantConditions
+        return BehaviourProvider
+            .getEscManagerBehaviour(getSessionIdProvider().getSessionId(), MPTracker.getInstance().getFlowName());
     }
 
     @NonNull
@@ -331,10 +333,12 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 configurationModule.getPaymentSettings(),
                 configurationModule.getDisabledPaymentMethodRepository(),
                 getPluginRepository(),
-                getDiscountRepository(), getAmountRepository(),
+                getDiscountRepository(),
+                getAmountRepository(),
                 paymentProcessor,
                 getApplicationContext(),
                 getEscPaymentManager(),
+                getMercadoPagoESC(),
                 getTokenRepository(),
                 getInstructionsRepository(),
                 getInitRepository(),

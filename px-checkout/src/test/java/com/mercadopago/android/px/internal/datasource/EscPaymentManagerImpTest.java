@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.model.Cause;
 import com.mercadopago.android.px.model.Payment;
@@ -141,7 +142,8 @@ public class EscPaymentManagerImpTest {
             escPaymentManager
                 .manageEscForPayment(Collections.singletonList(paymentData), Payment.StatusCodes.STATUS_REJECTED,
                     Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_SECURITY_CODE);
-        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId());
+        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId(), EscDeleteReason.REJECTED_PAYMENT,
+            Payment.StatusDetail.STATUS_DETAIL_CC_REJECTED_BAD_FILLED_SECURITY_CODE);
         verifyNoMoreInteractions(escManagerBehaviour);
         assertFalse(invalid);
     }
@@ -173,7 +175,8 @@ public class EscPaymentManagerImpTest {
         final PaymentData paymentData = validCardPaymentData();
         final MercadoPagoError error = escMpError();
         final boolean invalid = escPaymentManager.manageEscForError(error, Collections.singletonList(paymentData));
-        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId());
+        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId(), EscDeleteReason.REJECTED_PAYMENT,
+            ApiException.ErrorCodes.INVALID_PAYMENT_WITH_ESC);
         verifyNoMoreInteractions(escManagerBehaviour);
         assertTrue(invalid);
     }
@@ -183,7 +186,8 @@ public class EscPaymentManagerImpTest {
         final PaymentData paymentData = validCardPaymentData();
         final MercadoPagoError error = multipleErrorEscMpError();
         final boolean invalid = escPaymentManager.manageEscForError(error, Collections.singletonList(paymentData));
-        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId());
+        verify(escManagerBehaviour).deleteESCWith(paymentData.getToken().getCardId(), EscDeleteReason.REJECTED_PAYMENT,
+            ApiException.ErrorCodes.INVALID_PAYMENT_WITH_ESC);
         verifyNoMoreInteractions(escManagerBehaviour);
         assertTrue(invalid);
     }

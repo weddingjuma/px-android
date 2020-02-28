@@ -56,18 +56,4 @@ public final class EscUtil {
         }
         return false;
     }
-
-    public static boolean isInvalidEscForApiException(final ApiException apiException) {
-        boolean invalidEsc = false;
-        if (apiException.getStatus() == ApiUtil.StatusCodes.BAD_REQUEST) {
-            final List<Cause> causes = apiException.getCause();
-            if (causes != null && !causes.isEmpty()) {
-                for (final Cause cause : causes) {
-                    invalidEsc = ApiException.ErrorCodes.INVALID_ESC.equals(cause.getCode()) ||
-                        ApiException.ErrorCodes.INVALID_FINGERPRINT.equals(cause.getCode());
-                }
-            }
-        }
-        return invalidEsc;
-    }
 }

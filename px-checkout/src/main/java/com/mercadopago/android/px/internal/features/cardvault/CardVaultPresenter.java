@@ -13,8 +13,8 @@ import com.mercadopago.android.px.internal.repository.CardTokenRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
-import com.mercadopago.android.px.internal.util.EscUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.util.TokenErrorWrapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.CardInfo;
 import com.mercadopago.android.px.model.PayerCost;
@@ -29,7 +29,7 @@ import java.util.List;
 
 /* default */ class CardVaultPresenter extends BasePresenter<CardVault.View> implements CardVault.Actions {
 
-    @NonNull private final ESCManagerBehaviour escManagerBehaviour;
+    /* default */ @NonNull final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final AmountConfigurationRepository amountConfigurationRepository;
     @NonNull private final UserSelectionRepository userSelectionRepository;
     @NonNull private final PaymentSettingRepository paymentSettingRepository;
@@ -256,17 +256,18 @@ import java.util.List;
 
             @Override
             public void onFailure(final MercadoPagoError error) {
-                if (error.isApiException() && EscUtil.isInvalidEscForApiException(error.getApiException())) {
+                final TokenErrorWrapper tokenError = new TokenErrorWrapper(error);
+                if (tokenError.isKnownTokenError()) {
                     // Just limit the tracking to esc api exception
                     EscFrictionEventTracker.create(escCardToken.getCardId(), esc, error.getApiException()).track();
                 }
 
-                escManagerBehaviour.deleteESCWith(escCardToken.getCardId());
+                escManagerBehaviour
+                    .deleteESCWith(escCardToken.getCardId(), tokenError.toEscDeleteReason(), tokenError.getValue());
                 esc = null;
                 //Start CVV screen if fail
                 if (isViewAttached()) {
-                    getView().startSecurityCodeActivity(
-                        error.isApiException() ? Reason.from(error.getApiException()) : Reason.LEGACY);
+                    getView().startSecurityCodeActivity(tokenError.toReason());
                 }
             }
         });

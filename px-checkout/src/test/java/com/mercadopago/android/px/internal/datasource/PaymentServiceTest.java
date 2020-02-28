@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
@@ -56,6 +57,7 @@ public class PaymentServiceTest {
     @Mock private SplitPaymentProcessor paymentProcessor;
     @Mock private Context context;
     @Mock private EscPaymentManager escPaymentManager;
+    @Mock private ESCManagerBehaviour escManagerBehaviour;
     @Mock private TokenRepository tokenRepository;
     @Mock private InstructionsRepository instructionsRepository;
     @Mock private InitRepository initRepository;
@@ -85,6 +87,7 @@ public class PaymentServiceTest {
             paymentProcessor,
             context,
             escPaymentManager,
+            escManagerBehaviour,
             tokenRepository,
             instructionsRepository,
             initRepository,
@@ -133,6 +136,7 @@ public class PaymentServiceTest {
         final Card card = savedCreditCardOneTapPresent(EscStatus.APPROVED);
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
         when(tokenRepository.createToken(card)).thenReturn(new StubFailMpCall(mock(ApiException.class)));
+        when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
 
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
@@ -144,7 +148,7 @@ public class PaymentServiceTest {
         verifyNoMoreInteractions(tokenRepository);
 
         // if api call to tokenize fails, then ask for CVV.
-        verify(handler).onCvvRequired(card, Reason.UNKNOWN_TOKENIZATION_ERROR);
+        verify(handler).onCvvRequired(card, Reason.UNEXPECTED_TOKENIZATION_ERROR);
         verifyNoMoreInteractions(handler);
     }
 
@@ -154,6 +158,7 @@ public class PaymentServiceTest {
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
         final MPCall<Token> tokenMPCall = mock(MPCall.class);
         when(tokenRepository.createToken(card)).thenReturn(tokenMPCall);
+        when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
 
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
@@ -169,6 +174,7 @@ public class PaymentServiceTest {
     public void whenOneTapPaymentWhenNotSavedCardAndESCSavedThenAskCVV() {
         final Card card = savedCreditCardOneTapPresent(EscStatus.APPROVED);
         when(escPaymentManager.hasEsc(card)).thenReturn(false);
+        when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
 
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
@@ -182,7 +188,8 @@ public class PaymentServiceTest {
     public void whenOneTapPaymentWhenCapExceededThenAskCVV() {
         final Card card = savedCreditCardOneTapPresent(EscStatus.REJECTED);
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
-
+        when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
+        
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);
 
@@ -197,6 +204,7 @@ public class PaymentServiceTest {
         final MPCall<Token> tokenMPCall = mock(MPCall.class);
         when(tokenRepository.createToken(card)).thenReturn(tokenMPCall);
         when(escPaymentManager.hasEsc(card)).thenReturn(true);
+        when(escManagerBehaviour.isESCEnabled()).thenReturn(true);
 
         paymentService.attach(handler);
         paymentService.startExpressPayment(expressMetadata.get(0), payerCost, false);

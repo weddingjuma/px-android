@@ -18,23 +18,28 @@ public final class BehaviourProvider {
     private BehaviourProvider() {
     }
 
-    /* default */ static void set(final SecurityBehaviour securityBehaviour) {
+    /* default */
+    static void set(final SecurityBehaviour securityBehaviour) {
         BehaviourProvider.securityBehaviour = securityBehaviour;
     }
 
-    /* default */ static void set(final ESCManagerBehaviour escManagerBehaviour) {
+    /* default */
+    static void set(final ESCManagerBehaviour escManagerBehaviour) {
         BehaviourProvider.escManagerBehaviour = escManagerBehaviour;
     }
 
-    /* default */ static void set(final TrackingBehaviour trackingBehaviour) {
+    /* default */
+    static void set(final TrackingBehaviour trackingBehaviour) {
         BehaviourProvider.trackingBehaviour = trackingBehaviour;
     }
 
-    /* default */ static void set(final LocaleBehaviour localeBehaviour) {
+    /* default */
+    static void set(final LocaleBehaviour localeBehaviour) {
         BehaviourProvider.localeBehaviour = localeBehaviour;
     }
 
-    /* default */ static void set(final FlowBehaviour flowBehaviour) {
+    /* default */
+    static void set(final FlowBehaviour flowBehaviour) {
         BehaviourProvider.flowBehaviour = flowBehaviour;
     }
 
@@ -47,7 +52,9 @@ public final class BehaviourProvider {
      * @param session session id for tracking purpose
      * @param escEnabled indicates if current flow works with esc or not
      * @return EscManagerBehaviour implementation.
+     * @deprecated use {@link #getEscManagerBehaviour(String, String)} instead
      */
+    @Deprecated
     @NonNull
     public static ESCManagerBehaviour getEscManagerBehaviour(@NonNull final String session, final boolean escEnabled) {
         final ESCManagerBehaviour escManagerBehaviour = resolveEscImplementation(escEnabled);
@@ -58,11 +65,27 @@ public final class BehaviourProvider {
     /**
      * @param session session id for tracking purpose
      * @return EscManagerBehaviour implementation.
+     * @deprecated use {@link #getEscManagerBehaviour(String, String)} instead
      */
+    @Deprecated
     @NonNull
     public static ESCManagerBehaviour getEscManagerBehaviour(@NonNull final String session) {
         final ESCManagerBehaviour escManagerBehaviour = resolveEscImplementation(true);
         escManagerBehaviour.setSessionId(session);
+        return escManagerBehaviour;
+    }
+
+    /**
+     * @param session session id for tracking purpose
+     * @param flow flow name for tracking purpose
+     * @return EscManagerBehaviour implementation.
+     */
+    @NonNull
+    public static ESCManagerBehaviour getEscManagerBehaviour(@NonNull final String session,
+        @NonNull final String flow) {
+        final ESCManagerBehaviour escManagerBehaviour = resolveEscImplementation(true);
+        escManagerBehaviour.setSessionId(session);
+        escManagerBehaviour.setFlow(flow);
         return escManagerBehaviour;
     }
 

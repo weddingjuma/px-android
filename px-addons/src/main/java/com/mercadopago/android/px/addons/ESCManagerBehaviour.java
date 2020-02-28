@@ -2,11 +2,14 @@ package com.mercadopago.android.px.addons;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import java.util.Set;
 
 public interface ESCManagerBehaviour {
 
     void setSessionId(@NonNull final String sessionId);
+
+    void setFlow(@NonNull final String flow);
 
     @Nullable
     String getESC(@Nullable final String cardId, @Nullable final String firstDigits, @Nullable final String lastDigits);
@@ -15,13 +18,25 @@ public interface ESCManagerBehaviour {
 
     boolean saveESCWith(@NonNull final String firstDigits, @NonNull final String lastDigits, @NonNull final String esc);
 
+    /**
+     *
+     * @deprecated use the one with Reason and detail parameters
+     */
+    @Deprecated
     void deleteESCWith(@NonNull final String cardId);
 
+    /**
+     *
+     * @deprecated there are no cases where we need to delete this ESCs
+     */
+    @Deprecated
     void deleteESCWith(@NonNull final String firstDigits, @NonNull final String lastDigits);
+
+    void deleteESCWith(@NonNull final String cardId, @NonNull final EscDeleteReason reason,
+        @Nullable final String detail);
 
     @NonNull
     Set<String> getESCCardIds();
 
     boolean isESCEnabled();
-
 }

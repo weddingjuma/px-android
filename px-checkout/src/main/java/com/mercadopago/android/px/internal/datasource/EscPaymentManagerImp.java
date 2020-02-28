@@ -2,12 +2,14 @@ package com.mercadopago.android.px.internal.datasource;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.EscUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.PaymentData;
+import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import java.util.List;
 
@@ -36,7 +38,8 @@ public class EscPaymentManagerImp implements EscPaymentManager {
             if (EscUtil
                 .shouldDeleteEsc(paymentSettingRepository.getConfiguration().getEscBlacklistedStatus(), paymentData,
                     paymentStatus, paymentStatusDetail)) {
-                escManager.deleteESCWith(paymentData.getToken().getCardId());
+                escManager.deleteESCWith(paymentData.getToken().getCardId(), EscDeleteReason.REJECTED_PAYMENT,
+                    paymentStatusDetail);
             } else if (EscUtil
                 .shouldStoreESC(paymentSettingRepository.getConfiguration().getEscBlacklistedStatus(), paymentData,
                     paymentStatus, paymentStatusDetail)) {
@@ -56,7 +59,8 @@ public class EscPaymentManagerImp implements EscPaymentManager {
         for (final PaymentData paymentData : paymentDataList) {
             final boolean isInvalidEsc = paymentData.containsCardInfo() && EscUtil.isErrorInvalidPaymentWithEsc(error);
             if (isInvalidEsc) {
-                escManager.deleteESCWith(paymentData.getToken().getCardId());
+                escManager.deleteESCWith(paymentData.getToken().getCardId(), EscDeleteReason.REJECTED_PAYMENT,
+                    ApiException.ErrorCodes.INVALID_PAYMENT_WITH_ESC);
             }
             result |= isInvalidEsc;
         }

@@ -3,6 +3,7 @@ package com.mercadopago.android.px.addons;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,10 @@ public class FakeEscManagerBehaviourImpl implements ESCManagerBehaviour {
 
     @Override
     public void setSessionId(@NonNull final String sessionId) {
+    }
+
+    @Override
+    public void setFlow(@NonNull final String flow) {
     }
 
     @Nullable
@@ -35,12 +40,12 @@ public class FakeEscManagerBehaviourImpl implements ESCManagerBehaviour {
 
     @Override
     public boolean saveESCWith(@NonNull final String cardId, @NonNull final String esc) {
-        if(TextUtil.isNotEmpty(cardId) && TextUtil.isNotEmpty(esc)) {
+        if (TextUtil.isNotEmpty(cardId) && TextUtil.isNotEmpty(esc)) {
             storage.put(cardId, esc);
             return true;
         } else if (TextUtil.isNotEmpty(cardId) && TextUtil.isEmpty(esc)) {
             Log.d(TAG, "save esc with invalid esc");
-            deleteESCWith(cardId);
+            deleteESCWith(cardId, EscDeleteReason.NO_ESC, null);
         } else {
             Log.d(TAG, "save esc with invalid key");
         }
@@ -54,14 +59,23 @@ public class FakeEscManagerBehaviourImpl implements ESCManagerBehaviour {
         return true;
     }
 
+    @Deprecated
     @Override
     public void deleteESCWith(@NonNull final String cardId) {
-        storage.remove(cardId);
+        throw new RuntimeException("Use the method with Reason and detail params");
+    }
+
+    @Deprecated
+    @Override
+    public void deleteESCWith(@NonNull final String firstDigits, @NonNull final String lastDigits) {
+        throw new RuntimeException("There are no cases where we need to delete this ESCs");
     }
 
     @Override
-    public void deleteESCWith(@NonNull final String firstDigits, @NonNull final String lastDigits) {
-        storage.remove(getKey(firstDigits, lastDigits));
+    public void deleteESCWith(@NonNull final String cardId, @NonNull final EscDeleteReason reason,
+        @Nullable final String detail) {
+        Log.d(TAG, "delete esc for key: " + cardId + " with reason: " + reason.name() + " with detail: " + detail);
+        storage.remove(cardId);
     }
 
     private String getKey(@NonNull final String firstDigits, @NonNull final String lastDigits) {

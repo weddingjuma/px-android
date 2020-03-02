@@ -1,18 +1,18 @@
 package com.mercadopago.android.px.internal.driver;
 
 import com.mercadopago.android.px.internal.navigation.DefaultPayerInformationDriver;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Identification;
 import com.mercadopago.android.px.model.Payer;
 import com.mercadopago.android.px.model.PaymentMethod;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -85,7 +85,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidNameThenCollectPayerInfoBolBradesco() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_BOLBRADESCO);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_BOLBRADESCO);
-        when(payerMock.getFirstName()).thenReturn(StringUtils.EMPTY);
+        when(payerMock.getFirstName()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -105,7 +105,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidLastNameThenCollectPayerInfoBolbradesco() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_BOLBRADESCO);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_BOLBRADESCO);
-        when(payerMock.getLastName()).thenReturn(StringUtils.EMPTY);
+        when(payerMock.getLastName()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -125,7 +125,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasNoFullNameAndNoBusinessNameThenCollectPayerInfoBolbradesco() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_BOLBRADESCO);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_BOLBRADESCO);
-        when(payerMock.getFirstName()).thenReturn(StringUtils.EMPTY);
+        when(payerMock.getFirstName()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -145,7 +145,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidIdentificationNumberThenCollectPayerInfoBolbradesco() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_BOLBRADESCO);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_BOLBRADESCO);
-        when(identification.getNumber()).thenReturn(StringUtils.EMPTY);
+        when(identification.getNumber()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -155,7 +155,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidIdentificationTypeThenCollectPayerInfoBolbradesco() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_BOLBRADESCO);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_BOLBRADESCO);
-        when(identification.getType()).thenReturn(StringUtils.EMPTY);
+        when(identification.getType()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -193,7 +193,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidNameThenCollectPayerInfoPec() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_PEC);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_PEC);
-        when(payerMock.getFirstName()).thenReturn(StringUtils.EMPTY);
+        when(payerMock.getFirstName()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -213,7 +213,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidLastNameThenCollectPayerInfoPec() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_PEC);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_PEC);
-        when(payerMock.getLastName()).thenReturn(StringUtils.EMPTY);
+        when(payerMock.getLastName()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -233,7 +233,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidIdentificationNumberThenCollectPayerInfoPec() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_PEC);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_PEC);
-        when(identification.getNumber()).thenReturn(StringUtils.EMPTY);
+        when(identification.getNumber()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);
@@ -243,7 +243,7 @@ public class DefaultPayerInformationDriverTest {
     public void whenPayerIsNotNullAndHasInvalidIdentificationTypeThenCollectPayerInfoPec() {
         when(paymentMethod.getId()).thenReturn(TEST_PAYMNENT_METHOD_ID_PEC);
         when(paymentMethod.getAdditionalInfoNeeded()).thenReturn(ADDITIONAL_INFO_PEC);
-        when(identification.getType()).thenReturn(StringUtils.EMPTY);
+        when(identification.getType()).thenReturn(TextUtil.EMPTY);
         handler.drive(payerInfoDriverCallback);
         verify(payerInfoDriverCallback).driveToNewPayerData();
         verifyNoMoreInteractions(payerInfoDriverCallback);

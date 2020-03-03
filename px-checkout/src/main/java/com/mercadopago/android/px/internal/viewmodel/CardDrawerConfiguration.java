@@ -4,8 +4,8 @@ import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.widget.ImageView;
 import com.meli.android.carddrawer.configuration.FontType;
 import com.meli.android.carddrawer.configuration.SecurityCodeLocation;
@@ -19,8 +19,6 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
 
     private static final int NUMBER_SEC_CODE = 3;
 
-    @DrawableRes private int logoRes;
-    @DrawableRes private int issuerRes;
     private final CardDisplayInfo info;
     @ColorInt private int color;
     @ColorInt private int fontColor;
@@ -49,8 +47,6 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
     }
 
     protected CardDrawerConfiguration(final Parcel in) {
-        logoRes = in.readInt();
-        issuerRes = in.readInt();
         info = in.readParcelable(CardDisplayInfo.class.getClassLoader());
         color = in.readInt();
         fontColor = in.readInt();
@@ -60,8 +56,6 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeInt(logoRes);
-        dest.writeInt(issuerRes);
         dest.writeParcelable(info, flags);
         dest.writeInt(color);
         dest.writeInt(fontColor);
@@ -97,12 +91,12 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
 
     @Override
     public int getBankImageRes() {
-        return issuerRes;
+        return 0;
     }
 
     @Override
     public int getCardLogoImageRes() {
-        return logoRes;
+        return 0;
     }
 
     @Override
@@ -127,13 +121,11 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
 
     @Override
     public void setCardLogoImage(@NonNull final ImageView cardLogo) {
-        cardLogo.setImageResource(getCardLogoImageRes());
         toGrayScaleIfDisabled(cardLogo);
     }
 
     @Override
     public void setBankImage(@NonNull final ImageView bankImage) {
-        bankImage.setImageResource(getBankImageRes());
         toGrayScaleIfDisabled(bankImage);
     }
 
@@ -157,16 +149,16 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
         return info.getCardPattern();
     }
 
-    public String getIssuerImageName() {
-        return info.issuerImage;
+    @Nullable
+    @Override
+    public String getBankImageUrl() {
+        return info.issuerImageUrl;
     }
 
-    public void setLogoRes(@DrawableRes final int logoRes) {
-        this.logoRes = logoRes;
-    }
-
-    public void setIssuerRes(@DrawableRes final int issuerRes) {
-        this.issuerRes = issuerRes;
+    @Nullable
+    @Override
+    public String getCardLogoImageUrl() {
+        return info.paymentMethodImageUrl;
     }
 
     public void disable() {

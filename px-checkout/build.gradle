@@ -9,6 +9,12 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force "com.mercadolibre.android:picasso-disk-cache:$picassoDiskCacheForce"
+    }
+}
+
 dependencies {
     androidTestImplementation project(':testlib')
 
@@ -45,4 +51,5 @@ dependencies {
     implementation("com.mercadolibre.android:cardform:$cardform") {
         exclude group: 'com.mercadopago.android.px', module: 'addons'
     }
+    implementation "com.mercadolibre.android:picasso-disk-cache:$picassoDiskCacheForce"
 }

@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.repository;
 
+import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.model.CardToken;
 import com.mercadopago.android.px.model.SavedCardToken;
@@ -26,6 +27,7 @@ public interface CardTokenRepository {
 
     /**
      * An specialization of SavedCardToken. Create token for cards with ESC to create Payment.
+     *
      * @param savedESCCardToken: saved ESC card token information to create TOken.
      * @return Token associated to SavedESCCard.
      */
@@ -40,7 +42,6 @@ public interface CardTokenRepository {
     MPCall<Token> cloneToken(final String tokenId);
 
     /**
-     *
      * Update Token with securityCode.
      *
      * @param securityCode to update token.
@@ -49,4 +50,15 @@ public interface CardTokenRepository {
      */
     MPCall<Token> putSecurityCode(String securityCode, String tokenId);
 
+    /**
+     * Clear card cap and execute an action whatever it succeed or not
+     *
+     * @param cardId card id to clear cap
+     * @param callback action to be executed
+     */
+    void clearCap(@NonNull final String cardId, @NonNull final ClearCapCallback callback);
+
+    interface ClearCapCallback {
+        void execute();
+    }
 }

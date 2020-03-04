@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.callbacks.TaggedCallback;
@@ -37,8 +38,8 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
     private static final String BUNDLE_PAYMENT_METHOD = "BUNDLE_PAYMENT_METHOD";
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
+    @NonNull /* default */ final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final CardTokenRepository cardTokenRepository;
-    @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     private FailureRecovery mFailureRecovery;
 
     //Card Info
@@ -51,9 +52,9 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
     private PaymentMethod paymentMethod;
     private CardInfo cardInfo;
     private Card card;
-    /* default */ Token token;
     private PaymentRecovery paymentRecovery;
-    private Reason reason;
+    /* default */ Token token;
+    /* default */ Reason reason;
 
     public SecurityCodePresenter(@NonNull final PaymentSettingRepository paymentSettingRepository,
         @NonNull final CardTokenRepository cardTokenRepository,
@@ -343,6 +344,10 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
             .createToken(savedESCCardToken).enqueue(new TaggedCallback<Token>(ApiUtil.RequestOrigin.CREATE_TOKEN) {
             @Override
             public void onSuccess(final Token token) {
+                if (Reason.ESC_CAP == reason) {
+                    // Remove previous esc for tracking purpose
+                    escManagerBehaviour.deleteESCWith(savedESCCardToken.getCardId(), EscDeleteReason.ESC_CAP, null);
+                }
                 resolveTokenCreation(token);
             }
 

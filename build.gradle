@@ -8,13 +8,14 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.1'
+        classpath "com.android.tools.build:gradle:$gradle_plugin_version"
         classpath 'org.jacoco:org.jacoco.core:0.8.1'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.4'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
-        classpath 'com.monits:static-code-analysis-plugin:2.6.9'
+        classpath 'com.monits:static-code-analysis-plugin:2.6.11'
         classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.8.3'
         classpath 'com.stanfy.spoon:spoon-gradle-plugin:1.2.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -28,11 +29,6 @@ subprojects {
         google()
         jcenter()
     }
-}
-
-wrapper {
-    gradleVersion = "4.10.2"
-    distributionType = Wrapper.DistributionType.BIN
 }
 
 // Aggregate javadoc task

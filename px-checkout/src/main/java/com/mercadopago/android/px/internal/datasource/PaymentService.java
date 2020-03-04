@@ -3,6 +3,8 @@ package com.mercadopago.android.px.internal.datasource;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
+import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandlerWrapper;
@@ -21,6 +23,7 @@ import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.PaymentMethodHelper;
+import com.mercadopago.android.px.internal.util.TokenErrorWrapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PaymentMethodMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
@@ -58,6 +61,7 @@ public class PaymentService implements PaymentRepository {
     @NonNull private final TokenRepository tokenRepository;
     @NonNull private final InitRepository initRepository;
     @NonNull private final EscPaymentManager escPaymentManager;
+    @NonNull private final ESCManagerBehaviour escManagerBehaviour;
 
     @NonNull /* default */ final PaymentServiceHandlerWrapper handlerWrapper;
     @NonNull /* default */ final AmountConfigurationRepository amountConfigurationRepository;
@@ -75,6 +79,7 @@ public class PaymentService implements PaymentRepository {
         @NonNull final SplitPaymentProcessor paymentProcessor,
         @NonNull final Context context,
         @NonNull final EscPaymentManager escPaymentManager,
+        @NonNull final ESCManagerBehaviour escManagerBehaviour,
         @NonNull final TokenRepository tokenRepository,
         @NonNull final InstructionsRepository instructionsRepository,
         @NonNull final InitRepository initRepository,
@@ -82,6 +87,7 @@ public class PaymentService implements PaymentRepository {
         @NonNull final PaymentRewardRepository paymentRewardRepository) {
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.escPaymentManager = escPaymentManager;
+        this.escManagerBehaviour = escManagerBehaviour;
         this.userSelectionRepository = userSelectionRepository;
         this.pluginRepository = pluginRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -269,7 +275,7 @@ public class PaymentService implements PaymentRepository {
         final Card card = userSelectionRepository.getCard();
 
         final boolean shouldInvalidateEsc = shouldInvalidateEsc(card.getEscStatus());
-        if (escPaymentManager.hasEsc(card) && !shouldInvalidateEsc) {
+        if (escManagerBehaviour.isESCEnabled() && escPaymentManager.hasEsc(card) && !shouldInvalidateEsc) {
             //Saved card has ESC - Try to tokenize
             tokenRepository.createToken(card).enqueue(new Callback<Token>() {
                 @Override
@@ -280,12 +286,14 @@ public class PaymentService implements PaymentRepository {
                 @Override
                 public void failure(final ApiException apiException) {
                     //Start CVV screen if fail
-                    handlerWrapper.onCvvRequired(card, Reason.from(apiException));
+                    handlerWrapper.onCvvRequired(card, new TokenErrorWrapper(apiException).toReason());
                 }
             });
         } else {
-            //Saved card has no ESC saved - CVV is requiered.
-            handlerWrapper.onCvvRequired(card, shouldInvalidateEsc ? Reason.ESC_CAP : Reason.SAVED_CARD);
+            final Reason reason =
+                escManagerBehaviour.isESCEnabled() ? (shouldInvalidateEsc ? Reason.ESC_CAP : Reason.SAVED_CARD)
+                    : Reason.ESC_DISABLED;
+            handlerWrapper.onCvvRequired(card, reason);
         }
     }
 

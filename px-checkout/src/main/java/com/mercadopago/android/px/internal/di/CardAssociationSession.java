@@ -3,8 +3,8 @@ package com.mercadopago.android.px.internal.di;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.addons.BehaviourProvider;
+import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.internal.core.ApplicationModule;
 import com.mercadopago.android.px.internal.datasource.CardAssociationGatewayService;
 import com.mercadopago.android.px.internal.datasource.CardAssociationService;
@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.services.CardService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.model.Device;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 
 public final class CardAssociationSession extends ApplicationModule {
 
@@ -47,7 +48,9 @@ public final class CardAssociationSession extends ApplicationModule {
 
     @NonNull
     public ESCManagerBehaviour getMercadoPagoESC() {
-        return BehaviourProvider.getEscManagerBehaviour(getSessionIdProvider().getSessionId(), true);
+        //noinspection ConstantConditions
+        return BehaviourProvider
+            .getEscManagerBehaviour(getSessionIdProvider().getSessionId(), MPTracker.getInstance().getFlowName());
     }
 
     @NonNull

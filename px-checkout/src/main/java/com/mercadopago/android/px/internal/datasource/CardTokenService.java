@@ -46,11 +46,7 @@ public class CardTokenService implements CardTokenRepository {
 
             @Override
             public void failure(final ApiException apiException) {
-                if (EscUtil.isInvalidEscForApiException(apiException)) {
-                    paymentSettingRepository.configure((Token) null);
-                    escManagerBehaviour.deleteESCWith(cardInfo.getFirstSixDigits(), cardInfo.getLastFourDigits());
-                }
-
+                paymentSettingRepository.configure((Token) null);
                 callback.failure(apiException);
             }
         };

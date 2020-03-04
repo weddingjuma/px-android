@@ -6,7 +6,7 @@ import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.services.GatewayService;
-import com.mercadopago.android.px.internal.util.EscUtil;
+import com.mercadopago.android.px.internal.util.TokenErrorWrapper;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.model.SavedESCCardToken;
@@ -35,7 +35,8 @@ public class TokenizeService implements TokenRepository {
     @Override
     public MPCall<Token> createToken(@NonNull final Card card) {
         return new MPCall<Token>() {
-            private final String esc = escManagerBehaviour.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits());
+            private final String esc =
+                escManagerBehaviour.getESC(card.getId(), card.getFirstSixDigits(), card.getLastFourDigits());
 
             @Override
             public void enqueue(final Callback<Token> callback) {
@@ -63,9 +64,10 @@ public class TokenizeService implements TokenRepository {
             @Override
             public void failure(final ApiException apiException) {
                 //TODO move to esc manager / Token repo
+                final TokenErrorWrapper tokenError = new TokenErrorWrapper(apiException);
                 paymentSettingRepository.configure((Token) null);
-                escManagerBehaviour.deleteESCWith(card.getId());
-                if (EscUtil.isInvalidEscForApiException(apiException)) {
+                escManagerBehaviour.deleteESCWith(card.getId(), tokenError.toEscDeleteReason(), tokenError.getValue());
+                if (tokenError.isKnownTokenError()) {
                     // Just limit the tracking to esc api exception
                     EscFrictionEventTracker.create(card.getId(), esc, apiException).track();
                 }

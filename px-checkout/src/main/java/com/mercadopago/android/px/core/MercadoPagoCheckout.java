@@ -25,6 +25,7 @@ import com.mercadopago.android.px.tracking.internal.events.InitEvent;
 public final class MercadoPagoCheckout {
 
     public static final int PAYMENT_RESULT_CODE = 7;
+    public static final int SESSION_EXPIRED_RESULT_CODE = 666;
     public static final String EXTRA_PAYMENT_RESULT = "EXTRA_PAYMENT_RESULT";
     public static final String EXTRA_ERROR = "EXTRA_ERROR";
 

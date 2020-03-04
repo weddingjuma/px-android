@@ -1,17 +1,13 @@
-apply from:"$rootDir/gradle/base_android_lib.gradle"
-apply from:"$rootDir/gradle/jacoco.gradle"
-apply from:"$rootDir/gradle/static-analysis.gradle"
-apply from:"$rootDir/gradle/deploy_checkout.gradle"
+apply from: "$rootDir/gradle/base_android_lib.gradle"
+apply from: "$rootDir/gradle/jacoco.gradle"
+apply from: "$rootDir/gradle/static-analysis.gradle"
+apply from: "$rootDir/gradle/deploy_checkout.gradle"
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
 
 android {
     defaultConfig {
         multiDexEnabled true
-    }
-}
-
-configurations.all {
-    resolutionStrategy {
-        force "com.mercadolibre.android:picasso-disk-cache:$picassoDiskCacheForce"
     }
 }
 
@@ -51,5 +47,5 @@ dependencies {
     implementation("com.mercadolibre.android:cardform:$cardform") {
         exclude group: 'com.mercadopago.android.px', module: 'addons'
     }
-    implementation "com.mercadolibre.android:picasso-disk-cache:$picassoDiskCacheForce"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

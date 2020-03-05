@@ -2,6 +2,7 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.model.internal.Text;
 import java.io.Serializable;
 
@@ -11,6 +12,7 @@ public final class OfflinePaymentMethod implements Parcelable, Serializable {
     private final String instructionId;
     private final Text name;
     private final Text description;
+    @SerializedName("has_additional_info_needed")
     private final boolean additionalInfoNeeded;
     private final StatusMetadata status;
 

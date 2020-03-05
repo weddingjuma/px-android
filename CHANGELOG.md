@@ -1,3 +1,8 @@
+## VERSION 4.37.0
+_28_02_2020_
+* ENHANCEMENT - Reset esc cap when user enter security code
+* ENHANCEMENT - Exit with custom error code when session is irrecoverable
+
 ## VERSION 4.36.0
 _28_02_2020_
 * ENHANCEMENT - Adapt new signature of ESC Manager in PX Addons

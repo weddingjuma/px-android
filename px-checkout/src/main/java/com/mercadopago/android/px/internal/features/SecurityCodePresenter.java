@@ -39,7 +39,7 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
 
     @NonNull /* default */ final PaymentSettingRepository paymentSettingRepository;
     @NonNull /* default */ final ESCManagerBehaviour escManagerBehaviour;
-    @NonNull private final CardTokenRepository cardTokenRepository;
+    @NonNull /* default */ final CardTokenRepository cardTokenRepository;
     private FailureRecovery mFailureRecovery;
 
     //Card Info
@@ -348,7 +348,7 @@ public class SecurityCodePresenter extends BasePresenter<SecurityCodeActivityVie
                     // Remove previous esc for tracking purpose
                     escManagerBehaviour.deleteESCWith(savedESCCardToken.getCardId(), EscDeleteReason.ESC_CAP, null);
                 }
-                resolveTokenCreation(token);
+                cardTokenRepository.clearCap(savedESCCardToken.getCardId(), () -> resolveTokenCreation(token));
             }
 
             @Override

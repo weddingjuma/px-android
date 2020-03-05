@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.securitycode;
 
+import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivityView;
 import com.mercadopago.android.px.internal.features.SecurityCodePresenter;
@@ -24,11 +25,13 @@ import java.util.UUID;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -221,6 +224,8 @@ public class SecurityCodePresenterTest {
         presenter.saveSecurityCode(DUMMY_CVV);
         presenter.validateSecurityCodeInput();
 
+        mockClearCap(card.getId());
+
         verify(view).showLoadingView();
         verify(view).finishWithResult();
         verifyNoMoreInteractions(view);
@@ -257,6 +262,8 @@ public class SecurityCodePresenterTest {
 
         presenter.saveSecurityCode(DUMMY_CVV);
         presenter.validateSecurityCodeInput();
+
+        mockClearCap(card.getId());
 
         verify(view).showLoadingView();
         verify(view).finishWithResult();
@@ -311,10 +318,20 @@ public class SecurityCodePresenterTest {
         presenter.saveSecurityCode(DUMMY_CVV);
         presenter.validateSecurityCodeInput();
 
+        mockClearCap(token.getCardId());
+
         verify(view).showLoadingView();
         verify(view).clearErrorView();
         verify(view).finishWithResult();
         verifyNoMoreInteractions(view);
+    }
+
+    private void mockClearCap(@NonNull final String cardId) {
+        final ArgumentCaptor<CardTokenRepository.ClearCapCallback> callbackArgumentCaptor = ArgumentCaptor.forClass(
+            CardTokenRepository.ClearCapCallback.class);
+        verify(cardTokenRepository).clearCap(eq(cardId), callbackArgumentCaptor.capture());
+        final CardTokenRepository.ClearCapCallback value = callbackArgumentCaptor.getValue();
+        value.execute();
     }
 
 // --------- Helper methods ----------- //

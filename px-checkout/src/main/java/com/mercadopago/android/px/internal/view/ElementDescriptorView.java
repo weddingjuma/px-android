@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -117,12 +118,18 @@ public class ElementDescriptorView extends LinearLayout {
 
     public void update(@NonNull final ElementDescriptorView.Model model) {
         title.setText(model.getTitle());
+        setContentDescription(model.getTitle());
+        title.announceForAccessibility("Le estas por pagar a " + model.getTitle());
+
         if (model.hasSubtitle()) {
             subtitle.setVisibility(VISIBLE);
             subtitle.setText(model.getSubtitle());
         } else {
             subtitle.setVisibility(GONE);
         }
+
+        subtitle.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+
         final Picasso picasso = PicassoLoader.getPicasso();
         final RequestCreator requestCreator;
 

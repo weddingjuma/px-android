@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -64,6 +68,14 @@ public class AmountDescriptorView extends ConstraintLayout {
         leftLabel = leftContainer.findViewById(R.id.label);
         rightLabel = findViewById(R.id.amount);
         imageView = findViewById(R.id.icon_descriptor_amount);
+
+        ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
+            @Override
+            public void onInitializeAccessibilityNodeInfo(final View host, final AccessibilityNodeInfoCompat info) {
+                super.onInitializeAccessibilityNodeInfo(host, info);
+                info.removeAction(AccessibilityActionCompat.ACTION_CLICK);
+            }
+        });
     }
 
     public void animateEnter() {
@@ -88,6 +100,7 @@ public class AmountDescriptorView extends ConstraintLayout {
     private void updateLeftLabel(@NonNull final AmountDescriptorView.Model model) {
         if (model.leftText != null) {
             updateLabel(leftLabel, model.leftText);
+            setContentDescription("Total a pagar " + model.leftText);
         } else {
             updateLabel(model.left.get(getContext()), leftLabel, leftLabelSemiBold);
         }

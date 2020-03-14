@@ -228,17 +228,13 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
 
-        Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-
-        if (fragment == null) {
-            fragment = ExpressPaymentFragment.getInstance();
+        if (supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
+                .replace(R.id.one_tap_fragment, ExpressPaymentFragment.getInstance(), TAG_ONETAP_FRAGMENT)
+                .commitNowAllowingStateLoss();
         }
-
-        getSupportFragmentManager()
-            .beginTransaction()
-            .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
-            .replace(R.id.one_tap_fragment, fragment, TAG_ONETAP_FRAGMENT)
-            .commitNowAllowingStateLoss();
     }
 
     @Override

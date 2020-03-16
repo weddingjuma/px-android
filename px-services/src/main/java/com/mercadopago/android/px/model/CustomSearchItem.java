@@ -61,7 +61,7 @@ public class CustomSearchItem implements Serializable, Parcelable {
         discountInfo = in.readString();
         defaultAmountConfiguration = in.readString();
         amountConfigurations = new HashMap<>();
-        in.readMap(amountConfigurations, CustomSearchItem.class.getClassLoader());
+        in.readMap(amountConfigurations, AmountConfiguration.class.getClassLoader());
         lastFourDigits = in.readString();
         firstSixDigits = in.readString();
         issuer = in.readParcelable(Issuer.class.getClassLoader());

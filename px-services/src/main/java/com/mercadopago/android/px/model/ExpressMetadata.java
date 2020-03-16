@@ -3,8 +3,11 @@ package com.mercadopago.android.px.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class ExpressMetadata implements Parcelable, Serializable, ExpressPaymentMethod {
 
@@ -17,6 +20,9 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
     private final StatusMetadata status;
     private final OfflinePaymentTypesMetadata offlineMethods;
     private final BenefitsMetadata benefits;
+    private final SliderDisplayInfo displayInfo;
+    @SerializedName("behaviour")
+    private final Map<String, Behaviour> behaviours;
 
     public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
         @Override
@@ -70,6 +76,14 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return benefits;
     }
 
+    public SliderDisplayInfo getDisplayInfo() {
+        return displayInfo;
+    }
+
+    public Map<String, Behaviour> getBehaviours() {
+        return behaviours;
+    }
+
     public boolean isAccountMoney() {
         return accountMoney != null;
     }
@@ -110,6 +124,9 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
         offlineMethods = in.readParcelable(OfflinePaymentTypesMetadata.class.getClassLoader());
         benefits = in.readParcelable(BenefitsMetadata.class.getClassLoader());
+        displayInfo = in.readParcelable(SliderDisplayInfo.class.getClassLoader());
+        behaviours = new HashMap<>();
+        in.readMap(behaviours, Behaviour.class.getClassLoader());
     }
 
     @Override
@@ -128,5 +145,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         dest.writeParcelable(status, flags);
         dest.writeParcelable(offlineMethods, flags);
         dest.writeParcelable(benefits, flags);
+        dest.writeParcelable(displayInfo, flags);
+        dest.writeMap(behaviours);
     }
 }

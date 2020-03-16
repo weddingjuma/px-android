@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.mercadopago.android.px.internal.view.MPTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Código de seguridad"
+        tools:text="Vuelve a ingresarlo para confirmar el pago"/>
+
+    <com.mercadopago.android.px.internal.view.MPEditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <com.mercadopago.android.px.internal.view.MPTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Los 3 números están al dorso de la tarjeta"/>
+</merge>

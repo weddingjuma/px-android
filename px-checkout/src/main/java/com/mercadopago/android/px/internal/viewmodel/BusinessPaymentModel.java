@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.viewmodel;
 
 import android.os.Parcel;
 import android.support.annotation.NonNull;
+import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandler;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -27,6 +28,11 @@ public class BusinessPaymentModel extends PaymentModel {
     /* default */ BusinessPaymentModel(final Parcel in) {
         super(in);
         businessPayment = in.readParcelable(BusinessPayment.class.getClassLoader());
+    }
+
+    @Override
+    public void process(@NonNull final PaymentModelHandler handler) {
+        handler.visit(this);
     }
 
     public static final Creator<BusinessPaymentModel> CREATOR = new Creator<BusinessPaymentModel>() {

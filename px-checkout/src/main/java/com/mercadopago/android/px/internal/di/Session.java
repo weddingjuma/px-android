@@ -18,6 +18,7 @@ import com.mercadopago.android.px.internal.datasource.AmountConfigurationReposit
 import com.mercadopago.android.px.internal.datasource.AmountService;
 import com.mercadopago.android.px.internal.datasource.BankDealsService;
 import com.mercadopago.android.px.internal.datasource.CardTokenService;
+import com.mercadopago.android.px.internal.datasource.CongratsRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.DiscountServiceImp;
 import com.mercadopago.android.px.internal.datasource.EscPaymentManagerImp;
 import com.mercadopago.android.px.internal.datasource.ExperimentsService;
@@ -26,7 +27,6 @@ import com.mercadopago.android.px.internal.datasource.InitService;
 import com.mercadopago.android.px.internal.datasource.InstructionsService;
 import com.mercadopago.android.px.internal.datasource.IssuersServiceImp;
 import com.mercadopago.android.px.internal.datasource.PaymentMethodsService;
-import com.mercadopago.android.px.internal.datasource.PaymentRewardRepositoryImpl;
 import com.mercadopago.android.px.internal.datasource.PaymentService;
 import com.mercadopago.android.px.internal.datasource.PluginService;
 import com.mercadopago.android.px.internal.datasource.SummaryAmountService;
@@ -35,11 +35,11 @@ import com.mercadopago.android.px.internal.datasource.cache.Cache;
 import com.mercadopago.android.px.internal.datasource.cache.InitCacheCoordinator;
 import com.mercadopago.android.px.internal.datasource.cache.InitDiskCache;
 import com.mercadopago.android.px.internal.datasource.cache.InitMemCache;
-import com.mercadopago.android.px.internal.datasource.cache.PaymentRewardMemCache;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.BankDealsRepository;
 import com.mercadopago.android.px.internal.repository.CardTokenRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.ExperimentsRepository;
@@ -49,7 +49,6 @@ import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.IssuersRepository;
 import com.mercadopago.android.px.internal.repository.PaymentMethodsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.SummaryAmountRepository;
@@ -57,10 +56,10 @@ import com.mercadopago.android.px.internal.repository.TokenRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.services.BankDealService;
 import com.mercadopago.android.px.internal.services.CheckoutService;
+import com.mercadopago.android.px.internal.services.CongratsService;
 import com.mercadopago.android.px.internal.services.GatewayService;
 import com.mercadopago.android.px.internal.services.InstallmentService;
 import com.mercadopago.android.px.internal.services.InstructionsClient;
-import com.mercadopago.android.px.internal.services.PaymentRewardService;
 import com.mercadopago.android.px.internal.util.LocaleUtil;
 import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
@@ -101,7 +100,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private BankDealsRepository bankDealsRepository;
     private IdentificationRepository identificationRepository;
     private PaymentMethodsRepository paymentMethodsRepository;
-    private PaymentRewardRepository paymentRewardRepository;
+    private CongratsRepository congratsRepository;
     private ExperimentsRepository experimentsRepository;
     private EscPaymentManagerImp escPaymentManager;
 
@@ -184,7 +183,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
         getExperimentsRepository().reset();
         getConfigurationModule().reset();
         getInitCache().evict();
-        getPaymentRewardCache().evict();
         configurationModule = null;
         discountRepository = null;
         amountRepository = null;
@@ -199,7 +197,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         issuersRepository = null;
         cardTokenRepository = null;
         paymentMethodsRepository = null;
-        paymentRewardRepository = null;
+        congratsRepository = null;
         escPaymentManager = null;
         initialized = false;
     }
@@ -307,14 +305,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
     }
 
     @NonNull
-    private Cache<PaymentReward> getPaymentRewardCache() {
-        if (paymentRewardCache == null) {
-            paymentRewardCache = new PaymentRewardMemCache();
-        }
-        return paymentRewardCache;
-    }
-
-    @NonNull
     public PluginRepository getPluginRepository() {
         if (pluginRepository == null) {
             pluginRepository =
@@ -343,7 +333,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
                 getInstructionsRepository(),
                 getInitRepository(),
                 getAmountConfigurationRepository(),
-                getPaymentRewardRepository());
+                getCongratsRepository());
         }
 
         return paymentRepository;
@@ -447,17 +437,16 @@ public final class Session extends ApplicationModule implements AmountComponent 
         return paymentMethodsRepository;
     }
 
-    public PaymentRewardRepository getPaymentRewardRepository() {
-        if (paymentRewardRepository == null) {
+    public CongratsRepository getCongratsRepository() {
+        if (congratsRepository == null) {
             final Context applicationContext = getApplicationContext();
-            final PaymentRewardService paymentRewardService =
-                RetrofitUtil.getRetrofitClient(applicationContext).create(PaymentRewardService.class);
+            final CongratsService congratsService =
+                RetrofitUtil.getRetrofitClient(applicationContext).create(CongratsService.class);
             final PaymentSettingRepository paymentSettings = getConfigurationModule().getPaymentSettings();
-            paymentRewardRepository =
-                new PaymentRewardRepositoryImpl(getPaymentRewardCache(), paymentRewardService,
-                    paymentSettings.getPrivateKey(), getPlatform(applicationContext),
+            congratsRepository =
+                new CongratsRepositoryImpl(congratsService, paymentSettings, getPlatform(applicationContext),
                     LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName());
         }
-        return paymentRewardRepository;
+        return congratsRepository;
     }
 }

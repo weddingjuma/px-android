@@ -18,6 +18,7 @@ public final class PaymentUtils {
             Payment.StatusDetail.STATUS_DETAIL_ACCREDITED,
             R.drawable.px_icon_card, "Title")
             .setPrimaryButton(new ExitAction("Button Name", 23))
+            .setReceiptId("123456")
             .build();
     }
 

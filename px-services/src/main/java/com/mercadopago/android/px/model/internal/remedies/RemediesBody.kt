@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.internal.features.payment_result.model.remedies
+package com.mercadopago.android.px.model.internal.remedies
 
 data class RemediesBody(
         val alternativePayerPaymentMethods: List<AlternativePayerPaymentMethod>,

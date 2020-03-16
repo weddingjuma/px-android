@@ -4,6 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandler;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentResult;
@@ -54,6 +55,10 @@ public class PaymentModel implements Parcelable {
     @NonNull
     public PaymentReward getPaymentReward() {
         return paymentReward;
+    }
+
+    public void process(@NonNull final PaymentModelHandler handler) {
+        handler.visit(this);
     }
 
     /* default */ PaymentModel(final Parcel in) {

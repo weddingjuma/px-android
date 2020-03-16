@@ -129,7 +129,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                     session.getInitRepository(),
                     session.getPluginRepository(),
                     session.getPaymentRepository(),
-                    session.getPaymentRewardRepository(),
+                    session.getCongratsRepository(),
                     session.getInternalConfiguration());
 
             privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
@@ -192,7 +192,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             session.getInitRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
-            session.getPaymentRewardRepository(),
+            session.getCongratsRepository(),
             session.getInternalConfiguration());
     }
 

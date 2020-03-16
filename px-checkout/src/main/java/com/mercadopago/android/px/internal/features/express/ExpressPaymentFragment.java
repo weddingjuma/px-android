@@ -29,6 +29,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
@@ -53,7 +54,6 @@ import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentH
 import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
-import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -228,11 +228,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         confirmButton.setOnClickListener(new OnSingleClickListener() {
             @Override
             public void onSingleClick(final View view) {
-                if (ApiUtil.checkConnection(getContext())) {
-                    presenter.startSecuredPayment();
-                } else {
-                    presenter.manageNoConnection();
-                }
+                presenter.onConfirmButton();
             }
         });
 
@@ -365,7 +361,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getProductIdProvider(),
             new PaymentMethodDrawableItemMapper(getContext(),
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-                session.getConfigurationModule().getChargeSolver()));
+                session.getConfigurationModule().getChargeSolver()),
+            ConnectionHelper.getInstance());
     }
 
     @Override
@@ -552,7 +549,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     private void handleBiometricsResult(final int resultCode) {
         if (resultCode == RESULT_OK) {
-            presenter.confirmPayment();
+            presenter.onBiometricsResultOk();
         } else {
             presenter.trackSecurityFriction();
         }

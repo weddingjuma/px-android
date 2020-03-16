@@ -142,5 +142,9 @@ public interface ExpressPayment {
         void onOtherPaymentMethodClickableStateChanged(boolean state);
 
         void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery);
+
+        void onConfirmButton();
+
+        void onBiometricsResultOk();
     }
 }

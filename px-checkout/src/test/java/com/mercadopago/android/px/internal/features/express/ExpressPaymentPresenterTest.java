@@ -5,6 +5,7 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
@@ -24,7 +25,6 @@ import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDraw
 import com.mercadopago.android.px.mocks.CurrencyStub;
 import com.mercadopago.android.px.mocks.SiteStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
-import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -114,6 +114,9 @@ public class ExpressPaymentPresenterTest {
     @Mock
     private PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
 
+    @Mock
+    private ConnectionHelper connectionHelper;
+
     private ExpressPaymentPresenter expressPaymentPresenter;
 
     @Before
@@ -138,7 +141,7 @@ public class ExpressPaymentPresenterTest {
         expressPaymentPresenter =
             new ExpressPaymentPresenter(paymentRepository, paymentSettingRepository, disabledPaymentMethodRepository,
                 payerCostSelectionRepository, discountRepository, amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
-                escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper);
+                escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper, connectionHelper);
 
         verifyAttachView();
     }

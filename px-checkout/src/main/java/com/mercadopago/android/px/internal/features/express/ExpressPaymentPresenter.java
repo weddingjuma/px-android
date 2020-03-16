@@ -6,7 +6,9 @@ import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.core.internal.PaymentHandler;
 import com.mercadopago.android.px.internal.base.BasePresenter;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
@@ -52,7 +54,9 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.exceptions.NoConnectivityException;
+import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
 import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
@@ -70,7 +74,7 @@ import org.jetbrains.annotations.Nullable;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>
     implements PostPaymentAction.ActionController, ExpressPayment.Actions,
-    AmountDescriptorView.OnClickListener {
+    AmountDescriptorView.OnClickListener, PaymentHandler.Listener {
 
     private static final String BUNDLE_STATE_SPLIT_PREF = "state_split_pref";
     private static final String BUNDLE_STATE_CURRENT_PM_INDEX = "state_current_pm_index";
@@ -86,6 +90,7 @@ import org.jetbrains.annotations.Nullable;
     @NonNull private final ProductIdProvider productIdProvider;
     @NonNull private final ExplodeDecoratorMapper explodeDecoratorMapper;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
+    @NonNull private final ConnectionHelper connectionHelper;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
@@ -96,6 +101,7 @@ import org.jetbrains.annotations.Nullable;
     private Set<String> cardsWithSplit;
     private boolean otherPaymentMethodClickable = true;
     @Nullable private Runnable unattendedEvent;
+    private PaymentHandler paymentHandler;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -108,7 +114,8 @@ import org.jetbrains.annotations.Nullable;
         @NonNull final ChargeRepository chargeRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
         @NonNull final ProductIdProvider productIdProvider,
-        @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper) {
+        @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper,
+        @NonNull final ConnectionHelper connectionHelper) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -122,6 +129,7 @@ import org.jetbrains.annotations.Nullable;
         this.escManagerBehaviour = escManagerBehaviour;
         this.productIdProvider = productIdProvider;
         this.paymentMethodDrawableItemMapper = paymentMethodDrawableItemMapper;
+        this.connectionHelper = connectionHelper;
 
         explodeDecoratorMapper = new ExplodeDecoratorMapper();
         splitSelectionState = new SplitSelectionState();
@@ -237,31 +245,13 @@ import org.jetbrains.annotations.Nullable;
     }
 
     @Override
+    public void startSecurityValidation(@NonNull final SecurityValidationData data) {
+        getView().startSecurityValidation(data);
+    }
+
+    @Override
     public void confirmPayment() {
-        refreshExplodingState();
 
-        // TODO improve: This was added because onetap can detach this listener on its onDestroy
-        paymentRepository.attach(this);
-
-        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
-
-        PayerCost payerCost = null;
-
-        final String customOptionId = expressMetadata.getCustomOptionId();
-        final AmountConfiguration amountConfiguration =
-            amountConfigurationRepository.getConfigurationFor(customOptionId);
-
-        if (expressMetadata.isCard() || expressMetadata.isConsumerCredits()) {
-            payerCost = amountConfiguration.getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
-                payerCostSelectionRepository.get(customOptionId));
-        }
-
-        final boolean splitPayment = splitSelectionState.userWantsToSplit() && amountConfiguration.allowSplit();
-        ConfirmEvent
-            .from(escManagerBehaviour.getESCCardIds(), expressMetadata, payerCost, splitPayment, paymentMethodIndex)
-            .track();
-
-        paymentRepository.startExpressPayment(expressMetadata, payerCost, splitPayment);
     }
 
     private ExpressMetadata getCurrentExpressMetadata() {
@@ -543,5 +533,41 @@ import org.jetbrains.annotations.Nullable;
             unattendedEvent.run();
             unattendedEvent = null;
         }
+    }
+
+    @Override
+    public void onConfirmButton() {
+        if (connectionHelper.checkConnection()) {
+            pindonga();
+        } else {
+            manageNoConnection();
+        }
+    }
+
+    private void pindonga() {
+        final SecurityValidationData securityData = SecurityValidationDataFactory
+            .create(productIdProvider, getCurrentExpressMetadata());
+
+        getView().startSecurityValidation(securityData);
+    }
+
+    @Override
+    public void onBiometricsResultOk() {
+        refreshExplodingState();
+
+        paymentRepository.attach(this);
+
+        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+
+        final PaymentConfiguration paymentConfiguration =
+            new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository, splitSelectionState,
+                payerCostSelectionRepository).map(expressMetadata);
+
+        paymentRepository.startExpressPayment(paymentConfiguration);
+
+        ConfirmEvent
+            .from(escManagerBehaviour.getESCCardIds(), expressMetadata, paymentConfiguration.getPayerCost(),
+                paymentConfiguration.getSplitPayment(), paymentMethodIndex)
+            .track();
     }
 }

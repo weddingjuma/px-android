@@ -1,11 +1,10 @@
 package com.mercadopago.android.px.internal.viewmodel.mappers;
 
 import android.support.annotation.NonNull;
-import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentMethodSearch;
 
-public class PaymentMethodMapper extends Mapper<ExpressMetadata, PaymentMethod> {
+public class PaymentMethodMapper extends Mapper<String, PaymentMethod> {
 
     @NonNull private final PaymentMethodSearch paymentMethodSearch;
 
@@ -14,7 +13,7 @@ public class PaymentMethodMapper extends Mapper<ExpressMetadata, PaymentMethod> 
     }
 
     @Override
-    public PaymentMethod map(@NonNull final ExpressMetadata expressMetadata) {
-        return paymentMethodSearch.getPaymentMethodById(expressMetadata.getPaymentMethodId());
+    public PaymentMethod map(@NonNull final String paymentMethodId) {
+        return paymentMethodSearch.getPaymentMethodById(paymentMethodId);
     }
 }

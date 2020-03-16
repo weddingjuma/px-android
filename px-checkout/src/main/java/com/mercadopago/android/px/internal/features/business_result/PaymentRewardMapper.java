@@ -9,6 +9,7 @@ import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusin
 import com.mercadolibre.android.mlbusinesscomponents.components.discount.MLBusinessDiscountTracker;
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingData;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
+import com.mercadopago.android.px.model.internal.Action;
 import com.mercadopago.android.px.model.internal.PaymentReward;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
         }
 
         final PaymentReward.Score.Progress progress = score.getProgress();
-        final PaymentReward.Action action = score.getAction();
+        final Action action = score.getAction();
 
         return new MLBusinessLoyaltyRingData() {
             @Override
@@ -165,8 +166,8 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
     }
 
     @Nullable
-    private PaymentReward.Action getShowAllDiscount(@Nullable final PaymentReward.Discount discount) {
-        final PaymentReward.Action showAllDiscount;
+    private Action getShowAllDiscount(@Nullable final PaymentReward.Discount discount) {
+        final Action showAllDiscount;
         if (discount == null || (showAllDiscount = discount.getAction()) == null) {
             return null;
         }
@@ -218,7 +219,7 @@ public class PaymentRewardMapper extends Mapper<PaymentReward, PaymentRewardView
 
         for (PaymentReward.CrossSelling crossSellingItem : crossSellingList) {
 
-            PaymentReward.Action action = crossSellingItem.getAction();
+            Action action = crossSellingItem.getAction();
             crossSellingBoxData.add(new MLBusinessCrossSellingBoxData() {
                 @NonNull
                 @Override

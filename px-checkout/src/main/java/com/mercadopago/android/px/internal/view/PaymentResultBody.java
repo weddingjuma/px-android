@@ -24,7 +24,7 @@ import com.mercadopago.android.px.internal.features.business_result.PaymentRewar
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.ExternalFragment;
-import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.Action;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.isMPInstalled;
@@ -81,7 +81,7 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
-    private void renderShowAllDiscounts(@Nullable final PaymentReward.Action showAllDiscountAction,
+    private void renderShowAllDiscounts(@Nullable final Action showAllDiscountAction,
         @NonNull final OnClickBusinessActions onClickDiscountBox) {
         final MeliButton showAllDiscounts = findViewById(R.id.showAllDiscounts);
 

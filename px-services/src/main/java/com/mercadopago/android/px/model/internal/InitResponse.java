@@ -9,6 +9,7 @@ import com.mercadopago.android.px.model.PaymentMethodSearch;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.util.List;
+import java.util.Map;
 
 public final class InitResponse extends PaymentMethodSearch {
 
@@ -24,6 +25,8 @@ public final class InitResponse extends PaymentMethodSearch {
 
     @SerializedName("configurations")
     private Configuration configuration;
+
+    private Map<String, Modal> modals;
 
     @Nullable
     public CheckoutPreference getCheckoutPreference() {
@@ -54,4 +57,5 @@ public final class InitResponse extends PaymentMethodSearch {
     public Configuration getConfiguration() {
         return configuration;
     }
+
 }

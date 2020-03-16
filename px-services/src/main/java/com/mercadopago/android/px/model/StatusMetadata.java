@@ -2,14 +2,19 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.StringDef;
 import com.mercadopago.android.px.model.internal.Text;
 import java.io.Serializable;
+import java.lang.annotation.Retention;
+
+import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 public final class StatusMetadata implements Parcelable, Serializable {
 
+    private final boolean enabled;
+    @Detail private final String detail;
     private final Text mainMessage;
     private final Text secondaryMessage;
-    private final boolean enabled;
 
     public static final Creator<StatusMetadata> CREATOR = new Creator<StatusMetadata>() {
         @Override
@@ -24,16 +29,26 @@ public final class StatusMetadata implements Parcelable, Serializable {
     };
 
     protected StatusMetadata(final Parcel in) {
+        enabled = in.readByte() != 0;
+        detail = in.readString();
         mainMessage = in.readParcelable(Text.class.getClassLoader());
         secondaryMessage = in.readParcelable(Text.class.getClassLoader());
-        enabled = in.readByte() != 0;
     }
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeByte((byte) (enabled ? 1 : 0));
+        dest.writeString(detail);
         dest.writeParcelable(mainMessage, flags);
         dest.writeParcelable(secondaryMessage, flags);
-        dest.writeByte((byte) (enabled ? 1 : 0));
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public String getDetail() {
+        return detail;
     }
 
     public Text getMainMessage() {
@@ -44,12 +59,15 @@ public final class StatusMetadata implements Parcelable, Serializable {
         return secondaryMessage;
     }
 
-    public boolean isEnabled() {
-        return enabled;
-    }
-
     @Override
     public int describeContents() {
         return 0;
+    }
+
+    @Retention(SOURCE)
+    @StringDef({ Detail.SUSPENDED, Detail.ACTIVE })
+    public @interface Detail {
+        String SUSPENDED = "suspended";
+        String ACTIVE = "active";
     }
 }

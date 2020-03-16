@@ -340,48 +340,6 @@ public final class PaymentReward implements Parcelable {
         }
     }
 
-    /* default */ public static final class Action implements Parcelable {
-
-        public static final Creator<Action> CREATOR = new Creator<Action>() {
-            @Override
-            public Action createFromParcel(final Parcel in) {
-                return new Action(in);
-            }
-
-            @Override
-            public Action[] newArray(final int size) {
-                return new Action[size];
-            }
-        };
-
-        private final String label;
-        private final String target;
-
-        /* default */ Action(final Parcel in) {
-            label = in.readString();
-            target = in.readString();
-        }
-
-        @Override
-        public void writeToParcel(final Parcel dest, final int flags) {
-            dest.writeString(label);
-            dest.writeString(target);
-        }
-
-        @Override
-        public int describeContents() {
-            return 0;
-        }
-
-        public String getLabel() {
-            return label;
-        }
-
-        public String getTarget() {
-            return target;
-        }
-    }
-
     /* default */ public static final class CrossSelling implements Parcelable {
 
         public static final Creator<CrossSelling> CREATOR = new Creator<CrossSelling>() {

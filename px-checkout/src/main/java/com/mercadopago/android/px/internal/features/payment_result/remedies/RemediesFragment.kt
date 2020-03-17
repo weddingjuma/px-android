@@ -33,7 +33,7 @@ internal class RemediesFragment : Fragment(), Remedies.View {
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
          *
-         * @return A new instance of fragment CardFormFragment.
+         * @return A new instance of fragment RemediesFragment.
          */
 
         fun newInstance(model: CvvRemedy.Model) = RemediesFragment().apply {

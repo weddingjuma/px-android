@@ -103,6 +103,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private CongratsRepository congratsRepository;
     private ExperimentsRepository experimentsRepository;
     private EscPaymentManagerImp escPaymentManager;
+    private ViewModelModule viewModelModule;
 
     private Session(@NonNull final Context context) {
         super(context);
@@ -199,6 +200,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         paymentMethodsRepository = null;
         congratsRepository = null;
         escPaymentManager = null;
+        viewModelModule = null;
         initialized = false;
     }
 
@@ -449,5 +451,12 @@ public final class Session extends ApplicationModule implements AmountComponent 
                     configurationModule.getUserSelectionRepository());
         }
         return congratsRepository;
+    }
+
+    public ViewModelModule getViewModelModule() {
+        if (viewModelModule == null) {
+            viewModelModule = new ViewModelModule();
+        }
+        return viewModelModule;
     }
 }

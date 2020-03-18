@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -17,6 +18,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
+import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
@@ -144,13 +146,13 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager != null) {
             final int backStackEntryCount = fragmentManager.getBackStackEntryCount();
             Fragment fragment = fragmentManager.findFragmentByTag(TAG_OFFLINE_METHODS_FRAGMENT);
 
             if (fragment instanceof BackHandler) {
-                boolean shouldHandleBack = ((BackHandler) fragment).handleBack();
+                final boolean shouldHandleBack = ((BackHandler) fragment).handleBack();
                 if (!shouldHandleBack) {
                     return;
                 }
@@ -168,8 +170,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             }
 
             fragment =
-                FragmentUtil.getFragmentByTag(fragmentManager, TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-            if (fragment == null || !((ExpressPaymentFragment) fragment).isExploding()) {
+                FragmentUtil.getFragmentByTag(fragmentManager, PayButtonFragment.TAG, PayButtonFragment.class);
+            if (fragment == null || !((PayButtonFragment) fragment).isExploding()) {
                 super.onBackPressed();
             }
         }
@@ -222,23 +224,20 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     }
 
     @Override
+    @SuppressLint("SourceLockedOrientationActivity")
     public void showOneTap() {
         //One tap only supports portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
 
-        Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-
-        if (fragment == null) {
-            fragment = ExpressPaymentFragment.getInstance();
+        if (supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
+                .replace(R.id.one_tap_fragment, ExpressPaymentFragment.getInstance(), TAG_ONETAP_FRAGMENT)
+                .commitNowAllowingStateLoss();
         }
-
-        getSupportFragmentManager()
-            .beginTransaction()
-            .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
-            .replace(R.id.one_tap_fragment, fragment, TAG_ONETAP_FRAGMENT)
-            .commitNowAllowingStateLoss();
     }
 
     @Override
@@ -261,9 +260,9 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     public void startPayment() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-        if (fragment instanceof ExpressPaymentFragment) {
-            ((ExpressPaymentFragment) fragment).startPayment();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(PayButtonFragment.TAG);
+        if (fragment instanceof PayButtonFragment) {
+            ((PayButtonFragment) fragment).stimulate();
         }
     }
 

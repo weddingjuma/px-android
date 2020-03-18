@@ -16,9 +16,9 @@ public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewM
     public void updateData(final int currentIndex, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         if (data.get(currentIndex).isDisabled()) {
-            view.setState(MeliButton.State.DISABLED);
+            //view.setState(MeliButton.State.DISABLED);
         } else {
-            view.setState(MeliButton.State.NORMAL);
+            //view.setState(MeliButton.State.NORMAL);
         }
     }
 

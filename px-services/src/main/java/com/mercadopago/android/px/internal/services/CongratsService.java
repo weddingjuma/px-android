@@ -25,9 +25,9 @@ public interface CongratsService {
         @Query("campaign_id") String campaignId,
         @Nullable @Query("flow_name") String flowName);
 
-    @POST("/px_mobile/{version}/remedies/{payment_id}")
+    @POST("{environment}/px_mobile/v1/remedies/{payment_id}")
     Deferred<Response<RemediesResponse>> getRemedies(
-        @Path(value = "version", encoded = true) String version,
+        @Path(value = "environment", encoded = true) String environment,
         @Path(value = "payment_id", encoded = true) String paymentId,
         @Header("Accept-Language") String locale,
         @Query("access_token") String accessToken,

@@ -74,7 +74,7 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
                 RemediesBodyMapper().map(Pair(card, payerCost))
             }}
 
-            val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT, paymentId, locale, privateKey,
+            val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT_NEW, paymentId, locale, privateKey,
                 body).await()
             if (response.isSuccessful) {
                 response.body()!!

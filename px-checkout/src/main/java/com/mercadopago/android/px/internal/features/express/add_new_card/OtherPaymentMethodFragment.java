@@ -48,7 +48,8 @@ public class OtherPaymentMethodFragment
             return new AddNewCardOldPresenter(Session.getInstance().getInitRepository());
         } else {
             return new OtherPaymentMethodPresenter(
-                Session.getInstance().getConfigurationModule().getPaymentSettings());
+                Session.getInstance().getConfigurationModule().getPaymentSettings(),
+                Session.getInstance().getConfigurationModule().getSessionIdProvider());
         }
     }
 

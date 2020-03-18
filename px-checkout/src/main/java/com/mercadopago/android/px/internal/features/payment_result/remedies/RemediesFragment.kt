@@ -29,7 +29,7 @@ internal class RemediesFragment : Fragment() {
 
     private fun buildViewModel() {
         remediesViewModel.remedyState.nonNullObserve(viewLifecycleOwner) {
-            when(it) {
+            when (it) {
                 is RemedyState.ShowCvvRemedy -> {
                     cvv.init(it.model)
                 }
@@ -52,6 +52,7 @@ internal class RemediesFragment : Fragment() {
          * @return A new instance of fragment RemediesFragment.
          */
 
+        @JvmStatic
         fun newInstance(model: RemediesModel) = RemediesFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(REMEDIES_MODEL, model)

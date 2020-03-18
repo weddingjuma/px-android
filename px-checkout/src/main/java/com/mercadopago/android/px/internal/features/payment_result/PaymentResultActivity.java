@@ -107,7 +107,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
             fragmentManager
                 .beginTransaction()
                 .replace(R.id.remedies,
-                    RemediesFragment.Companion.newInstance(remediesModel),
+                    RemediesFragment.newInstance(remediesModel),
                     RemediesFragment.REMEDIES_TAG)
                 .commitAllowingStateLoss();
         }

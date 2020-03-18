@@ -16,7 +16,7 @@ public class AddNewCardOldPresenter extends OtherPaymentMethodPresenter {
     private final InitRepository initRepository;
 
     /* default */ AddNewCardOldPresenter(@NonNull final InitRepository initRepository) {
-        super(null);
+        super(null, null);
         this.initRepository = initRepository;
     }
 

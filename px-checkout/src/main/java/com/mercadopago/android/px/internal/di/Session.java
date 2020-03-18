@@ -104,6 +104,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private PaymentRewardRepository paymentRewardRepository;
     private ExperimentsRepository experimentsRepository;
     private EscPaymentManagerImp escPaymentManager;
+    private ViewModelModule viewModelModule;
 
     private Session(@NonNull final Context context) {
         super(context);
@@ -201,6 +202,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
         paymentMethodsRepository = null;
         paymentRewardRepository = null;
         escPaymentManager = null;
+        viewModelModule = null;
         initialized = false;
     }
 
@@ -459,5 +461,12 @@ public final class Session extends ApplicationModule implements AmountComponent 
                     LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName());
         }
         return paymentRewardRepository;
+    }
+
+    public ViewModelModule getViewModelModule() {
+        if (viewModelModule == null) {
+            viewModelModule = new ViewModelModule();
+        }
+        return viewModelModule;
     }
 }

@@ -362,8 +362,8 @@ public class ExplodingFragment extends Fragment {
     private void configureListener(final Context context) {
         if (context instanceof ExplodingAnimationListener) {
             listener = (ExplodingAnimationListener) context;
-        } else if (getParentFragment() != null) {
-            final Fragment fragment = getParentFragment();
+        } else if (getTargetFragment() != null) {
+            final Fragment fragment = getTargetFragment();
             listener = (ExplodingAnimationListener) fragment;
         }
     }

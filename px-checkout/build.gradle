@@ -1,9 +1,9 @@
-apply from: "$rootDir/gradle/base_android_lib.gradle"
-apply from: "$rootDir/gradle/jacoco.gradle"
-apply from: "$rootDir/gradle/static-analysis.gradle"
-apply from: "$rootDir/gradle/deploy_checkout.gradle"
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply from:"$rootDir/gradle/base_android_lib.gradle"
+apply from:"$rootDir/gradle/jacoco.gradle"
+apply from:"$rootDir/gradle/static-analysis.gradle"
+apply from:"$rootDir/gradle/deploy_checkout.gradle"
+apply plugin:'kotlin-android'
+apply plugin:'kotlin-android-extensions'
 
 android {
     defaultConfig {
@@ -12,6 +12,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.android.support:support-v4:28.0.0'
     androidTestImplementation project(':testlib')
 
     testImplementation "junit:junit:$junit"
@@ -45,7 +46,10 @@ dependencies {
     implementation "com.mercadolibre.android:carddrawer:$meli_card_drawer"
     implementation "com.mercadolibre.android.mlbusinesscomponents:mlbusinesscomponents:$mlbusinesscomponents"
     implementation("com.mercadolibre.android:cardform:$cardform") {
-        exclude group: 'com.mercadopago.android.px', module: 'addons'
+        exclude group:'com.mercadopago.android.px', module:'addons'
     }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+    implementation "android.arch.lifecycle:livedata-core:$lifecycle_version"
+    implementation "android.arch.lifecycle:viewmodel:$lifecycle_version"
 }

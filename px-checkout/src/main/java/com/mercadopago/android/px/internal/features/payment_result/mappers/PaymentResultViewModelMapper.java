@@ -26,6 +26,7 @@ public class PaymentResultViewModelMapper extends Mapper<PaymentModel, PaymentRe
             model, configuration, instruction);
         return new PaymentResultViewModel(
             new PaymentResultHeaderModelMapper(configuration, instruction).map(model.getPaymentResult()),
+            PaymentResultRemediesModelMapper.INSTANCE.map(model.getRemedies()),
             new PaymentResultBodyModelMapper(configuration).map(model), legacyViewModel);
     }
 }

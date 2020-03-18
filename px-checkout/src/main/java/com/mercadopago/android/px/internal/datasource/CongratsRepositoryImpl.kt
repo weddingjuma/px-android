@@ -68,7 +68,7 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
     private suspend fun getRemedies(payment: IPaymentDescriptor) =
         try {
             //TODO remove, testing
-            val paymentId = "5148018960"
+            val paymentId = "6101162949"
 
             val body = userSelectionRepository.card?.let { card -> userSelectionRepository.payerCost?.let { payerCost ->
                 RemediesBodyMapper().map(Pair(card, payerCost))

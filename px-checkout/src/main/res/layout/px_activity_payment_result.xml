@@ -23,6 +23,15 @@
                 tools:layout_height="100dp"
                 android:layout_height="wrap_content"/>
 
+            <FrameLayout
+                android:id="@+id/remedies"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/ui_3m"
+                android:layout_marginStart="@dimen/ui_3m"
+                android:layout_marginEnd="@dimen/ui_3m"
+                tools:context=".payment_result.remedies.RemediesFragment" />
+
             <com.mercadopago.android.px.internal.view.PaymentResultBody
                 android:id="@+id/body"
                 android:layout_width="match_parent"

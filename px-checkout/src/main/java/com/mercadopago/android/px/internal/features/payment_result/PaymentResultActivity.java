@@ -12,14 +12,19 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
+import android.widget.FrameLayout;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesFragment;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.Logger;
@@ -82,8 +87,30 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
         body.init(model.bodyModel, callback);
-        //TODO migrate
-        PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
+
+        if (hasRemedies(model.remediesModel)) {
+            loadRemedies(model.remediesModel);
+        } else {
+            //TODO migrate
+            PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
+        }
+    }
+
+    private boolean hasRemedies(final @NonNull RemediesModel model) {
+        //TODO: there will be more remedies
+        return model.getCvvRemedyModel() != null;
+    }
+
+    private void loadRemedies(RemediesModel remediesModel) {
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null && fragmentManager.findFragmentByTag(RemediesFragment.REMEDIES_TAG) == null) {
+            fragmentManager
+                .beginTransaction()
+                .replace(R.id.remedies,
+                    RemediesFragment.Companion.newInstance(remediesModel),
+                    RemediesFragment.REMEDIES_TAG)
+                .commitAllowingStateLoss();
+        }
     }
 
     @Override

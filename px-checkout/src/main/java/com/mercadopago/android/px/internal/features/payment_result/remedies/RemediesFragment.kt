@@ -6,12 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.mercadopago.android.px.R
-import com.mercadopago.android.px.internal.base.BaseViewModel
-import com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy
+import com.mercadopago.android.px.internal.util.nonNullObserve
+import kotlinx.android.synthetic.main.px_remedies.*
 
-internal class RemediesFragment : Fragment(), Remedies.View {
+internal class RemediesFragment : Fragment() {
 
-    private lateinit var remediesViewModel: BaseViewModel
+    private lateinit var remediesViewModel: RemediesViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.px_remedies, container, false)
@@ -19,14 +19,30 @@ internal class RemediesFragment : Fragment(), Remedies.View {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        remediesViewModel = RemediesViewModel()
+        arguments?.apply {
+            getParcelable<RemediesModel>(REMEDIES_MODEL)?.let {
+                remediesViewModel = RemediesViewModel(it)
+                buildViewModel()
+            }
+        }
     }
 
-    override fun showCvvRemedy() {
+    private fun buildViewModel() {
+        remediesViewModel.remedyState.nonNullObserve(viewLifecycleOwner) {
+            when(it) {
+                is RemedyState.ShowCvvRemedy -> {
+                    cvv.init(it.model)
+                }
 
+                is RemedyState.ShowKyCRemedy -> {
+
+                }
+            }
+        }
     }
 
     companion object {
+        const val REMEDIES_TAG = "remedies"
         private const val REMEDIES_MODEL = "remedies_model"
 
         /**
@@ -36,7 +52,7 @@ internal class RemediesFragment : Fragment(), Remedies.View {
          * @return A new instance of fragment RemediesFragment.
          */
 
-        fun newInstance(model: CvvRemedy.Model) = RemediesFragment().apply {
+        fun newInstance(model: RemediesModel) = RemediesFragment().apply {
             arguments = Bundle().apply {
                 putParcelable(REMEDIES_MODEL, model)
             }

@@ -7,8 +7,6 @@
 
     <com.mercadolibre.android.ui.widgets.MeliButton
         android:id="@+id/confirm_button"
-        android:background="@color/card_drawer_band"
-        android:backgroundTint="@color/card_drawer_band"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/px_m_margin"

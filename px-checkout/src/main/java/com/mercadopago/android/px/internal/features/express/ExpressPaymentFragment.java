@@ -1,13 +1,11 @@
 package com.mercadopago.android.px.internal.features.express;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
@@ -21,19 +19,13 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
-import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.addons.BehaviourProvider;
-import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
-import com.mercadopago.android.px.internal.features.SecurityCodeActivity;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
-import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
-import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.features.express.add_new_card.OfflineMethodsFragment;
 import com.mercadopago.android.px.internal.features.express.add_new_card.OtherPaymentMethodFragment;
 import com.mercadopago.android.px.internal.features.express.animations.ExpandAndCollapseAnimation;
@@ -49,8 +41,8 @@ import com.mercadopago.android.px.internal.features.express.slider.PaymentMethod
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
+import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
-import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
@@ -77,11 +69,11 @@ import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
+import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
 import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
 import static android.view.View.INVISIBLE;
@@ -93,15 +85,12 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
     OfflineMethodsFragment.SheetHidability, TitlePagerAdapter.InstallmentChanged,
-    PayButtonFragment.PayButtonHandler {
+    PayButton.Handler {
 
-    private static final String TAG_BUTTON_FRAGMENT = "TAG_BUTTON_FRAGMENT";
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
     private static final String EXTRA_RENDER_MODE = "render_mode";
-    private static final int REQ_CODE_PAYMENT_PROCESSOR = 101;
-    private static final int REQ_CODE_CARD_VAULT = 102;
-    private static final int REQ_CODE_BIOMETRICS = 104;
+
     private static final int REQ_CODE_DISABLE_DIALOG = 105;
     public static final int REQ_CODE_CARD_FORM = 106;
     private static final float PAGER_NEGATIVE_MARGIN_MULTIPLIER = -1.5f;
@@ -147,14 +136,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void requireConfiguration() {
-        presenter.onCurrentConfigurationRequired();
-    }
-
-    @Override
-    public void onCurrentConfigurationProvided(@NonNull final PaymentConfiguration paymentConfiguration) {
-        //noinspection ConstantConditions
-        payButtonFragment.onConfigurationProvided(paymentConfiguration);
+    public void onCurrentConfigurationProvided(@NonNull final PaymentConfiguration paymentConfiguration,
+        @NotNull final ConfirmData confirmTrackerData) {
+        payButtonFragment.onReadyForPayment(paymentConfiguration, confirmTrackerData);
     }
 
     @Override
@@ -164,13 +148,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onPaymentError(@NotNull final MercadoPagoError error) {
-        // TODO mover al fragment
-        //presenter.onPaymentError(error);
+        if (getActivity() != null) {
+            ((CheckoutActivity) getActivity()).presenter.onPaymentError(error);
+        }
     }
 
     @Override
     public void prePayment() {
-        payButtonFragment.onReadyForPayment();
+        presenter.requireCurrentConfiguration();
     }
 
     public interface CallBack {
@@ -252,7 +237,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     private void configureViews(@NonNull final View view) {
         payButtonFragment = PayButtonFragment.newInstance(this);
         getActivity().getSupportFragmentManager().beginTransaction()
-            .replace(R.id.pay_button, payButtonFragment, TAG_BUTTON_FRAGMENT).commitAllowingStateLoss();
+            .replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG).commitAllowingStateLoss();
         splitPaymentView = view.findViewById(R.id.labeledSwitch);
         titlePager = view.findViewById(R.id.title_pager);
         summaryView = view.findViewById(R.id.summary_view);
@@ -404,7 +389,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onDestroy() {
-        FragmentUtil.removeFragment(getActivity().getSupportFragmentManager(), TAG_BUTTON_FRAGMENT);
+        FragmentUtil.removeFragment(getActivity().getSupportFragmentManager(), PayButtonFragment.TAG);
         super.onDestroy();
     }
 
@@ -511,11 +496,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == REQ_CODE_CARD_VAULT) {
-            handleCardVaultResult(resultCode);
-        } else if (requestCode == REQ_CODE_BIOMETRICS) {
-            handleBiometricsResult(resultCode);
-        } else if (requestCode == REQ_CODE_DISABLE_DIALOG) {
+        if (requestCode == REQ_CODE_DISABLE_DIALOG) {
             resetPagerIndex();
         } else if (requestCode == REQ_CODE_CARD_FORM) {
             handleCardFormResult(resultCode);
@@ -533,47 +514,9 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         }
     }
 
-    private void handleBiometricsResult(final int resultCode) {
-        if (resultCode == RESULT_OK) {
-            presenter.onBiometricsResultOk();
-        } else {
-            presenter.trackSecurityFriction();
-        }
-        //TODO confirmButton.setState(MeliButton.State.NORMAL);
-    }
-
-    private void handleCardVaultResult(final int resultCode) {
-        if (resultCode == RESULT_OK) {
-            presenter.onTokenResolved();
-        } else if (resultCode == RESULT_CANCELED) {
-            presenter.trackExpressView();
-        }
-    }
-
     private void handleAction(final Intent data) {
         if (data != null && data.getExtras() != null) {
             PostPaymentAction.fromBundle(data.getExtras()).execute(presenter);
-        }
-    }
-
-    @Override
-    public void showPaymentProcessor() {
-        PaymentProcessorActivity.start(this, REQ_CODE_PAYMENT_PROCESSOR);
-    }
-
-    @Override
-    public void showErrorScreen(@NonNull final MercadoPagoError error) {
-        if (getActivity() != null) {
-            ((CheckoutActivity) getActivity()).presenter.onPaymentError(error);
-        }
-    }
-
-    @SuppressLint("Range")
-    @Override
-    public void showErrorSnackBar(@NonNull final MercadoPagoError error) {
-        if (getView() != null && getActivity() != null) {
-            MeliSnackbar.make(getView(), error.getMessage(), Snackbar.LENGTH_LONG, MeliSnackbar.SnackbarType.ERROR)
-                .show();
         }
     }
 
@@ -593,50 +536,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void startSecurityValidation(@NonNull final SecurityValidationData data) {
-        //TODO confirmButton.setState(MeliButton.State.DISABLED);
-        BehaviourProvider.getSecurityBehaviour().startValidation(this, data, REQ_CODE_BIOMETRICS);
-    }
-
-    //FIXME Used to start payment from activity
-    @Override
-    public void startPayment() {
-        presenter.confirmPayment();
-    }
-
-    @Override
-    public void finishLoading(@NonNull final ExplodeDecorator params) {
-        final ExplodingFragment fragment =
-            FragmentUtil.getFragmentByTag(getChildFragmentManager(), "TAG_EXPLODING_FRAGMENT", ExplodingFragment.class);
-        if (fragment != null) {
-            fragment.finishLoading(params);
-        } else {
-            presenter.hasFinishPaymentAnimation();
-        }
-    }
-
-    @Override
-    public void onLoadingCanceled() {
-        if (getActivity() instanceof AppCompatActivity) {
-            summaryView.enableToolbarBack((AppCompatActivity) getActivity());
-        }
-    }
-
-    @Override
-    public void onLoadingStarted() {
-        if (getActivity() instanceof AppCompatActivity) {
-            summaryView.disableToolbarBack((AppCompatActivity) getActivity());
-        }
-    }
-
-    @Override
     public void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery) {
         payButtonFragment.handlePaymentRecovery(paymentRecovery);
-    }
-
-    @Override
-    public void showSecurityCodeScreenForRecovery(@NonNull final PaymentRecovery paymentRecovery) {
-        SecurityCodeActivity.startForRecovery(this, paymentRecovery, REQ_CODE_CARD_VAULT);
     }
 
     @Override
@@ -664,11 +565,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     public void showDiscountDetailDialog(@NonNull final Currency currency,
         @NonNull final DiscountConfigurationModel discountModel) {
         DiscountDetailDialog.showDialog(getFragmentManager(), currency, discountModel);
-    }
-
-    @Override
-    public boolean isExploding() {
-        return FragmentUtil.isFragmentVisible(getChildFragmentManager(), "TAG_EXPLODING_FRAGMENT");
     }
 
     @Override

@@ -7,7 +7,11 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper
 import com.mercadopago.android.px.model.ExpressMetadata
 import com.mercadopago.android.px.model.PayerCost
 
-class FromExpressMetadataToPaymentConfiguration(val amountConfigurationRepository: AmountConfigurationRepository, val splitSelectionState: SplitSelectionState, val payerCostSelectionRepository: PayerCostSelectionRepository) : Mapper<ExpressMetadata, PaymentConfiguration>() {
+class FromExpressMetadataToPaymentConfiguration(
+    private val amountConfigurationRepository: AmountConfigurationRepository,
+    private val splitSelectionState: SplitSelectionState,
+    private val payerCostSelectionRepository: PayerCostSelectionRepository
+) : Mapper<ExpressMetadata, PaymentConfiguration>() {
 
     override fun map(expressMetadata: ExpressMetadata): PaymentConfiguration {
 
@@ -19,9 +23,10 @@ class FromExpressMetadataToPaymentConfiguration(val amountConfigurationRepositor
 
         if (expressMetadata.isCard || expressMetadata.isConsumerCredits) {
             payerCost = amountConfiguration!!.getCurrentPayerCost(splitSelectionState.userWantsToSplit(),
-                    payerCostSelectionRepository.get(customOptionId))
+                payerCostSelectionRepository.get(customOptionId))
         }
 
-        return PaymentConfiguration(expressMetadata.paymentMethodId, customOptionId, splitPayment, payerCost)
+        return PaymentConfiguration(expressMetadata.paymentMethodId, customOptionId, expressMetadata.isCard,
+            splitPayment, payerCost)
     }
 }

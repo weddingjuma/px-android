@@ -35,6 +35,7 @@ import com.mercadopago.android.px.internal.util.ViewUtils;
 
 public class ExplodingFragment extends Fragment {
 
+    public static final String TAG = "TAG_EXPLODING_FRAGMENT";
     private static final String BUNDLE_DECORATOR = "BUNDLE_DECORATOR";
     private static final String ARG_EXPLODING_PARAMS = "ARG_EXPLODING_PARAMS";
 

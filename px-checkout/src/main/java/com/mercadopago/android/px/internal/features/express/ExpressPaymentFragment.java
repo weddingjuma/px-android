@@ -290,7 +290,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             new SummaryViewAdapter(summaryView),
             new SplitPaymentHeaderAdapter(splitPaymentView, this),
             new PaymentMethodHeaderAdapter(paymentMethodHeaderView),
-            new ConfirmButtonAdapter(null)
+            new ConfirmButtonAdapter(payButtonFragment)
         ));
 
         configureBottomSheet();

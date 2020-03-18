@@ -83,6 +83,18 @@ class PayButtonFragment : Fragment(), PayButton.View {
         viewModel.preparePayment()
     }
 
+    override fun enable() {
+        if(::button.isInitialized) {
+            button.state = MeliButton.State.NORMAL
+        }
+    }
+
+    override fun disable() {
+        if(::button.isInitialized) {
+            button.state = MeliButton.State.DISABLED
+        }
+    }
+
     @SuppressLint("Range")
     private fun showSnackBar(error: MercadoPagoError) {
         view?.let {
@@ -91,7 +103,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
     }
 
     private fun startBiometricsValidation(validationData: SecurityValidationData) {
-        button.state = MeliButton.State.DISABLED
+        disable()
         BehaviourProvider.getSecurityBehaviour().startValidation(this, validationData, REQ_CODE_BIOMETRICS)
 
     }
@@ -106,7 +118,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQ_CODE_BIOMETRICS) {
-            button.state = MeliButton.State.NORMAL
+            enable()
             viewModel.handleBiometricsResult(resultCode == Activity.RESULT_OK)
         } else if (requestCode == REQ_CODE_SECURITY_CODE) {
             cancelLoading()
@@ -228,5 +240,4 @@ class PayButtonFragment : Fragment(), PayButton.View {
         @JvmStatic
         fun newInstance(targetFragment: Fragment) = PayButtonFragment().apply { setTargetFragment(targetFragment, 0) }
     }
-
 }

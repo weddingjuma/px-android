@@ -15,6 +15,8 @@ interface PayButton {
         fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
         fun isExploding(): Boolean
         fun stimulate()
+        fun enable()
+        fun disable()
     }
 
     interface ViewModel : PaymentServiceHandler {

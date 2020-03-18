@@ -29,6 +29,7 @@ import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.remedies.RemediesResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEvent;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
@@ -227,7 +228,7 @@ import java.util.Set;
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
+            final PaymentModel paymentModel = new PaymentModel(paymentResult, currency);
             getView().showResult(paymentModel);
         } else if (error.isInternalServerError() || error.isNoConnectivityError()) {
             getView().showErrorSnackBar(error);

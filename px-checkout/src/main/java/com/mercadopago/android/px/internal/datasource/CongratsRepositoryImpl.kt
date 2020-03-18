@@ -1,8 +1,10 @@
 package com.mercadopago.android.px.internal.datasource
 
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesBodyMapper
 import com.mercadopago.android.px.internal.repository.CongratsRepository
 import com.mercadopago.android.px.internal.repository.CongratsRepository.PostPaymentCallback
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository
+import com.mercadopago.android.px.internal.repository.UserSelectionRepository
 import com.mercadopago.android.px.internal.services.CongratsService
 import com.mercadopago.android.px.internal.util.StatusHelper
 import com.mercadopago.android.px.internal.util.TextUtil
@@ -19,7 +21,7 @@ import kotlinx.coroutines.withContext
 
 class CongratsRepositoryImpl(private val congratsService: CongratsService,
         private val paymentSetting: PaymentSettingRepository, private val platform: String, private val locale: String,
-        private val flow: String?) : CongratsRepository {
+        private val flow: String?, private val userSelectionRepository: UserSelectionRepository) : CongratsRepository {
 
     private val paymentRewardCache = HashMap<String, PaymentReward>()
     private val remediesCache = HashMap<String, RemediesResponse>()
@@ -65,8 +67,15 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
 
     private suspend fun getRemedies(payment: IPaymentDescriptor) =
         try {
-            val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT, payment.id.toString(), locale,
-                    privateKey, null).await()
+            //TODO remove, testing
+            val paymentId = "5148018960"
+
+            val body = userSelectionRepository.card?.let { card -> userSelectionRepository.payerCost?.let { payerCost ->
+                RemediesBodyMapper().map(Pair(card, payerCost))
+            }}
+
+            val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT, paymentId, locale, privateKey,
+                body).await()
             if (response.isSuccessful) {
                 response.body()!!
             } else {
@@ -80,11 +89,12 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
                              remedies: RemediesResponse, currency: Currency, callback: PostPaymentCallback) {
         payment.process(object : IPaymentDescriptorHandler {
             override fun visit(payment: IPaymentDescriptor) {
-                callback.handleResult(PaymentModel(payment, paymentResult, paymentReward, currency))
+                callback.handleResult(PaymentModel(payment, paymentResult, paymentReward, remedies, currency))
             }
 
             override fun visit(businessPayment: BusinessPayment) {
-                callback.handleResult(BusinessPaymentModel(businessPayment, paymentResult, paymentReward, currency))
+                callback.handleResult(BusinessPaymentModel(businessPayment, paymentResult, paymentReward, remedies,
+                    currency))
             }
         })
     }

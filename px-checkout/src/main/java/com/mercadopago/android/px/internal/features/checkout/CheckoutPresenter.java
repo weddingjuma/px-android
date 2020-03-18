@@ -177,7 +177,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
+            final PaymentModel paymentModel = new PaymentModel(paymentResult, currency);
             getView().showPaymentResult(paymentModel);
         } else if (mercadoPagoError != null && mercadoPagoError.isInternalServerError()) {
             setFailureRecovery(() -> getView().startPayment());

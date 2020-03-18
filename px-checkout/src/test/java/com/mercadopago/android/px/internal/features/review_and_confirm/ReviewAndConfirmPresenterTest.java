@@ -194,7 +194,7 @@ public class ReviewAndConfirmPresenterTest {
     }
 
     @Test
-    public void whendViewDetachedThenPaymentRepositoryViewDetachmentIsPerformed() {
+    public void whenViewDetachedThenPaymentRepositoryViewDetachmentIsPerformed() {
         reviewAndConfirmPresenter.detachView();
 
         verify(paymentRepository).detach(reviewAndConfirmPresenter);
@@ -343,16 +343,13 @@ public class ReviewAndConfirmPresenterTest {
 
     private void whenIPaymentAndAnimationIsFinishedThenShowResult(final IPaymentDescriptor payment) {
         final PaymentResult paymentResult = mock(PaymentResult.class);
-        when(paymentResult.getPaymentData()).thenReturn(mock(PaymentData.class));
         when(paymentRepository.getPayment()).thenReturn(payment);
         when(paymentRepository.createPaymentResult(payment)).thenReturn(paymentResult);
-        when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
-        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(), any());
+        doCallRealMethod().when(paymentRewardRepository).getPostPaymentData(any(), any(), any());
 
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();
 
         verify(paymentRepository).getPayment();
-        verify(payment).process(any());
         verify(view).setPayButtonText(any());
         verify(paymentRepository).createPaymentResult(payment);
         verifyNoMoreInteractions(view);

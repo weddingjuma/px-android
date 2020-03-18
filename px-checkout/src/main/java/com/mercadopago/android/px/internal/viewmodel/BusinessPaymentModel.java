@@ -7,6 +7,7 @@ import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.remedies.RemediesResponse;
 
 public class BusinessPaymentModel extends PaymentModel {
 
@@ -14,8 +15,8 @@ public class BusinessPaymentModel extends PaymentModel {
 
     public BusinessPaymentModel(@NonNull final BusinessPayment businessPayment,
         @NonNull final PaymentResult paymentResult, @NonNull final PaymentReward paymentReward,
-        @NonNull final Currency currency) {
-        super(null, paymentResult, paymentReward, currency);
+        @NonNull final RemediesResponse remedies, @NonNull final Currency currency) {
+        super(null, paymentResult, paymentReward, remedies, currency);
         this.businessPayment = businessPayment;
     }
 

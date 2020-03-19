@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.pay_button
 
 import android.arch.lifecycle.MutableLiveData
+import android.os.Bundle
 import com.mercadopago.android.px.addons.model.SecurityValidationData
 import com.mercadopago.android.px.internal.base.BaseViewModel
 import com.mercadopago.android.px.internal.core.ConnectionHelper
@@ -133,5 +134,20 @@ internal class PayButtonViewModel(
 
     override fun hasFinishPaymentAnimation() {
         paymentService.payment?.let { handler.onPaymentFinished(it) }
+    }
+
+    override fun storeInBundle(bundle: Bundle) {
+        bundle.putParcelable(BUNDLE_PAYMENT_CONFIGURATION, paymentConfiguration)
+        bundle.putParcelable(BUNDLE_CONFIRM_DATA, confirmTrackerData)
+    }
+
+    override fun recoverFromBundle(bundle: Bundle) {
+        paymentConfiguration = bundle.getParcelable(BUNDLE_PAYMENT_CONFIGURATION)
+        confirmTrackerData = bundle.getParcelable(BUNDLE_CONFIRM_DATA)
+    }
+
+    companion object {
+        const val BUNDLE_PAYMENT_CONFIGURATION = "BUNDLE_PAYMENT_CONFIGURATION"
+        const val BUNDLE_CONFIRM_DATA = "BUNDLE_CONFIRM_DATA"
     }
 }

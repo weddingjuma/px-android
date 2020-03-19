@@ -71,6 +71,16 @@ class PayButtonFragment : Fragment(), PayButton.View {
         viewModel.stateUILiveData.observe(viewLifecycleOwner, Observer { s -> onStateUIChanged(s!!) })
     }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.storeInBundle(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let { viewModel.recoverFromBundle(it) }
+    }
+
     private fun onStateUIChanged(stateUI: PayButtonState) {
         when (stateUI) {
             is UIProgress.FingerprintRequired -> startBiometricsValidation(stateUI.validationData)
@@ -172,8 +182,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
         super.onDestroy()
     }
 
-
-    fun finishLoading(params: ExplodeDecorator) {
+    private fun finishLoading(params: ExplodeDecorator) {
         FragmentUtil.getFragmentByTag(parentFragmentManager, ExplodingFragment.TAG, ExplodingFragment::class.java)
             ?.finishLoading(params)
             ?: viewModel.hasFinishPaymentAnimation()
@@ -186,9 +195,9 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 buttonConfig.getButtonProgressText(context!!), paymentTimeout)
             val explodingFragment = ExplodingFragment.newInstance(explodeParams)
             explodingFragment.setTargetFragment(this, 0)
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.add(android.R.id.content, explodingFragment, ExplodingFragment.TAG)
-                ?.commitNowAllowingStateLoss()
+            parentFragmentManager.beginTransaction()
+                .add(android.R.id.content, explodingFragment, ExplodingFragment.TAG)
+                .commitNowAllowingStateLoss()
         }
     }
 

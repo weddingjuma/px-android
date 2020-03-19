@@ -234,9 +234,13 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void configureViews(@NonNull final View view) {
-        payButtonFragment = PayButtonFragment.newInstance(this);
-        getActivity().getSupportFragmentManager().beginTransaction()
-            .replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG).commitAllowingStateLoss();
+        payButtonFragment =
+            (PayButtonFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PayButtonFragment.TAG);
+        if (payButtonFragment == null) {
+            payButtonFragment = PayButtonFragment.newInstance(this);
+            getActivity().getSupportFragmentManager().beginTransaction()
+                .replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG).commitAllowingStateLoss();
+        }
         splitPaymentView = view.findViewById(R.id.labeledSwitch);
         titlePager = view.findViewById(R.id.title_pager);
         summaryView = view.findViewById(R.id.summary_view);

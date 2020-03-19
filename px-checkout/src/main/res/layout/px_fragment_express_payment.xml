@@ -54,7 +54,11 @@
         <FrameLayout
             android:id="@+id/pay_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/px_m_margin"
+            android:layout_marginTop="@dimen/px_s_margin"
+            android:layout_marginEnd="@dimen/px_m_margin"
+            android:layout_marginBottom="@dimen/px_m_margin" />
 
     </LinearLayout>
 

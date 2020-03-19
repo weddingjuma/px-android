@@ -29,13 +29,12 @@ import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActi
 import com.mercadopago.android.px.internal.util.FragmentUtil
 import com.mercadopago.android.px.internal.util.ViewUtils
 import com.mercadopago.android.px.internal.view.OnSingleClickListener
+import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as ButtonConfig
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction
 import com.mercadopago.android.px.model.Card
 import com.mercadopago.android.px.model.PaymentRecovery
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
 import com.mercadopago.android.px.tracking.internal.model.Reason
-import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as ButtonConfig
-
 
 class PayButtonFragment : Fragment(), PayButton.View {
 

@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
@@ -116,6 +117,9 @@ public class ExpressPaymentPresenterTest {
     @Mock
     private ConnectionHelper connectionHelper;
 
+    @Mock
+    private CongratsRepository congratsRepository;
+
     private ExpressPaymentPresenter expressPaymentPresenter;
 
     @Before
@@ -139,8 +143,8 @@ public class ExpressPaymentPresenterTest {
         expressPaymentPresenter =
             new ExpressPaymentPresenter(paymentRepository, paymentSettingRepository, disabledPaymentMethodRepository,
                 payerCostSelectionRepository, discountRepository, amountRepository, initRepository,
-                amountConfigurationRepository, chargeRepository,
-                escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper, connectionHelper);
+                amountConfigurationRepository, chargeRepository, escManagerBehaviour, productIdProvider,
+                paymentMethodDrawableItemMapper, connectionHelper, congratsRepository);
 
         verifyAttachView();
     }

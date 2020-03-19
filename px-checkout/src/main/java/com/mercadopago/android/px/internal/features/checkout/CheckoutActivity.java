@@ -62,8 +62,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     private static final String EXTRA_PRIVATE_KEY = "extra_private_key";
     private static final String EXTRA_PUBLIC_KEY = "extra_public_key";
 
-    private static final int REQ_CONGRATS_BUSINESS = 0x01;
-    private static final int REQ_CONGRATS = 0x02;
+    public static final int REQ_CONGRATS_BUSINESS = 0x01;
+    public static final int REQ_CONGRATS = 0x02;
     private static final int REQ_PAYMENT_PROCESSOR = 0x03;
     private static final int REQ_CARD_VAULT = 0x04;
     private static final int REQ_REVIEW_AND_CONFIRM = 0x05;
@@ -131,7 +131,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                     session.getInitRepository(),
                     session.getPluginRepository(),
                     session.getPaymentRepository(),
-                    session.getPaymentRewardRepository(),
+                    session.getCongratsRepository(),
                     session.getInternalConfiguration());
 
             privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
@@ -194,7 +194,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             session.getInitRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
-            session.getPaymentRewardRepository(),
+            session.getCongratsRepository(),
             session.getInternalConfiguration());
     }
 

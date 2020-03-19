@@ -21,9 +21,11 @@ import android.view.animation.AnimationUtils;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
+import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.express.add_new_card.OfflineMethodsFragment;
@@ -43,6 +45,7 @@ import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAd
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
+import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
@@ -53,6 +56,8 @@ import com.mercadopago.android.px.internal.view.PaymentMethodHeaderView;
 import com.mercadopago.android.px.internal.view.ScrollingPagerIndicator;
 import com.mercadopago.android.px.internal.view.SummaryView;
 import com.mercadopago.android.px.internal.view.TitlePager;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.RenderMode;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
@@ -68,6 +73,7 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -140,12 +146,14 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        showPaymentResult(payment);
+        presenter.onPaymentFinished(payment);
     }
 
     @Override
     public void onPaymentError(@NonNull final MercadoPagoError error) {
-        if (getActivity() != null) {
+        if (error.isPaymentProcessing()) {
+            presenter.onPaymentProcessingError(error);
+        } else if (getActivity() != null) {
             ((CheckoutActivity) getActivity()).presenter.onPaymentError(error);
         }
     }
@@ -360,7 +368,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             new PaymentMethodDrawableItemMapper(getContext(),
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
                 session.getConfigurationModule().getChargeSolver()),
-            ConnectionHelper.getInstance());
+            ConnectionHelper.getInstance(),
+            session.getCongratsRepository());
     }
 
     @Override
@@ -524,11 +533,19 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void showPaymentResult(@NonNull final IPaymentDescriptor paymentResult) {
-        //TODO refactor, this should be handled here and not in CheckoutActivity
-        if (getActivity() != null) {
-            ((CheckoutActivity) getActivity()).presenter.onPaymentFinished(paymentResult);
+    public void showPaymentResult(@NonNull final PaymentModel model, @NonNull final PaymentConfiguration paymentConfiguration) {
+        if (getActivity() instanceof PXActivity) {
+            ((PXActivity) getActivity()).overrideTransitionIn();
         }
+        PaymentResultActivity.start(this, CheckoutActivity.REQ_CONGRATS, model, paymentConfiguration);
+    }
+
+    @Override
+    public void showBusinessResult(@NonNull final BusinessPaymentModel model) {
+        if (getActivity() instanceof PXActivity) {
+            ((PXActivity) getActivity()).overrideTransitionIn();
+        }
+        BusinessPaymentResultActivity.start(this, CheckoutActivity.REQ_CONGRATS_BUSINESS, model);
     }
 
     @Override

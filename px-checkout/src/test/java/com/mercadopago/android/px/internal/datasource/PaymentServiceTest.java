@@ -9,12 +9,12 @@ import com.mercadopago.android.px.internal.callbacks.MPCall;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
@@ -23,7 +23,6 @@ import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.mocks.InitResponseStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
-import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PayerCost;
@@ -77,12 +76,11 @@ public class PaymentServiceTest {
     @Mock private InstructionsRepository instructionsRepository;
     @Mock private InitRepository initRepository;
     @Mock private AmountConfigurationRepository amountConfigurationRepository;
+    @Mock private CongratsRepository congratsRepository;
     @Mock private SplitSelectionState splitSelectionState;
     @Mock private PayerCostSelectionRepository payerCostSelectionRepository;
-    @Mock private PaymentRewardRepository paymentRewardRepository;
 
     @Mock private ExpressMetadata node;
-    @Mock private CardMetadata cardMetadata;
     @Mock private PayerCost payerCost;
     @Mock private PaymentMethod paymentMethod;
 
@@ -107,7 +105,7 @@ public class PaymentServiceTest {
             instructionsRepository,
             initRepository,
             amountConfigurationRepository,
-            paymentRewardRepository);
+            congratsRepository);
 
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(mock(CheckoutPreference.class));
         when(discountRepository.getCurrentConfiguration()).thenReturn(WITHOUT_DISCOUNT);

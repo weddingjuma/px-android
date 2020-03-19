@@ -58,7 +58,7 @@ internal class PayButtonViewModel(
         confirmTrackerData = null
         if (connectionHelper.checkConnection()) {
             handler.prePayment(object : OnReadyForPaymentCallback {
-                override fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+                override fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
                     startSecuredPayment(paymentConfiguration, confirmTrackerData)
                 }
             })
@@ -67,7 +67,7 @@ internal class PayButtonViewModel(
         }
     }
 
-    private fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+    private fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
         this.paymentConfiguration = paymentConfiguration
         this.confirmTrackerData = confirmTrackerData
         val data: SecurityValidationData = SecurityValidationDataFactory
@@ -94,13 +94,12 @@ internal class PayButtonViewModel(
                 paymentService.attach(this@PayButtonViewModel)
                 paymentService.startExpressPayment(paymentConfiguration!!)
 
-                ConfirmEvent(confirmTrackerData!!).track()
+                confirmTrackerData?.let { ConfirmEvent(it).track() }
             }
 
             override fun failure() {
                 stateUILiveData.value = (UIProgress.ButtonLoadingCanceled)
             }
-
         })
     }
 

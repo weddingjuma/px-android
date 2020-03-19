@@ -43,6 +43,7 @@
             <com.mercadopago.android.px.internal.features.payment_result.view.PaymentResultFooter
                 android:id="@+id/remedies_footer"
                 android:visibility="gone"
+                android:layout_marginBottom="@dimen/ui_3m"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 

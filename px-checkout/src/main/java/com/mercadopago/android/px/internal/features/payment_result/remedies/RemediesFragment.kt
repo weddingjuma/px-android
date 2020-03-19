@@ -7,15 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.mercadopago.android.px.R
+import com.mercadopago.android.px.internal.di.Session
 import com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy
 import com.mercadopago.android.px.internal.util.nonNullObserve
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel
+import com.mercadopago.android.px.model.IPaymentDescriptor
 import kotlinx.android.synthetic.main.px_remedies.*
-import java.lang.IllegalStateException
 
-internal class RemediesFragment : Fragment() {
+internal class RemediesFragment : Fragment(), Remedies.View, CvvRemedy.Listener {
 
-    private lateinit var remediesViewModel: RemediesViewModel
-    private var cvvListener: CvvRemedy.Listener? = null
+    private lateinit var viewModel: RemediesViewModel
+    private var listener: Listener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.px_remedies, container, false)
@@ -25,29 +27,48 @@ internal class RemediesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         arguments?.apply {
             getParcelable<RemediesModel>(REMEDIES_MODEL)?.let {
-                remediesViewModel = RemediesViewModel(it)
+                val session = Session.getInstance()
+                viewModel = RemediesViewModel(it, session.paymentRepository, session.configurationModule.paymentSettings,
+                    session.cardTokenRepository, session.mercadoPagoESC, session.congratsRepository)
                 buildViewModel()
-                cvv.listener = cvvListener
+                cvv.listener = this@RemediesFragment
             }
         }
     }
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        if (context is CvvRemedy.Listener) {
-            cvvListener = context
+        if (context is Listener) {
+            listener = context
         } else {
-            throw IllegalStateException("Parent should implement cvv remedy listener")
+            throw IllegalStateException("Parent should implement remedies listener")
         }
     }
 
     override fun onDetach() {
         super.onDetach()
-        cvvListener = null
+        listener = null
+    }
+
+    override fun onCvvFilled(cvv: String) {
+        viewModel.onCvvFilled(cvv)
+        listener?.enablePayButton()
+    }
+
+    override fun onCvvDeleted() {
+        listener?.disablePayButton()
+    }
+
+    override fun onPayButtonPressed() {
+        viewModel.onPayButtonPressed()
+    }
+
+    override fun onPaymentFinished(payment: IPaymentDescriptor) {
+        viewModel.onPaymentFinished(payment)
     }
 
     private fun buildViewModel() {
-        remediesViewModel.remedyState.nonNullObserve(viewLifecycleOwner) {
+        viewModel.remedyState.nonNullObserve(viewLifecycleOwner) {
             when (it) {
                 is RemedyState.ShowCvvRemedy -> {
                     cvv.init(it.model)
@@ -55,6 +76,14 @@ internal class RemediesFragment : Fragment() {
 
                 is RemedyState.ShowKyCRemedy -> {
 
+                }
+
+                is RemedyState.StartPayment -> {
+                    listener?.startPayment()
+                }
+
+                is RemedyState.ShowResult -> {
+                    listener?.showResult(it.paymentModel)
                 }
             }
         }
@@ -77,5 +106,12 @@ internal class RemediesFragment : Fragment() {
                 putParcelable(REMEDIES_MODEL, model)
             }
         }
+    }
+
+    interface Listener {
+        fun enablePayButton()
+        fun disablePayButton()
+        fun startPayment()
+        fun showResult(paymentModel: PaymentModel)
     }
 }

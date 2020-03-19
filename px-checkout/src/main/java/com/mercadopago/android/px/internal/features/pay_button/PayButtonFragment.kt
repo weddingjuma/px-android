@@ -124,7 +124,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
     }
 
-    override fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+    override fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
         viewModel.startSecuredPayment(paymentConfiguration, confirmTrackerData)
     }
 

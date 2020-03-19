@@ -12,7 +12,7 @@ interface PayButton {
 
     interface View : ExplodingFragment.ExplodingAnimationListener {
         fun handlePaymentRecovery(paymentRecovery: PaymentRecovery)
-        fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
+        fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?)
         fun isExploding(): Boolean
         fun stimulate()
         fun enable()
@@ -21,7 +21,7 @@ interface PayButton {
 
     interface ViewModel : PaymentServiceHandler {
         fun attach(handler: Handler)
-        fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
+        fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?)
         fun handleBiometricsResult(isSuccess: Boolean)
         fun preparePayment()
         fun hasFinishPaymentAnimation()

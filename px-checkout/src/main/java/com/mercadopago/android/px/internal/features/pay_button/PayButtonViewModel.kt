@@ -53,7 +53,7 @@ internal class PayButtonViewModel(
         this.handler = handler
     }
 
-    override fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+    override fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
         this.paymentConfiguration = paymentConfiguration
         this.confirmTrackerData = confirmTrackerData
         val data: SecurityValidationData = SecurityValidationDataFactory
@@ -78,7 +78,7 @@ internal class PayButtonViewModel(
         paymentService.attach(this)
         paymentService.startExpressPayment(paymentConfiguration!!)
 
-        ConfirmEvent(confirmTrackerData!!).track()
+        confirmTrackerData?.let { ConfirmEvent(it).track() }
     }
 
     override fun onPaymentError(error: MercadoPagoError) {

@@ -14,6 +14,7 @@ import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentH
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
@@ -24,10 +25,13 @@ import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
 import com.mercadopago.android.px.internal.view.SummaryView;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
+import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandler;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ConfirmButtonViewModelMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.ElementDescriptorMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.InstallmentViewModelMapper;
@@ -36,12 +40,17 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.SplitHeaderMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryInfoMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
+import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentData;
+import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
 import com.mercadopago.android.px.model.internal.InitResponse;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
@@ -58,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>
@@ -78,6 +88,7 @@ import org.jetbrains.annotations.Nullable;
     @NonNull private final ProductIdProvider productIdProvider;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final ConnectionHelper connectionHelper;
+    @NonNull private final CongratsRepository congratsRepository;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
@@ -87,6 +98,7 @@ import org.jetbrains.annotations.Nullable;
     private Set<String> cardsWithSplit;
     private boolean otherPaymentMethodClickable = true;
     @Nullable private Runnable unattendedEvent;
+    /* default */ PaymentConfiguration currentPaymentConfiguration;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -100,7 +112,8 @@ import org.jetbrains.annotations.Nullable;
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
         @NonNull final ProductIdProvider productIdProvider,
         @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper,
-        @NonNull final ConnectionHelper connectionHelper) {
+        @NonNull final ConnectionHelper connectionHelper,
+        @NonNull final CongratsRepository congratsRepository) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -115,6 +128,7 @@ import org.jetbrains.annotations.Nullable;
         this.productIdProvider = productIdProvider;
         this.paymentMethodDrawableItemMapper = paymentMethodDrawableItemMapper;
         this.connectionHelper = connectionHelper;
+        this.congratsRepository = congratsRepository;
 
         splitSelectionState = new SplitSelectionState();
     }
@@ -392,15 +406,44 @@ import org.jetbrains.annotations.Nullable;
     public void requireCurrentConfiguration() {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
 
-        final PaymentConfiguration paymentConfiguration =
-            new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository, splitSelectionState,
-                payerCostSelectionRepository).map(expressMetadata);
+        currentPaymentConfiguration = new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository,
+            splitSelectionState, payerCostSelectionRepository).map(expressMetadata);
 
         final ConfirmData confirmTrackerData = new ConfirmData(ConfirmEvent.ReviewType.ONE_TAP, paymentMethodIndex,
             new FromSelectedExpressMetadataToAvailableMethods(escManagerBehaviour.getESCCardIds(),
-                paymentConfiguration.getPayerCost(), paymentConfiguration.getSplitPayment())
+                currentPaymentConfiguration.getPayerCost(), currentPaymentConfiguration.getSplitPayment())
                 .map(expressMetadata));
 
-        getView().onCurrentConfigurationProvided(paymentConfiguration, confirmTrackerData);
+        getView().onCurrentConfigurationProvided(currentPaymentConfiguration, confirmTrackerData);
+    }
+
+    @Override
+    public void onPaymentProcessingError(@NonNull final MercadoPagoError error) {
+        final Currency currency = paymentSettingRepository.getCurrency();
+        final PaymentResult paymentResult =
+            new PaymentResult.Builder()
+                .setPaymentData(paymentRepository.getPaymentDataList())
+                .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
+                .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
+                .build();
+        final PaymentModel paymentModel = new PaymentModel(paymentResult, currency);
+        getView().showPaymentResult(paymentModel, currentPaymentConfiguration);
+    }
+
+    @Override
+    public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
+        congratsRepository.getPostPaymentData(payment, paymentRepository.createPaymentResult(payment),
+            model -> model.process(new PaymentModelHandler() {
+                @Override
+                public void visit(@NonNull final PaymentModel paymentModel) {
+                    getView().showPaymentResult(paymentModel, currentPaymentConfiguration);
+                }
+
+                @Override
+                public void visit(@NonNull final BusinessPaymentModel businessPaymentModel) {
+                    getView().showBusinessResult(businessPaymentModel);
+                }
+            })
+        );
     }
 }

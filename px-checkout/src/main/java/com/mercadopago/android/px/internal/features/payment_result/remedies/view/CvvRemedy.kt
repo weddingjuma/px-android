@@ -43,7 +43,7 @@ internal class CvvRemedy(context: Context, attrs: AttributeSet?, defStyleAttr: I
 
             override fun onTextChanged(text: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (text?.length == length) {
-                    listener?.onCvvEntered(text.toString())
+                    listener?.onCvvFilled(text.toString())
                 } else if (previousCvv.length == length) {
                     listener?.onCvvDeleted()
                 }
@@ -52,7 +52,7 @@ internal class CvvRemedy(context: Context, attrs: AttributeSet?, defStyleAttr: I
     }
 
     interface Listener {
-        fun onCvvEntered(cvv: String)
+        fun onCvvFilled(cvv: String)
         fun onCvvDeleted()
     }
 

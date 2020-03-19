@@ -6,6 +6,8 @@ import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
+import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.model.Currency;
@@ -16,6 +18,7 @@ import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
+import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
@@ -39,8 +42,6 @@ public interface ExpressPayment {
         void cancel();
 
         void handlePaymentRecovery(@NonNull PaymentRecovery paymentRecovery);
-
-        void showPaymentResult(@NonNull final IPaymentDescriptor paymentResult);
 
         void updateViewForPosition(final int paymentMethodIndex,
             final int payerCostSelected,
@@ -66,6 +67,10 @@ public interface ExpressPayment {
         void showOfflineMethods(@NonNull final OfflinePaymentTypesMetadata offlineMethods);
 
         void updateBottomSheetStatus(final boolean hasToExpand);
+
+        void showPaymentResult(@NonNull final PaymentModel model, @NonNull final PaymentConfiguration paymentConfiguration);
+
+        void showBusinessResult(@NonNull final BusinessPaymentModel model);
     }
 
     interface Actions {
@@ -93,5 +98,9 @@ public interface ExpressPayment {
         void onOtherPaymentMethodClickableStateChanged(boolean state);
 
         void requireCurrentConfiguration();
+
+        void onPaymentProcessingError(@NonNull final MercadoPagoError error);
+
+        void onPaymentFinished(@NonNull final IPaymentDescriptor payment);
     }
 }

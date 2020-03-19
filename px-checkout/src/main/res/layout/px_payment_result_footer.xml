@@ -20,13 +20,15 @@
         android:layout_height="wrap_content"
         app:type="optionPrimary"
         android:visibility="gone"
-        android:text="Pagar" />
+        tools:text="Pagar" />
 
     <com.mercadolibre.android.ui.widgets.MeliButton
         android:id="@+id/action_quiet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/ui_3m"
+        android:layout_marginEnd="@dimen/ui_3m"
         app:type="actionSecondary"
-        android:text="Pagar con otro medio" />
+        tools:text="Pagar con otro medio" />
 
 </merge>

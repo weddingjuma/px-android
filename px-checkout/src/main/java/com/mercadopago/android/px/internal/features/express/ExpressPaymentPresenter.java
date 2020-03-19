@@ -11,6 +11,7 @@ import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
+import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
 import com.mercadopago.android.px.internal.repository.ChargeRepository;
@@ -389,7 +390,7 @@ import org.jetbrains.annotations.Nullable;
     }
 
     @Override
-    public void requireCurrentConfiguration() {
+    public void requireCurrentConfiguration(@NonNull PayButton.OnReadyForPaymentCallback callback) {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
 
         final PaymentConfiguration paymentConfiguration =
@@ -401,6 +402,6 @@ import org.jetbrains.annotations.Nullable;
                 paymentConfiguration.getPayerCost(), paymentConfiguration.getSplitPayment())
                 .map(expressMetadata));
 
-        getView().onCurrentConfigurationProvided(paymentConfiguration, confirmTrackerData);
+        callback.call(paymentConfiguration, confirmTrackerData);
     }
 }

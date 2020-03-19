@@ -12,7 +12,6 @@ interface PayButton {
 
     interface View : ExplodingFragment.ExplodingAnimationListener {
         fun handlePaymentRecovery(paymentRecovery: PaymentRecovery)
-        fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
         fun isExploding(): Boolean
         fun stimulate()
         fun enable()
@@ -21,18 +20,27 @@ interface PayButton {
 
     interface ViewModel : PaymentServiceHandler {
         fun attach(handler: Handler)
-        fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
-        fun handleBiometricsResult(isSuccess: Boolean)
         fun preparePayment()
+        fun handleBiometricsResult(isSuccess: Boolean)
+        fun startPayment()
         fun hasFinishPaymentAnimation()
         fun recoverPayment()
         fun recoverPayment(recovery: PaymentRecovery)
-        fun startPayment()
     }
 
     interface Handler {
+        fun prePayment(callback: OnReadyForPaymentCallback)
+        @JvmDefault fun enqueueOnExploding(callback: OnEnqueueResolvedCallback) { callback.success() }
         fun onPaymentFinished(payment: IPaymentDescriptor)
         fun onPaymentError(error: MercadoPagoError)
-        fun prePayment()
+    }
+
+    interface OnReadyForPaymentCallback {
+        fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData)
+    }
+
+    interface OnEnqueueResolvedCallback {
+        fun success()
+        fun failure()
     }
 }

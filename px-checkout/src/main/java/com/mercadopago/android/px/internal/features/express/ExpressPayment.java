@@ -5,6 +5,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
+import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
@@ -24,9 +25,6 @@ import java.util.List;
 public interface ExpressPayment {
 
     interface View extends MvpView {
-
-        void onCurrentConfigurationProvided(@NonNull PaymentConfiguration paymentConfiguration,
-            @NonNull final ConfirmData confirmTrackerData);
 
         void clearAdapters();
 
@@ -92,6 +90,6 @@ public interface ExpressPayment {
 
         void onOtherPaymentMethodClickableStateChanged(boolean state);
 
-        void requireCurrentConfiguration();
+        void requireCurrentConfiguration(@NonNull final PayButton.OnReadyForPaymentCallback callback);
     }
 }

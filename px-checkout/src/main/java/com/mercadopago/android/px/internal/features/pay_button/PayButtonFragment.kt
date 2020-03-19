@@ -41,6 +41,7 @@ import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as Butto
 
 class PayButtonFragment : Fragment(), PayButton.View {
 
+    private var buttonStatus = MeliButton.State.NORMAL
     private lateinit var button: MeliButton
     private lateinit var viewModel: PayButtonViewModel
 
@@ -57,6 +58,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 viewModel.preparePayment()
             }
         })
+        updateButtonState()
 
         viewModel.buttonTextLiveData.observe(viewLifecycleOwner,
             Observer { buttonConfig -> button.text = buttonConfig!!.getButtonText(this.context!!) })
@@ -67,6 +69,16 @@ class PayButtonFragment : Fragment(), PayButton.View {
         viewModel.recoverRequiredLiveData.observe(viewLifecycleOwner,
             Observer { r -> showSecurityCodeForRecovery(r!!) })
         viewModel.stateUILiveData.observe(viewLifecycleOwner, Observer { s -> onStateUIChanged(s!!) })
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.storeInBundle(outState)
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        savedInstanceState?.let { viewModel.recoverFromBundle(it) }
     }
 
     private fun onStateUIChanged(stateUI: PayButtonState) {
@@ -83,6 +95,22 @@ class PayButtonFragment : Fragment(), PayButton.View {
         viewModel.preparePayment()
     }
 
+    override fun enable() {
+        buttonStatus = MeliButton.State.NORMAL
+        updateButtonState()
+    }
+
+    override fun disable() {
+        buttonStatus = MeliButton.State.DISABLED
+        updateButtonState()
+    }
+
+    private fun updateButtonState() {
+        if (::button.isInitialized) {
+            button.state = buttonStatus
+        }
+    }
+
     @SuppressLint("Range")
     private fun showSnackBar(error: MercadoPagoError) {
         view?.let {
@@ -91,7 +119,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
     }
 
     private fun startBiometricsValidation(validationData: SecurityValidationData) {
-        button.state = MeliButton.State.DISABLED
+        disable()
         BehaviourProvider.getSecurityBehaviour().startValidation(this, validationData, REQ_CODE_BIOMETRICS)
 
     }
@@ -106,7 +134,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQ_CODE_BIOMETRICS) {
-            button.state = MeliButton.State.NORMAL
+            enable()
             viewModel.handleBiometricsResult(resultCode == Activity.RESULT_OK)
         } else if (requestCode == REQ_CODE_SECURITY_CODE) {
             cancelLoading()
@@ -154,8 +182,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
         super.onDestroy()
     }
 
-
-    fun finishLoading(params: ExplodeDecorator) {
+    private fun finishLoading(params: ExplodeDecorator) {
         FragmentUtil.getFragmentByTag(parentFragmentManager, ExplodingFragment.TAG, ExplodingFragment::class.java)
             ?.finishLoading(params)
             ?: viewModel.hasFinishPaymentAnimation()
@@ -168,9 +195,9 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 buttonConfig.getButtonProgressText(context!!), paymentTimeout)
             val explodingFragment = ExplodingFragment.newInstance(explodeParams)
             explodingFragment.setTargetFragment(this, 0)
-            activity?.supportFragmentManager?.beginTransaction()
-                ?.add(android.R.id.content, explodingFragment, ExplodingFragment.TAG)
-                ?.commitNowAllowingStateLoss()
+            parentFragmentManager.beginTransaction()
+                .add(android.R.id.content, explodingFragment, ExplodingFragment.TAG)
+                .commitNowAllowingStateLoss()
         }
     }
 
@@ -228,5 +255,4 @@ class PayButtonFragment : Fragment(), PayButton.View {
         @JvmStatic
         fun newInstance(targetFragment: Fragment) = PayButtonFragment().apply { setTargetFragment(targetFragment, 0) }
     }
-
 }

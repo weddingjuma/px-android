@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.pay_button
 
 import android.arch.lifecycle.MutableLiveData
+import android.os.Bundle
 import com.mercadopago.android.px.addons.model.SecurityValidationData
 import com.mercadopago.android.px.internal.base.BaseViewModel
 import com.mercadopago.android.px.internal.core.ConnectionHelper
@@ -43,7 +44,7 @@ internal class PayButtonViewModel(
         paymentSettingRepository.advancedConfiguration.customStringConfiguration)
 
     init {
-        buttonTextLiveData.postValue(buttonConfig)
+        buttonTextLiveData.value = buttonConfig
     }
 
     private lateinit var handler: PayButton.Handler
@@ -57,7 +58,7 @@ internal class PayButtonViewModel(
         this.confirmTrackerData = confirmTrackerData
         val data: SecurityValidationData = SecurityValidationDataFactory
             .create(productIdProvider, paymentConfiguration)
-        stateUILiveData.postValue(UIProgress.FingerprintRequired(data))
+        stateUILiveData.value = UIProgress.FingerprintRequired(data)
     }
 
     override fun handleBiometricsResult(isSuccess: Boolean) {
@@ -81,21 +82,21 @@ internal class PayButtonViewModel(
     }
 
     override fun onPaymentError(error: MercadoPagoError) {
-        stateUILiveData.postValue(UIProgress.ButtonLoadingCanceled)
+        stateUILiveData.value = UIProgress.ButtonLoadingCanceled
         val shouldHandleError = error.isInternalServerError || error.isNoConnectivityError
         if (shouldHandleError) handleError(error) else handler.onPaymentError(error)
     }
 
     override fun onVisualPayment() {
-        stateUILiveData.postValue(UIResult.VisualProcessorResult)
+        stateUILiveData.value = UIResult.VisualProcessorResult
     }
 
     override fun onCvvRequired(card: Card, reason: Reason) {
-        cvvRequiredLiveData.postValue(Pair(card, reason))
+        cvvRequiredLiveData.value = Pair(card, reason)
     }
 
     override fun onPaymentFinished(payment: IPaymentDescriptor) {
-        stateUILiveData.postValue(UIProgress.ButtonLoadingFinished(ExplodeDecoratorMapper().map(payment)))
+        stateUILiveData.value = UIProgress.ButtonLoadingFinished(ExplodeDecoratorMapper().map(payment))
     }
 
     override fun onRecoverPaymentEscInvalid(recovery: PaymentRecovery) {
@@ -108,7 +109,7 @@ internal class PayButtonViewModel(
 
     override fun recoverPayment(recovery: PaymentRecovery) {
         if (recovery.shouldAskForCvv()) {
-            recoverRequiredLiveData.postValue(recovery)
+            recoverRequiredLiveData.value = recovery
         }
     }
 
@@ -128,10 +129,25 @@ internal class PayButtonViewModel(
     private fun handleError(error: MercadoPagoError) {
         FrictionEventTracker.with(OneTapViewTracker.PATH_REVIEW_ONE_TAP_VIEW,
             FrictionEventTracker.Id.GENERIC, FrictionEventTracker.Style.CUSTOM_COMPONENT, error).track()
-        stateUILiveData.postValue(UIError.ConnectionError(error))
+        stateUILiveData.value = UIError.ConnectionError(error)
     }
 
     override fun hasFinishPaymentAnimation() {
         paymentService.payment?.let { handler.onPaymentFinished(it) }
+    }
+
+    override fun storeInBundle(bundle: Bundle) {
+        bundle.putParcelable(BUNDLE_PAYMENT_CONFIGURATION, paymentConfiguration)
+        bundle.putParcelable(BUNDLE_CONFIRM_DATA, confirmTrackerData)
+    }
+
+    override fun recoverFromBundle(bundle: Bundle) {
+        paymentConfiguration = bundle.getParcelable(BUNDLE_PAYMENT_CONFIGURATION)
+        confirmTrackerData = bundle.getParcelable(BUNDLE_CONFIRM_DATA)
+    }
+
+    companion object {
+        const val BUNDLE_PAYMENT_CONFIGURATION = "BUNDLE_PAYMENT_CONFIGURATION"
+        const val BUNDLE_CONFIRM_DATA = "BUNDLE_CONFIRM_DATA"
     }
 }

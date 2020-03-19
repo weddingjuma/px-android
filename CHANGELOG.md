@@ -1,3 +1,10 @@
+## VERSION 4.38.0
+_19_03_2020_
+* FEATURE - New security code remedy
+* ENHANCEMENT - Generic payment button
+* FIX - NPE in card form
+* FIX - Sending session id on card form
+
 ## VERSION 4.37.0
 _28_02_2020_
 * ENHANCEMENT - Reset esc cap when user enter security code

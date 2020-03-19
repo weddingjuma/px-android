@@ -33,6 +33,7 @@ import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.BackHandler;
 import com.mercadopago.android.px.internal.base.BaseFragment;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
@@ -99,7 +100,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         confirmButton = view.findViewById(R.id.confirm_button);
         confirmButton.setState(MeliButton.State.DISABLED);
         confirmButton.setOnClickListener(v -> {
-            if (ApiUtil.checkConnection(getActivity().getApplicationContext())) {
+            if (ConnectionHelper.getInstance().checkConnection()) {
                 presenter.startSecuredPayment();
             } else {
                 presenter.manageNoConnection();

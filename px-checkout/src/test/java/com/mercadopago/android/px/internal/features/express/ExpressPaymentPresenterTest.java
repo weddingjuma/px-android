@@ -5,6 +5,7 @@ import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
@@ -17,14 +18,12 @@ import com.mercadopago.android.px.internal.repository.PayerCostSelectionReposito
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
-import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import com.mercadopago.android.px.internal.viewmodel.drawables.PaymentMethodDrawableItemMapper;
 import com.mercadopago.android.px.mocks.CurrencyStub;
 import com.mercadopago.android.px.mocks.SiteStub;
 import com.mercadopago.android.px.model.AmountConfiguration;
-import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -114,6 +113,9 @@ public class ExpressPaymentPresenterTest {
     @Mock
     private PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
 
+    @Mock
+    private ConnectionHelper connectionHelper;
+
     private ExpressPaymentPresenter expressPaymentPresenter;
 
     @Before
@@ -126,7 +128,6 @@ public class ExpressPaymentPresenterTest {
         when(paymentSettingRepository.getCheckoutPreference()).thenReturn(preference);
         when(paymentSettingRepository.getAdvancedConfiguration()).thenReturn(advancedConfiguration);
         when(advancedConfiguration.getDynamicDialogConfiguration()).thenReturn(dynamicDialogConfiguration);
-        when(advancedConfiguration.getCustomStringConfiguration()).thenReturn(mock(CustomStringConfiguration.class));
         when(initRepository.init()).thenReturn(new StubSuccessMpCall<>(initResponse));
         when(initResponse.getExpress()).thenReturn(Collections.singletonList(expressMetadata));
         when(expressMetadata.isCard()).thenReturn(true);
@@ -137,8 +138,9 @@ public class ExpressPaymentPresenterTest {
 
         expressPaymentPresenter =
             new ExpressPaymentPresenter(paymentRepository, paymentSettingRepository, disabledPaymentMethodRepository,
-                payerCostSelectionRepository, discountRepository, amountRepository, initRepository, amountConfigurationRepository, chargeRepository,
-                escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper);
+                payerCostSelectionRepository, discountRepository, amountRepository, initRepository,
+                amountConfigurationRepository, chargeRepository,
+                escManagerBehaviour, productIdProvider, paymentMethodDrawableItemMapper, connectionHelper);
 
         verifyAttachView();
     }
@@ -153,17 +155,6 @@ public class ExpressPaymentPresenterTest {
 
     @Test
     public void whenViewIsResumedThenPaymentRepositoryIsAttached() {
-        verifyOnViewResumed();
-        verifyNoMoreInteractions(paymentRepository);
-        verifyNoMoreInteractions(view);
-        verifyNoMoreInteractions(dynamicDialogConfiguration);
-    }
-
-    @Test
-    public void whenViewIsPausedThenPaymentRepositoryIsDetached() {
-        verifyOnViewResumed();
-        expressPaymentPresenter.onViewPaused();
-        verify(paymentRepository).detach(expressPaymentPresenter);
         verifyNoMoreInteractions(paymentRepository);
         verifyNoMoreInteractions(view);
         verifyNoMoreInteractions(dynamicDialogConfiguration);
@@ -219,13 +210,6 @@ public class ExpressPaymentPresenterTest {
         verifyNoMoreInteractions(view);
     }
 
-    @Test
-    public void whenConfirmPaymentWithSecurityThenStartSecurityValidation() {
-        expressPaymentPresenter.startSecuredPayment();
-        verify(view).startSecurityValidation(any());
-        verifyNoMoreInteractions(view);
-    }
-
     private int mockPayerCosts() {
         final int selectedPayerCostIndex = 1;
         when(payerCostSelectionRepository.get(anyString())).thenReturn(selectedPayerCostIndex);
@@ -246,11 +230,5 @@ public class ExpressPaymentPresenterTest {
         verify(view).configureAdapters(any(Site.class), any(Currency.class));
         verify(view).updatePaymentMethods(anyListOf(DrawableFragmentItem.class));
         verify(view).updateBottomSheetStatus(false);
-        verify(view).setPayButtonText(any(PayButtonViewModel.class));
-    }
-
-    private void verifyOnViewResumed() {
-        expressPaymentPresenter.onViewResumed();
-        verify(paymentRepository).attach(expressPaymentPresenter);
     }
 }

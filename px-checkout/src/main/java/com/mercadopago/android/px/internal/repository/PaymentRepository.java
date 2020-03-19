@@ -4,20 +4,18 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.annotation.Size;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
-import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
-import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import java.util.List;
 
 public interface PaymentRepository {
 
     void startPayment();
 
-    void startExpressPayment(@NonNull final ExpressMetadata expressMetadata, @Nullable final PayerCost payerCost,
-        final boolean splitPayment);
+    void startExpressPayment(@NonNull final PaymentConfiguration paymentConfiguration);
 
     void startExpressPaymentWithOffMethod(@NonNull final String paymentMethodId, @NonNull final String paymentTypeId);
 

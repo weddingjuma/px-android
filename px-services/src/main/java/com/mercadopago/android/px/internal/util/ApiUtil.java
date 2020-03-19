@@ -48,36 +48,6 @@ public final class ApiUtil {
         return apiException;
     }
 
-    public static boolean checkConnection(@NonNull final Context context) {
-        if (context != null) {
-            try {
-                boolean haveConnectedWifi = false;
-                boolean haveConnectedMobile = false;
-                final ConnectivityManager cm =
-                    (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
-                if (networkInfo != null && networkInfo.isConnected()) {
-                    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                        if (networkInfo.isConnectedOrConnecting()) {
-                            haveConnectedWifi = true;
-                        }
-                    }
-                    if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
-                        if (networkInfo.isConnectedOrConnecting()) {
-                            haveConnectedMobile = true;
-                        }
-                    }
-                }
-
-                return haveConnectedWifi || haveConnectedMobile;
-            } catch (final Exception ex) {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
     public static final class StatusCodes {
 
         private StatusCodes() {

@@ -72,7 +72,6 @@ import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
 import java.util.Arrays;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
@@ -137,17 +136,17 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onCurrentConfigurationProvided(@NonNull final PaymentConfiguration paymentConfiguration,
-        @NotNull final ConfirmData confirmTrackerData) {
+        @NonNull final ConfirmData confirmTrackerData) {
         payButtonFragment.onReadyForPayment(paymentConfiguration, confirmTrackerData);
     }
 
     @Override
-    public void onPaymentFinished(@NotNull final IPaymentDescriptor payment) {
+    public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
         showPaymentResult(payment);
     }
 
     @Override
-    public void onPaymentError(@NotNull final MercadoPagoError error) {
+    public void onPaymentError(@NonNull final MercadoPagoError error) {
         if (getActivity() != null) {
             ((CheckoutActivity) getActivity()).presenter.onPaymentError(error);
         }

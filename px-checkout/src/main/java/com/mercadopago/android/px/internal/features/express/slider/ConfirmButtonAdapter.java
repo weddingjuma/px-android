@@ -2,7 +2,6 @@ package com.mercadopago.android.px.internal.features.express.slider;
 
 import android.support.annotation.NonNull;
 import android.view.View;
-import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
@@ -10,9 +9,9 @@ import java.util.List;
 
 public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewModel>, View> {
 
-    private PayButton.View payButton;
+    private PayButtonFragment payButton;
 
-    public ConfirmButtonAdapter(@NonNull final PayButton.View fragment) {
+    public ConfirmButtonAdapter(@NonNull final PayButtonFragment fragment) {
         super(null);
         this.payButton = fragment;
     }

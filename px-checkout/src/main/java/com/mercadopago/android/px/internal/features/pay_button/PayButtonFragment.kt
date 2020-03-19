@@ -41,6 +41,7 @@ import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as Butto
 
 class PayButtonFragment : Fragment(), PayButton.View {
 
+    private var buttonStatus = MeliButton.State.NORMAL
     private lateinit var button: MeliButton
     private lateinit var viewModel: PayButtonViewModel
 
@@ -57,6 +58,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 viewModel.preparePayment()
             }
         })
+        updateButtonState()
 
         viewModel.buttonTextLiveData.observe(viewLifecycleOwner,
             Observer { buttonConfig -> button.text = buttonConfig!!.getButtonText(this.context!!) })
@@ -84,14 +86,18 @@ class PayButtonFragment : Fragment(), PayButton.View {
     }
 
     override fun enable() {
-        if(::button.isInitialized) {
-            button.state = MeliButton.State.NORMAL
-        }
+        buttonStatus = MeliButton.State.NORMAL
+        updateButtonState()
     }
 
     override fun disable() {
-        if(::button.isInitialized) {
-            button.state = MeliButton.State.DISABLED
+        buttonStatus = MeliButton.State.DISABLED
+        updateButtonState()
+    }
+
+    private fun updateButtonState() {
+        if (::button.isInitialized) {
+            button.state = buttonStatus
         }
     }
 

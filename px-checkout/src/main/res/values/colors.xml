@@ -49,6 +49,7 @@
     <color name="px_color_light_grey">#F0F0F0</color>
     <color name="px_active_button">@color/px_input</color>
     <color name="px_inactive_button">#84b4fc</color>
+    <color name="px_quiet_button">#33479ad1</color>
     <color name="px_error_red_pink">#F04449</color>
     <color name="px_color_congrats_background">#0DB478</color>
     <color name="px_color_new_card_form_background_light_alpha">#4DFFFFFF</color>

@@ -1,17 +1,21 @@
 package com.mercadopago.android.px.internal.features.payment_result.remedies
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.mercadopago.android.px.R
+import com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy
 import com.mercadopago.android.px.internal.util.nonNullObserve
 import kotlinx.android.synthetic.main.px_remedies.*
+import java.lang.IllegalStateException
 
 internal class RemediesFragment : Fragment() {
 
     private lateinit var remediesViewModel: RemediesViewModel
+    private var cvvListener: CvvRemedy.Listener? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.px_remedies, container, false)
@@ -23,8 +27,23 @@ internal class RemediesFragment : Fragment() {
             getParcelable<RemediesModel>(REMEDIES_MODEL)?.let {
                 remediesViewModel = RemediesViewModel(it)
                 buildViewModel()
+                cvv.listener = cvvListener
             }
         }
+    }
+
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        if (context is CvvRemedy.Listener) {
+            cvvListener = context
+        } else {
+            throw IllegalStateException("Parent should implement cvv remedy listener")
+        }
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        cvvListener = null
     }
 
     private fun buildViewModel() {

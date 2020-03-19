@@ -6,9 +6,9 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory;
 import com.mercadopago.android.px.internal.features.payment_result.model.Badge;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.Instruction;
@@ -17,7 +17,7 @@ import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
 
-public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, PaymentResultHeader.Model> {
+public class PaymentResultHeaderModelMapper extends Mapper<PaymentModel, PaymentResultHeader.Model> {
 
     private static final int DEFAULT_LABEL = 0;
     private static final int DEFAULT_ICON_IMAGE = R.drawable.px_icon_default;
@@ -40,11 +40,14 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
     }
 
     @Override
-    public PaymentResultHeader.Model map(@NonNull final PaymentResult paymentResult) {
+    public PaymentResultHeader.Model map(@NonNull final PaymentModel model) {
+        final PaymentResult paymentResult = model.getPaymentResult();
         final PaymentResultViewModel viewModel =
             PaymentResultViewModelFactory.createPaymentResultViewModel(paymentResult);
 
         final boolean hasBodyComponent = viewModel.isApprovedSuccess() || viewModel.hasBodyError();
+        //TODO: check for all future remedies
+        final boolean hasRemedies = model.getRemedies().getCvv() != null;
 
         return new PaymentResultHeader.Model.Builder()
             .setDynamicHeight(!hasBodyComponent)
@@ -52,7 +55,7 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
             .setIconImage(getIconImage(paymentResult))
             .setIconUrl(getIconUrl(paymentResult))
             .setBadgeImage(getBadgeImage(paymentResult, viewModel))
-            .setTitle(new GenericLocalized(TextUtil.isNotEmpty(getInstructionsTitle()) ? getInstructionsTitle() : null,
+            .setTitle(new GenericLocalized(hasRemedies ? model.getRemedies().getCvv().getTitle() : getInstructionsTitle(),
                 viewModel.getTitleResId()))
             .setLabel(new GenericLocalized(null, DEFAULT_LABEL))
             .build();

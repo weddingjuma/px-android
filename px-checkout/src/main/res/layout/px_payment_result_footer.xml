@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <fragment
+        android:name="com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment"
+        android:id="@+id/pay_button_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.mercadolibre.android.ui.widgets.MeliButton
+        android:id="@+id/action_loud"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:type="optionPrimary"
+        android:visibility="gone"
+        android:text="Pagar" />
+
+    <com.mercadolibre.android.ui.widgets.MeliButton
+        android:id="@+id/action_quiet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:type="actionSecondary"
+        android:text="Pagar con otro medio" />
+
+</merge>

@@ -12,19 +12,20 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
-import android.widget.FrameLayout;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.pay_button.PayButton;
+import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesFragment;
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.Logger;
@@ -35,15 +36,17 @@ import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
+import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import org.jetbrains.annotations.NotNull;
 
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getSafeIntent;
 
 public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> implements
-    PaymentResultContract.View {
+    PaymentResultContract.View, PayButton.Handler, CvvRemedy.Listener {
 
     private static final int CONGRATS_REQUEST_CODE = 16;
     private static final int INSTRUCTIONS_REQUEST_CODE = 14;
@@ -53,6 +56,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     private static final String TAG = PaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
+    private PayButtonFragment payButtonFragment;
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
         final Intent intent = new Intent(context, PaymentResultActivity.class);
@@ -86,22 +90,25 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final PaymentResultHeader header = findViewById(R.id.header);
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
-        body.init(model.bodyModel, callback);
 
         if (hasRemedies(model.remediesModel)) {
+            findViewById(R.id.remedies_footer).setVisibility(View.VISIBLE);
+            findViewById(R.id.remedies).setVisibility(View.VISIBLE);
+            body.setVisibility(View.GONE);
             loadRemedies(model.remediesModel);
         } else {
+            body.init(model.bodyModel, callback);
             //TODO migrate
             PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
         }
     }
 
-    private boolean hasRemedies(final @NonNull RemediesModel model) {
+    private boolean hasRemedies(@NonNull final RemediesModel model) {
         //TODO: there will be more remedies
         return model.getCvvRemedyModel() != null;
     }
 
-    private void loadRemedies(RemediesModel remediesModel) {
+    private void loadRemedies(@NonNull final RemediesModel remediesModel) {
         final FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager != null && fragmentManager.findFragmentByTag(RemediesFragment.REMEDIES_TAG) == null) {
             fragmentManager
@@ -219,7 +226,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void processBusinessAction(@NonNull final String deepLink) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             Logger.debug(TAG, e);
         }
     }
@@ -228,8 +235,33 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void processCrossSellingBusinessAction(@NonNull final String deepLink) {
         try {
             startActivity(getSafeIntent(this, Uri.parse(deepLink)));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             Logger.debug(TAG, e);
         }
+    }
+
+    @Override
+    public void onPaymentFinished(@NotNull final IPaymentDescriptor payment) {
+
+    }
+
+    @Override
+    public void onPaymentError(@NotNull final MercadoPagoError error) {
+
+    }
+
+    @Override
+    public void prePayment() {
+        //Tokenize
+    }
+
+    @Override
+    public void onCvvEntered(@NotNull final String cvv) {
+        
+    }
+
+    @Override
+    public void onCvvDeleted() {
+
     }
 }

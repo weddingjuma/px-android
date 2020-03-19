@@ -73,7 +73,7 @@ internal class PayButtonViewModel(
 
     override fun startPayment() {
         if (paymentService.isExplodingAnimationCompatible) {
-            paymentStartedLiveData.value = Pair(paymentService.paymentTimeout, buttonConfig)
+            paymentStartedLiveData.postValue(Pair(paymentService.paymentTimeout, buttonConfig))
         }
         paymentService.attach(this)
         paymentService.startExpressPayment(paymentConfiguration!!)

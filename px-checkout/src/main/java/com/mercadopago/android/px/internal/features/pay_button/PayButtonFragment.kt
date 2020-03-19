@@ -33,8 +33,6 @@ import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction
 import com.mercadopago.android.px.model.Card
 import com.mercadopago.android.px.model.PaymentRecovery
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError
-import com.mercadopago.android.px.model.internal.PaymentConfiguration
-import com.mercadopago.android.px.tracking.internal.model.ConfirmData
 import com.mercadopago.android.px.tracking.internal.model.Reason
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel as ButtonConfig
 
@@ -62,8 +60,6 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
         viewModel.buttonTextLiveData.observe(viewLifecycleOwner,
             Observer { buttonConfig -> button.text = buttonConfig!!.getButtonText(this.context!!) })
-        viewModel.paymentStartedLiveData.observe(viewLifecycleOwner,
-            Observer { pair -> startLoadingButton(pair!!.first, pair.second) })
         viewModel.cvvRequiredLiveData.observe(viewLifecycleOwner,
             Observer { p -> showSecurityCodeScreen(p!!.first, p.second) })
         viewModel.recoverRequiredLiveData.observe(viewLifecycleOwner,
@@ -84,6 +80,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
     private fun onStateUIChanged(stateUI: PayButtonState) {
         when (stateUI) {
             is UIProgress.FingerprintRequired -> startBiometricsValidation(stateUI.validationData)
+            is UIProgress.ButtonLoadingStarted -> startLoadingButton(stateUI.timeOut, stateUI.buttonConfig)
             is UIProgress.ButtonLoadingFinished -> finishLoading(stateUI.explodeDecorator)
             is UIProgress.ButtonLoadingCanceled -> cancelLoading()
             is UIResult.VisualProcessorResult -> PaymentProcessorActivity.start(this, REQ_CODE_PAYMENT_PROCESSOR)
@@ -122,10 +119,6 @@ class PayButtonFragment : Fragment(), PayButton.View {
         disable()
         BehaviourProvider.getSecurityBehaviour().startValidation(this, validationData, REQ_CODE_BIOMETRICS)
 
-    }
-
-    override fun onReadyForPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
-        viewModel.startSecuredPayment(paymentConfiguration, confirmTrackerData)
     }
 
     override fun onAnimationFinished() {

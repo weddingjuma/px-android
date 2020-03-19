@@ -68,10 +68,9 @@ import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.DisabledPaymentMethod;
-import com.mercadopago.android.px.model.internal.PaymentConfiguration;
-import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
 import java.util.Arrays;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 import static android.app.Activity.RESULT_OK;
 import static android.view.View.GONE;
@@ -135,9 +134,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void onCurrentConfigurationProvided(@NonNull final PaymentConfiguration paymentConfiguration,
-        @NonNull final ConfirmData confirmTrackerData) {
-        payButtonFragment.onReadyForPayment(paymentConfiguration, confirmTrackerData);
+    public void prePayment(@NotNull final PayButton.OnReadyForPaymentCallback callback) {
+        presenter.requireCurrentConfiguration(callback);
     }
 
     @Override
@@ -150,11 +148,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (getActivity() != null) {
             ((CheckoutActivity) getActivity()).presenter.onPaymentError(error);
         }
-    }
-
-    @Override
-    public void prePayment() {
-        presenter.requireCurrentConfiguration();
     }
 
     public interface CallBack {

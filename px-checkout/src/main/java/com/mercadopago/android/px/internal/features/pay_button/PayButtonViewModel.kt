@@ -7,6 +7,7 @@ import com.mercadopago.android.px.internal.base.BaseViewModel
 import com.mercadopago.android.px.internal.core.ConnectionHelper
 import com.mercadopago.android.px.internal.core.ProductIdProvider
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper
+import com.mercadopago.android.px.internal.features.pay_button.PayButton.OnReadyForPaymentCallback
 import com.mercadopago.android.px.internal.repository.PaymentRepository
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository
 import com.mercadopago.android.px.internal.util.ApiUtil
@@ -35,7 +36,6 @@ internal class PayButtonViewModel(
     private var paymentConfiguration: PaymentConfiguration? = null
 
     val buttonTextLiveData = MutableLiveData<ButtonConfig>()
-    val paymentStartedLiveData = MutableLiveData<Pair<Int, ButtonConfig>>()
     val cvvRequiredLiveData = MutableLiveData<Pair<Card, Reason>>()
     val recoverRequiredLiveData = MutableLiveData<PaymentRecovery>()
     val stateUILiveData = MutableLiveData<PayButtonState>()
@@ -53,7 +53,21 @@ internal class PayButtonViewModel(
         this.handler = handler
     }
 
-    override fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+    override fun preparePayment() {
+        paymentConfiguration = null
+        confirmTrackerData = null
+        if (connectionHelper.checkConnection()) {
+            handler.prePayment(object : OnReadyForPaymentCallback {
+                override fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
+                    startSecuredPayment(paymentConfiguration, confirmTrackerData)
+                }
+            })
+        } else {
+            manageNoConnection()
+        }
+    }
+
+    private fun startSecuredPayment(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData) {
         this.paymentConfiguration = paymentConfiguration
         this.confirmTrackerData = confirmTrackerData
         val data: SecurityValidationData = SecurityValidationDataFactory
@@ -73,12 +87,21 @@ internal class PayButtonViewModel(
 
     override fun startPayment() {
         if (paymentService.isExplodingAnimationCompatible) {
-            paymentStartedLiveData.postValue(Pair(paymentService.paymentTimeout, buttonConfig))
+            stateUILiveData.postValue(UIProgress.ButtonLoadingStarted(paymentService.paymentTimeout, buttonConfig))
         }
-        paymentService.attach(this)
-        paymentService.startExpressPayment(paymentConfiguration!!)
+        handler.enqueueOnExploding(object : PayButton.OnEnqueueResolvedCallback {
+            override fun success() {
+                paymentService.attach(this@PayButtonViewModel)
+                paymentService.startExpressPayment(paymentConfiguration!!)
 
-        ConfirmEvent(confirmTrackerData!!).track()
+                ConfirmEvent(confirmTrackerData!!).track()
+            }
+
+            override fun failure() {
+                stateUILiveData.value = (UIProgress.ButtonLoadingCanceled)
+            }
+
+        })
     }
 
     override fun onPaymentError(error: MercadoPagoError) {
@@ -111,12 +134,6 @@ internal class PayButtonViewModel(
         if (recovery.shouldAskForCvv()) {
             recoverRequiredLiveData.value = recovery
         }
-    }
-
-    override fun preparePayment() {
-        paymentConfiguration = null
-        confirmTrackerData = null
-        if (connectionHelper.checkConnection()) handler.prePayment() else manageNoConnection()
     }
 
     private fun manageNoConnection() {

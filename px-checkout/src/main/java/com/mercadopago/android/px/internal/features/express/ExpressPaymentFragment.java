@@ -124,6 +124,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     /* default */ View bottomSheet;
     private BottomSheetBehavior<View> bottomSheetBehavior;
     private PayButtonFragment payButtonFragment;
+    private FragmentManager.FragmentLifecycleCallbacks fragmentLifecycleCallbacks;
 
     public static Fragment getInstance() {
         return new ExpressPaymentFragment();
@@ -216,6 +217,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         configureViews(view);
 
         presenter = createPresenter();
@@ -236,12 +238,13 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     private void configureViews(@NonNull final View view) {
         payButtonFragment =
-            (PayButtonFragment) getActivity().getSupportFragmentManager().findFragmentByTag(PayButtonFragment.TAG);
+            (PayButtonFragment) getFragmentManager().findFragmentByTag(PayButtonFragment.TAG);
         if (payButtonFragment == null) {
             payButtonFragment = PayButtonFragment.newInstance(this);
-            getActivity().getSupportFragmentManager().beginTransaction()
+            getFragmentManager().beginTransaction()
                 .replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG).commitAllowingStateLoss();
         }
+        payButtonContainer = view.findViewById(R.id.pay_button);
         splitPaymentView = view.findViewById(R.id.labeledSwitch);
         titlePager = view.findViewById(R.id.title_pager);
         summaryView = view.findViewById(R.id.summary_view);
@@ -250,7 +253,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         paymentMethodPager = view.findViewById(R.id.payment_method_pager);
         indicator = view.findViewById(R.id.indicator);
         installmentsRecyclerView = view.findViewById(R.id.installments_recycler_view);
-        payButtonContainer = view.findViewById(R.id.pay_button);
         expandAndCollapseAnimation = new ExpandAndCollapseAnimation(installmentsRecyclerView);
         fadeAnimation = new FadeAnimator(view.getContext());
 
@@ -298,6 +300,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         ));
 
         configureBottomSheet();
+        registerFragmentLifecycleCallbacks();
     }
 
     private void configureBottomSheet() {
@@ -328,8 +331,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 fragment.onSlideSheet(v);
             }
         });
+    }
 
-        getFragmentManager().registerFragmentLifecycleCallbacks(new FragmentManager.FragmentLifecycleCallbacks() {
+    private void registerFragmentLifecycleCallbacks() {
+        fragmentLifecycleCallbacks = new FragmentManager.FragmentLifecycleCallbacks() {
             @Override
             public void onFragmentAttached(@NonNull final FragmentManager fm, @NonNull final Fragment fragment,
                 @NonNull final Context context) {
@@ -349,7 +354,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
                 }
                 super.onFragmentDetached(fm, fragment);
             }
-        }, false);
+        };
+        getFragmentManager().registerFragmentLifecycleCallbacks(fragmentLifecycleCallbacks, false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        getFragmentManager().unregisterFragmentLifecycleCallbacks(fragmentLifecycleCallbacks);
+        getFragmentManager().beginTransaction().remove(payButtonFragment).commitAllowingStateLoss();
+        super.onDestroyView();
     }
 
     private ExpressPaymentPresenter createPresenter() {
@@ -390,12 +403,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         if (context instanceof CallBack) {
             callback = (CallBack) context;
         }
-    }
-
-    @Override
-    public void onDestroy() {
-        FragmentUtil.removeFragment(getActivity().getSupportFragmentManager(), PayButtonFragment.TAG);
-        super.onDestroy();
     }
 
     @Override

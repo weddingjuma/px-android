@@ -55,6 +55,10 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 viewModel.preparePayment()
             }
         })
+        savedInstanceState?.let {
+            buttonStatus = it.getInt(EXTRA_STATE, MeliButton.State.NORMAL)
+            viewModel.recoverFromBundle(it)
+        }
         updateButtonState()
 
         viewModel.buttonTextLiveData.observe(viewLifecycleOwner,
@@ -68,12 +72,8 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putInt(EXTRA_STATE, buttonStatus)
         viewModel.storeInBundle(outState)
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
-        savedInstanceState?.let { viewModel.recoverFromBundle(it) }
     }
 
     private fun onStateUIChanged(stateUI: PayButtonState) {
@@ -243,6 +243,7 @@ class PayButtonFragment : Fragment(), PayButton.View {
         private const val REQ_CODE_SECURITY_CODE = 301
         private const val REQ_CODE_PAYMENT_PROCESSOR = 302
         private const val REQ_CODE_BIOMETRICS = 303
+        private const val EXTRA_STATE = "extra_state"
 
         @JvmStatic
         fun newInstance(targetFragment: Fragment) = PayButtonFragment().apply { setTargetFragment(targetFragment, 0) }

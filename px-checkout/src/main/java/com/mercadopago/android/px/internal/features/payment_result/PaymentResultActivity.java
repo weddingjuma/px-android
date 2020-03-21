@@ -15,6 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
@@ -94,8 +95,6 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         if (savedInstanceState == null) {
             presenter.onFreshStart();
         }
-        payButtonFragment = (PayButtonFragment) getSupportFragmentManager().findFragmentById(R.id.pay_button_container);
-        payButtonFragment.disable();
     }
 
     @NonNull
@@ -139,19 +138,25 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
             final PaymentModel paymentModel = getIntent().getParcelableExtra(EXTRA_PAYMENT_MODEL);
             final PaymentMethod paymentMethod = paymentModel.getPaymentResult().getPaymentData().getPaymentMethod();
 
-            remediesFragment = (RemediesFragment) fragmentManager.findFragmentByTag(RemediesFragment.REMEDIES_TAG);
-            if (remediesFragment == null) {
-                remediesFragment = RemediesFragment
-                    .newInstance(remediesModel,
-                        paymentMethod.getPaymentTypeId(),
-                        paymentMethod.getId());
+            remediesFragment = (RemediesFragment) fragmentManager.findFragmentByTag(RemediesFragment.TAG);
+            payButtonFragment = (PayButtonFragment) fragmentManager.findFragmentByTag(PayButtonFragment.TAG);
+
+            if (remediesFragment == null || payButtonFragment == null) {
+                final FragmentTransaction transaction = fragmentManager.beginTransaction();
+                if (remediesFragment == null) {
+                    remediesFragment = RemediesFragment
+                        .newInstance(remediesModel,
+                            paymentMethod.getPaymentTypeId(),
+                            paymentMethod.getId());
+                    transaction.replace(R.id.remedies, remediesFragment, RemediesFragment.TAG);
+                }
+                if (payButtonFragment == null) {
+                    payButtonFragment = new PayButtonFragment();
+                    transaction.replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG);
+                    payButtonFragment.disable();
+                }
+                transaction.commitAllowingStateLoss();
             }
-            fragmentManager
-                .beginTransaction()
-                .replace(R.id.remedies,
-                    remediesFragment,
-                    RemediesFragment.REMEDIES_TAG)
-                .commitAllowingStateLoss();
         }
     }
 
@@ -195,6 +200,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void changePaymentMethod() {
+        ViewUtils.hideKeyboard(this);
         final Intent returnIntent = new Intent();
         new ChangePaymentMethodPostPaymentAction().addToIntent(returnIntent);
         setResult(RESULT_ACTION, returnIntent);

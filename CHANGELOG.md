@@ -1,3 +1,9 @@
+## VERSION 4.38.1
+_21_03_2020_
+* FIX - Fixed crash on business congrats
+* FIX - Fixed congrats layout on instructions and body error
+* FIX - Fixed pay button disappearing in one tap when returning from card form
+
 ## VERSION 4.38.0
 _19_03_2020_
 * FEATURE - New security code remedy

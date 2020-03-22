@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.payment_result.view
 
 import android.content.Context
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -23,7 +24,7 @@ class PaymentResultFooter(context: Context, attrs: AttributeSet?, defStyleAttr: 
         orientation = VERTICAL
         View.inflate(context, R.layout.px_payment_result_footer, this)
         quietButton = findViewById<MeliButton>(R.id.action_quiet).apply {
-            background = resources.getDrawable(R.drawable.px_quiet_button_selector)
+            background = ContextCompat.getDrawable(context, R.drawable.px_quiet_button_selector)
             text = resources.getString(R.string.px_change_payment)
         }
     }

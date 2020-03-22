@@ -100,7 +100,7 @@ internal class RemediesFragment : Fragment(), Remedies.View, CvvRemedy.Listener 
     }
 
     companion object {
-        const val REMEDIES_TAG = "remedies"
+        const val TAG = "remedies"
         private const val REMEDIES_MODEL = "remedies_model"
         private const val PAYMENT_METHOD_TYPE = "payment_method_type"
         private const val PAYMENT_METHOD_ID = "payment_method_id"

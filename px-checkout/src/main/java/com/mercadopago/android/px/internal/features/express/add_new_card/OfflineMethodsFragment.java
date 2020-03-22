@@ -18,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,7 +41,6 @@ import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.font.PxFont;
-import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -71,6 +69,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     private View header;
 
     private int lastSheetState = BottomSheetBehavior.STATE_EXPANDED;
+    @Nullable private ExplodingFragment explodingFragment;
 
     @NonNull
     public static OfflineMethodsFragment getInstance(@NonNull final OfflinePaymentTypesMetadata model) {
@@ -119,6 +118,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
         if (savedInstanceState == null) {
             presenter.trackOfflineMethodsView(model);
+        } else {
+            explodingFragment = (ExplodingFragment) getFragmentManager().findFragmentByTag(ExplodingFragment.TAG);
         }
 
         presenter.updateModel();
@@ -208,9 +209,10 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         ViewUtils.runWhenViewIsFullyMeasured(getView(), () -> {
             final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
                 payButtonViewModel.getButtonProgressText(confirmButton.getContext()), paymentTimeout);
-            final FragmentManager childFragmentManager = getChildFragmentManager();
-            final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
-            childFragmentManager.beginTransaction()
+            final FragmentManager fragmentManager = getFragmentManager();
+            explodingFragment = ExplodingFragment.newInstance(explodeParams);
+            explodingFragment.setTargetFragment(this, 0);
+            fragmentManager.beginTransaction()
                 .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
                 .commitNowAllowingStateLoss();
         });
@@ -244,10 +246,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void finishLoading(@NonNull final ExplodeDecorator params) {
-        final ExplodingFragment fragment =
-            FragmentUtil.getFragmentByTag(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT, ExplodingFragment.class);
-        if (fragment != null) {
-            fragment.finishLoading(params);
+        if (explodingFragment != null) {
+            explodingFragment.finishLoading(params);
         } else {
             presenter.hasFinishPaymentAnimation();
         }
@@ -257,13 +257,10 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     @Override
     public void cancelLoading() {
         showConfirmButton();
-        final FragmentManager childFragmentManager = getChildFragmentManager();
-        final ExplodingFragment fragment =
-            (ExplodingFragment) childFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-        if (fragment != null && fragment.isAdded() && fragment.hasFinished()) {
-            childFragmentManager
+        if (explodingFragment != null && explodingFragment.isAdded() && explodingFragment.hasFinished()) {
+            getFragmentManager()
                 .beginTransaction()
-                .remove(fragment)
+                .remove(explodingFragment)
                 .commitNowAllowingStateLoss();
         }
     }

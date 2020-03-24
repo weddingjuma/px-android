@@ -4,7 +4,7 @@ import com.mercadopago.android.px.internal.datasource.DisabledPaymentMethodServi
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.mocks.PaymentMethodStub;
 import com.mercadopago.android.px.model.BusinessPayment;
@@ -38,7 +38,7 @@ public class PaymentServiceHandlerWrapperTest {
     @Mock private DisabledPaymentMethodService disabledPaymentMethodService;
     @Mock private PaymentRecovery paymentRecovery;
     @Mock private InstructionsRepository instructionsRepository;
-    @Mock private PaymentRewardRepository paymentRewardRepository;
+    @Mock private CongratsRepository congratsRepository;
     @Mock private EscPaymentManager escPaymentManager;
     @Mock private UserSelectionRepository userSelectionRepository;
 
@@ -48,7 +48,7 @@ public class PaymentServiceHandlerWrapperTest {
     public void setUp() {
         paymentServiceHandlerWrapper =
             new PaymentServiceHandlerWrapper(paymentRepository, disabledPaymentMethodService, escPaymentManager,
-                instructionsRepository, paymentRewardRepository, userSelectionRepository);
+                instructionsRepository, congratsRepository, userSelectionRepository);
         paymentServiceHandlerWrapper.setHandler(wrapped);
         when(paymentRepository.createRecoveryForInvalidESC()).thenReturn(paymentRecovery);
         when(paymentRepository.getPaymentDataList()).thenReturn(Collections.singletonList(mock(PaymentData.class)));

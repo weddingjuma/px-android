@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.ErrorActivity;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -62,7 +63,7 @@ public final class ErrorUtil {
         final MercadoPagoError mercadoPagoError;
         final String errorMessage;
 
-        if (!ApiUtil.checkConnection(activity)) {
+        if (!ConnectionHelper.getInstance().checkConnection()) {
             errorMessage = activity.getString(R.string.px_no_connection_message);
             mercadoPagoError = new MercadoPagoError(errorMessage, true);
         } else {

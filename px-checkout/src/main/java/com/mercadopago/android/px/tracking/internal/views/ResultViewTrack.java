@@ -7,6 +7,8 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.tracking.internal.model.ResultViewTrackModel;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,14 +23,16 @@ public class ResultViewTrack extends ViewTracker {
 
     private final ResultViewTrackModel resultViewTrackModel;
     private final String paymentStatus;
+    private final List<String> remedyList;
 
     public ResultViewTrack(@NonNull final PaymentModel paymentModel,
         @NonNull final PaymentResultScreenConfiguration screenConfiguration,
-        @NonNull final PaymentSettingRepository paymentSetting) {
+        @NonNull final PaymentSettingRepository paymentSetting, @NonNull final List<String> remedyList) {
         resultViewTrackModel =
             new ResultViewTrackModel(paymentModel, screenConfiguration, paymentSetting.getCheckoutPreference(),
                 paymentSetting.getCurrency().getId());
         paymentStatus = getMappedResult(paymentModel.getPaymentResult());
+        this.remedyList = remedyList;
     }
 
     public ResultViewTrack(@NonNull final BusinessPaymentModel paymentModel,
@@ -36,6 +40,7 @@ public class ResultViewTrack extends ViewTracker {
         resultViewTrackModel = new ResultViewTrackModel(paymentModel, paymentSetting.getCheckoutPreference(),
             paymentSetting.getCurrency().getId());
         paymentStatus = getMappedResult(paymentModel.getPaymentResult());
+        remedyList = Collections.emptyList();
     }
 
     private String getMappedResult(@NonNull final PaymentResult payment) {
@@ -53,7 +58,12 @@ public class ResultViewTrack extends ViewTracker {
     @NonNull
     @Override
     public Map<String, Object> getData() {
-        return resultViewTrackModel.toMap();
+        Map<String, Object> map = resultViewTrackModel.toMap();
+        if (paymentStatus.equals(ERROR)) {
+            map.put("recoverable", !remedyList.isEmpty());
+            map.put("remedies", remedyList);
+        }
+        return map;
     }
 
     @NonNull

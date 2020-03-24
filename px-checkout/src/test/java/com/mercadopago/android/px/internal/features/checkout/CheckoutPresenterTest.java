@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -64,7 +64,7 @@ public class CheckoutPresenterTest {
     @Mock private InitRepository initRepository;
     @Mock private PluginRepository pluginRepository;
     @Mock private PaymentRepository paymentRepository;
-    @Mock private PaymentRewardRepository paymentRewardRepository;
+    @Mock private CongratsRepository congratsRepository;
     @Mock private InternalConfiguration internalConfiguration;
 
     private CheckoutPresenter presenter;
@@ -619,7 +619,7 @@ public class CheckoutPresenterTest {
         final Checkout.View view, final CheckoutStateModel checkoutStateModel) {
 
         presenter = new CheckoutPresenter(checkoutStateModel, paymentSettingRepository, userSelectionRepository,
-            initRepository, pluginRepository, paymentRepository, paymentRewardRepository, internalConfiguration);
+            initRepository, pluginRepository, paymentRepository, congratsRepository, internalConfiguration);
 
         presenter.attachView(view);
         return presenter;

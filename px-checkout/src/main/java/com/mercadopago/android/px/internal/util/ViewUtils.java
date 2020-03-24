@@ -26,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -133,12 +134,11 @@ public final class ViewUtils {
 
     public static void hideKeyboard(final Activity activity) {
         try {
-            final MPEditText editText = (MPEditText) activity.getCurrentFocus();
+            final EditText editText = (EditText) activity.getCurrentFocus();
             final InputMethodManager imm = (InputMethodManager) activity.getSystemService(
                 Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-        } catch (final Exception ex) {
-        }
+        } catch (final Exception ex) { }
     }
 
     public static void openKeyboard(final View view) {

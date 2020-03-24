@@ -14,6 +14,7 @@ import android.widget.ImageView;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BaseFragment;
+import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
@@ -47,8 +48,10 @@ public class OtherPaymentMethodFragment
         if (model.getNewCardMetadata() != null && OLD_VERSION.equals(model.getNewCardMetadata().getVersion())) {
             return new AddNewCardOldPresenter(Session.getInstance().getInitRepository());
         } else {
+            final ConfigurationModule module = Session.getInstance().getConfigurationModule();
             return new OtherPaymentMethodPresenter(
-                Session.getInstance().getConfigurationModule().getPaymentSettings());
+                module.getPaymentSettings(),
+                module.getSessionIdProvider());
         }
     }
 

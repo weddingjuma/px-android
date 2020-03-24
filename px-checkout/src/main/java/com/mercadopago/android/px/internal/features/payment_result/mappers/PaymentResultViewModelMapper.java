@@ -25,7 +25,8 @@ public class PaymentResultViewModelMapper extends Mapper<PaymentModel, PaymentRe
         final PaymentResultLegacyViewModel legacyViewModel = new PaymentResultLegacyViewModel(
             model, configuration, instruction);
         return new PaymentResultViewModel(
-            new PaymentResultHeaderModelMapper(configuration, instruction).map(model.getPaymentResult()),
+            new PaymentResultHeaderModelMapper(configuration, instruction).map(model),
+            PaymentResultRemediesModelMapper.INSTANCE.map(model.getRemedies()),
             new PaymentResultBodyModelMapper(configuration).map(model), legacyViewModel);
     }
 }

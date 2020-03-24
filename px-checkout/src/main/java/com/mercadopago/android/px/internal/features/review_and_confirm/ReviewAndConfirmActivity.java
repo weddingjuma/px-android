@@ -130,7 +130,7 @@ public final class ReviewAndConfirmActivity extends PXActivity<ReviewAndConfirmP
             session.getDiscountRepository(),
             session.getConfigurationModule().getPaymentSettings(),
             session.getConfigurationModule().getUserSelectionRepository(),
-            session.getPaymentRewardRepository(),
+            session.getCongratsRepository(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider());
         presenter.attachView(this);

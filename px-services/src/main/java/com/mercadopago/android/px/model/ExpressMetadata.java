@@ -22,7 +22,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
     private final BenefitsMetadata benefits;
     private final SliderDisplayInfo displayInfo;
     @SerializedName("behaviour")
-    private final Map<String, Behaviour> behaviours;
+    private final Map<String, CheckoutBehaviour> behaviours;
 
     public static final Creator<ExpressMetadata> CREATOR = new Creator<ExpressMetadata>() {
         @Override
@@ -80,8 +80,8 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         return displayInfo;
     }
 
-    public Map<String, Behaviour> getBehaviours() {
-        return behaviours;
+    public CheckoutBehaviour getBehaviour(@NonNull @CheckoutBehaviour.Type final String type) {
+        return behaviours != null ? behaviours.get(type) : null;
     }
 
     public boolean isAccountMoney() {
@@ -126,7 +126,7 @@ public final class ExpressMetadata implements Parcelable, Serializable, ExpressP
         benefits = in.readParcelable(BenefitsMetadata.class.getClassLoader());
         displayInfo = in.readParcelable(SliderDisplayInfo.class.getClassLoader());
         behaviours = new HashMap<>();
-        in.readMap(behaviours, Behaviour.class.getClassLoader());
+        in.readMap(behaviours, CheckoutBehaviour.class.getClassLoader());
     }
 
     @Override

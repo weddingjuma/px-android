@@ -58,4 +58,8 @@ public final class InitResponse extends PaymentMethodSearch {
         return configuration;
     }
 
+    @NonNull
+    public Map<String, Modal> getModals() {
+        return modals;
+    }
 }

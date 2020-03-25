@@ -47,6 +47,14 @@ public final class StatusMetadata implements Parcelable, Serializable {
         return enabled;
     }
 
+    public boolean isActive() {
+        return Detail.ACTIVE.equals(detail);
+    }
+
+    public boolean isSuspended() {
+        return Detail.SUSPENDED.equals(detail);
+    }
+
     public String getDetail() {
         return detail;
     }

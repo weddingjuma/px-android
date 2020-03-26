@@ -20,6 +20,10 @@ public class SpannableFormatter extends ChainFormatter {
     private PxFont font;
     private boolean hasSpace;
 
+    public SpannableFormatter(@NonNull final Context context) {
+        this(new SpannableStringBuilder(), context);
+    }
+
     public SpannableFormatter(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
         this.spannableStringBuilder = spannableStringBuilder;
@@ -52,7 +56,7 @@ public class SpannableFormatter extends ChainFormatter {
             return apply(TextUtil.EMPTY);
         }
         withStyle(text.getWeight());
-        withTextColor(Color.parseColor(text.getTextColor()));
+        withTextColor(TextUtil.isNotEmpty(text.getTextColor()) ? Color.parseColor(text.getTextColor()) : 0);
         return apply(text.getMessage());
     }
 

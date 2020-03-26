@@ -2,6 +2,7 @@ package com.mercadopago.android.px.internal.features.express;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -43,6 +44,8 @@ import com.mercadopago.android.px.internal.features.express.slider.PaymentMethod
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
@@ -89,7 +92,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
     OfflineMethodsFragment.SheetHidability, TitlePagerAdapter.InstallmentChanged,
-    PayButton.Handler {
+    PayButton.Handler,
+    GenericDialog.Listener {
 
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
@@ -142,7 +146,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     @Override
     public void prePayment(@NotNull final PayButton.OnReadyForPaymentCallback callback) {
-        presenter.requireCurrentConfiguration(callback);
+        presenter.handlePrePaymentAction(callback);
     }
 
     @Override
@@ -509,7 +513,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
         if (requestCode == REQ_CODE_DISABLE_DIALOG) {
-            resetPagerIndex();
+            setPagerIndex(0);
         } else if (requestCode == REQ_CODE_CARD_FORM) {
             handleCardFormResult(resultCode);
         } else if (resultCode == Constants.RESULT_ACTION) {
@@ -540,7 +544,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void showPaymentResult(@NonNull final PaymentModel model, @NonNull final PaymentConfiguration paymentConfiguration) {
+    public void showPaymentResult(@NonNull final PaymentModel model,
+        @NonNull final PaymentConfiguration paymentConfiguration) {
         if (getActivity() instanceof PXActivity) {
             ((PXActivity) getActivity()).overrideTransitionIn();
         }
@@ -588,8 +593,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void resetPagerIndex() {
-        paymentMethodPager.setCurrentItem(0);
+    public void setPagerIndex(final int index) {
+        paymentMethodPager.setCurrentItem(index);
     }
 
     @Override
@@ -641,5 +646,25 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             bottomSheet.setVisibility(VISIBLE);
             bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         }
+    }
+
+    @Override
+    public void onAction(@NotNull final GenericDialog.Action action) {
+        if (action instanceof GenericDialog.Action.DeepLinkAction) {
+            startDeepLink(((GenericDialog.Action.DeepLinkAction) action).getDeepLink());
+        } else {
+            presenter.handleGenericDialogAction(((GenericDialog.Action.CustomAction) action).getType());
+        }
+    }
+
+    @Override
+    public void showGenericDialog(@NonNull final GenericDialogItem item) {
+        GenericDialog.showDialog(getChildFragmentManager(), item);
+    }
+
+    private void startDeepLink(@NonNull final String deepLink) {
+        final Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(deepLink));
+        startActivity(intent);
     }
 }

@@ -5,6 +5,8 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
@@ -56,7 +58,7 @@ public interface ExpressPayment {
         void showDisabledPaymentMethodDetailDialog(@NonNull final DisabledPaymentMethod disabledPaymentMethod,
             @NonNull final StatusMetadata currentStatus);
 
-        void resetPagerIndex();
+        void setPagerIndex(final int index);
 
         void showDynamicDialog(@NonNull final DynamicDialogCreator creatorFor,
             @NonNull final DynamicDialogCreator.CheckoutData checkoutData);
@@ -68,6 +70,8 @@ public interface ExpressPayment {
         void showPaymentResult(@NonNull final PaymentModel model, @NonNull final PaymentConfiguration paymentConfiguration);
 
         void showBusinessResult(@NonNull final BusinessPaymentModel model);
+
+        void showGenericDialog(@NonNull GenericDialogItem item);
     }
 
     interface Actions {
@@ -98,6 +102,8 @@ public interface ExpressPayment {
 
         void onPaymentFinished(@NonNull final IPaymentDescriptor payment);
 
-        void requireCurrentConfiguration(@NonNull final PayButton.OnReadyForPaymentCallback callback);
+        void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback);
+
+        void handleGenericDialogAction(@NonNull @GenericDialog.ActionType final String type);
     }
 }

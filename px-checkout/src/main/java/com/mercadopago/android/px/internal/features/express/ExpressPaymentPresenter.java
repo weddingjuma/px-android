@@ -1,7 +1,9 @@
 package com.mercadopago.android.px.internal.features.express;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
@@ -11,6 +13,9 @@ import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
+import com.mercadopago.android.px.internal.features.generic_modal.ActionTypeWrapper;
+import com.mercadopago.android.px.internal.features.generic_modal.FromModalToGenericDialogItem;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.repository.AmountConfigurationRepository;
 import com.mercadopago.android.px.internal.repository.AmountRepository;
@@ -41,6 +46,7 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.SplitHeaderMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryInfoMapper;
 import com.mercadopago.android.px.internal.viewmodel.mappers.SummaryViewModelMapper;
 import com.mercadopago.android.px.model.AmountConfiguration;
+import com.mercadopago.android.px.model.CheckoutBehaviour;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.ExpressMetadata;
@@ -54,6 +60,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.FromExpressMetadataToPaymentConfiguration;
 import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.Modal;
 import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
@@ -67,9 +74,8 @@ import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>
     implements PostPaymentAction.ActionController, ExpressPayment.Actions,
@@ -91,16 +97,18 @@ import org.jetbrains.annotations.Nullable;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final ConnectionHelper connectionHelper;
     @NonNull private final CongratsRepository congratsRepository;
+    @Nullable private Runnable unattendedEvent;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
     private final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper;
-    /* default */ List<ExpressMetadata> expressMetadataList; //FIXME remove.
-    /* default */ int paymentMethodIndex;
     private SplitSelectionState splitSelectionState;
     private Set<String> cardsWithSplit;
     private boolean otherPaymentMethodClickable = true;
-    @Nullable private Runnable unattendedEvent;
+    /* default */ List<ExpressMetadata> expressMetadataList; //FIXME remove.
+    /* default */ Map<String, Modal> modals; //FIXME remove.
+    /* default */ int paymentMethodIndex;
     /* default */ PaymentConfiguration currentPaymentConfiguration;
+    /* default */ ActionTypeWrapper actionTypeWrapper;
 
     /* default */ ExpressPaymentPresenter(@NonNull final PaymentRepository paymentRepository,
         @NonNull final PaymentSettingRepository paymentSettingRepository,
@@ -186,6 +194,8 @@ import org.jetbrains.annotations.Nullable;
             public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
                     expressMetadataList = initResponse.getExpress();
+                    actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
+                    modals = initResponse.getModals();
                     cardsWithSplit = initResponse.getIdsWithSplitAllowed();
                     loadViewModel();
                 }
@@ -367,6 +377,8 @@ import org.jetbrains.annotations.Nullable;
             public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
                     expressMetadataList = initResponse.getExpress();
+                    actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
+                    modals = initResponse.getModals();
                     resetPayerCostSelection();
                     paymentMethodIndex = 0;
                     getView().clearAdapters();
@@ -407,7 +419,20 @@ import org.jetbrains.annotations.Nullable;
     }
 
     @Override
-    public void requireCurrentConfiguration(@NonNull PayButton.OnReadyForPaymentCallback callback) {
+    public void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback) {
+        final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
+        @SuppressLint("WrongConstant")
+        final CheckoutBehaviour behaviour = expressMetadata.getBehaviour(CheckoutBehaviour.Type.TAP_PAY);
+        final Modal modal = behaviour != null ? modals.get(behaviour.getModal()) : null;
+
+        if (expressMetadata.getStatus().isSuspended() && modal != null) {
+            getView().showGenericDialog(new FromModalToGenericDialogItem(actionTypeWrapper.getActionType()).map(modal));
+        } else {
+            requireCurrentConfiguration(callback);
+        }
+    }
+
+    private void requireCurrentConfiguration(@NonNull PayButton.OnReadyForPaymentCallback callback) {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
 
         currentPaymentConfiguration = new FromExpressMetadataToPaymentConfiguration(amountConfigurationRepository,
@@ -419,6 +444,18 @@ import org.jetbrains.annotations.Nullable;
                 .map(expressMetadata));
 
         callback.call(currentPaymentConfiguration, confirmTrackerData);
+    }
+
+    @Override
+    public void handleGenericDialogAction(@NonNull @GenericDialog.ActionType final String type) {
+        switch (type) {
+        case GenericDialog.ActionType.PAY_WITH_OTHER_METHOD:
+        case GenericDialog.ActionType.PAY_WITH_OFFLINE_METHOD:
+        case GenericDialog.ActionType.ADD_NEW_CARD:
+            getView().setPagerIndex(actionTypeWrapper.getIndexToReturn());
+            break;
+        default: // do nothing
+        }
     }
 
     @Override

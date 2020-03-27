@@ -6,6 +6,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory;
 import com.mercadopago.android.px.internal.features.payment_result.model.Badge;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -32,11 +33,13 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentModel, Payment
 
     private final PaymentResultScreenConfiguration configuration;
     private final Instruction instruction;
+    private final RemediesModel remediesModel;
 
     /* default */ PaymentResultHeaderModelMapper(@NonNull final PaymentResultScreenConfiguration configuration,
-        @Nullable final Instruction instruction) {
+        @Nullable final Instruction instruction, @NonNull final RemediesModel remediesModel) {
         this.configuration = configuration;
         this.instruction = instruction;
+        this.remediesModel = remediesModel;
     }
 
     @Override
@@ -46,8 +49,6 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentModel, Payment
             PaymentResultViewModelFactory.createPaymentResultViewModel(paymentResult);
 
         final boolean hasBodyComponent = viewModel.isApprovedSuccess() || viewModel.hasBodyError();
-        //TODO: check for all future remedies
-        final boolean hasRemedies = model.getRemedies().getCvv() != null;
 
         return new PaymentResultHeader.Model.Builder()
             .setDynamicHeight(!hasBodyComponent)
@@ -55,8 +56,8 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentModel, Payment
             .setIconImage(getIconImage(paymentResult))
             .setIconUrl(getIconUrl(paymentResult))
             .setBadgeImage(getBadgeImage(paymentResult, viewModel))
-            .setTitle(new GenericLocalized(hasRemedies ? model.getRemedies().getCvv().getTitle() : getInstructionsTitle(),
-                viewModel.getTitleResId()))
+            .setTitle(new GenericLocalized(remediesModel.getTitle() != null ? remediesModel.getTitle() :
+                getInstructionsTitle(), viewModel.getTitleResId()))
             .setLabel(new GenericLocalized(null, DEFAULT_LABEL))
             .build();
     }

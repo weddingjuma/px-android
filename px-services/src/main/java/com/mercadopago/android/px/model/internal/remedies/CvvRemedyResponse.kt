@@ -20,7 +20,7 @@ data class CvvRemedyResponse(val title: String, val message: String, val fieldSe
 
     companion object CREATOR : Parcelable.Creator<CvvRemedyResponse> {
         override fun createFromParcel(parcel: Parcel) = CvvRemedyResponse(parcel)
-        override fun newArray(size: Int)= arrayOfNulls<CvvRemedyResponse?>(size)
+        override fun newArray(size: Int) = arrayOfNulls<CvvRemedyResponse?>(size)
     }
 
     data class FieldSetting(val name: String, val length: Int, val title: String, val hintMessage: String) : Parcelable {

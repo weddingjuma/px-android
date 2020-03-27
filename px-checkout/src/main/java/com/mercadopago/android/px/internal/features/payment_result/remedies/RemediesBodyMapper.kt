@@ -1,18 +1,21 @@
 package com.mercadopago.android.px.internal.features.payment_result.remedies
 
+import com.mercadopago.android.px.internal.repository.UserSelectionRepository
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper
-import com.mercadopago.android.px.model.Card
-import com.mercadopago.android.px.model.PayerCost
+import com.mercadopago.android.px.model.PaymentData
 import com.mercadopago.android.px.model.internal.remedies.PayerPaymentMethodRejected
 import com.mercadopago.android.px.model.internal.remedies.RemediesBody
 
-internal class RemediesBodyMapper : Mapper<Pair<Card, PayerCost>, RemediesBody>() {
+internal class RemediesBodyMapper(private val userSelectionRepository: UserSelectionRepository)
+    : Mapper<PaymentData, RemediesBody>() {
 
-    override fun map(cardAndPayerCost: Pair<Card, PayerCost>): RemediesBody {
-        val (card, payerCost) = cardAndPayerCost
-        val payerPaymentMethodRejected = PayerPaymentMethodRejected(payerCost.installments,
-            card.issuer?.name ?: "", card.lastFourDigits.orEmpty(), card.paymentMethod.id, card.securityCodeLength,
-            card.securityCodeLocation, payerCost.totalAmount)
-        return RemediesBody(payerPaymentMethodRejected)
+    override fun map(data: PaymentData): RemediesBody {
+        val securityCodeLocation = userSelectionRepository.card?.securityCodeLocation
+        with(data) {
+            val payerPaymentMethodRejected = PayerPaymentMethodRejected(payerCost?.installments,
+                issuer?.name, token?.lastFourDigits, paymentMethod.id, paymentMethod.paymentTypeId,
+                token?.securityCodeLength, securityCodeLocation, rawAmount)
+            return RemediesBody(payerPaymentMethodRejected)
+        }
     }
 }

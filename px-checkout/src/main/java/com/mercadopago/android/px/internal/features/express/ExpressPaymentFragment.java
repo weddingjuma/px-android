@@ -382,9 +382,10 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             session.getConfigurationModule().getChargeSolver(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider(),
-            new PaymentMethodDrawableItemMapper(getContext(),
+            new PaymentMethodDrawableItemMapper(session.getConfigurationModule().getChargeSolver(),
                 session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-                session.getConfigurationModule().getChargeSolver()),
+                getContext()
+            ),
             ConnectionHelper.getInstance(),
             session.getCongratsRepository());
     }

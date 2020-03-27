@@ -1,4 +1,4 @@
-package com.mercadopago.android.px.model
+package com.mercadopago.android.px.model.one_tap
 
 import android.os.Parcel
 import android.support.annotation.StringDef

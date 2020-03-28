@@ -5,6 +5,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
+import com.mercadopago.android.px.model.one_tap.CheckoutBehaviour;
+import com.mercadopago.android.px.model.one_tap.SliderDisplayInfo;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

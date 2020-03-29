@@ -11,6 +11,10 @@ public final class Text implements Parcelable, Serializable {
     private String textColor;
     private String weight;
 
+    public static Text empty() {
+        return new Text();
+    }
+
     public static final Creator<Text> CREATOR = new Creator<Text>() {
         @Override
         public Text createFromParcel(final Parcel in) {
@@ -22,6 +26,9 @@ public final class Text implements Parcelable, Serializable {
             return new Text[size];
         }
     };
+
+    private Text() {
+    }
 
     protected Text(final Parcel in) {
         message = in.readString();

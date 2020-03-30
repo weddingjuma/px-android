@@ -20,6 +20,7 @@ interface PayButton {
 
     interface ViewModel : PaymentServiceHandler {
         fun attach(handler: Handler)
+        fun detach()
         fun preparePayment()
         fun handleBiometricsResult(isSuccess: Boolean)
         fun startPayment()

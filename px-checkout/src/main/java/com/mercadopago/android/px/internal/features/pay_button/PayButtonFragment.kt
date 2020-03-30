@@ -49,6 +49,14 @@ class PayButtonFragment : Fragment(), PayButton.View {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewModel = Session.getInstance().viewModelModule.get(this, PayButtonViewModel::class.java)
+
+        when {
+            targetFragment is PayButton.Handler -> viewModel.attach(targetFragment as PayButton.Handler)
+            context is PayButton.Handler -> viewModel.attach(context as PayButton.Handler)
+            else -> throw IllegalStateException("Parent should implement ${PayButton.Handler::class.java.simpleName}")
+        }
+
         button = view.findViewById(R.id.confirm_button)
         button.setOnClickListener(object : OnSingleClickListener() {
             override fun onSingleClick(v: View?) {
@@ -155,15 +163,9 @@ class PayButtonFragment : Fragment(), PayButton.View {
         }
     }
 
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-        viewModel = Session.getInstance().viewModelModule.get(this, PayButtonViewModel::class.java)
-
-        when {
-            targetFragment is PayButton.Handler -> viewModel.attach(targetFragment as PayButton.Handler)
-            context is PayButton.Handler -> viewModel.attach(context)
-            else -> throw IllegalStateException("Parent should implement ${PayButton.Handler::class.java.simpleName}")
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.detach()
     }
 
     private val parentFragmentManager: FragmentManager

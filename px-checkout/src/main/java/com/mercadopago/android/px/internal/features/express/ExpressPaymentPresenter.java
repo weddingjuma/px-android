@@ -68,7 +68,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /* default */ class ExpressPaymentPresenter extends BasePresenter<ExpressPayment.View>

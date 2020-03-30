@@ -9,14 +9,14 @@ import com.mercadopago.android.px.model.internal.remedies.RemediesResponse
 internal object PaymentResultRemediesModelMapper : Mapper<RemediesResponse, RemediesModel>() {
     override fun map(model: RemediesResponse): RemediesModel {
         return RemediesModel(
-                model.cvv?.let {
-                    it.fieldSetting.run {
-                        CvvRemedy.Model(it.message,
-                                title,
-                                hintMessage,
-                                length)
-                    }
+            model.cvv?.let {
+                it.fieldSetting.run {
+                    CvvRemedy.Model(it.message,
+                            title,
+                            hintMessage,
+                            length)
                 }
+            }
         )
     }
 }

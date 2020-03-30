@@ -36,7 +36,7 @@ internal class TokenCreationWrapper private constructor(builder: Builder) {
         return if (card != null) {
             SavedESCCardToken.createWithSecurityCode(card.id, cvv).run {
                 validateSecurityCode(card)
-                createESCToken(this)
+                createESCToken(this).apply { lastFourDigits = card.lastFourDigits }
             }
         } else {
             SavedESCCardToken.createWithSecurityCode(token!!.cardId, cvv).run {

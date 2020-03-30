@@ -5,13 +5,15 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
-import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import java.util.Collections;
+import java.util.List;
 
 public class SamplePaymentProcessorNoView implements SplitPaymentProcessor {
 
@@ -30,28 +32,25 @@ public class SamplePaymentProcessorNoView implements SplitPaymentProcessor {
         }
     };
 
-    protected final IParcelablePaymentDescriptor payment;
-    protected final BusinessPayment businessPayment;
+    private int paymentIndex = 0;
+    protected final List<? extends IPaymentDescriptor> payments;
     private final Handler handler = new Handler();
 
     public SamplePaymentProcessorNoView(final IPayment payment) {
-        this.payment = IParcelablePaymentDescriptor.with(payment);
-        businessPayment = null;
+        payments = Collections.singletonList(IParcelablePaymentDescriptor.with(payment));
     }
 
-    public SamplePaymentProcessorNoView(final IParcelablePaymentDescriptor payment) {
-        this.payment = payment;
-        businessPayment = null;
+    public SamplePaymentProcessorNoView(final IPaymentDescriptor payment) {
+        payments = Collections.singletonList(payment);
     }
 
-    public SamplePaymentProcessorNoView(final BusinessPayment businessPayment) {
-        this.businessPayment = businessPayment;
-        payment = null;
+    public SamplePaymentProcessorNoView(@NonNull @Size(min = 1) final List<? extends IPaymentDescriptor> payments) {
+        this.payments = payments;
     }
 
     /* default */ SamplePaymentProcessorNoView(final Parcel in) {
-        payment = in.readParcelable(IParcelablePaymentDescriptor.class.getClassLoader());
-        businessPayment = in.readParcelable(BusinessPayment.class.getClassLoader());
+        //Not used as parcel
+        payments = null;
     }
 
     @Override
@@ -71,7 +70,7 @@ public class SamplePaymentProcessorNoView implements SplitPaymentProcessor {
     }
 
     @Override
-    public boolean supportsSplitPayment(@NonNull final CheckoutPreference checkoutPreference) {
+    public boolean supportsSplitPayment(@Nullable final CheckoutPreference checkoutPreference) {
         return true;
     }
 
@@ -88,16 +87,14 @@ public class SamplePaymentProcessorNoView implements SplitPaymentProcessor {
 
     @Override
     public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(payment, flags);
-        dest.writeParcelable(businessPayment, flags);
+        //Not used as parcel
     }
 
     @NonNull
-    private IPaymentDescriptor getPayment() {
-        if (payment != null) {
-            return payment;
-        } else {
-            return businessPayment;
+    protected IPaymentDescriptor getPayment() {
+        if (paymentIndex >= payments.size()) {
+            paymentIndex = 0;
         }
+        return payments.get(paymentIndex++);
     }
 }

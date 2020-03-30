@@ -17,7 +17,7 @@ public final class LinkableText implements Parcelable, Serializable {
     private final Map<String, String> links;
 
     public List<LinkablePhrase> getLinkablePhrases() {
-        return linkablePhrases;
+        return linkablePhrases != null ? linkablePhrases : Collections.emptyList();
     }
 
     public String getText() {
@@ -29,7 +29,7 @@ public final class LinkableText implements Parcelable, Serializable {
     }
 
     public Map<String, String> getLinks() {
-        return links;
+        return links != null ? links : Collections.emptyMap();
     }
 
     @Override

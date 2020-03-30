@@ -1,3 +1,10 @@
+## VERSION 4.38.2
+_30_03_2020_
+* FIX - Pay button crash when session isn't initialized
+* FIX - Prevent crash when font configurer isn't properly initialized
+* FIX - Prevent Linkable text crash
+* FIX - Last four digits were null after the new cvv remedy
+
 ## VERSION 4.38.1
 _21_03_2020_
 * FIX - Fixed crash on business congrats

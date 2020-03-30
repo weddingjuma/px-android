@@ -1,13 +1,13 @@
 package com.mercadopago;
 
 import android.content.Context;
-import android.os.Bundle;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.IPayment;
+import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 
@@ -55,6 +55,8 @@ public class SamplePaymentProcessor extends SamplePaymentProcessorNoView {
     @Nullable
     @Override
     public Fragment getFragment(@NonNull final CheckoutData data, @NonNull final Context context) {
-        return SamplePaymentProcessorFragment.with(payment != null ? payment : businessPayment);
+        final IPaymentDescriptor payment = getPayment();
+        return SamplePaymentProcessorFragment.with(payment instanceof BusinessPayment ? (BusinessPayment) payment :
+            (IParcelablePaymentDescriptor) payment);
     }
 }

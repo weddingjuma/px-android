@@ -77,6 +77,8 @@ public class PaymentResultMethod extends ConstraintLayout {
                 model.paymentMethodName,
                 getResources().getString(R.string.px_ending_in),
                 model.lastFourDigits);
+        } else if(!PaymentTypes.isAccountMoney(model.paymentTypeId)){
+            return model.paymentMethodName;
         }
         return null;
     }

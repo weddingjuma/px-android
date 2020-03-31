@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/transparent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tool:background="@color/px_white">
 
     <LinearLayout
         android:id="@+id/header"
@@ -52,7 +53,8 @@
             android:id="@+id/methods"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/confirm_button_container"
+            app:layout_goneMarginBottom="@dimen/ui_3m"
+            app:layout_constraintBottom_toTopOf="@id/bottom_description"
             app:layout_constraintTop_toTopOf="parent" />
 
         <FrameLayout
@@ -74,25 +76,31 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="5dp"
-            app:layout_constraintBottom_toTopOf="@id/confirm_button_container"
+            app:layout_goneMarginBottom="@dimen/ui_3m"
+            app:layout_constraintBottom_toTopOf="@id/bottom_description"
             android:background="@drawable/shadow_top">
         </View>
 
-        <FrameLayout
-            android:id="@+id/confirm_button_container"
+        <com.mercadopago.android.px.internal.view.MPTextView
+            android:id="@+id/bottom_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/ui_2m"
+            android:paddingHorizontal="@dimen/ui_3m"
+            app:layout_constraintBottom_toTopOf="@id/confirm_button"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tool:text="Procesado por Mercado Pago Estándar"/>
+
+        <com.mercadolibre.android.ui.widgets.MeliButton
+            android:id="@+id/confirm_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/ui_3m"
+            android:layout_marginHorizontal="@dimen/ui_3m"
+            android:text="@string/px_pay"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <com.mercadolibre.android.ui.widgets.MeliButton
-                android:id="@+id/confirm_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/px_m_margin"
-                android:background="@color/white"
-                android:text="@string/px_pay" />
-        </FrameLayout>
+            app:layout_constraintStart_toStartOf="parent"/>
     </android.support.constraint.ConstraintLayout>
 
     <FrameLayout

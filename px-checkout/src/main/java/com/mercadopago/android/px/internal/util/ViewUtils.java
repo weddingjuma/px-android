@@ -33,13 +33,13 @@ import android.widget.TextView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
-import com.mercadopago.android.px.internal.view.MPEditText;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.internal.Text;
 import com.squareup.picasso.Callback;
 
 public final class ViewUtils {
 
+    private static final String TAG = "ViewUtils";
     private static final float DARKEN_FACTOR = 0.1f;
     private static final ColorMatrixColorFilter DISABLED_FILTER;
 
@@ -183,6 +183,28 @@ public final class ViewUtils {
             spannable.setSpan(new ForegroundColorSpan(color), indexStart, indexEnd,
                 Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         }
+    }
+
+    public static void setColorInSpannable(@Nullable final String color, final int indexStart, final int indexEnd,
+        @NonNull final Spannable spannable) {
+        try {
+            setColorInSpannable(Color.parseColor(color), indexStart, indexEnd, spannable);
+        } catch (final Exception e) {
+            logParseColorError(color);
+        }
+    }
+
+
+    public static void setTextColor(@NonNull final TextView textView, @Nullable final String color) {
+        try {
+            textView.setTextColor(Color.parseColor(color));
+        } catch (final Exception e) {
+            logParseColorError(color);
+        }
+    }
+
+    private static void logParseColorError(@Nullable final String color) {
+        Logger.debug(TAG, "Cannot parse color" + color);
     }
 
     public static void setFontInSpannable(@NonNull final Context context, @NonNull final PxFont font,

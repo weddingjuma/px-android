@@ -47,17 +47,21 @@ internal class PayButtonViewModel(
         buttonTextLiveData.value = buttonConfig
     }
 
-    private lateinit var handler: PayButton.Handler
+    private var handler: PayButton.Handler? = null
 
     override fun attach(handler: PayButton.Handler) {
         this.handler = handler
+    }
+
+    override fun detach() {
+        handler = null
     }
 
     override fun preparePayment() {
         paymentConfiguration = null
         confirmTrackerData = null
         if (connectionHelper.checkConnection()) {
-            handler.prePayment(object : OnReadyForPaymentCallback {
+            handler?.prePayment(object : OnReadyForPaymentCallback {
                 override fun call(paymentConfiguration: PaymentConfiguration, confirmTrackerData: ConfirmData?) {
                     startSecuredPayment(paymentConfiguration, confirmTrackerData)
                 }
@@ -89,7 +93,7 @@ internal class PayButtonViewModel(
         if (paymentService.isExplodingAnimationCompatible) {
             stateUILiveData.postValue(UIProgress.ButtonLoadingStarted(paymentService.paymentTimeout, buttonConfig))
         }
-        handler.enqueueOnExploding(object : PayButton.OnEnqueueResolvedCallback {
+        handler?.enqueueOnExploding(object : PayButton.OnEnqueueResolvedCallback {
             override fun success() {
                 paymentService.attach(this@PayButtonViewModel)
                 paymentService.startExpressPayment(paymentConfiguration!!)
@@ -106,7 +110,7 @@ internal class PayButtonViewModel(
     override fun onPaymentError(error: MercadoPagoError) {
         stateUILiveData.value = UIProgress.ButtonLoadingCanceled
         val shouldHandleError = error.isInternalServerError || error.isNoConnectivityError
-        if (shouldHandleError) handleError(error) else handler.onPaymentError(error)
+        if (shouldHandleError) handleError(error) else handler?.onPaymentError(error)
     }
 
     override fun onVisualPayment() {
@@ -149,7 +153,7 @@ internal class PayButtonViewModel(
     }
 
     override fun hasFinishPaymentAnimation() {
-        paymentService.payment?.let { handler.onPaymentFinished(it) }
+        paymentService.payment?.let { handler?.onPaymentFinished(it) }
     }
 
     override fun storeInBundle(bundle: Bundle) {

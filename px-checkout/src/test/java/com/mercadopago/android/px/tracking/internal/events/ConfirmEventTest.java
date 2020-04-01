@@ -5,8 +5,11 @@ import com.mercadopago.android.px.model.CardDisplayInfo;
 import com.mercadopago.android.px.model.CardMetadata;
 import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.PayerCost;
+import com.mercadopago.android.px.tracking.internal.mapper.FromSelectedExpressMetadataToAvailableMethods;
+import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
 import java.math.BigDecimal;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,10 +32,19 @@ public class ConfirmEventTest {
     @Mock private ExpressMetadata expressMetadata;
     @Mock private Set<String> cardIdsWithEsc;
 
+    @NotNull
+    private ConfirmEvent getConfirmEvent(final PayerCost payerCost) {
+        final ConfirmData
+            confirmTrackerData = new ConfirmData(ConfirmEvent.ReviewType.ONE_TAP, PAYMENT_METHOD_SELECTED_INDEX,
+            new FromSelectedExpressMetadataToAvailableMethods(cardIdsWithEsc,
+                payerCost, false)
+                .map(expressMetadata));
+        return new ConfirmEvent(confirmTrackerData);
+    }
+
     @Test
     public void whenGetEventPathVerifyIsCorrect() {
-        final ConfirmEvent event = ConfirmEvent
-            .from(cardIdsWithEsc, expressMetadata, mock(PayerCost.class), false, PAYMENT_METHOD_SELECTED_INDEX);
+        final ConfirmEvent event = getConfirmEvent(mock(PayerCost.class));
         assertEquals(EXPECTED_PATH, event.getEventPath());
     }
 
@@ -44,8 +56,7 @@ public class ConfirmEventTest {
         when(expressMetadata.getAccountMoney()).thenReturn(am);
         when(am.getBalance()).thenReturn(BigDecimal.TEN);
         when(am.isInvested()).thenReturn(true);
-        final ConfirmEvent event = ConfirmEvent
-            .from(cardIdsWithEsc, expressMetadata, mock(PayerCost.class), false, PAYMENT_METHOD_SELECTED_INDEX);
+        final ConfirmEvent event = getConfirmEvent(mock(PayerCost.class));
         assertEquals(EXPECTED_JUST_AM, event.getEventData().toString());
     }
 
@@ -67,8 +78,7 @@ public class ConfirmEventTest {
         when(expressMetadata.getCard()).thenReturn(card);
         when(expressMetadata.isCard()).thenReturn(true);
 
-        final ConfirmEvent event =
-            ConfirmEvent.from(cardIdsWithEsc, expressMetadata, payerCost, false, PAYMENT_METHOD_SELECTED_INDEX);
+        final ConfirmEvent event = getConfirmEvent(payerCost);
 
         assertEquals(EXPECTED_JUST_CARD, event.getEventData().toString());
     }

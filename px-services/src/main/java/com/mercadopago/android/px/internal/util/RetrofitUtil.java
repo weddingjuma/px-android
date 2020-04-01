@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.util;
 
 import android.content.Context;
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory;
 import com.mercadopago.android.px.internal.adapters.ErrorHandlingCallAdapter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -32,6 +33,7 @@ public final class RetrofitUtil {
             .addConverterFactory(GsonConverterFactory.create(JsonUtil.getGson()))
             .client(HttpClientUtil.getClient(context, connectTimeout, readTimeout, writeTimeout))
             .addCallAdapterFactory(new ErrorHandlingCallAdapter.ErrorHandlingCallAdapterFactory())
+            .addCallAdapterFactory(CoroutineCallAdapterFactory.create())
             .build();
     }
 }

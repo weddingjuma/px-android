@@ -33,9 +33,13 @@ public final class LinkablePhrase implements Parcelable, Serializable {
         return html;
     }
 
+    public Map<String, String> getInstallments() {
+        return installments != null ? installments : Collections.emptyMap();
+    }
+
     @Nullable
     public String getLinkId(final int installments) {
-        return this.installments.get(String.valueOf(installments));
+        return this.getInstallments().get(String.valueOf(installments));
     }
 
     protected LinkablePhrase(final Parcel in) {

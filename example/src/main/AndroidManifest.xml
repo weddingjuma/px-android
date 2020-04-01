@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest package="com.mercadopago.example"
-          xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application
         android:name="com.mercadopago.SampleApplication"
@@ -9,21 +9,31 @@
         android:label="@string/app_name"
         android:theme="@style/Theme.AppTheme"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name="com.mercadopago.CheckoutExampleActivity"
             android:label="@string/title_activity_checkout_example">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.mercadopago.SelectCheckoutActivity"
-            android:label="@string/title_activity_checkout_example"/>
+            android:label="@string/title_activity_checkout_example" />
+        <activity android:name="com.mercadopago.CustomInitializationActivity" />
+        <activity android:name="com.mercadopago.FakeKycActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
 
-        <activity android:name="com.mercadopago.CustomInitializationActivity"/>
+                <data
+                    android:host="kyc"
+                    android:scheme="mercadopago"/>
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

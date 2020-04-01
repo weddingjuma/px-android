@@ -4,7 +4,6 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.model.EscDeleteReason;
 import com.mercadopago.android.px.core.SplitPaymentProcessor;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandler;
 import com.mercadopago.android.px.internal.callbacks.PaymentServiceHandlerWrapper;
@@ -17,7 +16,7 @@ import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.TokenRepository;
@@ -29,7 +28,6 @@ import com.mercadopago.android.px.model.AmountConfiguration;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Discount;
 import com.mercadopago.android.px.model.DiscountConfigurationModel;
-import com.mercadopago.android.px.model.ExpressMetadata;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PayerCost;
 import com.mercadopago.android.px.model.Payment;
@@ -43,6 +41,7 @@ import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
@@ -84,7 +83,7 @@ public class PaymentService implements PaymentRepository {
         @NonNull final InstructionsRepository instructionsRepository,
         @NonNull final InitRepository initRepository,
         @NonNull final AmountConfigurationRepository amountConfigurationRepository,
-        @NonNull final PaymentRewardRepository paymentRewardRepository) {
+        @NonNull final CongratsRepository congratsRepository) {
         this.amountConfigurationRepository = amountConfigurationRepository;
         this.escPaymentManager = escPaymentManager;
         this.escManagerBehaviour = escManagerBehaviour;
@@ -100,7 +99,7 @@ public class PaymentService implements PaymentRepository {
 
         handlerWrapper =
             new PaymentServiceHandlerWrapper(this, disabledPaymentMethodRepository, escPaymentManager,
-                instructionsRepository, paymentRewardRepository, userSelectionRepository);
+                instructionsRepository, congratsRepository, userSelectionRepository);
     }
 
     @Override
@@ -179,23 +178,20 @@ public class PaymentService implements PaymentRepository {
 
     /**
      * This method presets all user information ahead before the payment is processed.
-     *
-     * @param expressMetadata model
-     * @param splitPayment
      */
     @Override
-    public void startExpressPayment(@NonNull final ExpressMetadata expressMetadata,
-        @Nullable final PayerCost payerCost, final boolean splitPayment) {
+    public void startExpressPayment(@NonNull final PaymentConfiguration configuration) {
 
         initRepository.init().enqueue(new Callback<InitResponse>() {
             @Override
             public void success(final InitResponse initResponse) {
-                final String paymentTypeId = expressMetadata.getPaymentTypeId();
-
-                if (PaymentTypes.isCardPaymentType(paymentTypeId)) {
-                    // Saved card.
-                    final Card card = initResponse.getCardById(expressMetadata.getCard().getId());
-                    if (splitPayment) {
+                final PaymentMethod paymentMethod =
+                    new PaymentMethodMapper(initResponse).map(configuration.getPaymentMethodId());
+                userSelectionRepository.select(paymentMethod, null);
+                if (PaymentTypes.isCardPaymentType(paymentMethod.getPaymentTypeId())) {
+                    // cards
+                    final Card card = initResponse.getCardById(configuration.getCustomOptionId());
+                    if (configuration.getSplitPayment()) {
                         //TODO refactor
                         final String secondaryPaymentMethodId =
                             amountConfigurationRepository
@@ -206,18 +202,8 @@ public class PaymentService implements PaymentRepository {
                     } else {
                         userSelectionRepository.select(card, null);
                     }
-
-                    userSelectionRepository.select(payerCost);
-                } else if (PaymentTypes.isAccountMoney(paymentTypeId)) {
-                    userSelectionRepository
-                        .select(new PaymentMethodMapper(initResponse).map(expressMetadata), null);
-                } else if (expressMetadata.isConsumerCredits()) {
-                    userSelectionRepository
-                        .select(new PaymentMethodMapper(initResponse).map(expressMetadata), null);
-                    userSelectionRepository.select(payerCost);
-                } else {
-                    throw new IllegalStateException("payment method selected can not be used for express payment");
                 }
+                userSelectionRepository.select(configuration.getPayerCost());
 
                 startPayment();
             }

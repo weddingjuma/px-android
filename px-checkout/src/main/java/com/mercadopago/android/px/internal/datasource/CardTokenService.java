@@ -17,7 +17,7 @@ import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.requests.SecurityCodeIntent;
 import com.mercadopago.android.px.services.Callback;
 
-import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_INIT;
+import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_NEW;
 
 public class CardTokenService implements CardTokenRepository {
 
@@ -113,7 +113,7 @@ public class CardTokenService implements CardTokenRepository {
             callback.execute();
             return;
         }
-        gatewayService.clearCap(API_ENVIRONMENT_INIT, cardId, paymentSettingRepository.getPrivateKey())
+        gatewayService.clearCap(API_ENVIRONMENT_NEW, cardId, paymentSettingRepository.getPrivateKey())
             .enqueue(new Callback<String>() {
                 @Override
                 public void success(final String s) {

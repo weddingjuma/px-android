@@ -51,15 +51,15 @@
             app:px_spi_dotColor="@color/px_expressCheckoutScrollIndicatorColor"
             app:px_spi_dotSelectedColor="@color/ui_components_primary_color" />
 
-        <com.mercadolibre.android.ui.widgets.MeliButton
-            android:id="@+id/confirm_button"
+        <FrameLayout
+            android:id="@+id/pay_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/px_m_margin"
+            android:layout_marginStart="@dimen/px_m_margin"
             android:layout_marginTop="@dimen/px_s_margin"
-            android:layout_marginRight="@dimen/px_m_margin"
-            android:layout_marginBottom="@dimen/px_m_margin"
-            android:text="@string/px_pay" />
+            android:layout_marginEnd="@dimen/px_m_margin"
+            android:layout_marginBottom="@dimen/px_m_margin" />
+
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
@@ -69,11 +69,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/installments_header"
         tools:visibility="gone" />
-
-    <FrameLayout
-        android:id="@+id/exploding_frame"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/offline_methods_frame"

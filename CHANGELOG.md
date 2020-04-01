@@ -1,3 +1,23 @@
+## VERSION 4.38.2
+_30_03_2020_
+* FIX - Pay button crash when session isn't initialized
+* FIX - Prevent crash when font configurer isn't properly initialized
+* FIX - Prevent Linkable text crash
+* FIX - Last four digits were null after the new cvv remedy
+
+## VERSION 4.38.1
+_21_03_2020_
+* FIX - Fixed crash on business congrats
+* FIX - Fixed congrats layout on instructions and body error
+* FIX - Fixed pay button disappearing in one tap when returning from card form
+
+## VERSION 4.38.0
+_19_03_2020_
+* FEATURE - New security code remedy
+* ENHANCEMENT - Generic payment button
+* FIX - NPE in card form
+* FIX - Sending session id on card form
+
 ## VERSION 4.37.0
 _28_02_2020_
 * ENHANCEMENT - Reset esc cap when user enter security code

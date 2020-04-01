@@ -186,6 +186,7 @@ import org.jetbrains.annotations.Nullable;
             public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
                     expressMetadataList = initResponse.getExpress();
+                    paymentMethodDrawableItemMapper.setCustomSearchItems(initResponse.getCustomSearchItems());
                     cardsWithSplit = initResponse.getIdsWithSplitAllowed();
                     loadViewModel();
                 }

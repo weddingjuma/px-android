@@ -172,13 +172,23 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     @Override
     public void updateTotalView(@NonNull final AmountLocalized amountLocalized) {
         final Editable editable = new SpannableStringBuilder();
-        editable.append(getContext().getString(R.string.px_review_summary_total));
+        final Editable editableDescription = new SpannableStringBuilder();
+        final String totalText = getString(R.string.px_review_summary_total);
+        editable.append(totalText);
         editable.append(TextUtil.SPACE);
         editable.append(amountLocalized.get(getContext()));
 
         ViewUtils.setFontInSpannable(getContext(), PxFont.SEMI_BOLD, editable);
 
         totalAmountTextView.setText(editable);
+
+        editableDescription
+            .append(totalText)
+            .append(TextUtil.SPACE)
+            .append(String.valueOf(amountLocalized.getAmount().intValue()))
+            .append(getString(R.string.px_money));
+
+        totalAmountTextView.setContentDescription(editableDescription);
     }
 
     @Override

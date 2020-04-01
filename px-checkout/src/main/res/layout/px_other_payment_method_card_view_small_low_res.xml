@@ -32,6 +32,7 @@
             android:layout_height="@dimen/px_height_low_res"
             android:layout_marginStart="@dimen/px_s_margin"
             android:src="@drawable/px_ico_new_card"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -42,6 +43,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/px_s_margin"
             android:layout_marginEnd="@dimen/px_s_margin"
+            android:importantForAccessibility="no"
             android:textColor="@color/px_color_translucent_black"
             android:textSize="@dimen/px_s_text"
             app:customStyle="regular"

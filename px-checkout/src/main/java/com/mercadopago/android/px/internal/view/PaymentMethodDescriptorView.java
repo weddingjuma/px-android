@@ -6,8 +6,10 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.PayerCost;
 
 public class PaymentMethodDescriptorView extends ConstraintLayout {
@@ -30,6 +32,8 @@ public class PaymentMethodDescriptorView extends ConstraintLayout {
         inflate(context, R.layout.px_view_payment_method_descriptor, this);
         leftText = findViewById(R.id.left_text);
         rightText = findViewById(R.id.right_text);
+        leftText.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        rightText.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     public void update(@NonNull final Model model) {
@@ -39,6 +43,11 @@ public class PaymentMethodDescriptorView extends ConstraintLayout {
         final SpannableStringBuilder rightSpannableBuilder = new SpannableStringBuilder();
         model.updateRightSpannable(rightSpannableBuilder, leftText);
         rightText.setText(rightSpannableBuilder);
+        setContentDescription(TextUtil.EMPTY);
+    }
+
+    public void updateContentDescription(@NonNull final Model model) {
+        setContentDescription(model.getAccessibilityContentDescription(getContext()));
     }
 
     public abstract static class Model {
@@ -66,6 +75,10 @@ public class PaymentMethodDescriptorView extends ConstraintLayout {
 
         public boolean hasPayerCostList() {
             return false;
+        }
+
+        protected String getAccessibilityContentDescription(@NonNull final Context context) {
+            return TextUtil.EMPTY;
         }
     }
 }

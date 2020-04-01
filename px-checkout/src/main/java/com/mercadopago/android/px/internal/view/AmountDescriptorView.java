@@ -68,14 +68,6 @@ public class AmountDescriptorView extends ConstraintLayout {
         leftLabel = leftContainer.findViewById(R.id.label);
         rightLabel = findViewById(R.id.amount);
         imageView = findViewById(R.id.icon_descriptor_amount);
-
-        ViewCompat.setAccessibilityDelegate(this, new AccessibilityDelegateCompat() {
-            @Override
-            public void onInitializeAccessibilityNodeInfo(final View host, final AccessibilityNodeInfoCompat info) {
-                super.onInitializeAccessibilityNodeInfo(host, info);
-                info.removeAction(AccessibilityActionCompat.ACTION_CLICK);
-            }
-        });
     }
 
     public void animateEnter() {
@@ -94,13 +86,18 @@ public class AmountDescriptorView extends ConstraintLayout {
     }
 
     private void updateRightLabel(@NonNull final AmountDescriptorView.Model model) {
-        updateLabel(model.right.get(getContext()), rightLabel, rightLabelSemiBold);
+        final String textAmount = model.right.get(getContext()).toString();
+        updateLabel(textAmount, rightLabel, rightLabelSemiBold);
+        final String[] listAmount = textAmount.split(" ");
+        if (listAmount.length > 0) {
+            rightLabel
+                .setContentDescription(listAmount[listAmount.length - 1] + getResources().getString(R.string.px_money));
+        }
     }
 
     private void updateLeftLabel(@NonNull final AmountDescriptorView.Model model) {
         if (model.leftText != null) {
             updateLabel(leftLabel, model.leftText);
-            setContentDescription("Total a pagar " + model.leftText);
         } else {
             updateLabel(model.left.get(getContext()), leftLabel, leftLabelSemiBold);
         }

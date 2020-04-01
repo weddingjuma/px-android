@@ -171,7 +171,8 @@ public class SummaryView extends LinearLayout {
         }
     }
 
-    public void configureToolbar(@NonNull final AppCompatActivity activity, @NonNull final View.OnClickListener listener) {
+    public void configureToolbar(@NonNull final AppCompatActivity activity,
+        @NonNull final View.OnClickListener listener) {
         final Toolbar toolbar = findViewById(R.id.toolbar);
         activity.setSupportActionBar(toolbar);
 
@@ -181,6 +182,7 @@ public class SummaryView extends LinearLayout {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setDisplayShowHomeEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+            actionBar.setHomeActionContentDescription(R.string.px_label_back);
         }
         toolbar.setNavigationOnClickListener(listener);
     }
@@ -228,6 +230,7 @@ public class SummaryView extends LinearLayout {
                     toolbarElementDescriptor.startAnimation(toolbarAppearAnimation);
                 }
                 bigHeaderDescriptor.startAnimation(logoDisappearAnimation);
+                bigHeaderDescriptor.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
             }
         } else if (!showingBigLogo) {
             bigHeaderDescriptor.setVisibility(VISIBLE);
@@ -240,6 +243,7 @@ public class SummaryView extends LinearLayout {
                 bigHeaderDescriptor.startAnimation(logoAppearAnimation);
             }
             toolbarElementDescriptor.startAnimation(toolbarDisappearAnimation);
+            toolbarElementDescriptor.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
         }
         if (measureListener != null) {
             final int availableSummaryHeight = itemsMaxSize.getMeasuredHeight();

@@ -83,6 +83,11 @@ public class SplitPaymentHeaderAdapter extends HubableAdapter<List<SplitPaymentH
             labeledSwitch.setText(new SpannableStringBuilder(amount).append(message));
             labeledSwitch.setChecked(isChecked);
             labeledSwitch.setVisibility(View.VISIBLE);
+
+            labeledSwitch.setContentDescription(new SpannableStringBuilder()
+                .append(split.secondaryPaymentMethod.getVisibleAmountToPay().toString())
+                .append(labeledSwitch.getContext().getString(R.string.px_money))
+                .append(message));
         }
 
         @Override

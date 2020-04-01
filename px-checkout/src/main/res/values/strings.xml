@@ -234,4 +234,9 @@
 
     <!-- Disable payment method title pager -->
     <string name="px_payment_method_disable_title">No puedes usar este medio de pago</string>
+
+    <!-- Accessibility -->
+    <string name="px_money">pesos</string>
+    <string name="px_label_back">atrás</string>
+
 </resources>

@@ -63,6 +63,7 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
         final ConsumerCreditsDisplayInfo displayInfo = model.metadata.displayInfo;
         tintBackground(view.findViewById(R.id.background), displayInfo.color);
         showDisplayInfo(view, displayInfo);
+        view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
     protected void showDisplayInfo(final View view, @NonNull final ConsumerCreditsDisplayInfo displayInfo) {
@@ -114,5 +115,10 @@ public class ConsumerCreditsFragment extends PaymentMethodFragment<ConsumerCredi
         constraintSet.connect(logo.getId(), ConstraintSet.TOP, creditsLagout.getId(), ConstraintSet.TOP, 0);
         constraintSet.connect(logo.getId(), ConstraintSet.BOTTOM, creditsLagout.getId(), ConstraintSet.BOTTOM, 0);
         constraintSet.applyTo(creditsLagout);
+    }
+
+    @Override
+    protected String getAccessibilityContentDescription() {
+        return model.getDescription();
     }
 }

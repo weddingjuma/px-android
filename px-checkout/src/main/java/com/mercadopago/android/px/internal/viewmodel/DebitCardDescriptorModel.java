@@ -7,6 +7,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.textformatter.AmountLabeledFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.TextFormatter;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
@@ -68,5 +69,15 @@ public final class DebitCardDescriptorModel extends PaymentMethodDescriptorView.
     @Override
     public int getCurrentInstalment() {
         return getCurrent().getInstallments();
+    }
+
+    @Override
+    protected String getAccessibilityContentDescription(@NonNull final Context context) {
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
+        builder.append(getCurrent().getInstallmentAmount().toString())
+            .append(TextUtil.SPACE)
+            .append(context.getResources().getString(R.string.px_money));
+
+        return builder.toString();
     }
 }

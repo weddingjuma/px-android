@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/px_label_back"
             android:layout_weight="0.05"
             android:src="@drawable/ic_close" />
 

@@ -101,6 +101,7 @@ public class ElementDescriptorView extends LinearLayout {
         setIconSize((int) iconWidth, (int) iconHeight);
         configureTextView(title, titleSize, titleTextColor, titleTextMaxLines, gravity);
         configureTextView(subtitle, subtitleSize, subtitleTextColor, subtitleTextMaxLines, gravity);
+        setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
     private void configureTextView(final TextView text, final float textSize, final int textColor,
@@ -118,8 +119,6 @@ public class ElementDescriptorView extends LinearLayout {
 
     public void update(@NonNull final ElementDescriptorView.Model model) {
         title.setText(model.getTitle());
-        setContentDescription(model.getTitle());
-        title.announceForAccessibility("Le estas por pagar a " + model.getTitle());
 
         if (model.hasSubtitle()) {
             subtitle.setVisibility(VISIBLE);
@@ -127,8 +126,6 @@ public class ElementDescriptorView extends LinearLayout {
         } else {
             subtitle.setVisibility(GONE);
         }
-
-        subtitle.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
         final Picasso picasso = PicassoLoader.getPicasso();
         final RequestCreator requestCreator;

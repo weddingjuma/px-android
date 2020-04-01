@@ -39,6 +39,7 @@ public final class ToolbarCancel extends Toolbar {
             appCompatActivity.setSupportActionBar(this);
             final ActionBar supportActionBar = appCompatActivity.getSupportActionBar();
             supportActionBar.setHomeAsUpIndicator(R.drawable.ic_close);
+            supportActionBar.setHomeActionContentDescription(R.string.px_label_back);
             supportActionBar.setDisplayHomeAsUpEnabled(true);
             supportActionBar.setDisplayShowTitleEnabled(false);
             setNavigationOnClickListener(v -> appCompatActivity.onBackPressed());

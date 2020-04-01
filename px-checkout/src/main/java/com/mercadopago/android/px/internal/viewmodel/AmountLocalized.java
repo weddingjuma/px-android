@@ -16,6 +16,11 @@ public class AmountLocalized implements ILocalizedCharSequence {
         this.currency = currency;
     }
 
+    @NonNull
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
     @Override
     public CharSequence get(@NonNull final Context context) {
         return TextFormatter.withCurrency(currency)

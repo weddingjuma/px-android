@@ -238,5 +238,6 @@
     <!-- Accessibility -->
     <string name="px_money">pesos</string>
     <string name="px_label_back">atrás</string>
+    <string name="px_label_close">cerrar</string>
 
 </resources>

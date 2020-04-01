@@ -180,6 +180,7 @@
     <string name="px_payment_method_disable_title">You can not use this payment method</string>
     <string name="px_money">dollars</string>
     <string name="px_label_back">back</string>
+    <string name="px_label_close">close</string>
     <plurals name="px_accreditation_time_hour">
         <item quantity="one">Will be accredited in {0} hour</item>
         <item quantity="other">Will be accredited in {0} hours</item>

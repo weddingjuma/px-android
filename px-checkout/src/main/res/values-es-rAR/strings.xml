@@ -180,6 +180,7 @@
     <string name="px_payment_method_disable_title">No podés usar este medio de pago</string>
     <string name="px_money">pesos</string>
     <string name="px_label_back">atrás</string>
+    <string name="px_label_close">cerrar</string>
     <plurals name="px_accreditation_time_hour">
         <item quantity="one">Se acreditará en {0} hora</item>
         <item quantity="other">Se acreditará en {0} horas</item>

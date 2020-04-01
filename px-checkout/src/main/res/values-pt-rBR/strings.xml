@@ -180,6 +180,7 @@
     <string name="px_payment_method_disable_title">Não é possível pagar com essa opção</string>
     <string name="px_money">reais</string>
     <string name="px_label_back">voltar</string>
+    <string name="px_label_close">fechar</string>
     <plurals name="px_accreditation_time_hour">
         <item quantity="one" tools:ignore="ImpliedQuantity">Será aprovado em {0} hora</item>
         <item quantity="other">Será aprovado em {0} horas</item>

@@ -14,7 +14,7 @@ import com.mercadopago.android.px.model.AccountMoneyMetadata;
 public class AccountMoneyDescriptorModel extends PaymentMethodDescriptorView.Model {
 
     private final AccountMoneyMetadata accountMoneyMetadata;
-    private String descriptionAccountMoney = TextUtil.EMPTY;
+    private String sliderTitle = TextUtil.EMPTY;
 
     @NonNull
     public static PaymentMethodDescriptorView.Model createFrom(
@@ -33,20 +33,20 @@ public class AccountMoneyDescriptorModel extends PaymentMethodDescriptorView.Mod
         final Context context = textView.getContext();
 
         if (accountMoneyMetadata.displayInfo != null) {
-            descriptionAccountMoney = accountMoneyMetadata.displayInfo.sliderTitle;
-            if (TextUtil.isEmpty(accountMoneyMetadata.displayInfo.sliderTitle)) {
+            sliderTitle = accountMoneyMetadata.displayInfo.sliderTitle;
+            if (TextUtil.isEmpty(sliderTitle)) {
                 spannableStringBuilder.append(TextUtil.SPACE);
             } else {
                 final AmountLabeledFormatter amountLabeledFormatter =
                     new AmountLabeledFormatter(spannableStringBuilder, context)
                         .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey));
-                amountLabeledFormatter.apply(descriptionAccountMoney);
+                amountLabeledFormatter.apply(sliderTitle);
             }
         }
     }
 
     @Override
     protected String getAccessibilityContentDescription(@NonNull final Context context) {
-        return descriptionAccountMoney;
+        return sliderTitle;
     }
 }

@@ -138,7 +138,7 @@
     <string name="px_got_it">Got it</string>
     <string name="px_form_card_title_payment_type">Card of {0}</string>
     <string name="px_form_card_title">Card</string>
-    <string name="px_form_identification_title">Card holder document</string>
+    <string name="px_form_identification_title">Card holder\'s ID</string>
     <string name="px_bank_deals_lowres">Promotions</string>
     <string name="px_credit_payment_type">Credit</string>
     <string name="px_debit_payment_type">Debit</string>
@@ -148,6 +148,8 @@
     <string name="px_review_item_quantity">Quantity:</string>
     <string name="px_review_product_price">Unit price: {0}</string>
     <string name="px_activity_checkout_title">Check if everything\'s correct</string>
+    <string name="px_review_summary_product">Product</string>
+    <string name="px_review_summary_products">Products</string>
     <string name="px_review_summary_charges">Charges</string>
     <string name="px_review_summary_taxes">Taxes</string>
     <string name="px_review_summary_shipping">Shipment</string>
@@ -176,8 +178,8 @@
     <string name="px_dialog_detail_payment_method_disable_black_list">We rejected the payment with this card.</string>
     <string name="px_dialog_detail_payment_method_disable_insufficient_amount">Your funds are insufficient or you exceeded the purchase limit.</string>
     <string name="px_payment_method_disable_title">You can not use this payment method</string>
-    <string name="px_review_summary_product">Product</string>
-    <string name="px_review_summary_products">Products</string>
+    <string name="px_money">dollars</string>
+    <string name="px_label_back">back</string>
     <plurals name="px_accreditation_time_hour">
         <item quantity="one">Will be accredited in {0} hour</item>
         <item quantity="other">Will be accredited in {0} hours</item>

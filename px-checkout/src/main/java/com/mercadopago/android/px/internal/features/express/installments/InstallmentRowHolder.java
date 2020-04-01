@@ -92,12 +92,12 @@ public class InstallmentRowHolder extends RecyclerView.ViewHolder {
 
         installmentsText.setText(new SpannableStringBuilder(installmentText)
             .append(text)
-            .append(" ")
+            .append(TextUtil.SPACE)
             .append(spannedInstallmentsText));
 
         installmentsText.setContentDescription(new SpannableStringBuilder(installmentText)
             .append(context.getString(R.string.px_date_divider))
-            .append(" ")
+            .append(TextUtil.SPACE)
             .append(payerCost.getInstallmentAmount().toString())
             .append(context.getString(R.string.px_money)));
     }

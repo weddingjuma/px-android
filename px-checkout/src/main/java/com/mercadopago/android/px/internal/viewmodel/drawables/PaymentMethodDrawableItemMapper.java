@@ -11,8 +11,8 @@ import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.mappers.NonNullMapper;
 import com.mercadopago.android.px.model.CustomSearchItem;
 import com.mercadopago.android.px.model.ExpressMetadata;
+import com.mercadopago.android.px.model.Issuer;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
-import com.mercadopago.android.px.model.internal.Text;
 import java.util.Collections;
 import java.util.List;
 
@@ -71,10 +71,15 @@ public class PaymentMethodDrawableItemMapper extends NonNullMapper<ExpressMetada
         String description = TextUtil.EMPTY;
         String issuerName = TextUtil.EMPTY;
         CustomSearchItem item;
+        Issuer issuer;
         if((item = getCustomSearchItemById(expressMetadata.getCustomOptionId())) != null) {
-            description = item.getDescription();
-            if (item.getIssuer() != null && item.getIssuer() != null) {
-                issuerName = item.getIssuer().getName();
+            issuer = item.getIssuer();
+
+            if (item.getDescription() != null) {
+                description = item.getDescription();
+            }
+            if (issuer != null && issuer.getName() != null) {
+                issuerName = issuer.getName();
             }
         }
 

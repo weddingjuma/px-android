@@ -116,8 +116,9 @@ public class OtherPaymentMethodFragment
     public void setUserVisibleHint(final boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         final View view = getView();
-        final ViewGroup parent;
-        if (presenter != null && view != null && (parent = (ViewGroup) view.getParent()) != null) {
+        final ViewGroup parent = view != null ? (ViewGroup) view.getParent() : null;
+
+        if (presenter != null && parent != null) {
             parent.performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
             if (isVisibleToUser) {
                 offPaymentMethodView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);

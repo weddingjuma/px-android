@@ -155,7 +155,9 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     private void clearForAccessibility() {
         card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
         card.setContentDescription(TextUtil.SPACE);
-        handler.removeCallbacksAndMessages(null);
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
+        }
     }
 
     @Override

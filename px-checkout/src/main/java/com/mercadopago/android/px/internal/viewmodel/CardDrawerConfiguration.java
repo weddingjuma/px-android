@@ -161,10 +161,6 @@ public final class CardDrawerConfiguration implements CardUI, Parcelable, Serial
         return info.issuerImage;
     }
 
-    public String getLastDigits() {
-        return info.lastFourDigits;
-    }
-
     public void setLogoRes(@DrawableRes final int logoRes) {
         this.logoRes = logoRes;
     }

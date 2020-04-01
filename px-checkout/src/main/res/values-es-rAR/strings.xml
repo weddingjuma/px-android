@@ -90,7 +90,7 @@
     <string name="px_error_try_with_other_method">Por favor, intente pagar de otra forma.</string>
     <string name="px_error_description_duplicated_payment">No te preocupes, solo te cobramos el primer pago</string>
     <string name="px_error_description_max_attempts">Como llegaste al límite de intentos con esta tarjeta, usá otro medio de pago.</string>
-    <string name="px_error_description_rejected_by_regulations">Para pagar con dinero en cuenta debes completar los datos faltantes.</string>
+    <string name="px_error_description_rejected_by_regulations">Para pagar con dinero disponible en Mercado Pago debes completar los datos faltantes.</string>
     <string name="px_error_description_rejected_by_insufficient_amount_1">¡No te desanimes! Consulta con tu tarjeta si tienes saldo o límite disponible.</string>
     <string name="px_error_description_rejected_by_insufficient_amount_2">Si prefieres, puedes elegir otro medio de pago.</string>
     <string name="px_error_message_invalid_item">Item inválido</string>
@@ -148,6 +148,8 @@
     <string name="px_review_item_quantity">Cantidad:</string>
     <string name="px_review_product_price">Precio unitario: {0}</string>
     <string name="px_activity_checkout_title">Revisá si está todo bien</string>
+    <string name="px_review_summary_product">Producto</string>
+    <string name="px_review_summary_products">Productos</string>
     <string name="px_review_summary_charges">Cargos</string>
     <string name="px_review_summary_taxes">Impuestos</string>
     <string name="px_review_summary_shipping">Envío</string>
@@ -175,9 +177,9 @@
     <string name="px_dialog_detail_payment_method_disable_high_risk">Rechazamos tu pago.</string>
     <string name="px_dialog_detail_payment_method_disable_black_list">Rechazamos tu pago con esta tarjeta.</string>
     <string name="px_dialog_detail_payment_method_disable_insufficient_amount">Tus fondos son insuficientes o superaste el límite de compra.</string>
-    <string name="px_payment_method_disable_title">No puedes usar este medio de pago</string>
-    <string name="px_review_summary_product">Producto</string>
-    <string name="px_review_summary_products">Productos</string>
+    <string name="px_payment_method_disable_title">No podés usar este medio de pago</string>
+    <string name="px_money">pesos</string>
+    <string name="px_label_back">atrás</string>
     <plurals name="px_accreditation_time_hour">
         <item quantity="one">Se acreditará en {0} hora</item>
         <item quantity="other">Se acreditará en {0} horas</item>

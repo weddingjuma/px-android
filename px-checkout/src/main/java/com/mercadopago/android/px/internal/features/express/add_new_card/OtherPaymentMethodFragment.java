@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadopago.android.px.R;
@@ -114,6 +115,21 @@ public class OtherPaymentMethodFragment
         view.setOnClickListener(listener);
     }
 
+    @Override
+    public void setUserVisibleHint(final boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        final View view = getView();
+        final ViewGroup parent = view != null ? (ViewGroup) view.getParent() : null;
+
+        if (presenter != null && parent != null) {
+            parent.performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
+            if (isVisibleToUser) {
+                offPaymentMethodView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+                addNewCardView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
+            }
+        }
+    }
+
     protected void loadPrimaryMessageView(@NonNull final View view, @Nullable final Text primaryMessage) {
         final MPTextView primaryMessageView = view.findViewById(R.id.other_payment_method_primary_message);
         ViewUtils.loadOrHide(View.GONE, primaryMessage, primaryMessageView);
@@ -132,7 +148,7 @@ public class OtherPaymentMethodFragment
     @Override
     public void startCardForm(@NonNull final CardFormWithFragment cardForm) {
         FragmentManager manager;
-        if(getParentFragment() != null && (manager = getParentFragment().getFragmentManager()) != null) {
+        if (getParentFragment() != null && (manager = getParentFragment().getFragmentManager()) != null) {
             cardForm.start(manager, ExpressPaymentFragment.REQ_CODE_CARD_FORM,
                 R.id.one_tap_fragment);
         }

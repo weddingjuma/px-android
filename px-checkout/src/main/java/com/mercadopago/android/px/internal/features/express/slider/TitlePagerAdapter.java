@@ -8,6 +8,8 @@ import com.mercadopago.android.px.internal.viewmodel.GoingToModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
+import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
+
 public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescriptorView.Model>, TitlePager> {
 
     private static final int NO_SELECTED = -1;
@@ -65,6 +67,10 @@ public class TitlePagerAdapter extends HubableAdapter<List<PaymentMethodDescript
         currentModel.setCurrentPayerCost(payerCostSelected);
         currentModel.setSplit(splitSelectionState.userWantsToSplit());
         currentView.update(currentModel);
+        executeIfAccessibilityTalkBackEnable(currentView.getContext(), () -> {
+            currentView.updateContentDescription(currentModel);
+            return null;
+        });
 
         if (installmentChanged != null) {
             installmentChanged.installmentSelectedChanged(currentModel.getCurrentInstalment());

@@ -19,6 +19,7 @@
 
             <com.mercadopago.android.px.internal.view.PaymentResultHeader
                 android:id="@+id/header"
+                android:focusable="true"
                 android:layout_width="match_parent"
                 tools:layout_height="100dp"
                 android:layout_height="wrap_content"/>
@@ -37,7 +38,9 @@
             <com.mercadopago.android.px.internal.view.PaymentResultBody
                 android:id="@+id/body"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:importantForAccessibility="noHideDescendants"
+                />
 
             <!-- Body used to draw instructions or error messages of the old congrats -->
             <LinearLayout

@@ -17,6 +17,8 @@ public abstract class DrawableFragmentItem implements Parcelable, Serializable {
     private final StatusMetadata status;
     private final Reimbursement reimbursement;
     private final DisabledPaymentMethod disabledPaymentMethod;
+    private String description;
+    private String issuerName;
 
     protected DrawableFragmentItem(@NonNull final Parameters parameters) {
         id = parameters.id;
@@ -24,6 +26,8 @@ public abstract class DrawableFragmentItem implements Parcelable, Serializable {
         status = parameters.status;
         reimbursement = parameters.reimbursement;
         disabledPaymentMethod = parameters.disabledPaymentMethod;
+        description = parameters.description;
+        issuerName = parameters.issuerName;
     }
 
     protected DrawableFragmentItem(final Parcel in) {
@@ -32,6 +36,8 @@ public abstract class DrawableFragmentItem implements Parcelable, Serializable {
         status = in.readParcelable(StatusMetadata.class.getClassLoader());
         reimbursement = in.readParcelable(Reimbursement.class.getClassLoader());
         disabledPaymentMethod = in.readParcelable(DisabledPaymentMethod.class.getClassLoader());
+        description = in.readString();
+        issuerName = in.readString();
     }
 
     @Override
@@ -41,6 +47,8 @@ public abstract class DrawableFragmentItem implements Parcelable, Serializable {
         dest.writeParcelable(status, flags);
         dest.writeParcelable(reimbursement, flags);
         dest.writeParcelable(disabledPaymentMethod, flags);
+        dest.writeString(description);
+        dest.writeString(issuerName);
     }
 
     public abstract Fragment draw(@NonNull final PaymentMethodFragmentDrawer drawer);
@@ -68,21 +76,36 @@ public abstract class DrawableFragmentItem implements Parcelable, Serializable {
         return disabledPaymentMethod;
     }
 
+    @NonNull
+    public String getDescription() {
+        return description;
+    }
+
+    @NonNull
+    public String getIssuerName() {
+        return issuerName;
+    }
+
     /* default */ static final class Parameters {
         /* default */ @NonNull final String id;
         /* default */ @NonNull final StatusMetadata status;
         /* default */ @Nullable final String chargeMessage;
         /* default */ @Nullable final Reimbursement reimbursement;
         /* default */ @Nullable final DisabledPaymentMethod disabledPaymentMethod;
+        /* default */ @NonNull final String description;
+        /* default */ @NonNull final String issuerName;
 
         /* default */ Parameters(@NonNull final String id, @Nullable final String chargeMessage,
             @NonNull final StatusMetadata status, @Nullable final Reimbursement reimbursement,
-            @Nullable final DisabledPaymentMethod disabledPaymentMethod) {
+            @Nullable final DisabledPaymentMethod disabledPaymentMethod, @NonNull final String description,
+            @NonNull final String issuerName) {
             this.id = id;
             this.chargeMessage = chargeMessage;
             this.status = status;
             this.reimbursement = reimbursement;
             this.disabledPaymentMethod = disabledPaymentMethod;
+            this.description = description;
+            this.issuerName = issuerName;
         }
     }
 }

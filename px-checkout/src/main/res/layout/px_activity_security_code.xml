@@ -86,6 +86,7 @@
                         android:paddingLeft="10dp"
                         android:paddingRight="10dp"
                         android:paddingStart="10dp"
+                        android:contentDescription="@string/px_security_code"
                         android:visibility="visible">
 
                         <com.mercadopago.android.px.internal.view.MPTextView
@@ -105,6 +106,7 @@
                             android:inputType="number"
                             android:maxLength="4"
                             android:singleLine="true"
+                            android:importantForAccessibility="no"
                             android:textColor="@color/px_real_black"
                             android:textCursorDrawable="@drawable/px_cursor_input"
                             android:textSize="19dp"
@@ -146,44 +148,31 @@
                     android:visibility="visible"
                     android:weightSum="1">
 
-                    <FrameLayout
-                        android:layout_width="0dp"
-                        android:layout_height="40dp"
-                        android:layout_weight="0.5">
-
-                        <FrameLayout
-                            android:id="@+id/mpsdkBackButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/px_form_input_button"
-                            android:focusable="true">
-
-                            <com.mercadopago.android.px.internal.view.MPTextView
-                                android:id="@+id/mpsdkBackButtonText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="center"
-                                android:text="@string/px_button_back"
-                                android:textColor="@color/px_active_button"/>
-                        </FrameLayout>
-                    </FrameLayout>
-
-                    <FrameLayout
-                        android:id="@+id/mpsdkNextButton"
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/mpsdkBackButton"
                         android:layout_width="0dp"
                         android:layout_height="40dp"
                         android:layout_weight="0.5"
                         android:background="@drawable/px_form_input_button"
-                        android:focusable="true">
+                        android:layout_gravity="center"
+                        android:textAllCaps="false"
+                        android:gravity="center"
+                        android:text="@string/px_button_back"
+                        android:textColor="@color/px_active_button"
+                        android:focusable="true"/>
 
-                        <com.mercadopago.android.px.internal.view.MPTextView
-                            android:id="@+id/mpsdkNextButtonText"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:text="@string/px_button_continue"
-                            android:textColor="@color/px_active_button"/>
-                    </FrameLayout>
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/mpsdkNextButton"
+                        android:layout_width="0dp"
+                        android:layout_height="40dp"
+                        android:layout_weight="0.5"
+                        android:textAllCaps="false"
+                        android:gravity="center"
+                        android:background="@drawable/px_form_input_button"
+                        android:text="@string/px_button_continue"
+                        android:textColor="@color/px_active_button"
+                        android:focusable="true"/>
+
                 </LinearLayout>
 
                 <FrameLayout

@@ -74,6 +74,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         body.init(model.bodyModel, callback);
         //TODO migrate
         BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
+
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.mercadopago.android.px.model.internal.Text;
 public class DisabledPaymentMethodDescriptorModel extends PaymentMethodDescriptorView.Model {
 
     @Nullable public Text message;
+    @NonNull private String description = TextUtil.EMPTY;
 
     @NonNull
     public static PaymentMethodDescriptorView.Model createFrom(@NonNull final Text message) {
@@ -34,9 +35,16 @@ public class DisabledPaymentMethodDescriptorModel extends PaymentMethodDescripto
         amountLabeledFormatter.withTextColor(ContextCompat.getColor(context, R.color.ui_meli_blue))
             .withStyle(PxFont.SEMI_BOLD);
         if (message != null && TextUtil.isNotEmpty(message.getMessage())) {
-            amountLabeledFormatter.apply(message.getMessage());
+            description = message.getMessage();
         } else {
-            amountLabeledFormatter.apply(R.string.px_payment_method_disable_title);
+            description = context.getString(R.string.px_payment_method_disable_title);
         }
+
+        amountLabeledFormatter.apply(description);
+    }
+
+    @Override
+    protected String getAccessibilityContentDescription(@NonNull final Context context) {
+        return description;
     }
 }

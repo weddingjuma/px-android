@@ -1,3 +1,10 @@
+## VERSION 4.39.0
+_02_04_2020_
+* FEATURE - Accessibility functions.
+* FEATURE - High risk remedy.
+* FIX - Crash in offline methods fragment.
+* FIX - Title color in offline methods fragment.
+
 ## VERSION 4.38.2
 _30_03_2020_
 * FIX - Pay button crash when session isn't initialized

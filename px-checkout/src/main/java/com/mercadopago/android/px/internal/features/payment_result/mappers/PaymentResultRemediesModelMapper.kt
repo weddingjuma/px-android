@@ -2,7 +2,7 @@ package com.mercadopago.android.px.internal.features.payment_result.mappers
 
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel
 import com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy
-
+import com.mercadopago.android.px.internal.features.payment_result.remedies.view.HighRiskRemedy
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse
 
@@ -16,6 +16,9 @@ internal object PaymentResultRemediesModelMapper : Mapper<RemediesResponse, Reme
                             hintMessage,
                             length)
                 }
+            },
+            model.highRisk?.let {
+                HighRiskRemedy.Model(it.title, it.message, it.deepLink)
             }
         )
     }

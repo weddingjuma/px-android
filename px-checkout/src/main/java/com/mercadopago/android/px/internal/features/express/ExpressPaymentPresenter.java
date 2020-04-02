@@ -361,6 +361,11 @@ import org.jetbrains.annotations.Nullable;
         // do nothing
     }
 
+    @Override
+    public void onUserValidation() {
+        // do nothing
+    }
+
     private void postDisableModelUpdate() {
         initRepository.refresh().enqueue(new Callback<InitResponse>() {
             @Override

@@ -42,7 +42,7 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
             val remediesResponse = when {
                 hasToReturnEmptyResponse || isSuccess -> RemediesResponse.EMPTY
                 remediesCache.containsKey(paymentId) -> remediesCache[paymentId]!!
-                else -> getRemedies(payment).apply { remediesCache[paymentId] = this }
+                else -> getRemedies(payment, paymentResult.paymentData).apply { remediesCache[paymentId] = this }
             }
             withContext(Dispatchers.Main) {
                 handleResult(payment, paymentResult, paymentReward, remediesResponse, paymentSetting.currency, callback)
@@ -65,11 +65,9 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
             PaymentReward.EMPTY
         }
 
-    private suspend fun getRemedies(payment: IPaymentDescriptor) =
+    private suspend fun getRemedies(payment: IPaymentDescriptor, paymentData: PaymentData) =
         try {
-            val body = userSelectionRepository.card?.let { card -> userSelectionRepository.payerCost?.let { payerCost ->
-                RemediesBodyMapper().map(Pair(card, payerCost))
-            }}
+            val body = RemediesBodyMapper(userSelectionRepository).map(paymentData)
 
             val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT_NEW, payment.id.toString(),
                 locale, privateKey, body).await()

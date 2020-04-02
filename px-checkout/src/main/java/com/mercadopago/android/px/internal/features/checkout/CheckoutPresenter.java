@@ -32,7 +32,6 @@ import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.InitResponse;
-import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import java.util.List;

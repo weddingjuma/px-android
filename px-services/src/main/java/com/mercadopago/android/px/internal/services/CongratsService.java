@@ -1,7 +1,7 @@
 package com.mercadopago.android.px.internal.services;
 
 import android.support.annotation.Nullable;
-import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.CongratsResponse;
 import com.mercadopago.android.px.model.internal.remedies.RemediesBody;
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse;
 import kotlinx.coroutines.Deferred;
@@ -16,13 +16,15 @@ import retrofit2.http.Query;
 public interface CongratsService {
 
     @GET("/{version}/px_mobile/congrats")
-    Deferred<Response<PaymentReward>> getPaymentReward(
+    Deferred<Response<CongratsResponse>> getCongrats(
         @Path(value = "version", encoded = true) String version,
         @Header("Accept-Language") String locale,
         @Query("access_token") String accessToken,
         @Query("payment_ids") String paymentIds,
         @Query("platform") String platform,
         @Query("campaign_id") String campaignId,
+        @Query("ifpe") boolean turnedIfpeCompliant,
+        @Query("payment_methods_ids") String paymentMethodsIds,
         @Nullable @Query("flow_name") String flowName);
 
     @POST("{environment}/px_mobile/v1/remedies/{payment_id}")

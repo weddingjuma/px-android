@@ -2,11 +2,11 @@ package com.mercadopago.android.px.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import org.jetbrains.annotations.NotNull;
 
-public final class OfflineMethodsCompliance implements Parcelable {
+public final class OfflineMethodsCompliance extends InitiativeCompliance {
 
     private final String turnComplianceDeepLink;
-    private final boolean isCompliant;
     private final SensitiveInformation sensitiveInformation;
 
     public static final Creator<OfflineMethodsCompliance> CREATOR = new Creator<OfflineMethodsCompliance>() {
@@ -21,33 +21,26 @@ public final class OfflineMethodsCompliance implements Parcelable {
         }
     };
 
+    @SuppressWarnings("WeakerAccess")
     protected OfflineMethodsCompliance(final Parcel in) {
+        super(in);
         turnComplianceDeepLink = in.readString();
-        isCompliant = in.readByte() != 0;
         sensitiveInformation = in.readParcelable(SensitiveInformation.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(@NotNull final Parcel dest, final int flags) {
+        super.writeToParcel(dest, flags);
+        dest.writeString(turnComplianceDeepLink);
+        dest.writeParcelable(sensitiveInformation, flags);
     }
 
     public String getTurnComplianceDeepLink() {
         return turnComplianceDeepLink;
     }
 
-    public boolean isCompliant() {
-        return isCompliant;
-    }
-
     public SensitiveInformation getSensitiveInformation() {
         return sensitiveInformation;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeString(turnComplianceDeepLink);
-        dest.writeByte((byte) (isCompliant ? 1 : 0));
-        dest.writeParcelable(sensitiveInformation, flags);
-    }
 }

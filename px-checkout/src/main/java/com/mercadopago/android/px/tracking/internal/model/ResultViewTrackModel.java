@@ -10,11 +10,10 @@ import com.mercadopago.android.px.model.Campaign;
 import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.CongratsResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.mapper.FromDiscountItemToItemId;
 import java.math.BigDecimal;
-import java.util.Map;
 
 public final class ResultViewTrackModel extends TrackingMapModel {
 
@@ -67,9 +66,9 @@ public final class ResultViewTrackModel extends TrackingMapModel {
     private ResultViewTrackModel(@NonNull final Style style, @NonNull final PaymentModel paymentModel,
         @NonNull final CheckoutPreference checkoutPreference, @NonNull final String currencyId) {
         final PaymentResult paymentResult = paymentModel.getPaymentResult();
-        final PaymentReward paymentReward = paymentModel.getPaymentReward();
+        final CongratsResponse congratsResponse = paymentModel.getCongratsResponse();
         final PaymentData paymentData = paymentResult.getPaymentData();
-        final PaymentReward.Discount discount = paymentReward.getDiscount();
+        final CongratsResponse.Discount discount = congratsResponse.getDiscount();
         final Campaign campaign = paymentData != null ? paymentData.getCampaign() : null;
         final PaymentMethod paymentMethod = paymentData != null ? paymentData.getPaymentMethod() : null;
         this.style = style.value;
@@ -80,7 +79,7 @@ public final class ResultViewTrackModel extends TrackingMapModel {
         hasSplitPayment = PaymentDataHelper.isSplitPayment(paymentResult.getPaymentDataList());
         preferenceAmount = checkoutPreference.getTotalAmount();
         discountCouponAmount = PaymentDataHelper.getTotalDiscountAmount(paymentResult.getPaymentDataList());
-        scoreLevel = paymentReward.getScore() != null ? paymentReward.getScore().getProgress().getLevel() : null;
+        scoreLevel = congratsResponse.getScore() != null ? congratsResponse.getScore().getProgress().getLevel() : null;
         discountsCount = discount != null ? discount.getItems().size() : 0;
         campaignsIds = discount != null ? TextUtil.join(new FromDiscountItemToItemId().map(discount.getItems())) : null;
         campaignId = campaign != null ? campaign.getId() : null;

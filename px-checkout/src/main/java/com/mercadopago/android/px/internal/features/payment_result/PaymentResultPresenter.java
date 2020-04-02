@@ -15,10 +15,10 @@ import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.view.ActionDispatcher;
-import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.CopyAction;
 import com.mercadopago.android.px.internal.view.LinkAction;
 import com.mercadopago.android.px.internal.view.NextAction;
+import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.RecoverPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.FlowBehaviourResultMapper;
@@ -38,11 +38,10 @@ import com.mercadopago.android.px.tracking.internal.events.ScoreEvent;
 import com.mercadopago.android.px.tracking.internal.events.SeeAllDiscountsEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /* default */ class PaymentResultPresenter extends BasePresenter<PaymentResultContract.View>
-    implements ActionDispatcher, PaymentResultContract.Presenter, BusinessActions {
+    implements ActionDispatcher, PaymentResultContract.Presenter, PaymentResultBody.Listener {
 
     private final PaymentModel paymentModel;
     private final InstructionsRepository instructionsRepository;
@@ -191,7 +190,7 @@ import java.util.List;
     @Override
     public void OnClickDownloadAppButton(@NonNull final String deepLink) {
         new DownloadAppEvent(resultViewTrack).track();
-        getView().processBusinessAction(deepLink);
+        getView().launchDeepLink(deepLink);
     }
 
     @Override
@@ -204,19 +203,24 @@ import java.util.List;
     public void onClickDiscountItem(final int index, @Nullable final String deepLink, @Nullable final String trackId) {
         new DiscountItemEvent(resultViewTrack, index, trackId).track();
         if (deepLink != null) {
-            getView().processBusinessAction(deepLink);
+            getView().launchDeepLink(deepLink);
         }
     }
 
     @Override
     public void onClickLoyaltyButton(@NonNull final String deepLink) {
         new ScoreEvent(resultViewTrack).track();
-        getView().processBusinessAction(deepLink);
+        getView().launchDeepLink(deepLink);
     }
 
     @Override
     public void onClickShowAllDiscounts(@NonNull final String deepLink) {
         new SeeAllDiscountsEvent(resultViewTrack).track();
-        getView().processBusinessAction(deepLink);
+        getView().launchDeepLink(deepLink);
+    }
+
+    @Override
+    public void onClickViewReceipt(@NonNull final String deeLink) {
+        getView().launchDeepLink(deeLink);
     }
 }

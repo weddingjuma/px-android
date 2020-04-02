@@ -6,14 +6,12 @@ import java.io.Serializable;
 
 public final class Text implements Parcelable, Serializable {
 
+    public static final Text EMPTY = new Text();
+
     private String message;
     private String backgroundColor;
     private String textColor;
     private String weight;
-
-    public static Text empty() {
-        return new Text();
-    }
 
     public static final Creator<Text> CREATOR = new Creator<Text>() {
         @Override

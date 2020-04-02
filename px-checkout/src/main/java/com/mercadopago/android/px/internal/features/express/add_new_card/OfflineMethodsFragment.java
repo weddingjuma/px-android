@@ -94,6 +94,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         header = view.findViewById(R.id.header);
         panIndicator = view.findViewById(R.id.pan_indicator);
         confirmButton = view.findViewById(R.id.confirm_button);
@@ -378,11 +379,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void onDetach() {
+        super.onDetach();
         fadeInAnimation = null;
         fadeOutAnimation = null;
-        if (presenter != null) {
-            presenter.detachView();
-        }
-        super.onDetach();
     }
 }

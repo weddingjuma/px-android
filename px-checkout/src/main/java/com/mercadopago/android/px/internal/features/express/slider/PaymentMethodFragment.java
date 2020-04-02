@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.View;
-
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
@@ -46,22 +44,16 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     }
 
     @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         animation = new BottomSlideAnimationSet();
         handler = new Handler();
-    }
-
-    @Override
-    public void onDetach() {
-        animation = null;
-        handler = null;
-        super.onDetach();
     }
 
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
         if (isDisableMethod()) {
             disable();

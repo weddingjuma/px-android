@@ -187,7 +187,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         editableDescription
             .append(totalText)
             .append(TextUtil.SPACE)
-            .append(amountLocalized.getAmount().toString())
+            .append(String.valueOf(amountLocalized.getAmount().floatValue()))
             .append(getString(R.string.px_money));
 
         totalAmountTextView.setContentDescription(editableDescription);

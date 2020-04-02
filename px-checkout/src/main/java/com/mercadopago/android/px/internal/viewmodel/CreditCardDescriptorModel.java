@@ -155,7 +155,7 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
             .append(TextUtil.SPACE)
             .append(money)
             .append(TextUtil.SPACE)
-            .append(hasAmountDescriptor() ? currentInstallment.getTotalAmount() + money : TextUtil.EMPTY)
+            .append(hasAmountDescriptor() ? currentInstallment.getTotalAmount().floatValue() + money : TextUtil.EMPTY)
             .append(hasInterestFree() ? interestFree.getInstallmentRow().getMessage() : TextUtil.EMPTY);
 
         updateCFTSpannable(builder, context);

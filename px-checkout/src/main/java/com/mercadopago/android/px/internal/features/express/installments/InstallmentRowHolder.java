@@ -64,7 +64,7 @@ public class InstallmentRowHolder extends RecyclerView.ViewHolder {
                 .setTextColor(ContextCompat.getColor(installmentsInterest.getContext(), R.color.px_color_payer_costs));
             FontHelper.setFont(installmentsInterest, PxFont.REGULAR);
             installmentsInterest.setContentDescription(
-                TextUtils.concat(model.payerCost.getTotalAmount().toString(),
+                TextUtils.concat(String.valueOf(model.payerCost.getTotalAmount().floatValue()),
                     installmentsInterest.getContext().getString(R.string.px_money)));
         }
     }
@@ -98,7 +98,7 @@ public class InstallmentRowHolder extends RecyclerView.ViewHolder {
         installmentsText.setContentDescription(new SpannableStringBuilder(installmentText)
             .append(context.getString(R.string.px_date_divider))
             .append(TextUtil.SPACE)
-            .append(payerCost.getInstallmentAmount().toString())
+            .append(String.valueOf(payerCost.getInstallmentAmount().floatValue()))
             .append(context.getString(R.string.px_money)));
     }
 

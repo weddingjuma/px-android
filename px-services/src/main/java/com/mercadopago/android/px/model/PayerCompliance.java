@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public final class PayerCompliance implements Parcelable {
 
     private final OfflineMethodsCompliance offlineMethods;
+    private final InitiativeCompliance ifpe;
 
     public static final Creator<PayerCompliance> CREATOR = new Creator<PayerCompliance>() {
         @Override
@@ -21,19 +22,26 @@ public final class PayerCompliance implements Parcelable {
 
     protected PayerCompliance(final Parcel in) {
         offlineMethods = in.readParcelable(OfflineMethodsCompliance.class.getClassLoader());
+        ifpe = in.readParcelable(InitiativeCompliance.class.getClassLoader());
+    }
+
+    @Override
+    public void writeToParcel(final Parcel dest, final int flags) {
+        dest.writeParcelable(offlineMethods, flags);
+        dest.writeParcelable(ifpe, flags);
     }
 
     public OfflineMethodsCompliance getOfflineMethods() {
         return offlineMethods;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
+    @SuppressWarnings("SpellCheckingInspection")
+    public InitiativeCompliance getIfpe() {
+        return ifpe;
     }
 
     @Override
-    public void writeToParcel(final Parcel dest, final int flags) {
-        dest.writeParcelable(offlineMethods, flags);
+    public int describeContents() {
+        return 0;
     }
 }

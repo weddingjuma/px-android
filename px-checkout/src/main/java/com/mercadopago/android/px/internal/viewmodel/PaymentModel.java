@@ -8,7 +8,7 @@ import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandle
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.CongratsResponse;
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse;
 
 public class PaymentModel implements Parcelable {
@@ -27,20 +27,20 @@ public class PaymentModel implements Parcelable {
 
     private final IPaymentDescriptor payment;
     private final PaymentResult paymentResult;
-    private final PaymentReward paymentReward;
+    private final CongratsResponse congratsResponse;
     private final RemediesResponse remedies;
     private final Currency currency;
 
     public PaymentModel(@NonNull final PaymentResult paymentResult, @NonNull final Currency currency) {
-        this(null, paymentResult, PaymentReward.EMPTY, RemediesResponse.getEMPTY(), currency);
+        this(null, paymentResult, CongratsResponse.EMPTY, RemediesResponse.getEMPTY(), currency);
     }
 
     public PaymentModel(@Nullable final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentReward paymentReward, @NonNull final RemediesResponse remedies,
+        @NonNull final CongratsResponse congratsResponse, @NonNull final RemediesResponse remedies,
         @NonNull final Currency currency) {
         this.payment = payment;
         this.paymentResult = paymentResult;
-        this.paymentReward = paymentReward;
+        this.congratsResponse = congratsResponse;
         this.remedies = remedies;
         this.currency = currency;
     }
@@ -61,8 +61,8 @@ public class PaymentModel implements Parcelable {
     }
 
     @NonNull
-    public PaymentReward getPaymentReward() {
-        return paymentReward;
+    public CongratsResponse getCongratsResponse() {
+        return congratsResponse;
     }
 
     @NonNull
@@ -77,7 +77,7 @@ public class PaymentModel implements Parcelable {
     /* default */ PaymentModel(final Parcel in) {
         payment = (IPaymentDescriptor) in.readSerializable();
         paymentResult = (PaymentResult) in.readSerializable();
-        paymentReward = in.readParcelable(PaymentReward.class.getClassLoader());
+        congratsResponse = in.readParcelable(CongratsResponse.class.getClassLoader());
         remedies = in.readParcelable(RemediesResponse.class.getClassLoader());
         currency = in.readParcelable(Currency.class.getClassLoader());
     }
@@ -86,7 +86,7 @@ public class PaymentModel implements Parcelable {
     public void writeToParcel(final Parcel dest, final int flags) {
         dest.writeSerializable(payment);
         dest.writeSerializable(paymentResult);
-        dest.writeParcelable(paymentReward, flags);
+        dest.writeParcelable(congratsResponse, flags);
         dest.writeParcelable(remedies, flags);
         dest.writeParcelable(currency, flags);
     }

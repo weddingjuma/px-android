@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,23 +21,27 @@ import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusine
 import com.mercadolibre.android.mlbusinesscomponents.components.loyalty.MLBusinessLoyaltyRingView;
 import com.mercadolibre.android.ui.widgets.MeliButton;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.features.business_result.PaymentRewardViewModel;
+import com.mercadopago.android.px.internal.features.business_result.CongratsViewModel;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.model.ExternalFragment;
 import com.mercadopago.android.px.model.internal.Action;
+import com.mercadopago.android.px.model.internal.Text;
 import java.util.List;
 
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.isMPInstalled;
 
 public final class PaymentResultBody extends LinearLayout {
 
-    public interface OnClickBusinessActions extends MLBusinessLoyaltyRingView.OnClickLoyaltyRing,
+    public interface Listener extends ActionDispatcher, MLBusinessLoyaltyRingView.OnClickLoyaltyRing,
         MLBusinessDiscountBoxView.OnClickDiscountBox,
         MLBusinessDownloadAppView.OnClickDownloadApp,
         MLBusinessCrossSellingBoxView.OnClickCrossSellingBoxView {
 
         void onClickShowAllDiscounts(@NonNull final String deepLink);
+
+        void onClickViewReceipt(@NonNull final String deeLink);
     }
 
     public PaymentResultBody(final Context context) {
@@ -54,22 +59,29 @@ public final class PaymentResultBody extends LinearLayout {
         setOrientation(VERTICAL);
     }
 
-    public void init(@NonNull final Model model, @NonNull final OnClickBusinessActions businessActions) {
+    public void init(@NonNull final Model model, @NonNull final Listener listener) {
+        renderTopTextBox(model.congratsViewModel.getTopTextBox());
         renderFragment(R.id.px_fragment_container_important, model.importantFragment);
-        renderLoyalty(model.rewardResultViewModel.getLoyaltyRingData(), businessActions);
-        renderDiscounts(model.rewardResultViewModel.getDiscountBoxData(), businessActions);
-        renderShowAllDiscounts(model.rewardResultViewModel.getShowAllDiscounts(), businessActions);
-        renderDownload(model.rewardResultViewModel.getDownloadAppData(), businessActions);
-        renderCrossSellingBox(model.rewardResultViewModel.getCrossSellingBoxData(), businessActions);
+        renderLoyalty(model.congratsViewModel.getLoyaltyRingData(), listener);
+        renderDiscounts(model.congratsViewModel.getDiscountBoxData(), listener);
+        renderShowAllDiscounts(model.congratsViewModel.getShowAllDiscounts(), listener);
+        renderDownload(model.congratsViewModel.getDownloadAppData(), listener);
+        renderCrossSellingBox(model.congratsViewModel.getCrossSellingBoxData(), listener);
         renderReceipt(model.receiptId);
         renderHelp(model.help);
         renderFragment(R.id.px_fragment_container_top, model.topFragment);
         renderMethods(model);
+        renderViewReceipt(model.congratsViewModel.getViewReceipt(), listener);
         renderFragment(R.id.px_fragment_container_bottom, model.bottomFragment);
     }
 
+    private void renderTopTextBox(@NonNull final Text topTextBox) {
+        final boolean isVisible = ViewUtils.loadOrHide(View.GONE, topTextBox, findViewById(R.id.top_text_box));
+        findViewById(R.id.top_text_box_separator).setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
     private void renderLoyalty(@Nullable final MLBusinessLoyaltyRingData loyaltyData,
-        @NonNull final OnClickBusinessActions onClickLoyaltyRing) {
+        @NonNull final Listener onClickLoyaltyRing) {
         final MLBusinessLoyaltyRingView loyaltyView = findViewById(R.id.loyaltyView);
         final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
 
@@ -82,7 +94,7 @@ public final class PaymentResultBody extends LinearLayout {
     }
 
     private void renderShowAllDiscounts(@Nullable final Action showAllDiscountAction,
-        @NonNull final OnClickBusinessActions onClickDiscountBox) {
+        @NonNull final Listener onClickDiscountBox) {
         final MeliButton showAllDiscounts = findViewById(R.id.showAllDiscounts);
 
         if (showAllDiscountAction != null && isMPInstalled(getContext().getPackageManager())) {
@@ -95,7 +107,7 @@ public final class PaymentResultBody extends LinearLayout {
     }
 
     private void renderDiscounts(@Nullable final MLBusinessDiscountBoxData discountData,
-        @NonNull final OnClickBusinessActions onClickDiscountBox) {
+        @NonNull final Listener onClickDiscountBox) {
         final MLBusinessDiscountBoxView discountView = findViewById(R.id.discountView);
         final MLBusinessDividingLineView dividingView = findViewById(R.id.dividingLineView);
 
@@ -108,10 +120,10 @@ public final class PaymentResultBody extends LinearLayout {
     }
 
     private void renderDownload(@Nullable final MLBusinessDownloadAppData downloadAppData,
-        @NonNull final OnClickBusinessActions onClickBusinessActions) {
+        @NonNull final Listener listener) {
         final MLBusinessDownloadAppView downloadAppView = findViewById(R.id.downloadView);
         if (downloadAppData != null && !isMPInstalled(getContext().getPackageManager())) {
-            downloadAppView.init(downloadAppData, onClickBusinessActions);
+            downloadAppView.init(downloadAppData, listener);
         } else {
             downloadAppView.setVisibility(GONE);
         }
@@ -119,14 +131,14 @@ public final class PaymentResultBody extends LinearLayout {
 
     private void renderCrossSellingBox(
         @NonNull final List<MLBusinessCrossSellingBoxData> crossSellingBoxDataList,
-        @NonNull final OnClickBusinessActions onClickBusinessActions) {
+        @NonNull final Listener listener) {
 
         final LinearLayout businessComponents = findViewById(R.id.businessComponents);
 
         for (final MLBusinessCrossSellingBoxData crossSellingData : crossSellingBoxDataList) {
             final MLBusinessCrossSellingBoxView crossSellingBoxView =
                 new MLBusinessCrossSellingBoxView(getContext());
-            crossSellingBoxView.init(crossSellingData, onClickBusinessActions);
+            crossSellingBoxView.init(crossSellingData, listener);
             businessComponents.addView(crossSellingBoxView);
         }
     }
@@ -171,6 +183,20 @@ public final class PaymentResultBody extends LinearLayout {
         }
     }
 
+    private void renderViewReceipt(@Nullable final Action viewReceiptAction, final Listener listener) {
+        final MeliButton viewReceiptButton = findViewById(R.id.view_receipt_action);
+        final String target = viewReceiptAction != null ? viewReceiptAction.getTarget() : null;
+        if (TextUtil.isNotEmpty(target) && isMPInstalled(getContext().getPackageManager())) {
+            viewReceiptButton
+                .setBackground(ContextCompat.getDrawable(getContext(), R.drawable.px_quiet_button_selector));
+            viewReceiptButton.setText(viewReceiptAction.getLabel());
+            viewReceiptButton.setOnClickListener(
+                v -> listener.onClickViewReceipt(target));
+        } else {
+            viewReceiptButton.setVisibility(GONE);
+        }
+    }
+
     private void renderFragment(@IdRes final int id, @Nullable final ExternalFragment fragment) {
         final ViewGroup container = findViewById(id);
         if (fragment != null) {
@@ -183,7 +209,7 @@ public final class PaymentResultBody extends LinearLayout {
 
     public static final class Model {
         /* default */ final List<PaymentResultMethod.Model> methodModels;
-        /* default */ final PaymentRewardViewModel rewardResultViewModel;
+        /* default */ final CongratsViewModel congratsViewModel;
         @Nullable /* default */ final String receiptId;
         @Nullable /* default */ final String help;
         @Nullable /* default */ final String statement;
@@ -193,7 +219,7 @@ public final class PaymentResultBody extends LinearLayout {
 
         public Model(@NonNull final Builder builder) {
             methodModels = builder.methodModels;
-            rewardResultViewModel = builder.rewardResultViewModel;
+            congratsViewModel = builder.congratsViewModel;
             receiptId = builder.receiptId;
             help = builder.help;
             statement = builder.statement;
@@ -204,7 +230,7 @@ public final class PaymentResultBody extends LinearLayout {
 
         public static class Builder {
             /* default */ List<PaymentResultMethod.Model> methodModels;
-            /* default */ PaymentRewardViewModel rewardResultViewModel;
+            /* default */ CongratsViewModel congratsViewModel;
             @Nullable /* default */ String receiptId;
             @Nullable /* default */ String help;
             @Nullable /* default */ String statement;
@@ -217,9 +243,9 @@ public final class PaymentResultBody extends LinearLayout {
                 return this;
             }
 
-            public Builder setRewardViewModel(
-                @NonNull final PaymentRewardViewModel rewardResultViewModel) {
-                this.rewardResultViewModel = rewardResultViewModel;
+            public Builder setCongratsViewModel(
+                @NonNull final CongratsViewModel rewardResultViewModel) {
+                this.congratsViewModel = rewardResultViewModel;
                 return this;
             }
 

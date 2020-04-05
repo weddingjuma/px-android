@@ -11,7 +11,7 @@ import com.mercadopago.android.px.internal.util.TextUtil
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel
 import com.mercadopago.android.px.model.*
-import com.mercadopago.android.px.model.internal.PaymentReward
+import com.mercadopago.android.px.model.internal.CongratsResponse
 import com.mercadopago.android.px.model.internal.remedies.RemediesResponse
 import com.mercadopago.android.px.services.BuildConfig
 import kotlinx.coroutines.CoroutineScope
@@ -23,7 +23,7 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
         private val paymentSetting: PaymentSettingRepository, private val platform: String, private val locale: String,
         private val flow: String?, private val userSelectionRepository: UserSelectionRepository) : CongratsRepository {
 
-    private val paymentRewardCache = HashMap<String, PaymentReward>()
+    private val paymentRewardCache = HashMap<String, CongratsResponse>()
     private val remediesCache = HashMap<String, RemediesResponse>()
     private val privateKey = paymentSetting.privateKey
 
@@ -35,7 +35,7 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
         CoroutineScope(Dispatchers.IO).launch {
             val paymentId = payment.paymentIds?.get(0) ?: payment.id.toString()
             val paymentReward = when {
-                hasToReturnEmptyResponse || !isSuccess -> PaymentReward.EMPTY
+                hasToReturnEmptyResponse || !isSuccess -> CongratsResponse.EMPTY
                 paymentRewardCache.containsKey(paymentId) -> paymentRewardCache[paymentId]!!
                 else -> getPaymentReward(payment, paymentResult).apply { paymentRewardCache[paymentId] = this }
             }
@@ -53,23 +53,27 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
     private suspend fun getPaymentReward(payment: IPaymentDescriptor, paymentResult: PaymentResult) =
         try {
             val joinedPaymentIds = TextUtil.join(payment.paymentIds)
+            val joinedPaymentMethodsIds = paymentResult.paymentDataList
+                .joinToString(TextUtil.CSV_DELIMITER) { p -> (p.paymentMethod.id) }
             val campaignId = paymentResult.paymentData.campaign?.run { id } ?: ""
-            val response = congratsService.getPaymentReward(BuildConfig.API_ENVIRONMENT, locale, privateKey,
-                    joinedPaymentIds, platform, campaignId, flow).await()
+            val response = congratsService.getCongrats(BuildConfig.API_ENVIRONMENT, locale, privateKey,
+                joinedPaymentIds, platform, campaignId, true, joinedPaymentMethodsIds, flow).await()
             if (response.isSuccessful) {
                 response.body()!!
             } else {
-                PaymentReward.EMPTY
+                CongratsResponse.EMPTY
             }
         } catch (e: Exception) {
-            PaymentReward.EMPTY
+            CongratsResponse.EMPTY
         }
 
     private suspend fun getRemedies(payment: IPaymentDescriptor) =
         try {
-            val body = userSelectionRepository.card?.let { card -> userSelectionRepository.payerCost?.let { payerCost ->
-                RemediesBodyMapper().map(Pair(card, payerCost))
-            }}
+            val body = userSelectionRepository.card?.let { card ->
+                userSelectionRepository.payerCost?.let { payerCost ->
+                    RemediesBodyMapper().map(Pair(card, payerCost))
+                }
+            }
 
             val response = congratsService.getRemedies(BuildConfig.API_ENVIRONMENT_NEW, payment.id.toString(),
                 locale, privateKey, body).await()
@@ -82,15 +86,15 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
             RemediesResponse.EMPTY
         }
 
-    private fun handleResult(payment: IPaymentDescriptor, paymentResult: PaymentResult, paymentReward: PaymentReward,
+    private fun handleResult(payment: IPaymentDescriptor, paymentResult: PaymentResult, congratsResponse: CongratsResponse,
                              remedies: RemediesResponse, currency: Currency, callback: PostPaymentCallback) {
         payment.process(object : IPaymentDescriptorHandler {
             override fun visit(payment: IPaymentDescriptor) {
-                callback.handleResult(PaymentModel(payment, paymentResult, paymentReward, remedies, currency))
+                callback.handleResult(PaymentModel(payment, paymentResult, congratsResponse, remedies, currency))
             }
 
             override fun visit(businessPayment: BusinessPayment) {
-                callback.handleResult(BusinessPaymentModel(businessPayment, paymentResult, paymentReward, remedies,
+                callback.handleResult(BusinessPaymentModel(businessPayment, paymentResult, congratsResponse, remedies,
                     currency))
             }
         })

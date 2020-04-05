@@ -110,7 +110,7 @@ public class PaymentResultMethod extends ConstraintLayout {
 
             final PaymentMethod paymentMethod = paymentData.getPaymentMethod();
             final Text description =
-                paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.empty();
+                paymentMethod.getDisplayInfo() != null ? paymentMethod.getDisplayInfo().getDescription() : Text.EMPTY;
             return new Builder(paymentMethod.getId(), paymentMethod.getName(), description,
                 paymentMethod.getPaymentTypeId())
                 .setLastFourDigits(paymentData.getToken() != null ? paymentData.getToken().getLastFourDigits() : null)

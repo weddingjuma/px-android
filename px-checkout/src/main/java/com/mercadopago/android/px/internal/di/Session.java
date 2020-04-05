@@ -65,7 +65,6 @@ import com.mercadopago.android.px.internal.util.RetrofitUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.model.Device;
 import com.mercadopago.android.px.model.internal.InitResponse;
-import com.mercadopago.android.px.model.internal.PaymentReward;
 import com.mercadopago.android.px.services.MercadoPagoServices;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
 
@@ -90,7 +89,6 @@ public final class Session extends ApplicationModule implements AmountComponent 
     private PaymentRepository paymentRepository;
     private AmountConfigurationRepository amountConfigurationRepository;
     private Cache<InitResponse> initCache;
-    private Cache<PaymentReward> paymentRewardCache;
     private PluginService pluginRepository;
     private InternalConfiguration internalConfiguration;
     private InstructionsService instructionsRepository;

@@ -17,7 +17,6 @@ import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.ViewUtils;
-import com.mercadopago.android.px.internal.view.BusinessActions;
 import com.mercadopago.android.px.internal.view.PaymentResultBody;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
@@ -66,14 +65,14 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     @Override
     public void configureViews(@NonNull final BusinessPaymentResultViewModel model,
-        @NonNull final BusinessActions callback) {
+        @NonNull final PaymentResultBody.Listener listener) {
         findViewById(R.id.loading).setVisibility(View.GONE);
         final PaymentResultHeader header = findViewById(R.id.header);
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
-        body.init(model.bodyModel, callback);
+        body.init(model.bodyModel, listener);
         //TODO migrate
-        BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
+        BusinessResultLegacyRenderer.render(findViewById(R.id.container), listener, model);
     }
 
     @Override
@@ -99,7 +98,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
     }
 
     @Override
-    public void processBusinessAction(@NonNull final String deepLink) {
+    public void launchDeepLink(@NonNull final String deepLink) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
         } catch (ActivityNotFoundException e) {

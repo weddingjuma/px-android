@@ -4,12 +4,14 @@ import android.content.Context;
 import android.os.Parcel;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.Size;
 import android.support.v4.app.Fragment;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.IPayment;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
+import java.util.List;
 
 public class SamplePaymentProcessor extends SamplePaymentProcessorNoView {
 
@@ -29,12 +31,12 @@ public class SamplePaymentProcessor extends SamplePaymentProcessorNoView {
         super(payment);
     }
 
-    public SamplePaymentProcessor(final IParcelablePaymentDescriptor payment) {
+    public SamplePaymentProcessor(final IPaymentDescriptor payment) {
         super(payment);
     }
 
-    public SamplePaymentProcessor(final BusinessPayment businessPayment) {
-        super(businessPayment);
+    public SamplePaymentProcessor(@NonNull @Size(min = 1) final List<? extends IPaymentDescriptor> payments) {
+        super(payments);
     }
 
     /* default */ SamplePaymentProcessor(final Parcel in) {

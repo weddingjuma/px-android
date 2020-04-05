@@ -38,8 +38,6 @@ public interface ExpressPayment {
 
         void cancel();
 
-        void handlePaymentRecovery(@NonNull PaymentRecovery paymentRecovery);
-
         void updateViewForPosition(final int paymentMethodIndex,
             final int payerCostSelected,
             @NonNull final SplitSelectionState splitSelectionState);

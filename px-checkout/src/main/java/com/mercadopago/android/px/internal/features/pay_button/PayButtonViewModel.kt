@@ -133,7 +133,7 @@ internal class PayButtonViewModel(
         recoverPayment(paymentService.createPaymentRecovery())
     }
 
-    override fun recoverPayment(recovery: PaymentRecovery) {
+    private fun recoverPayment(recovery: PaymentRecovery) {
         if (recovery.shouldAskForCvv()) {
             recoverRequiredLiveData.value = recovery
         }

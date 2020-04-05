@@ -558,11 +558,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery) {
-        payButtonFragment.handlePaymentRecovery(paymentRecovery);
-    }
-
-    @Override
     public void onClick(final PayerCost payerCostSelected) {
         presenter.onPayerCostSelected(payerCostSelected);
     }

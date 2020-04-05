@@ -464,14 +464,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
         overrideTransitionIn();
     }
 
-    @Override
-    public void startExpressPaymentRecoveryFlow(@NonNull final PaymentRecovery paymentRecovery) {
-        final ExpressPaymentFragment fragment = FragmentUtil
-            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-        //noinspection ConstantConditions
-        fragment.handlePaymentRecovery(paymentRecovery);
-    }
-
     private void resolveErrorRequest(final int resultCode, final Intent data) {
         if (resultCode == RESULT_OK) {
             presenter.recoverFromFailure();

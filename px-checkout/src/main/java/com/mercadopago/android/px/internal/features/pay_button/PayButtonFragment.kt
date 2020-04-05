@@ -3,7 +3,6 @@ package com.mercadopago.android.px.internal.features.pay_button
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.arch.lifecycle.Observer
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.Snackbar
@@ -143,6 +142,10 @@ class PayButtonFragment : Fragment(), PayButton.View {
             }
         } else if (resultCode == Constants.RESULT_ACTION) {
             handleAction(data)
+        } else if (resultCode == Constants.RESULT_PAYMENT) {
+            viewModel.onPaymentFinished(PaymentProcessorActivity.getPayment(data))
+        } else if (resultCode == Constants.RESULT_FAIL_ESC) {
+            viewModel.onRecoverPaymentEscInvalid(PaymentProcessorActivity.getPaymentRecovery(data)!!)
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
@@ -234,10 +237,6 @@ class PayButtonFragment : Fragment(), PayButton.View {
 
     private fun showSecurityCodeScreen(card: Card, reason: Reason?) {
         SecurityCodeActivity.startForSavedCard(this, card, reason, REQ_CODE_SECURITY_CODE)
-    }
-
-    override fun handlePaymentRecovery(paymentRecovery: PaymentRecovery) {
-        viewModel.recoverPayment(paymentRecovery)
     }
 
     override fun isExploding(): Boolean {

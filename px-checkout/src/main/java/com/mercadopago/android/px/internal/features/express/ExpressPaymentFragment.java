@@ -45,6 +45,7 @@ import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentH
 import com.mercadopago.android.px.internal.features.express.slider.SummaryViewAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.TitlePagerAdapter;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
+import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogAction;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
@@ -646,11 +647,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void onAction(@NotNull final GenericDialog.Action action) {
-        if (action instanceof GenericDialog.Action.DeepLinkAction) {
-            startDeepLink(((GenericDialog.Action.DeepLinkAction) action).getDeepLink());
-        } else {
-            presenter.handleGenericDialogAction(((GenericDialog.Action.CustomAction) action).getType());
+    public void onAction(@NotNull final GenericDialogAction action) {
+        if (action instanceof GenericDialogAction.DeepLinkAction) {
+            startDeepLink(((GenericDialogAction.DeepLinkAction) action).getDeepLink());
+        } else if (action instanceof GenericDialogAction.CustomAction) {
+            presenter.handleGenericDialogAction(((GenericDialogAction.CustomAction) action).getType());
         }
     }
 

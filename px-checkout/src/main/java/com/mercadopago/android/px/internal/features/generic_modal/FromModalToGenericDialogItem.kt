@@ -5,10 +5,11 @@ import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper
 import com.mercadopago.android.px.model.internal.Modal
 
 class FromModalToGenericDialogItem(
-    @GenericDialog.ActionType private val action: String) : Mapper<Modal, GenericDialogItem>() {
+    @ActionType private val action: String, private val dialogDescription: String) : Mapper<Modal, GenericDialogItem>() {
 
     override fun map(value: Modal): GenericDialogItem {
         return GenericDialogItem(
+            dialogDescription,
             value.imageUrl,
             TextLocalized(value.title, 0),
             TextLocalized(value.description, 0),

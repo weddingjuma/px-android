@@ -12,7 +12,7 @@
     android:orientation="vertical">
 
     <ImageView
-        android:id="@+id/px_dialog_generic_image"
+        android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/ui_1m"
@@ -21,7 +21,7 @@
         android:adjustViewBounds="true" />
 
     <com.mercadopago.android.px.internal.view.MPTextView
-        android:id="@+id/px_dialog_generic_text_title"
+        android:id="@+id/dialog_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -34,7 +34,7 @@
         tools:text="Title" />
 
     <com.mercadopago.android.px.internal.view.MPTextView
-        android:id="@+id/px_dialog_generic_text_description"
+        android:id="@+id/dialog_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
@@ -47,22 +47,26 @@
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua." />
 
     <com.mercadolibre.android.ui.widgets.MeliButton
-        android:id="@+id/px_dialog_generic_button_main"
+        android:id="@+id/main_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/ui_3m"
         android:layout_marginBottom="@dimen/ui_1m"
         android:textSize="@dimen/ui_2m"
+        android:visibility="gone"
         app:type="actionPrimary"
+        tools:visibility="visible"
         tools:text="Main action"/>
 
     <com.mercadolibre.android.ui.widgets.MeliButton
-        android:id="@+id/px_dialog_generic_button_secondary"
+        android:id="@+id/secondary_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/ui_3m"
         android:layout_marginBottom="@dimen/ui_1m"
         android:textSize="@dimen/ui_2m"
+        android:visibility="gone"
         app:type="actionSecondary"
+        tools:visibility="visible"
         tools:text="Secondary action"/>
 </LinearLayout>

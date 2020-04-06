@@ -5,7 +5,7 @@ import com.mercadopago.android.px.model.ExpressMetadata
 class ActionTypeWrapper(var items: List<ExpressMetadata>) {
 
     val indexToReturn: Int
-    @GenericDialog.ActionType val actionType: String
+    @ActionType val actionType: String
 
     init {
         var indexOfNewCard = -1
@@ -23,19 +23,19 @@ class ActionTypeWrapper(var items: List<ExpressMetadata>) {
 
         when {
             hasActiveMethods -> {
-                actionType = GenericDialog.ActionType.PAY_WITH_OTHER_METHOD
+                actionType = ActionType.PAY_WITH_OTHER_METHOD
                 indexToReturn = 0
             }
             indexOfOfflineMethod > 0 -> {
-                actionType = GenericDialog.ActionType.PAY_WITH_OFFLINE_METHOD
+                actionType = ActionType.PAY_WITH_OFFLINE_METHOD
                 indexToReturn = indexOfOfflineMethod
             }
             indexOfNewCard > 0 -> {
-                actionType = GenericDialog.ActionType.ADD_NEW_CARD
+                actionType = ActionType.ADD_NEW_CARD
                 indexToReturn = indexOfNewCard
             }
             else -> {
-                actionType = GenericDialog.ActionType.PAY_WITH_OTHER_METHOD
+                actionType = ActionType.PAY_WITH_OTHER_METHOD
                 indexToReturn = 0
             }
         }

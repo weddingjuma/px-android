@@ -5,7 +5,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
-import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
+import com.mercadopago.android.px.internal.features.generic_modal.ActionType;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
@@ -18,7 +18,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -102,6 +101,6 @@ public interface ExpressPayment {
 
         void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback);
 
-        void handleGenericDialogAction(@NonNull @GenericDialog.ActionType final String type);
+        void handleGenericDialogAction(@NonNull @ActionType final String type);
     }
 }

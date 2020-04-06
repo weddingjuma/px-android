@@ -6,7 +6,7 @@ import java.util.Map;
 
 public final class OfflineMethodsViewTracker extends ViewTracker {
 
-    public static final String PATH_REVIEW_OFFLINE_METHODS_VIEW = BASE_VIEW_PATH + "review/one_tap/offline_methods";
+    public static final String PATH_REVIEW_OFFLINE_METHODS_VIEW = BASE_VIEW_PATH + "/review/one_tap/offline_methods";
 
     private final OfflineMethodsData data;
 

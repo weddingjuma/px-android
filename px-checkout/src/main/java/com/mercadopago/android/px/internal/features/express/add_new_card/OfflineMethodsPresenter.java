@@ -30,6 +30,7 @@ import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.FrictionEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.KnowYourCustomerFlowEvent;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 import com.mercadopago.android.px.tracking.internal.views.OfflineMethodsViewTracker;
 import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
@@ -135,6 +136,7 @@ class OfflineMethodsPresenter extends BasePresenter<OfflineMethods.OffMethodsVie
             if (selectedItem.isAdditionalInfoNeeded() && payerCompliance.isCompliant()) {
                 completePayerInformation();
             } else if (selectedItem.isAdditionalInfoNeeded()) {
+                tracker.trackEvent(new KnowYourCustomerFlowEvent());
                 getView().startKnowYourCustomerFlow(payerCompliance.getTurnComplianceDeepLink());
                 return;
             }

@@ -11,3 +11,9 @@ fun View.gone() = apply { visibility = View.GONE }
 fun View.visible() = apply { visibility = View.VISIBLE }
 
 fun View.invisible() = apply { visibility = View.INVISIBLE }
+
+fun Any?.runIfNull(action: ()->Unit) {
+    if(this == null) {
+        action.invoke()
+    }
+}

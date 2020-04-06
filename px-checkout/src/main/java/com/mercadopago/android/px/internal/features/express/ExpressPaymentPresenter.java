@@ -98,7 +98,7 @@ import java.util.Set;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final ConnectionHelper connectionHelper;
     @NonNull private final CongratsRepository congratsRepository;
-    @NonNull private PayerComplianceRepository payerComplianceRepository;
+    @NonNull private final PayerComplianceRepository payerComplianceRepository;
     @Nullable private Runnable unattendedEvent;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
@@ -376,23 +376,12 @@ import java.util.Set;
         // do nothing
     }
 
-    @Override
-    public void onUserValidation() {
-        // do nothing
-    }
-
     private void postDisableModelUpdate() {
         initRepository.refresh().enqueue(new Callback<InitResponse>() {
             @Override
             public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
-                    expressMetadataList = initResponse.getExpress();
-                    actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
-                    modals = initResponse.getModals();
-                    resetPayerCostSelection();
-                    paymentMethodIndex = 0;
-                    getView().clearAdapters();
-                    loadViewModel();
+                    resetState(initResponse);
                 }
             }
 
@@ -498,11 +487,40 @@ import java.util.Set;
         );
     }
 
+    /* default */ void resetState(@NonNull final InitResponse initResponse) {
+        expressMetadataList = initResponse.getExpress();
+        actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
+        modals = initResponse.getModals();
+        resetPayerCostSelection();
+        paymentMethodIndex = 0;
+        getView().clearAdapters();
+        loadViewModel();
+    }
+
     @Override
     public void handleDeepLink() {
         //Callback from KYC
-        //TODO refresh one tap
-        //TODO we are assuming that the callback is for IFPE, but could be something else, we need yo check against the payer compliance when reresh is done
+        //TODO we are assuming that the callback is for IFPE, but could be something else, we need yo check against the payer compliance when refresh is done
         payerComplianceRepository.turnIFPECompliant();
+        disabledPaymentMethodRepository.reset();
+        if (isViewAttached()) {
+            getView().showLoading();
+        }
+        initRepository.cleanRefresh().enqueue(new Callback<InitResponse>() {
+            @Override
+            public void success(final InitResponse initResponse) {
+                if (isViewAttached()) {
+                    resetState(initResponse);
+                    getView().hideLoading();
+                }
+            }
+
+            @Override
+            public void failure(final ApiException apiException) {
+                if (isViewAttached()) {
+                    getView().hideLoading();
+                }
+            }
+        });
     }
 }

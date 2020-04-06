@@ -9,11 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.drawables.AccountMoneyDrawableFragmentItem;
-import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 
 public class AccountMoneyFragment extends PaymentMethodFragment<AccountMoneyDrawableFragmentItem> {
 

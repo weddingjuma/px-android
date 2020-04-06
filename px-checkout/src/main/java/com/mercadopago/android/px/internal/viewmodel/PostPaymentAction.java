@@ -50,8 +50,6 @@ public abstract class PostPaymentAction implements Parcelable {
             return new RecoverPaymentPostPaymentAction();
         case SELECT_OTHER_PAYMENT_METHOD:
             return new ChangePaymentMethodPostPaymentAction();
-        case USER_VALIDATION:
-            return new UserValidationPostPaymentAction();
         default:
             throw new IllegalStateException("Impossible to create PostPaymentAction");
         }
@@ -65,7 +63,5 @@ public abstract class PostPaymentAction implements Parcelable {
         void recoverPayment(@NonNull final PostPaymentAction postPaymentAction);
 
         void onChangePaymentMethod();
-
-        void onUserValidation();
     }
 }

@@ -68,6 +68,7 @@ public final class DisabledPaymentMethodService implements DisabledPaymentMethod
 
     @Override
     public void reset() {
+        disabledPaymentMethods = null;
         sharedPreferences.edit().remove(PREF_DISABLED_PAYMENT_METHODS).apply();
     }
 

@@ -254,11 +254,6 @@ import java.util.Set;
             public void onChangePaymentMethod() {
                 // Do nothing, It is handled before.
             }
-
-            @Override
-            public void onUserValidation() {
-                // Do nothing
-            }
         });
     }
 

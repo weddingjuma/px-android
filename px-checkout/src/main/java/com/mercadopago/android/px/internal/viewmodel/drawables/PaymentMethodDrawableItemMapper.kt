@@ -9,16 +9,14 @@ import com.mercadopago.android.px.internal.viewmodel.DisableConfiguration
 import com.mercadopago.android.px.internal.viewmodel.mappers.NonNullMapper
 import com.mercadopago.android.px.model.CustomSearchItem
 import com.mercadopago.android.px.model.ExpressMetadata
-import com.mercadopago.android.px.model.internal.Text
 import java.util.*
 
 class PaymentMethodDrawableItemMapper(
     private val chargeRepository: ChargeRepository,
-    disabledPaymentMethodRepository: DisabledPaymentMethodRepository,
+    private val disabledPaymentMethodRepository: DisabledPaymentMethodRepository,
     context: Context) : NonNullMapper<ExpressMetadata?, DrawableFragmentItem?>() {
 
     private val disableConfiguration = DisableConfiguration(context)
-    private val disabledPaymentMethods = disabledPaymentMethodRepository.disabledPaymentMethods
     private var customSearchItems: List<CustomSearchItem> = Collections.emptyList()
 
     override fun map(expressMetadata: ExpressMetadata): DrawableFragmentItem? {
@@ -45,7 +43,8 @@ class PaymentMethodDrawableItemMapper(
 
         return DrawableFragmentItem.Parameters(
             customOptionId, expressMetadata.status, expressMetadata.displayInfo?.bottomDescription, charge?.message,
-            expressMetadata.benefits?.reimbursement, disabledPaymentMethods[customOptionId], description, issuerName)
+            expressMetadata.benefits?.reimbursement,
+            disabledPaymentMethodRepository.getDisabledPaymentMethod(customOptionId), description, issuerName)
     }
 
     fun setCustomSearchItems(items: List<CustomSearchItem>) {

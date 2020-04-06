@@ -18,7 +18,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -72,6 +71,10 @@ public interface ExpressPayment {
         void showGenericDialog(@NonNull GenericDialogItem item);
 
         void onDeepLinkReceived();
+
+        void showLoading();
+
+        void hideLoading();
     }
 
     interface Actions {

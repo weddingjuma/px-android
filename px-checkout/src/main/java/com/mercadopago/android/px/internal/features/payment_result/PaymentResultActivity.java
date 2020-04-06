@@ -38,7 +38,6 @@ import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
-import com.mercadopago.android.px.internal.viewmodel.UserValidationPostPaymentAction;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -206,11 +205,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void onUserValidation() {
-        ViewUtils.hideKeyboard(this);
-        final Intent returnIntent = new Intent();
-        new UserValidationPostPaymentAction().addToIntent(returnIntent);
-        setResult(RESULT_ACTION, returnIntent);
-        finish();
+        changePaymentMethod();
     }
 
     @Override

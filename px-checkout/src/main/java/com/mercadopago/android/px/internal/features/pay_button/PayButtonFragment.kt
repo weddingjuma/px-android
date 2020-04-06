@@ -162,10 +162,6 @@ class PayButtonFragment : Fragment(), PayButton.View {
                 override fun onChangePaymentMethod() {
                     cancelLoading()
                 }
-
-                override fun onUserValidation() {
-                    cancelLoading()
-                }
             })
         }
     }

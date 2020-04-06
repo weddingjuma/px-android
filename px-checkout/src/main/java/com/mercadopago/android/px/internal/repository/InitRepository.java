@@ -9,6 +9,8 @@ public interface InitRepository {
     @NonNull
     MPCall<InitResponse> init();
 
+    MPCall<InitResponse> cleanRefresh();
+
     MPCall<InitResponse> refresh();
 
     MPCall<InitResponse> refreshWithNewCard(@NonNull final String cardId);

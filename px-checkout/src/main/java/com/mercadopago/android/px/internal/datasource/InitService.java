@@ -166,6 +166,12 @@ public class InitService implements InitRepository {
         };
     }
 
+    @Override
+    public MPCall<InitResponse> cleanRefresh() {
+        initCache.evict();
+        return init();
+    }
+
     /* default */ Callback<InitResponse> getRefreshCallback(@NonNull final Callback<InitResponse> originalCallback) {
         final Map<String, DisabledPaymentMethod> disabledPaymentMethodMap =
             disabledPaymentMethodRepository.getDisabledPaymentMethods();

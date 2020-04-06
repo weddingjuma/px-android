@@ -438,11 +438,6 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
             });
     }
 
-    @Override
-    public void onUserValidation() {
-        // Do nothing
-    }
-
     //TODO separate with better navigation when we have a proper driver.
     @Override
     public void onChangePaymentMethodFromReviewAndConfirm() {

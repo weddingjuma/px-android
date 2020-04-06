@@ -121,11 +121,11 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Nullable private Animation slideUpAndFadeAnimation;
     @Nullable private Animation slideDownAndFadeAnimation;
     private InstallmentsAdapter installmentsAdapter;
-    private TitlePager titlePager;
     private PaymentMethodHeaderView paymentMethodHeaderView;
     private LabeledSwitch splitPaymentView;
     private PaymentMethodFragmentAdapter paymentMethodFragmentAdapter;
     @RenderMode private String renderMode;
+    private View loading;
 
     private HubAdapter hubAdapter;
     /* default */ View bottomSheet;
@@ -253,8 +253,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         }
         payButtonContainer = view.findViewById(R.id.pay_button);
         splitPaymentView = view.findViewById(R.id.labeledSwitch);
-        titlePager = view.findViewById(R.id.title_pager);
         summaryView = view.findViewById(R.id.summary_view);
+        loading = view.findViewById(R.id.loading);
 
         pagerAndConfirmButtonContainer = view.findViewById(R.id.container);
         paymentMethodPager = view.findViewById(R.id.payment_method_pager);
@@ -295,6 +295,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             summaryView.configureToolbar((AppCompatActivity) getActivity(), v -> presenter.cancel());
         }
 
+        final TitlePager titlePager = view.findViewById(R.id.title_pager);
         final TitlePagerAdapter titlePagerAdapter = new TitlePagerAdapter(titlePager, this);
         titlePager.setAdapter(titlePagerAdapter);
 
@@ -676,5 +677,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onDeepLinkReceived() {
         presenter.handleDeepLink();
+    }
+
+    @Override
+    public void showLoading() {
+        loading.setVisibility(VISIBLE);
+    }
+
+    @Override
+    public void hideLoading() {
+        loading.setVisibility(GONE);
     }
 }

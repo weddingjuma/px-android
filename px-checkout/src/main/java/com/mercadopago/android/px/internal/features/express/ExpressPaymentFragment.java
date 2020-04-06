@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.express;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -24,6 +25,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.core.ConnectionHelper;
+import com.mercadopago.android.px.internal.di.ConfigurationModule;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
@@ -50,6 +52,7 @@ import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
+import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
 import com.mercadopago.android.px.internal.view.DiscountDetailDialog;
 import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
@@ -94,6 +97,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     PayButton.Handler,
     GenericDialog.Listener {
 
+    private static final String TAG = ExpressPaymentFragment.class.getSimpleName();
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
     private static final String TAG_HEADER_DYNAMIC_DIALOG = "TAG_HEADER_DYNAMIC_DIALOG";
     private static final String EXTRA_RENDER_MODE = "render_mode";
@@ -369,23 +373,25 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
 
     private ExpressPaymentPresenter createPresenter() {
         final Session session = Session.getInstance();
+        final ConfigurationModule configurationModule = session.getConfigurationModule();
         return new ExpressPaymentPresenter(session.getPaymentRepository(),
-            session.getConfigurationModule().getPaymentSettings(),
-            session.getConfigurationModule().getDisabledPaymentMethodRepository(),
-            session.getConfigurationModule().getPayerCostSelectionRepository(),
+            configurationModule.getPaymentSettings(),
+            configurationModule.getDisabledPaymentMethodRepository(),
+            configurationModule.getPayerCostSelectionRepository(),
             session.getDiscountRepository(),
             session.getAmountRepository(),
             session.getInitRepository(),
             session.getAmountConfigurationRepository(),
-            session.getConfigurationModule().getChargeSolver(),
+            configurationModule.getChargeSolver(),
             session.getMercadoPagoESC(),
             session.getProductIdProvider(),
-            new PaymentMethodDrawableItemMapper(session.getConfigurationModule().getChargeSolver(),
-                session.getConfigurationModule().getDisabledPaymentMethodRepository(),
+            new PaymentMethodDrawableItemMapper(configurationModule.getChargeSolver(),
+                configurationModule.getDisabledPaymentMethodRepository(),
                 getContext()
             ),
             ConnectionHelper.getInstance(),
-            session.getCongratsRepository());
+            session.getCongratsRepository(),
+            configurationModule.getPayerComplianceRepository());
     }
 
     @Override
@@ -660,8 +666,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     private void startDeepLink(@NonNull final String deepLink) {
-        final Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setData(Uri.parse(deepLink));
-        startActivity(intent);
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
+        } catch (final ActivityNotFoundException e) {
+            Logger.debug(TAG, e);
+        }
+    }
+
+    @Override
+    public void onDeepLinkReceived() {
+        presenter.handleDeepLink();
     }
 }

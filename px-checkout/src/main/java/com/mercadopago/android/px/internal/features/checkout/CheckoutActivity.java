@@ -93,8 +93,11 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
         if (intent.getData() != null) {
-            //Callback from KYC
-            //TODO refresh one tap
+            ExpressPaymentFragment fragment =
+                (ExpressPaymentFragment) getSupportFragmentManager().findFragmentByTag(TAG_ONETAP_FRAGMENT);
+            if(fragment != null) {
+                fragment.onDeepLinkReceived();
+            }
         } else {
             FragmentUtil.removeFragment(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
             // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter

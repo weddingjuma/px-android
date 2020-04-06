@@ -70,6 +70,8 @@ public interface ExpressPayment {
         void showBusinessResult(@NonNull final BusinessPaymentModel model);
 
         void showGenericDialog(@NonNull GenericDialogItem item);
+
+        void onDeepLinkReceived();
     }
 
     interface Actions {
@@ -103,5 +105,7 @@ public interface ExpressPayment {
         void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback);
 
         void handleGenericDialogAction(@NonNull @GenericDialog.ActionType final String type);
+
+        void handleDeepLink();
     }
 }

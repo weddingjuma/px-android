@@ -24,6 +24,7 @@ import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.InitRepository;
+import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
@@ -97,6 +98,7 @@ import java.util.Set;
     @NonNull private final ESCManagerBehaviour escManagerBehaviour;
     @NonNull private final ConnectionHelper connectionHelper;
     @NonNull private final CongratsRepository congratsRepository;
+    @NonNull private PayerComplianceRepository payerComplianceRepository;
     @Nullable private Runnable unattendedEvent;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
@@ -123,7 +125,8 @@ import java.util.Set;
         @NonNull final ProductIdProvider productIdProvider,
         @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper,
         @NonNull final ConnectionHelper connectionHelper,
-        @NonNull final CongratsRepository congratsRepository) {
+        @NonNull final CongratsRepository congratsRepository,
+        @NonNull final PayerComplianceRepository payerComplianceRepository) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -139,6 +142,7 @@ import java.util.Set;
         this.paymentMethodDrawableItemMapper = paymentMethodDrawableItemMapper;
         this.connectionHelper = connectionHelper;
         this.congratsRepository = congratsRepository;
+        this.payerComplianceRepository = payerComplianceRepository;
 
         splitSelectionState = new SplitSelectionState();
     }
@@ -493,5 +497,13 @@ import java.util.Set;
                 }
             })
         );
+    }
+
+    @Override
+    public void handleDeepLink() {
+        //Callback from KYC
+        //TODO refresh one tap
+        //TODO we are assuming that the callback is for IFPE, but could be something else, we need yo check against the payer compliance when reresh is done
+        payerComplianceRepository.turnIFPECompliant();
     }
 }

@@ -23,7 +23,7 @@ public interface CongratsService {
         @Query("payment_ids") String paymentIds,
         @Query("platform") String platform,
         @Query("campaign_id") String campaignId,
-        @Query("ifpe") boolean turnedIfpeCompliant,
+        @Query("ifpe") boolean turnedIFPECompliant,
         @Query("payment_methods_ids") String paymentMethodsIds,
         @Nullable @Query("flow_name") String flowName);
 

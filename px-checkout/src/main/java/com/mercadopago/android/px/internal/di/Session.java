@@ -446,7 +446,7 @@ public final class Session extends ApplicationModule implements AmountComponent 
             congratsRepository =
                 new CongratsRepositoryImpl(congratsService, paymentSettings, getPlatform(applicationContext),
                     LocaleUtil.getLanguage(getApplicationContext()), MPTracker.getInstance().getFlowName(),
-                    configurationModule.getUserSelectionRepository());
+                    configurationModule.getUserSelectionRepository(), configurationModule.getPayerComplianceRepository());
         }
         return congratsRepository;
     }

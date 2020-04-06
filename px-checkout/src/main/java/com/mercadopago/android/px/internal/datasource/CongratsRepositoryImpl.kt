@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.datasource
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesBodyMapper
 import com.mercadopago.android.px.internal.repository.CongratsRepository
 import com.mercadopago.android.px.internal.repository.CongratsRepository.PostPaymentCallback
+import com.mercadopago.android.px.internal.repository.PayerComplianceRepository
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository
 import com.mercadopago.android.px.internal.services.CongratsService
@@ -19,9 +20,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CongratsRepositoryImpl(private val congratsService: CongratsService,
-        private val paymentSetting: PaymentSettingRepository, private val platform: String, private val locale: String,
-        private val flow: String?, private val userSelectionRepository: UserSelectionRepository) : CongratsRepository {
+class CongratsRepositoryImpl(
+    private val congratsService: CongratsService, private val paymentSetting: PaymentSettingRepository,
+    private val platform: String, private val locale: String, private val flow: String?,
+    private val userSelectionRepository: UserSelectionRepository,
+    private val payerComplianceRepository: PayerComplianceRepository) : CongratsRepository {
 
     private val paymentRewardCache = HashMap<String, CongratsResponse>()
     private val remediesCache = HashMap<String, RemediesResponse>()
@@ -57,7 +60,8 @@ class CongratsRepositoryImpl(private val congratsService: CongratsService,
                 .joinToString(TextUtil.CSV_DELIMITER) { p -> (p.paymentMethod.id) }
             val campaignId = paymentResult.paymentData.campaign?.run { id } ?: ""
             val response = congratsService.getCongrats(BuildConfig.API_ENVIRONMENT, locale, privateKey,
-                joinedPaymentIds, platform, campaignId, true, joinedPaymentMethodsIds, flow).await()
+                joinedPaymentIds, platform, campaignId, payerComplianceRepository.turnedIFPECompliant(),
+                joinedPaymentMethodsIds, flow).await()
             if (response.isSuccessful) {
                 response.body()!!
             } else {

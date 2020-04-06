@@ -68,7 +68,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -88,7 +87,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     SplitPaymentHeaderAdapter.SplitListener,
     PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
-    OfflineMethodsFragment.SheetHidability, TitlePagerAdapter.InstallmentChanged,
+    OfflineMethodsFragment.SheetHandler, TitlePagerAdapter.InstallmentChanged,
     PayButton.Handler {
 
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
@@ -136,8 +135,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void setSheetHidability(final boolean b) {
-        bottomSheetBehavior.setHideable(b);
+    public void setSheetHideable(final boolean isHideable) {
+        bottomSheetBehavior.setHideable(isHideable);
     }
 
     @Override

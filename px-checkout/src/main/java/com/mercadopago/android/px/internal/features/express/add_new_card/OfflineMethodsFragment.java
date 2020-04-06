@@ -38,7 +38,6 @@ import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
-import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
@@ -70,6 +69,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     private int lastSheetState = BottomSheetBehavior.STATE_EXPANDED;
     @Nullable private ExplodingFragment explodingFragment;
+    private SheetHandler sheetHandler;
 
     @NonNull
     public static OfflineMethodsFragment getInstance(@NonNull final OfflinePaymentTypesMetadata model) {
@@ -208,29 +208,17 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
-        final Fragment fragment = getTargetFragment();
-        if (fragment instanceof SheetHidability) {
-            ((SheetHidability) fragment).setSheetHidability(false);
-        } else {
-            throw new IllegalStateException("Target fragment should implement ");
-        }
-
+        sheetHandler.setSheetHideable(false);
         hideConfirmButton();
-
         ViewUtils.runWhenViewIsFullyMeasured(getView(), () -> {
             final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
                 payButtonViewModel.getButtonProgressText(confirmButton.getContext()), paymentTimeout);
-            final FragmentManager fragmentManager = getFragmentManager();
             explodingFragment = ExplodingFragment.newInstance(explodeParams);
             explodingFragment.setTargetFragment(this, 0);
-            fragmentManager.beginTransaction()
+            getFragmentManager().beginTransaction()
                 .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
                 .commitNowAllowingStateLoss();
         });
-    }
-
-    public interface SheetHidability {
-        void setSheetHidability(boolean b);
     }
 
     private void hideConfirmButton() {
@@ -245,9 +233,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void showPaymentResult(final IPaymentDescriptor payment) {
-        if (getActivity() != null) {
-            ((CheckoutActivity) getActivity()).presenter.onPaymentFinished(payment);
-        }
+        sheetHandler.onPaymentFinished(payment);
     }
 
     @Override
@@ -262,7 +248,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         } else {
             presenter.hasFinishPaymentAnimation();
         }
-        ((ExpressPaymentFragment) getTargetFragment()).setSheetHidability(true);
+        sheetHandler.setSheetHideable(true);
     }
 
     @Override
@@ -307,7 +293,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public boolean isExploding() {
-        return FragmentUtil.isFragmentVisible(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT);
+        return FragmentUtil.isFragmentVisible(getFragmentManager(), TAG_EXPLODING_FRAGMENT);
     }
 
     interface OnMethodSelectedListener {
@@ -375,6 +361,12 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         fadeInAnimation.setDuration(duration);
         fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.px_fade_out);
         fadeOutAnimation.setDuration(duration);
+        final Fragment fragment = getTargetFragment();
+        if (fragment instanceof SheetHandler) {
+            sheetHandler = (SheetHandler) fragment;
+        } else {
+            throw new IllegalStateException("Target fragment should implement " + SheetHandler.class.getSimpleName());
+        }
     }
 
     @Override
@@ -382,5 +374,12 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         super.onDetach();
         fadeInAnimation = null;
         fadeOutAnimation = null;
+        sheetHandler = null;
+    }
+
+    public interface SheetHandler {
+        void setSheetHideable(boolean isHideable);
+        //TODO remove when sheet has new pay button implementation
+        void onPaymentFinished(@NonNull IPaymentDescriptor payment);
     }
 }

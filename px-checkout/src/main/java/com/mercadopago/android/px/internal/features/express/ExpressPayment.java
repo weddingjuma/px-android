@@ -5,7 +5,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.MvpView;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
-import com.mercadopago.android.px.internal.features.generic_modal.GenericDialog;
+import com.mercadopago.android.px.internal.features.generic_modal.ActionType;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
@@ -107,7 +107,7 @@ public interface ExpressPayment {
 
         void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback);
 
-        void handleGenericDialogAction(@NonNull @GenericDialog.ActionType final String type);
+        void handleGenericDialogAction(@NonNull @ActionType final String type);
 
         void handleDeepLink();
     }

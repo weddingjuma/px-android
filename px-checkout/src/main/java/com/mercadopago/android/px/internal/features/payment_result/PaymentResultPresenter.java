@@ -36,6 +36,7 @@ import com.mercadopago.android.px.tracking.internal.events.DiscountItemEvent;
 import com.mercadopago.android.px.tracking.internal.events.DownloadAppEvent;
 import com.mercadopago.android.px.tracking.internal.events.ScoreEvent;
 import com.mercadopago.android.px.tracking.internal.events.SeeAllDiscountsEvent;
+import com.mercadopago.android.px.tracking.internal.events.ViewReceiptEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 import java.util.ArrayList;
 import java.util.List;
@@ -221,6 +222,7 @@ import java.util.List;
 
     @Override
     public void onClickViewReceipt(@NonNull final String deeLink) {
+        new ViewReceiptEvent(resultViewTrack).track();
         getView().launchDeepLink(deeLink);
     }
 }

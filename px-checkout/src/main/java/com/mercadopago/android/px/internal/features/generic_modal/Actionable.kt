@@ -8,7 +8,7 @@ import java.lang.IllegalStateException
 data class Actionable(
     val label: String,
     val deepLink: String?,
-    @GenericDialog.ActionType val action: String?) : KParcelable {
+    @ActionType val action: String?) : KParcelable {
 
     init {
         if (deepLink.isNullOrEmpty() && action.isNullOrEmpty()) {
@@ -24,6 +24,7 @@ data class Actionable(
     override fun writeToParcel(parcel: Parcel, flags: Int) = with(parcel) {
         writeString(label)
         writeString(deepLink)
+        writeString(action)
     }
 
     companion object {

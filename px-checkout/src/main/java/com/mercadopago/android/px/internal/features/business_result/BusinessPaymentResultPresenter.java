@@ -21,6 +21,7 @@ import com.mercadopago.android.px.tracking.internal.events.PrimaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.ScoreEvent;
 import com.mercadopago.android.px.tracking.internal.events.SecondaryActionEvent;
 import com.mercadopago.android.px.tracking.internal.events.SeeAllDiscountsEvent;
+import com.mercadopago.android.px.tracking.internal.events.ViewReceiptEvent;
 import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
 /* default */ class BusinessPaymentResultPresenter extends BasePresenter<BusinessPaymentResultContract.View>
@@ -110,6 +111,7 @@ import com.mercadopago.android.px.tracking.internal.views.ResultViewTrack;
 
     @Override
     public void onClickViewReceipt(@NonNull final String deeLink) {
+        new ViewReceiptEvent(viewTracker).track();
         getView().launchDeepLink(deeLink);
     }
 }

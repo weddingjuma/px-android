@@ -3,6 +3,7 @@ package com.mercadopago.android.px.tracking.internal.events;
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.tracking.internal.MPTracker;
+import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,5 +26,9 @@ public abstract class EventTracker {
     @NonNull
     public Map<String, Object> getEventData() {
         return new HashMap<>();
+    }
+
+    public void trackFromView(@NonNull final ViewTracker viewTracker) {
+        throw new RuntimeException("Method not implemented");
     }
 }

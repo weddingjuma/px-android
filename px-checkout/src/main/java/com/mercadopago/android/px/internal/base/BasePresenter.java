@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import com.mercadopago.android.px.tracking.internal.TrackingContract;
 import com.mercadopago.android.px.tracking.internal.events.AbortEvent;
 import com.mercadopago.android.px.tracking.internal.events.BackEvent;
+import com.mercadopago.android.px.tracking.internal.events.EventTracker;
 import com.mercadopago.android.px.tracking.internal.views.ViewTracker;
 import java.lang.ref.WeakReference;
 
@@ -32,6 +33,13 @@ public abstract class BasePresenter<V extends MvpView> {
         public void trackBack() {
             if (viewTracker != null) {
                 new BackEvent(viewTracker).track();
+            }
+        }
+
+        @Override
+        public void trackEvent(@NonNull final EventTracker eventTracker) {
+            if (viewTracker != null) {
+                eventTracker.trackFromView(viewTracker);
             }
         }
     };

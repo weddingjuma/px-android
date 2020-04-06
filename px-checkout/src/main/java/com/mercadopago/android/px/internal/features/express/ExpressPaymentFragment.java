@@ -71,7 +71,6 @@ import com.mercadopago.android.px.model.DiscountConfigurationModel;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.OfflinePaymentTypesMetadata;
 import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.Site;
 import com.mercadopago.android.px.model.StatusMetadata;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
@@ -113,8 +112,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     /* default */ DynamicHeightViewPager paymentMethodPager;
     /* default */ View pagerAndConfirmButtonContainer;
     private ScrollingPagerIndicator indicator;
-    private ExpandAndCollapseAnimation expandAndCollapseAnimation;
-    private FadeAnimator fadeAnimation;
+    @Nullable private ExpandAndCollapseAnimation expandAndCollapseAnimation;
+    @Nullable private FadeAnimator fadeAnimation;
     @Nullable private Animation slideUpAndFadeAnimation;
     @Nullable private Animation slideDownAndFadeAnimation;
     private InstallmentsAdapter installmentsAdapter;
@@ -258,7 +257,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         indicator = view.findViewById(R.id.indicator);
         installmentsRecyclerView = view.findViewById(R.id.installments_recycler_view);
         expandAndCollapseAnimation = new ExpandAndCollapseAnimation(installmentsRecyclerView);
-        fadeAnimation = new FadeAnimator(view.getContext());
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         installmentsRecyclerView.setLayoutManager(linearLayoutManager);
@@ -403,6 +401,7 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onAttach(final Context context) {
         super.onAttach(context);
+        fadeAnimation = new FadeAnimator(context);
         slideDownAndFadeAnimation = AnimationUtils.loadAnimation(context, R.anim.px_slide_down_and_fade);
         slideUpAndFadeAnimation = AnimationUtils.loadAnimation(context, R.anim.px_slide_up_and_fade);
         if (context instanceof CallBack) {
@@ -413,6 +412,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void onDetach() {
         callback = null;
+        fadeAnimation = null;
+        expandAndCollapseAnimation = null;
         slideDownAndFadeAnimation = null;
         slideUpAndFadeAnimation = null;
         //TODO remove null check after session is persisted
@@ -559,11 +560,6 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             ((PXActivity) getActivity()).overrideTransitionIn();
         }
         BusinessPaymentResultActivity.start(this, CheckoutActivity.REQ_CONGRATS_BUSINESS, model);
-    }
-
-    @Override
-    public void handlePaymentRecovery(@NonNull final PaymentRecovery paymentRecovery) {
-        payButtonFragment.handlePaymentRecovery(paymentRecovery);
     }
 
     @Override

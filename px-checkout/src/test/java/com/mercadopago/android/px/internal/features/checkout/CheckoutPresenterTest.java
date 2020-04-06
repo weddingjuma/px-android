@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -291,14 +292,14 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenOneTapPaymentHasInvalidEscThenStartPaymentRecoveryFlow() {
+    public void whenOneTapPaymentHasInvalidEscThenDoNotHandleItInCheckoutActivity() {
         checkoutStateModel.isExpressCheckout = true;
 
         final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
 
         presenter.onRecoverPaymentEscInvalid(paymentRecovery);
 
-        verify(checkoutView).startExpressPaymentRecoveryFlow(paymentRecovery);
+        verifyZeroInteractions(checkoutView);
     }
 
     @Test

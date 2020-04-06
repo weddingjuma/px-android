@@ -28,10 +28,24 @@
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.checkout.CheckoutActivity"
+            android:label=""
             android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTop"
+            android:launchMode="singleTask"
             android:screenOrientation="locked"
-            android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
+            android:theme="@style/Theme.MercadoPagoTheme.NoActionBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+
+                <data
+                    android:path="/one_tap"
+                    android:host="px"
+                    android:scheme="mercadopago"/>
+            </intent-filter>
+
+        </activity>
         <activity
             android:name=".internal.features.guessing_card.GuessingCardActivity"
             android:screenOrientation="sensorPortrait"
@@ -55,10 +69,12 @@
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.payment_result.PaymentResultActivity"
+            android:label=""
             android:theme="@style/ToolbarTransparentTheme"/>
         <activity
             android:name=".internal.features.SecurityCodeActivity"
             android:screenOrientation="sensorPortrait"
+            android:label=""
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"
             android:windowSoftInputMode="stateVisible"/>
         <activity
@@ -75,6 +91,7 @@
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.business_result.BusinessPaymentResultActivity"
+            android:label=""
             android:theme="@style/Theme.MercadoPagoTheme.NoActionBar"/>
         <activity
             android:name=".internal.features.review_and_confirm.ReviewAndConfirmActivity"

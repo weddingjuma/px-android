@@ -12,5 +12,6 @@ internal interface Remedies {
     interface ViewModel {
         fun onPayButtonPressed(callback: PayButton.OnEnqueueResolvedCallback)
         fun onCvvFilled(cvv: String)
+        fun onButtonPressed(action: RemedyButton.Action)
     }
 }

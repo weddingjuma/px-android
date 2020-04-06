@@ -5,9 +5,7 @@
     xmlns:tool="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/transparent"
-    android:orientation="vertical"
-    tool:background="@color/px_white">
+    android:orientation="vertical">
 
     <LinearLayout
         android:id="@+id/header"
@@ -28,7 +26,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="start"
             android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/px_label_close"
             android:layout_weight="0.05"
+            android:tint="@color/px_toolbar_text"
             android:src="@drawable/ic_close" />
 
         <com.mercadopago.android.px.internal.view.MPTextView
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.95"
             android:gravity="end"
-            android:textColor="@color/white"
+            android:textColor="@color/px_expressCheckoutTextColor"
             android:textSize="@dimen/px_l_text"
             tool:text="Total $ 10.000" />
     </LinearLayout>

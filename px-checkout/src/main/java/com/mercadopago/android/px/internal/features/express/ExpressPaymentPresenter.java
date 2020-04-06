@@ -196,6 +196,7 @@ import java.util.Set;
                     expressMetadataList = initResponse.getExpress();
                     actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
                     modals = initResponse.getModals();
+                    paymentMethodDrawableItemMapper.setCustomSearchItems(initResponse.getCustomSearchItems());
                     cardsWithSplit = initResponse.getIdsWithSplitAllowed();
                     loadViewModel();
                 }
@@ -368,6 +369,11 @@ import java.util.Set;
 
     @Override
     public void recoverPayment(@NonNull final PostPaymentAction postPaymentAction) {
+        // do nothing
+    }
+
+    @Override
+    public void onUserValidation() {
         // do nothing
     }
 

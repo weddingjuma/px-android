@@ -28,7 +28,7 @@ import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesFragment;
 import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
-import com.mercadopago.android.px.internal.features.payment_result.view.PaymentResultFooter;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.view.PaymentResultFooter;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.Logger;
@@ -38,6 +38,7 @@ import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.UserValidationPostPaymentAction;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
@@ -113,13 +114,9 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
 
-        if (hasRemedies(model.remediesModel) && paymentConfiguration != null) {
-            final PaymentResultFooter footer = findViewById(R.id.remedies_footer);
-            footer.setVisibility(View.VISIBLE);
-            footer.setQuietButtonListener(v -> changePaymentMethod());
-            findViewById(R.id.remedies).setVisibility(View.VISIBLE);
+        if (model.remediesModel.hasRemedies() && paymentConfiguration != null) {
             body.setVisibility(View.GONE);
-            loadRemedies(model.remediesModel);
+            loadRemedies(model.remediesModel, model.footerModel);
         } else {
             body.init(model.bodyModel, listener);
             //TODO migrate
@@ -127,12 +124,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         }
     }
 
-    private boolean hasRemedies(@NonNull final RemediesModel model) {
-        //TODO: there will be more remedies
-        return model.getCvvRemedyModel() != null;
-    }
-
-    private void loadRemedies(@NonNull final RemediesModel remediesModel) {
+    private void loadRemedies(@NonNull final RemediesModel remediesModel, @NonNull final PaymentResultFooter.Model footerModel) {
         final FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager != null) {
             final PaymentModel paymentModel = getIntent().getParcelableExtra(EXTRA_PAYMENT_MODEL);
@@ -157,6 +149,11 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
                 }
                 transaction.commitAllowingStateLoss();
             }
+
+            final PaymentResultFooter footer = findViewById(R.id.remedies_footer);
+            footer.setVisibility(View.VISIBLE);
+            footer.init(footerModel, remediesFragment);
+            findViewById(R.id.remedies).setVisibility(View.VISIBLE);
         }
     }
 
@@ -203,6 +200,15 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         ViewUtils.hideKeyboard(this);
         final Intent returnIntent = new Intent();
         new ChangePaymentMethodPostPaymentAction().addToIntent(returnIntent);
+        setResult(RESULT_ACTION, returnIntent);
+        finish();
+    }
+
+    @Override
+    public void onUserValidation() {
+        ViewUtils.hideKeyboard(this);
+        final Intent returnIntent = new Intent();
+        new UserValidationPostPaymentAction().addToIntent(returnIntent);
         setResult(RESULT_ACTION, returnIntent);
         finish();
     }

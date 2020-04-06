@@ -8,6 +8,7 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.widget.TextView;
 import com.mercadopago.android.px.R;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.textformatter.AmountLabeledFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.CFTFormatter;
 import com.mercadopago.android.px.internal.util.textformatter.PayerCostFormatter;
@@ -100,16 +101,24 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
      */
     private void updateTotalAmountDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
-        if (BigDecimal.ZERO.compareTo(getCurrent().getInstallmentRate()) < 0) {
+        if (hasAmountDescriptor()) {
             new PayerCostFormatter(spannableStringBuilder, context, getCurrent(), currency)
                 .withTextColor(ContextCompat.getColor(context, R.color.ui_meli_grey))
                 .apply();
         }
     }
 
+    private boolean hasAmountDescriptor() {
+        return BigDecimal.ZERO.compareTo(getCurrent().getInstallmentRate()) < 0;
+    }
+
+    private boolean hasInterestFree() {
+        return interestFree != null && interestFree.hasAppliedInstallment(getCurrent().getInstallments());
+    }
+
     private void updateInterestDescriptionSpannable(@NonNull final SpannableStringBuilder spannableStringBuilder,
         @NonNull final Context context) {
-        if (interestFree != null && interestFree.hasAppliedInstallment(getCurrent().getInstallments())) {
+        if (hasInterestFree()) {
             new SpannableFormatter(spannableStringBuilder, context)
                 .withSpace()
                 .apply(interestFree.getInstallmentRow());
@@ -130,5 +139,28 @@ public final class CreditCardDescriptorModel extends PaymentMethodDescriptorView
     @Override
     public int getCurrentInstalment() {
         return getCurrent().getInstallments();
+    }
+
+    @Override
+    protected String getAccessibilityContentDescription(@NonNull final Context context) {
+        final SpannableStringBuilder builder = new SpannableStringBuilder();
+        final PayerCost currentInstallment = getCurrent();
+        final String money = context.getResources().getString(R.string.px_money);
+        builder
+            .append(currentInstallment.getInstallments().toString())
+            .append(TextUtil.SPACE)
+            .append(context.getResources().getString(R.string.px_date_divider))
+            .append(TextUtil.SPACE)
+            .append(currentInstallment.getInstallmentAmount().toString())
+            .append(TextUtil.SPACE)
+            .append(money)
+            .append(TextUtil.SPACE)
+            .append(hasAmountDescriptor() ? currentInstallment.getTotalAmount().floatValue() + money : TextUtil.EMPTY)
+            .append(hasInterestFree() ? interestFree.getInstallmentRow().getMessage() : TextUtil.EMPTY);
+
+        updateCFTSpannable(builder, context);
+        updateInstallmentsInfo(builder, context);
+
+        return builder.toString();
     }
 }

@@ -3,9 +3,11 @@ package com.mercadopago.android.px.internal.base;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import com.mercadopago.android.px.R;
@@ -38,10 +40,10 @@ public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable
         }
     }
 
+    @CallSuper
     @Override
-    @SuppressWarnings("unchecked")
-    public void onAttach(final Context context) {
-        super.onAttach(context);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         final Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey(ARG_MODEL)) {
             //noinspection ConstantConditions
@@ -49,22 +51,22 @@ public abstract class BaseFragment<P extends BasePresenter, M extends Parcelable
         } else {
             throw new IllegalStateException(getClass().getSimpleName() + " does not contain model info");
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @CallSuper
+    @Override
+    public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         presenter = createPresenter();
         presenter.attachView(this);
     }
 
     @Override
-    public void onCreate(@Nullable final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public void onDetach() {
-        if (presenter != null) {
-            presenter.detachView();
-            presenter = null;
-        }
-        super.onDetach();
+    public void onDestroyView() {
+        super.onDestroyView();
+        presenter.detachView();
+        presenter = null;
     }
 
     protected void storeModel(final M model) {

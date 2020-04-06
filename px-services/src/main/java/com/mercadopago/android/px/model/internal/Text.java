@@ -8,10 +8,10 @@ public final class Text implements Parcelable, Serializable {
 
     public static final Text EMPTY = new Text();
 
-    private String message;
-    private String backgroundColor;
-    private String textColor;
-    private String weight;
+    private final String message;
+    private final String backgroundColor;
+    private final String textColor;
+    private final String weight;
 
     public static final Creator<Text> CREATOR = new Creator<Text>() {
         @Override
@@ -26,9 +26,13 @@ public final class Text implements Parcelable, Serializable {
     };
 
     private Text() {
+        message = null;
+        backgroundColor = null;
+        textColor = null;
+        weight = null;
     }
 
-    protected Text(final Parcel in) {
+    /* default */ Text(final Parcel in) {
         message = in.readString();
         backgroundColor = in.readString();
         textColor = in.readString();

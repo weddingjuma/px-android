@@ -366,8 +366,10 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
-        congratsRepository.getPostPaymentData(payment, paymentRepository.createPaymentResult(payment),
-            this::handleResult);
+        if(!state.isExpressCheckout) {
+            congratsRepository.getPostPaymentData(payment, paymentRepository.createPaymentResult(payment),
+                this::handleResult);
+        }
     }
 
     private void handleResult(@NonNull final PaymentModel paymentModel) {
@@ -398,9 +400,7 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
 
     @Override
     public void onRecoverPaymentEscInvalid(final PaymentRecovery recovery) {
-        if (state.isExpressCheckout) {
-            getView().startExpressPaymentRecoveryFlow(recovery);
-        } else {
+        if (!state.isExpressCheckout) {
             getView().startPaymentRecoveryFlow(recovery);
         }
     }
@@ -436,6 +436,11 @@ public class CheckoutPresenter extends BasePresenter<Checkout.View> implements P
                     getView().showPaymentMethodSelection();
                 }
             });
+    }
+
+    @Override
+    public void onUserValidation() {
+        // Do nothing
     }
 
     //TODO separate with better navigation when we have a proper driver.

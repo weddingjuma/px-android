@@ -92,12 +92,17 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
-        FragmentUtil.removeFragment(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
-        // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter
-        if (presenter != null) {
-            presenter.detachView();
+        if (intent.getData() != null) {
+            //Callback from KYC
+            //TODO refresh one tap
+        } else {
+            FragmentUtil.removeFragment(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
+            // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter
+            if (presenter != null) {
+                presenter.detachView();
+            }
+            initPresenter();
         }
-        initPresenter();
     }
 
     private void initPresenter() {
@@ -457,14 +462,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     public void startPaymentRecoveryFlow(final PaymentRecovery paymentRecovery) {
         CardVaultActivity.startActivityForRecovery(this, REQ_CARD_VAULT, paymentRecovery);
         overrideTransitionIn();
-    }
-
-    @Override
-    public void startExpressPaymentRecoveryFlow(@NonNull final PaymentRecovery paymentRecovery) {
-        final ExpressPaymentFragment fragment = FragmentUtil
-            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-        //noinspection ConstantConditions
-        fragment.handlePaymentRecovery(paymentRecovery);
     }
 
     private void resolveErrorRequest(final int resultCode, final Intent data) {

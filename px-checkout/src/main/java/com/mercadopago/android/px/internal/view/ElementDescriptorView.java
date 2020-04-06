@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.View;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -100,6 +102,8 @@ public class ElementDescriptorView extends LinearLayout {
         setIconSize((int) iconWidth, (int) iconHeight);
         configureTextView(title, titleSize, titleTextColor, titleTextMaxLines, gravity);
         configureTextView(subtitle, subtitleSize, subtitleTextColor, subtitleTextMaxLines, gravity);
+        setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        post(() -> title.performAccessibilityAction(AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null));
     }
 
     private void configureTextView(final TextView text, final float textSize, final int textColor,
@@ -117,12 +121,14 @@ public class ElementDescriptorView extends LinearLayout {
 
     public void update(@NonNull final ElementDescriptorView.Model model) {
         title.setText(model.getTitle());
+
         if (model.hasSubtitle()) {
             subtitle.setVisibility(VISIBLE);
             subtitle.setText(model.getSubtitle());
         } else {
             subtitle.setVisibility(GONE);
         }
+
         final Picasso picasso = PicassoLoader.getPicasso();
         final RequestCreator requestCreator;
 

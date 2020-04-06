@@ -20,6 +20,7 @@
             android:layout_weight="1"
             android:maxLines="1"
             android:ellipsize="end"
+            android:importantForAccessibility="no"
             tools:text="Account money label super large money label super large"/>
 
         <Switch

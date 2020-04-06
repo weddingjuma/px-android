@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 internal class RemediesViewModel(
-    remediesModel: RemediesModel,
+    private val remediesModel: RemediesModel,
     private val paymentRepository: PaymentRepository,
     private val paymentSettingRepository: PaymentSettingRepository,
     private val cardTokenRepository: CardTokenRepository,
@@ -35,9 +35,13 @@ internal class RemediesViewModel(
     private var cvv = ""
 
     init {
-        remediesModel.cvvRemedyModel?.apply {
+        remediesModel.cvvRemedyModel?.let {
             RemedyEvent(RemedyTrackData(RemedyType.CVV_REQUEST.getType(), getExtraInfoTrack())).track()
-            remedyState.value = RemedyState.ShowCvvRemedy(this@apply)
+            remedyState.value = RemedyState.ShowCvvRemedy(it)
+        }
+        remediesModel.highRiskRemedyModel?.let {
+            //TODO track
+            remedyState.value = RemedyState.ShowKyCRemedy(it)
         }
     }
 
@@ -67,6 +71,16 @@ internal class RemediesViewModel(
                     remedyState.value = RemedyState.ShowResult(paymentModel)
                 }
             })
+    }
+
+    override fun onButtonPressed(action: RemedyButton.Action) {
+        when(action) {
+            RemedyButton.Action.CHANGE_PM -> remedyState.value = RemedyState.ChangePaymentMethod
+            RemedyButton.Action.KYC -> remediesModel.highRiskRemedyModel?.let {
+                remedyState.value = RemedyState.GoToKyc(it.deepLink)
+            }
+            else -> TODO()
+        }
     }
 
     override fun onCvvFilled(cvv: String) {

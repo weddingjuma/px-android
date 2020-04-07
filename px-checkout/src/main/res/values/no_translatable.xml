@@ -16,5 +16,5 @@
 
     <!-- Card Drawer -->
     <string name="px_card_aspect_ratio" translatable="false">H,256:158</string>
-    <string name="px_card_aspect_ratio_lowres" translatable="false">H,256:94</string>
+    <string name="px_card_aspect_ratio_lowres" translatable="false">H,256:96</string>
 </resources>

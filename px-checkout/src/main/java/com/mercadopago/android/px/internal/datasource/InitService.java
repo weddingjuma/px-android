@@ -129,6 +129,7 @@ public class InitService implements InitRepository {
         final CheckoutFeatures features = new CheckoutFeatures.Builder()
             .setSplit(paymentConfiguration.getPaymentProcessor().supportsSplitPayment(checkoutPreference))
             .setExpress(advancedConfiguration.isExpressPaymentEnabled())
+            .setOdrFlag(true)
             .build();
 
         final InitRequest initRequest = new InitRequest.Builder(paymentSettingRepository.getPublicKey())

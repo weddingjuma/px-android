@@ -29,6 +29,7 @@ import com.mercadopago.android.px.internal.repository.PayerCostSelectionReposito
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.PayerComplianceWrapper;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
@@ -70,8 +71,10 @@ import com.mercadopago.android.px.services.Callback;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.InstallmentsEventTrack;
 import com.mercadopago.android.px.tracking.internal.events.SwipeOneTapEventTracker;
+import com.mercadopago.android.px.tracking.internal.events.TargetBehaviourEvent;
 import com.mercadopago.android.px.tracking.internal.mapper.FromSelectedExpressMetadataToAvailableMethods;
 import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
+import com.mercadopago.android.px.tracking.internal.model.TargetBehaviourTrackData;
 import com.mercadopago.android.px.tracking.internal.views.OneTapViewTracker;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -421,17 +424,30 @@ import java.util.Set;
     }
 
     @Override
+    @SuppressLint("WrongConstant")
     public void handlePrePaymentAction(@NonNull final PayButton.OnReadyForPaymentCallback callback) {
+        if (!handleBehaviour(CheckoutBehaviour.Type.TAP_PAY)) {
+            requireCurrentConfiguration(callback);
+        }
+    }
+
+    private boolean handleBehaviour(@CheckoutBehaviour.Type @NonNull final String behaviourType) {
         final ExpressMetadata expressMetadata = getCurrentExpressMetadata();
-        @SuppressLint("WrongConstant")
-        final CheckoutBehaviour behaviour = expressMetadata.getBehaviour(CheckoutBehaviour.Type.TAP_PAY);
+
+        final CheckoutBehaviour behaviour = expressMetadata.getBehaviour(behaviourType);
         final Modal modal = behaviour != null && behaviour.getModal() != null ? modals.get(behaviour.getModal()) : null;
+        final String target = behaviour != null ? behaviour.getTarget() : null;
 
         if (expressMetadata.getStatus().isSuspended() && modal != null) {
             getView().showGenericDialog(
                 new FromModalToGenericDialogItem(actionTypeWrapper.getActionType(), behaviour.getModal()).map(modal));
+            return true;
+        } else if (TextUtil.isNotEmpty(target)) {
+            tracker.trackEvent(new TargetBehaviourEvent(new TargetBehaviourTrackData(behaviourType, target)));
+            getView().startDeepLink(target);
+            return true;
         } else {
-            requireCurrentConfiguration(callback);
+            return false;
         }
     }
 

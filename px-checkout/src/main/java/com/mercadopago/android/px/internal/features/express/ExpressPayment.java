@@ -70,6 +70,8 @@ public interface ExpressPayment {
 
         void showGenericDialog(@NonNull GenericDialogItem item);
 
+        void startDeepLink(@NonNull String deepLink);
+
         void onDeepLinkReceived();
 
         void showLoading();

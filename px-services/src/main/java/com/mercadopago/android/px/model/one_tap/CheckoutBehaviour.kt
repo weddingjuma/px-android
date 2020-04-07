@@ -5,12 +5,16 @@ import android.support.annotation.StringDef
 import com.mercadopago.android.px.internal.util.KParcelable
 import com.mercadopago.android.px.internal.util.parcelableCreator
 
-data class CheckoutBehaviour(val modal: String?) : KParcelable {
+data class CheckoutBehaviour(val modal: String?, val target: String?) : KParcelable {
 
-    private constructor(parcel: Parcel) : this(parcel.readString()!!)
+    private constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
+        parcel.readString()!!
+    )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) = with(parcel) {
         writeString(modal)
+        writeString(target)
     }
 
     companion object {

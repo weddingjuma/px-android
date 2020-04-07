@@ -666,7 +666,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
         GenericDialog.showDialog(getChildFragmentManager(), item);
     }
 
-    private void startDeepLink(@NonNull final String deepLink) {
+    @Override
+    public void startDeepLink(@NonNull final String deepLink) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
         } catch (final ActivityNotFoundException e) {

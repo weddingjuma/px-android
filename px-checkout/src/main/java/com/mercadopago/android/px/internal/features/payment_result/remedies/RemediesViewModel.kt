@@ -19,6 +19,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 internal class RemediesViewModel(
     private val remediesModel: RemediesModel,
@@ -36,16 +37,14 @@ internal class RemediesViewModel(
 
     init {
         remediesModel.cvvRemedyModel?.let {
-            RemedyEvent(RemedyTrackData(RemedyType.CVV_REQUEST.getType(), getExtraInfoTrack())).track()
             remedyState.value = RemedyState.ShowCvvRemedy(it)
         }
         remediesModel.highRiskRemedyModel?.let {
-            //TODO track
             remedyState.value = RemedyState.ShowKyCRemedy(it)
         }
     }
 
-    private fun getExtraInfoTrack() = mapOf(
+    private fun getExtraInfoTrackForPaymentMethodSuggestion() = mapOf(
             "payment_method_type" to paymentMethodType,
             "payment_method_id" to paymentMethodId
     )
@@ -56,6 +55,7 @@ internal class RemediesViewModel(
                 .recoverWithCVV(cvv)?.let {
                     paymentSettingRepository.configure(it)
                     withContext(Dispatchers.Main) {
+                        RemedyEvent(RemedyTrackData(RemedyType.CVV_REQUEST.getType(), Collections.emptyMap())).track()
                         callback.success()
                     }
                 } ?: withContext(Dispatchers.Main) {
@@ -77,7 +77,8 @@ internal class RemediesViewModel(
         when(action) {
             RemedyButton.Action.CHANGE_PM -> remedyState.value = RemedyState.ChangePaymentMethod
             RemedyButton.Action.KYC -> remediesModel.highRiskRemedyModel?.let {
-                remedyState.value = RemedyState.GoToKyc(it.deepLink)
+                    RemedyEvent(RemedyTrackData(RemedyType.KYC_REQUEST.getType(), Collections.emptyMap())).track()
+                    remedyState.value = RemedyState.GoToKyc(it.deepLink)
             }
             else -> TODO()
         }

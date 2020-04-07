@@ -94,9 +94,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     SplitPaymentHeaderAdapter.SplitListener,
     PaymentMethodFragment.DisabledDetailDialogLauncher,
     OtherPaymentMethodFragment.OnOtherPaymentMethodClickListener,
-    OfflineMethodsFragment.SheetHidability, TitlePagerAdapter.InstallmentChanged,
-    PayButton.Handler,
-    GenericDialog.Listener {
+    OfflineMethodsFragment.SheetHandler, TitlePagerAdapter.InstallmentChanged,
+    PayButton.Handler, GenericDialog.Listener {
 
     private static final String TAG = ExpressPaymentFragment.class.getSimpleName();
     public static final String TAG_OFFLINE_METHODS_FRAGMENT = "TAG_OFFLINE_METHODS_FRAGMENT";
@@ -144,8 +143,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     }
 
     @Override
-    public void setSheetHidability(final boolean b) {
-        bottomSheetBehavior.setHideable(b);
+    public void setSheetHideable(final boolean isHideable) {
+        bottomSheetBehavior.setHideable(isHideable);
     }
 
     @Override

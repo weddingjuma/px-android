@@ -10,6 +10,7 @@ import com.mercadopago.android.px.core.DynamicDialogCreator;
 import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
+import com.mercadopago.android.px.internal.core.SessionIdProvider;
 import com.mercadopago.android.px.internal.features.express.installments.InstallmentRowHolder;
 import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.express.slider.SplitPaymentHeaderAdapter;
@@ -28,6 +29,7 @@ import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.util.CardFormWithFragmentWrapper;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
@@ -67,6 +69,7 @@ import com.mercadopago.android.px.model.internal.SummaryInfo;
 import com.mercadopago.android.px.model.one_tap.CheckoutBehaviour;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.services.Callback;
+import com.mercadopago.android.px.tracking.internal.MPTracker;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
 import com.mercadopago.android.px.tracking.internal.events.InstallmentsEventTrack;
 import com.mercadopago.android.px.tracking.internal.events.SwipeOneTapEventTracker;
@@ -102,6 +105,7 @@ import java.util.Set;
     @NonNull private final ConnectionHelper connectionHelper;
     @NonNull private final CongratsRepository congratsRepository;
     @NonNull private final PayerComplianceRepository payerComplianceRepository;
+    @NonNull private final SessionIdProvider sessionIdProvider;
     @Nullable private Runnable unattendedEvent;
     @NonNull /* default */ final InitRepository initRepository;
     private final PayerCostSelectionRepository payerCostSelectionRepository;
@@ -129,7 +133,8 @@ import java.util.Set;
         @NonNull final PaymentMethodDrawableItemMapper paymentMethodDrawableItemMapper,
         @NonNull final ConnectionHelper connectionHelper,
         @NonNull final CongratsRepository congratsRepository,
-        @NonNull final PayerComplianceRepository payerComplianceRepository) {
+        @NonNull final PayerComplianceRepository payerComplianceRepository,
+        @NonNull final SessionIdProvider sessionIdProvider) {
 
         this.paymentRepository = paymentRepository;
         this.paymentSettingRepository = paymentSettingRepository;
@@ -146,6 +151,7 @@ import java.util.Set;
         this.connectionHelper = connectionHelper;
         this.congratsRepository = congratsRepository;
         this.payerComplianceRepository = payerComplianceRepository;
+        this.sessionIdProvider = sessionIdProvider;
 
         splitSelectionState = new SplitSelectionState();
     }
@@ -467,8 +473,12 @@ import java.util.Set;
         switch (type) {
         case ActionType.PAY_WITH_OTHER_METHOD:
         case ActionType.PAY_WITH_OFFLINE_METHOD:
+            getView().setPagerIndex(actionTypeWrapper.getIndexToReturn());
+            break;
         case ActionType.ADD_NEW_CARD:
             getView().setPagerIndex(actionTypeWrapper.getIndexToReturn());
+            getView().startAddNewCardFlow(
+                new CardFormWithFragmentWrapper(paymentSettingRepository, sessionIdProvider, MPTracker.getInstance()));
             break;
         default: // do nothing
         }

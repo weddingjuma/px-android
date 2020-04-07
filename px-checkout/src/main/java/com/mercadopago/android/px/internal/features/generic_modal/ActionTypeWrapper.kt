@@ -14,8 +14,8 @@ class ActionTypeWrapper(var items: List<ExpressMetadata>) {
         var hasActiveMethods = false
         items.forEach {
             when {
-                it.isNewCard -> indexOfNewCard = index
                 it.isOfflineMethods -> indexOfOfflineMethod = index
+                it.isNewCard -> indexOfNewCard = index
                 it.status.isActive && !it.isOfflineMethods && !it.isNewCard -> hasActiveMethods = true
             }
             index++

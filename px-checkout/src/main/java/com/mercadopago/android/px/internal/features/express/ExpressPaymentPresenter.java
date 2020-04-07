@@ -28,6 +28,7 @@ import com.mercadopago.android.px.internal.repository.PayerComplianceRepository;
 import com.mercadopago.android.px.internal.repository.PayerCostSelectionRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
+import com.mercadopago.android.px.internal.util.PayerComplianceWrapper;
 import com.mercadopago.android.px.internal.view.AmountDescriptorView;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.view.PaymentMethodDescriptorView;
@@ -108,6 +109,7 @@ import java.util.Set;
     private boolean otherPaymentMethodClickable = true;
     /* default */ List<ExpressMetadata> expressMetadataList; //FIXME remove.
     /* default */ Map<String, Modal> modals; //FIXME remove.
+    /* default */ PayerComplianceWrapper payerCompliance; //FIXME remove.
     /* default */ int paymentMethodIndex;
     /* default */ PaymentConfiguration currentPaymentConfiguration;
     /* default */ ActionTypeWrapper actionTypeWrapper;
@@ -200,6 +202,7 @@ import java.util.Set;
                     expressMetadataList = initResponse.getExpress();
                     actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
                     modals = initResponse.getModals();
+                    payerCompliance = new PayerComplianceWrapper(initResponse.getPayerCompliance());
                     paymentMethodDrawableItemMapper.setCustomSearchItems(initResponse.getCustomSearchItems());
                     cardsWithSplit = initResponse.getIdsWithSplitAllowed();
                     loadViewModel();
@@ -492,6 +495,7 @@ import java.util.Set;
         expressMetadataList = initResponse.getExpress();
         actionTypeWrapper = new ActionTypeWrapper(expressMetadataList);
         modals = initResponse.getModals();
+        payerCompliance = new PayerComplianceWrapper(initResponse.getPayerCompliance());
         resetPayerCostSelection();
         paymentMethodIndex = 0;
         getView().clearAdapters();
@@ -500,9 +504,6 @@ import java.util.Set;
 
     @Override
     public void handleDeepLink() {
-        //Callback from KYC
-        //TODO we are assuming that the callback is for IFPE, but could be something else, we need yo check against the payer compliance when refresh is done
-        payerComplianceRepository.turnIFPECompliant();
         disabledPaymentMethodRepository.reset();
         if (isViewAttached()) {
             getView().showLoading();
@@ -511,6 +512,9 @@ import java.util.Set;
             @Override
             public void success(final InitResponse initResponse) {
                 if (isViewAttached()) {
+                    if (payerCompliance.turnedIFPECompliant(initResponse.getPayerCompliance())) {
+                        payerComplianceRepository.turnIFPECompliant();
+                    }
                     resetState(initResponse);
                     getView().hideLoading();
                 }

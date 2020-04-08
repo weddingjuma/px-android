@@ -8,6 +8,7 @@ import com.mercadopago.android.px.internal.features.express.slider.HubAdapter;
 import com.mercadopago.android.px.internal.features.generic_modal.ActionType;
 import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogItem;
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
+import com.mercadopago.android.px.internal.util.CardFormWithFragmentWrapper;
 import com.mercadopago.android.px.internal.view.ElementDescriptorView;
 import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -69,6 +70,9 @@ public interface ExpressPayment {
         void showBusinessResult(@NonNull final BusinessPaymentModel model);
 
         void showGenericDialog(@NonNull GenericDialogItem item);
+
+        void startAddNewCardFlow(
+            final CardFormWithFragmentWrapper cardFormWithFragmentWrapper);
 
         void startDeepLink(@NonNull String deepLink);
 

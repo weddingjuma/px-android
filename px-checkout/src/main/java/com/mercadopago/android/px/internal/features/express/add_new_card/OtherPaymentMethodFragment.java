@@ -12,7 +12,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.ImageView;
-import com.mercadolibre.android.cardform.internal.CardFormWithFragment;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BaseFragment;
 import com.mercadopago.android.px.internal.di.ConfigurationModule;
@@ -20,6 +19,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
+import com.mercadopago.android.px.internal.util.CardFormWithFragmentWrapper;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.OtherPaymentMethodFragmentItem;
@@ -146,11 +146,11 @@ public class OtherPaymentMethodFragment
     }
 
     @Override
-    public void startCardForm(@NonNull final CardFormWithFragment cardForm) {
+    public void startCardForm(@NonNull final CardFormWithFragmentWrapper cardFormWithFragmentWrapper) {
         FragmentManager manager;
         if (getParentFragment() != null && (manager = getParentFragment().getFragmentManager()) != null) {
-            cardForm.start(manager, ExpressPaymentFragment.REQ_CODE_CARD_FORM,
-                R.id.one_tap_fragment);
+            cardFormWithFragmentWrapper.getCardFormWithFragment()
+                .start(manager, ExpressPaymentFragment.REQ_CODE_CARD_FORM, R.id.one_tap_fragment);
         }
     }
 

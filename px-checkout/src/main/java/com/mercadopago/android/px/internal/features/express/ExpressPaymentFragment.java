@@ -52,6 +52,7 @@ import com.mercadopago.android.px.internal.features.generic_modal.GenericDialogI
 import com.mercadopago.android.px.internal.features.pay_button.PayButton;
 import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
+import com.mercadopago.android.px.internal.util.CardFormWithFragmentWrapper;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.Logger;
 import com.mercadopago.android.px.internal.util.VibrationUtils;
@@ -392,7 +393,8 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
             ),
             ConnectionHelper.getInstance(),
             session.getCongratsRepository(),
-            configurationModule.getPayerComplianceRepository());
+            configurationModule.getPayerComplianceRepository(),
+            session.getSessionIdProvider());
     }
 
     @Override
@@ -664,6 +666,15 @@ public class ExpressPaymentFragment extends Fragment implements ExpressPayment.V
     @Override
     public void showGenericDialog(@NonNull final GenericDialogItem item) {
         GenericDialog.showDialog(getChildFragmentManager(), item);
+    }
+
+    @Override
+    public void startAddNewCardFlow(final CardFormWithFragmentWrapper cardFormWithFragmentWrapper) {
+        FragmentManager manager;
+        if ((manager = getFragmentManager()) != null) {
+            cardFormWithFragmentWrapper.getCardFormWithFragment()
+                .start(manager, REQ_CODE_CARD_FORM, R.id.one_tap_fragment);
+        }
     }
 
     @Override

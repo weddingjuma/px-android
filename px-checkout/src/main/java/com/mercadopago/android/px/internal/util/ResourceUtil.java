@@ -75,12 +75,4 @@ public final class ResourceUtil {
         final String imageName = CARD_ISSUER_IMAGE_PREFIX + issueId;
         return context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
     }
-
-    public static int getCardIssuerImage(@NonNull final Context context, final String issuerImageName) {
-        if (issuerImageName == null) {
-            return 0;
-        }
-        final String imageName = SDK_PREFIX + issuerImageName.replace("-", "_");
-        return context.getResources().getIdentifier(imageName, "drawable", context.getPackageName());
-    }
 }

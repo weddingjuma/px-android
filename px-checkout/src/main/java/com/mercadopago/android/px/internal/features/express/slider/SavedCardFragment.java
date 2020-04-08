@@ -1,6 +1,5 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,8 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.meli.android.carddrawer.model.CardDrawerView;
 import com.mercadopago.android.px.R;
-import com.mercadopago.android.px.internal.util.ResourceUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.viewmodel.CardDrawerConfiguration;
 import com.mercadopago.android.px.internal.viewmodel.drawables.SavedCardDrawableFragmentItem;
 
 public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFragmentItem> {
@@ -38,13 +37,12 @@ public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFr
         super.initializeViews(view);
         cardView = view.findViewById(R.id.card);
 
-        setIssuerIcon(view.getContext(), model);
-        setPaymentMethodIcon(view.getContext(), model);
+        final CardDrawerConfiguration card = model.card;
 
-        cardView.getCard().setName(model.card.getName());
-        cardView.getCard().setExpiration(model.card.getDate());
-        cardView.getCard().setNumber(model.card.getNumber());
-        cardView.show(model.card);
+        cardView.getCard().setName(card.getName());
+        cardView.getCard().setExpiration(card.getDate());
+        cardView.getCard().setNumber(card.getNumber());
+        cardView.show(card);
         cardView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
     }
 
@@ -63,24 +61,6 @@ public class SavedCardFragment extends PaymentMethodFragment<SavedCardDrawableFr
             .append(model.card.getName());
 
         return builder.toString();
-    }
-
-    protected void setIssuerIcon(@NonNull final Context context,
-        @NonNull final SavedCardDrawableFragmentItem drawableCard) {
-        final int issuerResource = ResourceUtil.getCardIssuerImage(context, drawableCard.card.getIssuerImageName());
-
-        if (issuerResource > 0) {
-            drawableCard.card.setIssuerRes(issuerResource);
-        }
-    }
-
-    private void setPaymentMethodIcon(@NonNull final Context context,
-        @NonNull final SavedCardDrawableFragmentItem drawableCard) {
-        final int paymentMethodResource = ResourceUtil.getCardImage(context, drawableCard.paymentMethodId);
-
-        if (paymentMethodResource > 0) {
-            drawableCard.card.setLogoRes(paymentMethodResource);
-        }
     }
 
     @Override

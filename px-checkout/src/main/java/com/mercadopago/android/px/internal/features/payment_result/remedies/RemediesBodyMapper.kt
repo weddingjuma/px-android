@@ -10,11 +10,13 @@ internal class RemediesBodyMapper(private val userSelectionRepository: UserSelec
     : Mapper<PaymentData, RemediesBody>() {
 
     override fun map(data: PaymentData): RemediesBody {
-        val securityCodeLocation = userSelectionRepository.card?.securityCodeLocation
+        val (secCodeLocation, secCodeLength) = userSelectionRepository.card?.let{
+            Pair(it.securityCodeLocation, it.securityCodeLength)
+        } ?: Pair(null, null)
         with(data) {
             val payerPaymentMethodRejected = PayerPaymentMethodRejected(payerCost?.installments,
                 issuer?.name, token?.lastFourDigits, paymentMethod.id, paymentMethod.paymentTypeId,
-                token?.securityCodeLength, securityCodeLocation, rawAmount)
+                secCodeLength, secCodeLocation, rawAmount)
             return RemediesBody(payerPaymentMethodRejected)
         }
     }

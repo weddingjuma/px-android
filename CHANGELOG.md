@@ -1,3 +1,7 @@
+## VERSION 4.39.1
+_08_04_2020_
+* FIX - Sec code length null after invalid esc
+
 ## VERSION 4.39.0
 _02_04_2020_
 * FEATURE - Accessibility functions.

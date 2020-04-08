@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_marginTop="@dimen/ui_3m"
+    android:layout_marginStart="@dimen/ui_3m"
+    android:layout_marginEnd="@dimen/ui_3m"
+    android:layout_height="wrap_content">
+
+    <com.mercadopago.android.px.internal.features.payment_result.remedies.view.CvvRemedy
+        android:id="@+id/cvv"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_marginBottom="@dimen/ui_3m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.mercadopago.android.px.internal.features.payment_result.remedies.view.HighRiskRemedy
+        android:id="@+id/high_risk"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_marginBottom="@dimen/ui_3m"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

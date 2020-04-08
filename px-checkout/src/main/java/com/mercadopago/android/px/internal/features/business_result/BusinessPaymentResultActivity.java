@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.mercadopago.android.px.R;
@@ -30,6 +31,13 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
 
     private static final String TAG = BusinessPaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_BUSINESS_PAYMENT_MODEL = "extra_business_payment_model";
+
+    public static void start(@NonNull final Fragment fragment, final int requestCode,
+        @NonNull final BusinessPaymentModel model) {
+        final Intent intent = new Intent(fragment.getContext(), BusinessPaymentResultActivity.class);
+        intent.putExtra(EXTRA_BUSINESS_PAYMENT_MODEL, model);
+        fragment.startActivityForResult(intent, requestCode);
+    }
 
     public static Intent getIntent(@NonNull final Context context,
         @NonNull final BusinessPaymentModel model) {
@@ -66,6 +74,7 @@ public class BusinessPaymentResultActivity extends PXActivity<BusinessPaymentRes
         body.init(model.bodyModel, callback);
         //TODO migrate
         BusinessResultLegacyRenderer.render(findViewById(R.id.container), callback, model);
+
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.mercadopago.android.px.internal.features.payment_result;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -12,6 +13,9 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import com.mercadolibre.android.ui.widgets.MeliSnackbar;
@@ -19,7 +23,12 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.internal.base.PXActivity;
 import com.mercadopago.android.px.internal.di.Session;
+import com.mercadopago.android.px.internal.features.pay_button.PayButton;
+import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.components.PaymentResultLegacyRenderer;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesFragment;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.view.PaymentResultFooter;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.Logger;
@@ -30,24 +39,46 @@ import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.ChangePaymentMethodPostPaymentAction;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.RecoverPaymentPostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.UserValidationPostPaymentAction;
+import com.mercadopago.android.px.model.IPaymentDescriptor;
+import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.exceptions.ApiException;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
+import org.jetbrains.annotations.NotNull;
 
+import static android.content.Intent.FLAG_ACTIVITY_FORWARD_RESULT;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_ACTION;
 import static com.mercadopago.android.px.internal.features.Constants.RESULT_CUSTOM_EXIT;
 import static com.mercadopago.android.px.internal.util.MercadoPagoUtil.getSafeIntent;
 
 public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> implements
-    PaymentResultContract.View {
+    PaymentResultContract.View, PayButton.Handler, RemediesFragment.Listener {
 
-    private static final int CONGRATS_REQUEST_CODE = 16;
-    private static final int INSTRUCTIONS_REQUEST_CODE = 14;
-    private static final int REJECTION_REQUEST_CODE = 9;
-    private static final int PENDING_REQUEST_CODE = 8;
-    private static final int CALL_FOR_AUTHORIZE_REQUEST_CODE = 7;
     private static final String TAG = PaymentResultActivity.class.getSimpleName();
     private static final String EXTRA_PAYMENT_MODEL = "extra_payment_model";
+    private static final String EXTRA_PAYMENT_CONFIGURATION = "extra_payment_configuration";
     public static final String EXTRA_RESULT_CODE = "extra_result_code";
+    private PayButtonFragment payButtonFragment;
+    private RemediesFragment remediesFragment;
+    @Nullable private PaymentConfiguration paymentConfiguration;
+
+    public static void startWithForwardResult(@NonNull final Activity activity, @NonNull final PaymentModel model,
+        @NonNull final PaymentConfiguration paymentConfiguration) {
+        final Intent intent = new Intent(activity, PaymentResultActivity.class);
+        intent.putExtra(EXTRA_PAYMENT_MODEL, model);
+        intent.putExtra(EXTRA_PAYMENT_CONFIGURATION, paymentConfiguration);
+        intent.setFlags(FLAG_ACTIVITY_FORWARD_RESULT);
+        activity.startActivity(intent);
+    }
+
+    public static void start(@NonNull final Fragment fragment, final int requestCode, @NonNull final PaymentModel model,
+        @NonNull final PaymentConfiguration paymentConfiguration) {
+        final Intent intent = new Intent(fragment.getContext(), PaymentResultActivity.class);
+        intent.putExtra(EXTRA_PAYMENT_MODEL, model);
+        intent.putExtra(EXTRA_PAYMENT_CONFIGURATION, paymentConfiguration);
+        fragment.startActivityForResult(intent, requestCode);
+    }
 
     public static Intent getIntent(@NonNull final Context context, @NonNull final PaymentModel paymentModel) {
         final Intent intent = new Intent(context, PaymentResultActivity.class);
@@ -59,6 +90,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void onCreated(@Nullable final Bundle savedInstanceState) {
         setContentView(R.layout.px_activity_payment_result);
 
+        paymentConfiguration = getIntent().getParcelableExtra(EXTRA_PAYMENT_CONFIGURATION);
         presenter = createPresenter();
         presenter.attachView(this);
         if (savedInstanceState == null) {
@@ -81,9 +113,48 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
         final PaymentResultHeader header = findViewById(R.id.header);
         header.setModel(model.headerModel);
         final PaymentResultBody body = findViewById(R.id.body);
-        body.init(model.bodyModel, callback);
-        //TODO migrate
-        PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
+
+        if (model.remediesModel.hasRemedies() && paymentConfiguration != null) {
+            body.setVisibility(View.GONE);
+            loadRemedies(model.remediesModel, model.footerModel);
+        } else {
+            body.init(model.bodyModel, callback);
+            //TODO migrate
+            PaymentResultLegacyRenderer.render(findViewById(R.id.container), callback, model.legacyViewModel);
+        }
+    }
+
+    private void loadRemedies(@NonNull final RemediesModel remediesModel, @NonNull final PaymentResultFooter.Model footerModel) {
+        final FragmentManager fragmentManager = getSupportFragmentManager();
+        if (fragmentManager != null) {
+            final PaymentModel paymentModel = getIntent().getParcelableExtra(EXTRA_PAYMENT_MODEL);
+            final PaymentMethod paymentMethod = paymentModel.getPaymentResult().getPaymentData().getPaymentMethod();
+
+            remediesFragment = (RemediesFragment) fragmentManager.findFragmentByTag(RemediesFragment.TAG);
+            payButtonFragment = (PayButtonFragment) fragmentManager.findFragmentByTag(PayButtonFragment.TAG);
+
+            if (remediesFragment == null || payButtonFragment == null) {
+                final FragmentTransaction transaction = fragmentManager.beginTransaction();
+                if (remediesFragment == null) {
+                    remediesFragment = RemediesFragment
+                        .newInstance(remediesModel,
+                            paymentMethod.getPaymentTypeId(),
+                            paymentMethod.getId());
+                    transaction.replace(R.id.remedies, remediesFragment, RemediesFragment.TAG);
+                }
+                if (payButtonFragment == null) {
+                    payButtonFragment = new PayButtonFragment();
+                    transaction.replace(R.id.pay_button, payButtonFragment, PayButtonFragment.TAG);
+                    payButtonFragment.disable();
+                }
+                transaction.commitAllowingStateLoss();
+            }
+
+            final PaymentResultFooter footer = findViewById(R.id.remedies_footer);
+            footer.setVisibility(View.VISIBLE);
+            footer.init(footerModel, remediesFragment);
+            findViewById(R.id.remedies).setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
@@ -98,43 +169,8 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     }
 
     @Override
-    protected void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
-        if (requestCode == CONGRATS_REQUEST_CODE) {
-            finishWithOkResult(resultCode, data);
-        } else if (requestCode == PENDING_REQUEST_CODE) {
-            resolveRequest(resultCode, data);
-        } else if (requestCode == REJECTION_REQUEST_CODE) {
-            resolveRequest(resultCode, data);
-        } else if (requestCode == CALL_FOR_AUTHORIZE_REQUEST_CODE) {
-            resolveRequest(resultCode, data);
-        } else if (requestCode == INSTRUCTIONS_REQUEST_CODE) {
-            finishWithOkResult(resultCode, data);
-        } else {
-            finishWithCancelResult(data);
-        }
-    }
-
-    @Override
     public void onBackPressed() {
         presenter.onAbort();
-    }
-
-    private void resolveRequest(final int resultCode, final Intent data) {
-        if (resultCode == RESULT_CANCELED && data != null) {
-            finishWithCancelResult(data);
-        } else {
-            finishWithOkResult(resultCode, data);
-        }
-    }
-
-    private void finishWithCancelResult(final Intent data) {
-        setResult(RESULT_CANCELED, data);
-        finish();
-    }
-
-    private void finishWithOkResult(final int resultCode, final Intent data) {
-        setResult(resultCode, data);
-        finish();
     }
 
     @Override
@@ -161,8 +197,18 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
 
     @Override
     public void changePaymentMethod() {
+        ViewUtils.hideKeyboard(this);
         final Intent returnIntent = new Intent();
         new ChangePaymentMethodPostPaymentAction().addToIntent(returnIntent);
+        setResult(RESULT_ACTION, returnIntent);
+        finish();
+    }
+
+    @Override
+    public void onUserValidation() {
+        ViewUtils.hideKeyboard(this);
+        final Intent returnIntent = new Intent();
+        new UserValidationPostPaymentAction().addToIntent(returnIntent);
         setResult(RESULT_ACTION, returnIntent);
         finish();
     }
@@ -192,7 +238,7 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void processBusinessAction(@NonNull final String deepLink) {
         try {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(deepLink)));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             Logger.debug(TAG, e);
         }
     }
@@ -201,8 +247,49 @@ public class PaymentResultActivity extends PXActivity<PaymentResultPresenter> im
     public void processCrossSellingBusinessAction(@NonNull final String deepLink) {
         try {
             startActivity(getSafeIntent(this, Uri.parse(deepLink)));
-        } catch (ActivityNotFoundException e) {
+        } catch (final ActivityNotFoundException e) {
             Logger.debug(TAG, e);
+        }
+    }
+
+    @Override
+    public void onPaymentFinished(@NotNull final IPaymentDescriptor payment) {
+        remediesFragment.onPaymentFinished(payment);
+    }
+
+    @Override
+    public void onPaymentError(@NotNull final MercadoPagoError error) {
+        //TODO add snackbar
+    }
+
+    @Override
+    public void prePayment(@NotNull final PayButton.OnReadyForPaymentCallback callback) {
+        if (paymentConfiguration != null) {
+            ViewUtils.hideKeyboard(this);
+            callback.call(paymentConfiguration, null);
+        }
+    }
+
+    @Override
+    public void enqueueOnExploding(@NotNull final PayButton.OnEnqueueResolvedCallback callback) {
+        remediesFragment.onPayButtonPressed(callback);
+    }
+
+    @Override
+    public void enablePayButton() {
+        payButtonFragment.enable();
+    }
+
+    @Override
+    public void disablePayButton() {
+        payButtonFragment.disable();
+    }
+
+    @Override
+    public void showResult(@NotNull final PaymentModel paymentModel) {
+        if (paymentConfiguration != null) {
+            PaymentResultActivity.startWithForwardResult(this, paymentModel, paymentConfiguration);
+            finish();
         }
     }
 }

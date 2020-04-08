@@ -72,6 +72,7 @@
             android:clipToPadding="false"
             android:paddingStart="@dimen/px_m_margin"
             android:paddingEnd="@dimen/px_m_margin"
+            android:layout_marginBottom="@dimen/px_s_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar"
             app:layout_constraintVertical_bias="1" />
@@ -80,6 +81,7 @@
             android:id="@+id/itemsMaxSize"
             android:layout_width="1dp"
             android:layout_height="0dp"
+            android:layout_marginBottom="@dimen/px_s_margin"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/toolbar" />
@@ -90,7 +92,6 @@
         android:id="@+id/separator"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="@dimen/px_s_margin"
         android:layout_marginBottom="@dimen/px_xs_margin"
         android:background="@color/px_expressCheckoutSeparatorLine" />
 

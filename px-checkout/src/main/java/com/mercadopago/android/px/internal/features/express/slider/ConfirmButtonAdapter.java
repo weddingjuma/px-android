@@ -1,24 +1,28 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
 import android.support.annotation.NonNull;
-import com.mercadolibre.android.ui.widgets.MeliButton;
+import android.view.View;
+import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.viewmodel.ConfirmButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.SplitSelectionState;
 import java.util.List;
 
-public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewModel>, MeliButton> {
+public class ConfirmButtonAdapter extends HubableAdapter<List<ConfirmButtonViewModel>, View> {
 
-    public ConfirmButtonAdapter(@NonNull final MeliButton view) {
-        super(view);
+    private PayButtonFragment payButton;
+
+    public ConfirmButtonAdapter(@NonNull final PayButtonFragment fragment) {
+        super(null);
+        this.payButton = fragment;
     }
 
     @Override
     public void updateData(final int currentIndex, final int payerCostSelected,
         @NonNull final SplitSelectionState splitSelectionState) {
         if (data.get(currentIndex).isDisabled()) {
-            view.setState(MeliButton.State.DISABLED);
+            payButton.disable();
         } else {
-            view.setState(MeliButton.State.NORMAL);
+            payButton.enable();
         }
     }
 

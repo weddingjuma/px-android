@@ -2,12 +2,11 @@ package com.mercadopago.android.px.internal.features.review_and_confirm;
 
 import android.support.annotation.NonNull;
 import com.mercadopago.android.px.addons.ESCManagerBehaviour;
-import com.mercadopago.android.px.addons.SecurityBehaviour;
 import com.mercadopago.android.px.configuration.AdvancedConfiguration;
 import com.mercadopago.android.px.configuration.CustomStringConfiguration;
 import com.mercadopago.android.px.configuration.DynamicDialogConfiguration;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
-import com.mercadopago.android.px.internal.datasource.PaymentRewardRepositoryImpl;
+import com.mercadopago.android.px.internal.datasource.CongratsRepositoryImpl;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
@@ -24,7 +23,6 @@ import com.mercadopago.android.px.model.PaymentData;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
-import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
@@ -60,7 +58,7 @@ public class ReviewAndConfirmPresenterTest {
 
     @Mock private UserSelectionRepository userSelectionRepository;
 
-    @Mock private PaymentRewardRepositoryImpl paymentRewardRepository;
+    @Mock private CongratsRepositoryImpl paymentRewardRepository;
 
     @Mock private PaymentMethod paymentMethod;
 
@@ -196,7 +194,7 @@ public class ReviewAndConfirmPresenterTest {
     }
 
     @Test
-    public void whendViewDetachedThenPaymentRepositoryViewDetachmentIsPerformed() {
+    public void whenViewDetachedThenPaymentRepositoryViewDetachmentIsPerformed() {
         reviewAndConfirmPresenter.detachView();
 
         verify(paymentRepository).detach(reviewAndConfirmPresenter);
@@ -345,16 +343,13 @@ public class ReviewAndConfirmPresenterTest {
 
     private void whenIPaymentAndAnimationIsFinishedThenShowResult(final IPaymentDescriptor payment) {
         final PaymentResult paymentResult = mock(PaymentResult.class);
-        when(paymentResult.getPaymentData()).thenReturn(mock(PaymentData.class));
         when(paymentRepository.getPayment()).thenReturn(payment);
         when(paymentRepository.createPaymentResult(payment)).thenReturn(paymentResult);
-        when(paymentSettingRepository.getCurrency()).thenReturn(CurrencyStub.MLA.get());
-        doCallRealMethod().when(paymentRewardRepository).getPaymentReward(any(), any(), any());
+        doCallRealMethod().when(paymentRewardRepository).getPostPaymentData(any(), any(), any());
 
         reviewAndConfirmPresenter.hasFinishPaymentAnimation();
 
         verify(paymentRepository).getPayment();
-        verify(payment).process(any());
         verify(view).setPayButtonText(any());
         verify(paymentRepository).createPaymentResult(payment);
         verifyNoMoreInteractions(view);

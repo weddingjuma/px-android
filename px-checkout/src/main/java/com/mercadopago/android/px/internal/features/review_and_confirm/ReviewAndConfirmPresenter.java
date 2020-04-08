@@ -9,9 +9,9 @@ import com.mercadopago.android.px.internal.base.BasePresenter;
 import com.mercadopago.android.px.internal.callbacks.FailureRecovery;
 import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecoratorMapper;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.DiscountRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.internal.util.SecurityValidationDataFactory;
@@ -19,17 +19,17 @@ import com.mercadopago.android.px.internal.viewmodel.BusinessPaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PayButtonViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PostPaymentAction;
+import com.mercadopago.android.px.internal.viewmodel.handlers.PaymentModelHandler;
 import com.mercadopago.android.px.internal.viewmodel.mappers.PayButtonViewModelMapper;
-import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
 import com.mercadopago.android.px.model.Currency;
 import com.mercadopago.android.px.model.IPaymentDescriptor;
-import com.mercadopago.android.px.model.IPaymentDescriptorHandler;
 import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentRecovery;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.model.internal.PaymentReward;
+import com.mercadopago.android.px.model.internal.remedies.RemediesResponse;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import com.mercadopago.android.px.tracking.internal.events.ChangePaymentMethodEvent;
 import com.mercadopago.android.px.tracking.internal.events.ConfirmEvent;
@@ -43,7 +43,7 @@ import java.util.Set;
 
     @NonNull private final PaymentSettingRepository paymentSettings;
     @NonNull private final UserSelectionRepository userSelectionRepository;
-    @NonNull private final PaymentRewardRepository paymentRewardRepository;
+    @NonNull private final CongratsRepository congratsRepository;
     @NonNull private final ProductIdProvider productIdProvider;
     @NonNull /* default */ final PaymentRepository paymentRepository;
     private final ExplodeDecoratorMapper explodeDecoratorMapper;
@@ -56,13 +56,13 @@ import java.util.Set;
         @NonNull final DiscountRepository discountRepository,
         @NonNull final PaymentSettingRepository paymentSettings,
         @NonNull final UserSelectionRepository userSelectionRepository,
-        @NonNull final PaymentRewardRepository paymentRewardRepository,
+        @NonNull final CongratsRepository congratsRepository,
         @NonNull final ESCManagerBehaviour escManagerBehaviour,
         @NonNull final ProductIdProvider productIdProvider) {
         this.paymentRepository = paymentRepository;
         this.paymentSettings = paymentSettings;
         this.userSelectionRepository = userSelectionRepository;
-        this.paymentRewardRepository = paymentRewardRepository;
+        this.congratsRepository = congratsRepository;
         this.productIdProvider = productIdProvider;
 
         final Set<String> escCardIds = escManagerBehaviour.getESCCardIds();
@@ -92,26 +92,20 @@ import java.util.Set;
     @Override
     public void hasFinishPaymentAnimation() {
         final IPaymentDescriptor payment = paymentRepository.getPayment();
-        paymentRewardRepository.getPaymentReward(payment, paymentRepository.createPaymentResult(payment),
+        congratsRepository.getPostPaymentData(payment, paymentRepository.createPaymentResult(payment),
             this::handleResult);
     }
 
-    private void handleResult(@NonNull final IPaymentDescriptor payment, @NonNull final PaymentResult paymentResult,
-        @NonNull final PaymentReward paymentReward) {
-        final Currency currency = paymentSettings.getCurrency();
-        payment.process(new IPaymentDescriptorHandler() {
+    private void handleResult(@NonNull final PaymentModel paymentModel) {
+        paymentModel.process(new PaymentModelHandler() {
             @Override
-            public void visit(@NonNull final IPaymentDescriptor payment) {
-                final PaymentModel paymentModel =
-                    new PaymentModel(payment, paymentResult, paymentReward, currency);
+            public void visit(@NonNull final PaymentModel paymentModel) {
                 getView().showResult(paymentModel);
             }
 
             @Override
-            public void visit(@NonNull final BusinessPayment businessPayment) {
-                final BusinessPaymentModel paymentModel =
-                    new BusinessPaymentModel((BusinessPayment) payment, paymentResult, paymentReward, currency);
-                getView().showResult(paymentModel);
+            public void visit(@NonNull final BusinessPaymentModel businessPaymentModel) {
+                getView().showResult(businessPaymentModel);
             }
         });
     }
@@ -234,7 +228,7 @@ import java.util.Set;
                     .setPaymentStatus(Payment.StatusCodes.STATUS_IN_PROCESS)
                     .setPaymentStatusDetail(Payment.StatusDetail.STATUS_DETAIL_PENDING_CONTINGENCY)
                     .build();
-            final PaymentModel paymentModel = new PaymentModel(null, paymentResult, PaymentReward.EMPTY, currency);
+            final PaymentModel paymentModel = new PaymentModel(paymentResult, currency);
             getView().showResult(paymentModel);
         } else if (error.isInternalServerError() || error.isNoConnectivityError()) {
             getView().showErrorSnackBar(error);
@@ -261,6 +255,11 @@ import java.util.Set;
             @Override
             public void onChangePaymentMethod() {
                 // Do nothing, It is handled before.
+            }
+
+            @Override
+            public void onUserValidation() {
+                // Do nothing
             }
         });
     }

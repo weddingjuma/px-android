@@ -18,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,15 +32,14 @@ import com.mercadopago.android.px.addons.BehaviourProvider;
 import com.mercadopago.android.px.addons.model.SecurityValidationData;
 import com.mercadopago.android.px.core.BackHandler;
 import com.mercadopago.android.px.internal.base.BaseFragment;
+import com.mercadopago.android.px.internal.core.ConnectionHelper;
 import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.checkout.CheckoutActivity;
 import com.mercadopago.android.px.internal.features.explode.ExplodeDecorator;
 import com.mercadopago.android.px.internal.features.explode.ExplodeParams;
 import com.mercadopago.android.px.internal.features.explode.ExplodingFragment;
-import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
 import com.mercadopago.android.px.internal.font.PxFont;
-import com.mercadopago.android.px.internal.util.ApiUtil;
 import com.mercadopago.android.px.internal.util.FragmentUtil;
 import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
@@ -70,6 +68,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     private View header;
 
     private int lastSheetState = BottomSheetBehavior.STATE_EXPANDED;
+    @Nullable private ExplodingFragment explodingFragment;
+    private SheetHandler sheetHandler;
 
     @NonNull
     public static OfflineMethodsFragment getInstance(@NonNull final OfflinePaymentTypesMetadata model) {
@@ -94,12 +94,13 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         header = view.findViewById(R.id.header);
         panIndicator = view.findViewById(R.id.pan_indicator);
         confirmButton = view.findViewById(R.id.confirm_button);
         confirmButton.setState(MeliButton.State.DISABLED);
         confirmButton.setOnClickListener(v -> {
-            if (ApiUtil.checkConnection(getActivity().getApplicationContext())) {
+            if (ConnectionHelper.getInstance().checkConnection()) {
                 presenter.startSecuredPayment();
             } else {
                 presenter.manageNoConnection();
@@ -118,6 +119,8 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
         if (savedInstanceState == null) {
             presenter.trackOfflineMethodsView(model);
+        } else {
+            explodingFragment = (ExplodingFragment) getFragmentManager().findFragmentByTag(ExplodingFragment.TAG);
         }
 
         presenter.updateModel();
@@ -172,13 +175,23 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
     @Override
     public void updateTotalView(@NonNull final AmountLocalized amountLocalized) {
         final Editable editable = new SpannableStringBuilder();
-        editable.append(getContext().getString(R.string.px_review_summary_total));
+        final Editable editableDescription = new SpannableStringBuilder();
+        final String totalText = getString(R.string.px_review_summary_total);
+        editable.append(totalText);
         editable.append(TextUtil.SPACE);
         editable.append(amountLocalized.get(getContext()));
 
         ViewUtils.setFontInSpannable(getContext(), PxFont.SEMI_BOLD, editable);
 
         totalAmountTextView.setText(editable);
+
+        editableDescription
+            .append(totalText)
+            .append(TextUtil.SPACE)
+            .append(String.valueOf(amountLocalized.getAmount().floatValue()))
+            .append(getString(R.string.px_money));
+
+        totalAmountTextView.setContentDescription(editableDescription);
     }
 
     @Override
@@ -195,28 +208,17 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void startLoadingButton(final int paymentTimeout, @NonNull final PayButtonViewModel payButtonViewModel) {
-        final Fragment fragment = getTargetFragment();
-        if (fragment instanceof SheetHidability) {
-            ((SheetHidability) fragment).setSheetHidability(false);
-        } else {
-            throw new IllegalStateException("Target fragment should implement ");
-        }
-
+        sheetHandler.setSheetHideable(false);
         hideConfirmButton();
-
         ViewUtils.runWhenViewIsFullyMeasured(getView(), () -> {
             final ExplodeParams explodeParams = ExplodingFragment.getParams(confirmButton,
                 payButtonViewModel.getButtonProgressText(confirmButton.getContext()), paymentTimeout);
-            final FragmentManager childFragmentManager = getChildFragmentManager();
-            final ExplodingFragment explodingFragment = ExplodingFragment.newInstance(explodeParams);
-            childFragmentManager.beginTransaction()
+            explodingFragment = ExplodingFragment.newInstance(explodeParams);
+            explodingFragment.setTargetFragment(this, 0);
+            getFragmentManager().beginTransaction()
                 .replace(R.id.exploding_frame, explodingFragment, TAG_EXPLODING_FRAGMENT)
                 .commitNowAllowingStateLoss();
         });
-    }
-
-    public interface SheetHidability {
-        void setSheetHidability(boolean b);
     }
 
     private void hideConfirmButton() {
@@ -231,9 +233,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void showPaymentResult(final IPaymentDescriptor payment) {
-        if (getActivity() != null) {
-            ((CheckoutActivity) getActivity()).presenter.onPaymentFinished(payment);
-        }
+        sheetHandler.onPaymentFinished(payment);
     }
 
     @Override
@@ -243,26 +243,21 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public void finishLoading(@NonNull final ExplodeDecorator params) {
-        final ExplodingFragment fragment =
-            FragmentUtil.getFragmentByTag(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT, ExplodingFragment.class);
-        if (fragment != null) {
-            fragment.finishLoading(params);
+        if (explodingFragment != null) {
+            explodingFragment.finishLoading(params);
         } else {
             presenter.hasFinishPaymentAnimation();
         }
-        ((ExpressPaymentFragment) getTargetFragment()).setSheetHidability(true);
+        sheetHandler.setSheetHideable(true);
     }
 
     @Override
     public void cancelLoading() {
         showConfirmButton();
-        final FragmentManager childFragmentManager = getChildFragmentManager();
-        final ExplodingFragment fragment =
-            (ExplodingFragment) childFragmentManager.findFragmentByTag(TAG_EXPLODING_FRAGMENT);
-        if (fragment != null && fragment.isAdded() && fragment.hasFinished()) {
-            childFragmentManager
+        if (explodingFragment != null && explodingFragment.isAdded() && explodingFragment.hasFinished()) {
+            getFragmentManager()
                 .beginTransaction()
-                .remove(fragment)
+                .remove(explodingFragment)
                 .commitNowAllowingStateLoss();
         }
     }
@@ -298,7 +293,7 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
 
     @Override
     public boolean isExploding() {
-        return FragmentUtil.isFragmentVisible(getChildFragmentManager(), TAG_EXPLODING_FRAGMENT);
+        return FragmentUtil.isFragmentVisible(getFragmentManager(), TAG_EXPLODING_FRAGMENT);
     }
 
     interface OnMethodSelectedListener {
@@ -366,15 +361,25 @@ public class OfflineMethodsFragment extends BaseFragment<OfflineMethodsPresenter
         fadeInAnimation.setDuration(duration);
         fadeOutAnimation = AnimationUtils.loadAnimation(context, R.anim.px_fade_out);
         fadeOutAnimation.setDuration(duration);
+        final Fragment fragment = getTargetFragment();
+        if (fragment instanceof SheetHandler) {
+            sheetHandler = (SheetHandler) fragment;
+        } else {
+            throw new IllegalStateException("Target fragment should implement " + SheetHandler.class.getSimpleName());
+        }
     }
 
     @Override
     public void onDetach() {
+        super.onDetach();
         fadeInAnimation = null;
         fadeOutAnimation = null;
-        if (presenter != null) {
-            presenter.detachView();
-        }
-        super.onDetach();
+        sheetHandler = null;
+    }
+
+    public interface SheetHandler {
+        void setSheetHideable(boolean isHideable);
+        //TODO remove when sheet has new pay button implementation
+        void onPaymentFinished(@NonNull IPaymentDescriptor payment);
     }
 }

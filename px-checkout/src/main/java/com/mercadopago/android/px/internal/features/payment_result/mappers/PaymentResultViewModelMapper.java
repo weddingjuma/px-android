@@ -3,6 +3,7 @@ package com.mercadopago.android.px.internal.features.payment_result.mappers;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultLegacyViewModel;
 import com.mercadopago.android.px.internal.features.payment_result.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
@@ -24,8 +25,11 @@ public class PaymentResultViewModelMapper extends Mapper<PaymentModel, PaymentRe
     public PaymentResultViewModel map(@NonNull final PaymentModel model) {
         final PaymentResultLegacyViewModel legacyViewModel = new PaymentResultLegacyViewModel(
             model, configuration, instruction);
+        final RemediesModel remediesModel = PaymentResultRemediesModelMapper.INSTANCE.map(model.getRemedies());
         return new PaymentResultViewModel(
-            new PaymentResultHeaderModelMapper(configuration, instruction).map(model.getPaymentResult()),
+            new PaymentResultHeaderModelMapper(configuration, instruction, remediesModel).map(model),
+            remediesModel,
+            PaymentResultFooterModelMapper.INSTANCE.map(model.getRemedies()),
             new PaymentResultBodyModelMapper(configuration).map(model), legacyViewModel);
     }
 }

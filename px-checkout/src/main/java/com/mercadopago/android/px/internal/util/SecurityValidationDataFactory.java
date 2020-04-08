@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.core.ProductIdProvider;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.PaymentMethod;
 import com.mercadopago.android.px.model.PaymentTypes;
-import com.mercadopago.android.px.model.internal.ExpressPaymentMethod;
+import com.mercadopago.android.px.model.internal.PaymentConfiguration;
 
 public final class SecurityValidationDataFactory {
 
@@ -15,10 +15,10 @@ public final class SecurityValidationDataFactory {
     }
 
     public static SecurityValidationData create(@NonNull final ProductIdProvider productIdProvider,
-        @NonNull final ExpressPaymentMethod expressMetadata) {
+        @NonNull final PaymentConfiguration paymentConfiguration) {
         final String productId = productIdProvider.getProductId();
-        final String customOptionId = expressMetadata.getCustomOptionId();
-        final boolean isCard = expressMetadata.isCard();
+        final String customOptionId = paymentConfiguration.getCustomOptionId();
+        final boolean isCard = paymentConfiguration.isCard();
         final EscValidationData escValidationData = new EscValidationData.Builder(customOptionId, isCard).build();
         return new SecurityValidationData.Builder(productId).setEscValidationData(escValidationData).build();
     }

@@ -8,6 +8,7 @@ import com.mercadopago.android.px.model.SavedESCCardToken;
 import com.mercadopago.android.px.model.Token;
 import com.mercadopago.android.px.model.requests.SecurityCodeIntent;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
 import retrofit2.http.Path;
@@ -34,4 +35,8 @@ public interface GatewayService {
     @PUT("/v1/card_tokens/{token_id}")
     MPCall<Token> updateToken(@Path(value = "token_id") String tokenId, @Query("public_key") String publicKey,
         @Query("access_token") String privateKey, @Body SecurityCodeIntent securityCodeIntent);
+
+    @DELETE("{environment}/px_mobile/v1/esc_cap/{card_id}")
+    MPCall<String> clearCap(@Path(value = "environment", encoded = true) String environment,
+        @Path(value = "card_id") String cardId, @Query("access_token") String privateKey);
 }

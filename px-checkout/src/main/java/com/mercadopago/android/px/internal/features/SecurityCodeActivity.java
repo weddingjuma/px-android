@@ -10,8 +10,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.Toolbar;
 import android.text.InputFilter;
+import android.text.SpannableStringBuilder;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +30,8 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.card.CardSecurityCodeTextWatcher;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardRepresentationModes;
 import com.mercadopago.android.px.internal.features.uicontrollers.card.CardView;
+import com.mercadopago.android.px.internal.font.FontHelper;
+import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.util.ErrorUtil;
 import com.mercadopago.android.px.internal.util.ResourceUtil;
@@ -45,6 +50,8 @@ import com.mercadopago.android.px.model.exceptions.ExceptionHandler;
 import com.mercadopago.android.px.model.exceptions.MercadoPagoError;
 import com.mercadopago.android.px.tracking.internal.model.Reason;
 
+import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
+
 public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> implements SecurityCodeActivityView {
 
     private static final String EXTRA_PAYMENT_METHOD = "PAYMENT_METHOD";
@@ -60,10 +67,8 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
     //View controls
     protected ViewGroup mProgressLayout;
     protected MPEditText mSecurityCodeEditText;
-    protected FrameLayout mNextButton;
-    protected FrameLayout mBackButton;
-    protected MPTextView mNextButtonText;
-    protected MPTextView mBackButtonText;
+    protected AppCompatButton mNextButton;
+    protected AppCompatButton mBackButton;
     protected LinearLayout mButtonContainer;
     protected FrameLayout mErrorContainer;
     protected MPTextView mErrorTextView;
@@ -153,13 +158,10 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     private void initializeControls() {
         initializeToolbar();
-
         mProgressLayout = findViewById(R.id.mpsdkProgressLayout);
         mSecurityCodeEditText = findViewById(R.id.mpsdkCardSecurityCode);
         mNextButton = findViewById(R.id.mpsdkNextButton);
         mBackButton = findViewById(R.id.mpsdkBackButton);
-        mNextButtonText = findViewById(R.id.mpsdkNextButtonText);
-        mBackButtonText = findViewById(R.id.mpsdkBackButtonText);
         mButtonContainer = findViewById(R.id.mpsdkButtonContainer);
         mErrorContainer = findViewById(R.id.mpsdkErrorContainer);
         mErrorTextView = findViewById(R.id.mpsdkErrorTextView);
@@ -169,17 +171,22 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         mProgressLayout.setVisibility(View.GONE);
         mSecurityCodeCardIcon = findViewById(R.id.mpsdkSecurityCodeCardIcon);
 
+        FontHelper.setFont(mNextButton, PxFont.REGULAR);
+        FontHelper.setFont(mBackButton, PxFont.REGULAR);
         setListeners();
     }
 
     private void initializeToolbar() {
         mToolbar = findViewById(R.id.mpsdkToolbar);
-
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayShowTitleEnabled(false);
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setDisplayShowHomeEnabled(true);
+            actionBar.setHomeActionContentDescription(R.string.px_label_back);
+        }
         mToolbar.setNavigationOnClickListener(v -> onBackPressed());
     }
 
@@ -222,6 +229,7 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
 
     private void loadViews() {
         mCardView = new CardView(this);
+        final String lastFourDigits = presenter.getCardInfo().getLastFourDigits();
         mCardView.setSize(CardRepresentationModes.BIG_SIZE);
         mCardView.inflateInParent(mCardContainer, true);
         mCardView.initializeControls();
@@ -229,11 +237,21 @@ public class SecurityCodeActivity extends PXActivity<SecurityCodePresenter> impl
         mCardView.setSecurityCodeLength(presenter.getSecurityCodeLength());
         mCardView.setSecurityCodeLocation(presenter.getSecurityCodeLocation());
         mCardView.setCardNumberLength(presenter.getCardNumberLength());
-        mCardView.setLastFourDigits(presenter.getCardInfo().getLastFourDigits());
+        mCardView.setLastFourDigits(lastFourDigits);
         mCardView.draw(CardView.CARD_SIDE_FRONT);
         mCardView.drawFullCard();
         mCardView.drawEditingSecurityCode("");
         presenter.setSecurityCodeCardType();
+
+        executeIfAccessibilityTalkBackEnable(this, () -> {
+            mCardContainer.setContentDescription(new SpannableStringBuilder()
+                .append(getString(R.string.px_card_number_label))
+                .append(TextUtil.SPACE)
+                .append(getString(R.string.px_ending_in))
+                .append(TextUtil.SPACE)
+                .append(lastFourDigits));
+            return null;
+        });
     }
 
     private void setSecurityCodeCardColorFilter() {

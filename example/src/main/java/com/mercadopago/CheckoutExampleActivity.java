@@ -6,9 +6,9 @@ import android.os.StrictMode;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import com.mercadopago.android.px.core.CheckoutLazyInit;
 import com.mercadopago.android.px.core.MercadoPagoCheckout;
-import com.mercadopago.android.px.internal.view.MPButton;
 import com.mercadopago.android.px.utils.ExamplesUtils;
 import com.mercadopago.example.R;
 
@@ -18,7 +18,7 @@ public class CheckoutExampleActivity extends AppCompatActivity {
 
     private static final int REQUEST_CODE = 1;
     private View mRegularLayout;
-    private MPButton continueSimpleCheckout;
+    private Button continueSimpleCheckout;
     private static final int REQ_CODE_CHECKOUT = 1;
 
     @Override

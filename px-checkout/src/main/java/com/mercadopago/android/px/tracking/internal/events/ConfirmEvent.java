@@ -3,9 +3,6 @@ package com.mercadopago.android.px.tracking.internal.events;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
-import com.mercadopago.android.px.model.ExpressMetadata;
-import com.mercadopago.android.px.model.PayerCost;
-import com.mercadopago.android.px.tracking.internal.mapper.FromSelectedExpressMetadataToAvailableMethods;
 import com.mercadopago.android.px.tracking.internal.mapper.FromUserSelectionToAvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.AvailableMethod;
 import com.mercadopago.android.px.tracking.internal.model.ConfirmData;
@@ -30,16 +27,6 @@ public final class ConfirmEvent extends EventTracker {
     }
 
     @NonNull
-    public static ConfirmEvent from(@NonNull final Set<String> cardsWithEsc,
-        @NonNull final ExpressMetadata expressMetadata,
-        @Nullable final PayerCost selectedPayerCost,
-        final boolean isSplit, final int paymentMethodSelectedIndex) {
-        return new ConfirmEvent(new ConfirmData(ReviewType.ONE_TAP, paymentMethodSelectedIndex,
-            new FromSelectedExpressMetadataToAvailableMethods(cardsWithEsc, selectedPayerCost, isSplit)
-                .map(expressMetadata)));
-    }
-
-    @NonNull
     public static ConfirmEvent from(@Nullable final String paymentTypeId, @Nullable final String paymentMethodId,
         final boolean isCompliant, final boolean isAdditionalInfoNeeded) {
         final Map<String, Object> extraInfo = new HashMap<>();
@@ -58,7 +45,7 @@ public final class ConfirmEvent extends EventTracker {
         return new ConfirmEvent(new ConfirmData(ReviewType.TRADITIONAL, ava));
     }
 
-    private ConfirmEvent(@NonNull final ConfirmData data) {
+    public ConfirmEvent(@NonNull final ConfirmData data) {
         this.data = data;
     }
 

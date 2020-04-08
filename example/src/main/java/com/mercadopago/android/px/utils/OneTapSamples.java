@@ -14,10 +14,13 @@ import com.mercadopago.android.px.model.Payment;
 import com.mercadopago.android.px.model.PaymentTypes;
 import com.mercadopago.android.px.model.Sites;
 import com.mercadopago.android.px.model.commission.PaymentTypeChargeRule;
+import com.mercadopago.android.px.model.internal.IParcelablePaymentDescriptor;
 import com.mercadopago.android.px.preferences.CheckoutPreference;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static com.mercadopago.android.px.utils.PaymentUtils.getBusinessPaymentApproved;
@@ -136,13 +139,12 @@ public final class OneTapSamples {
 
     // It should suggest one tap with account money
     private static MercadoPagoCheckout.Builder startOneTapWithAccountMoneyNoCards() {
-
-        final GenericPayment payment = getGenericPaymentApproved();
-
         final CheckoutPreference preference =
             getCheckoutPreferenceWithPayerEmail(new ArrayList<>(), 120);
         final PaymentConfiguration paymentConfiguration =
-            PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(payment));
+            PaymentConfigurationUtils.create(new SamplePaymentProcessorNoView(Arrays.asList(
+                IParcelablePaymentDescriptor.with(getGenericPaymentRejected()),
+                IParcelablePaymentDescriptor.with(getGenericPaymentApproved()))));
 
         return new MercadoPagoCheckout.Builder(ONE_TAP_DIRECT_DISCOUNT_MERCHANT_PUBLIC_KEY, preference, paymentConfiguration)
             .setPrivateKey(ONE_TAP_PAYER_1_ACCESS_TOKEN)

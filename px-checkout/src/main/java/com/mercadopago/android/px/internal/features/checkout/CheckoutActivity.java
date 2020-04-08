@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.checkout;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -17,6 +18,7 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.business_result.BusinessPaymentResultActivity;
 import com.mercadopago.android.px.internal.features.cardvault.CardVaultActivity;
 import com.mercadopago.android.px.internal.features.express.ExpressPaymentFragment;
+import com.mercadopago.android.px.internal.features.pay_button.PayButtonFragment;
 import com.mercadopago.android.px.internal.features.payment_result.PaymentResultActivity;
 import com.mercadopago.android.px.internal.features.payment_vault.PaymentVaultActivity;
 import com.mercadopago.android.px.internal.features.plugins.PaymentProcessorActivity;
@@ -60,8 +62,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     private static final String EXTRA_PRIVATE_KEY = "extra_private_key";
     private static final String EXTRA_PUBLIC_KEY = "extra_public_key";
 
-    private static final int REQ_CONGRATS_BUSINESS = 0x01;
-    private static final int REQ_CONGRATS = 0x02;
+    public static final int REQ_CONGRATS_BUSINESS = 0x01;
+    public static final int REQ_CONGRATS = 0x02;
     private static final int REQ_PAYMENT_PROCESSOR = 0x03;
     private static final int REQ_CARD_VAULT = 0x04;
     private static final int REQ_REVIEW_AND_CONFIRM = 0x05;
@@ -90,12 +92,17 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     protected void onNewIntent(final Intent intent) {
         super.onNewIntent(intent);
-        FragmentUtil.removeFragment(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
-        // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter
-        if (presenter != null) {
-            presenter.detachView();
+        if (intent.getData() != null) {
+            //Callback from KYC
+            //TODO refresh one tap
+        } else {
+            FragmentUtil.removeFragment(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT);
+            // if onNewIntent is called, means that we are initialized twice, so we need to detach previews presenter
+            if (presenter != null) {
+                presenter.detachView();
+            }
+            initPresenter();
         }
-        initPresenter();
     }
 
     private void initPresenter() {
@@ -129,7 +136,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
                     session.getInitRepository(),
                     session.getPluginRepository(),
                     session.getPaymentRepository(),
-                    session.getPaymentRewardRepository(),
+                    session.getCongratsRepository(),
                     session.getInternalConfiguration());
 
             privateKey = savedInstanceState.getString(EXTRA_PRIVATE_KEY);
@@ -144,13 +151,13 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
 
     @Override
     public void onBackPressed() {
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        final FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager != null) {
             final int backStackEntryCount = fragmentManager.getBackStackEntryCount();
             Fragment fragment = fragmentManager.findFragmentByTag(TAG_OFFLINE_METHODS_FRAGMENT);
 
             if (fragment instanceof BackHandler) {
-                boolean shouldHandleBack = ((BackHandler) fragment).handleBack();
+                final boolean shouldHandleBack = ((BackHandler) fragment).handleBack();
                 if (!shouldHandleBack) {
                     return;
                 }
@@ -168,8 +175,8 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             }
 
             fragment =
-                FragmentUtil.getFragmentByTag(fragmentManager, TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-            if (fragment == null || !((ExpressPaymentFragment) fragment).isExploding()) {
+                FragmentUtil.getFragmentByTag(fragmentManager, PayButtonFragment.TAG, PayButtonFragment.class);
+            if (fragment == null || !((PayButtonFragment) fragment).isExploding()) {
                 super.onBackPressed();
             }
         }
@@ -192,7 +199,7 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
             session.getInitRepository(),
             session.getPluginRepository(),
             session.getPaymentRepository(),
-            session.getPaymentRewardRepository(),
+            session.getCongratsRepository(),
             session.getInternalConfiguration());
     }
 
@@ -222,23 +229,20 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     }
 
     @Override
+    @SuppressLint("SourceLockedOrientationActivity")
     public void showOneTap() {
         //One tap only supports portrait
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
 
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
 
-        Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-
-        if (fragment == null) {
-            fragment = ExpressPaymentFragment.getInstance();
+        if (supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT) == null) {
+            supportFragmentManager
+                .beginTransaction()
+                .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
+                .replace(R.id.one_tap_fragment, ExpressPaymentFragment.getInstance(), TAG_ONETAP_FRAGMENT)
+                .commitNowAllowingStateLoss();
         }
-
-        getSupportFragmentManager()
-            .beginTransaction()
-            .setCustomAnimations(R.anim.px_slide_right_to_left_in, R.anim.px_slide_right_to_left_out)
-            .replace(R.id.one_tap_fragment, fragment, TAG_ONETAP_FRAGMENT)
-            .commitNowAllowingStateLoss();
     }
 
     @Override
@@ -261,9 +265,9 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     @Override
     public void startPayment() {
         final FragmentManager supportFragmentManager = getSupportFragmentManager();
-        final Fragment fragment = supportFragmentManager.findFragmentByTag(TAG_ONETAP_FRAGMENT);
-        if (fragment instanceof ExpressPaymentFragment) {
-            ((ExpressPaymentFragment) fragment).startPayment();
+        final Fragment fragment = supportFragmentManager.findFragmentByTag(PayButtonFragment.TAG);
+        if (fragment instanceof PayButtonFragment) {
+            ((PayButtonFragment) fragment).stimulate();
         }
     }
 
@@ -458,14 +462,6 @@ public class CheckoutActivity extends PXActivity<CheckoutPresenter>
     public void startPaymentRecoveryFlow(final PaymentRecovery paymentRecovery) {
         CardVaultActivity.startActivityForRecovery(this, REQ_CARD_VAULT, paymentRecovery);
         overrideTransitionIn();
-    }
-
-    @Override
-    public void startExpressPaymentRecoveryFlow(@NonNull final PaymentRecovery paymentRecovery) {
-        final ExpressPaymentFragment fragment = FragmentUtil
-            .getFragmentByTag(getSupportFragmentManager(), TAG_ONETAP_FRAGMENT, ExpressPaymentFragment.class);
-        //noinspection ConstantConditions
-        fragment.handlePaymentRecovery(paymentRecovery);
     }
 
     private void resolveErrorRequest(final int resultCode, final Intent data) {

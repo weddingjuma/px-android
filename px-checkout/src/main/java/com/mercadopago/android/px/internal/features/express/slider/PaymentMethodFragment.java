@@ -1,15 +1,16 @@
 package com.mercadopago.android.px.internal.features.express.slider;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.base.BaseFragment;
@@ -17,9 +18,12 @@ import com.mercadopago.android.px.internal.di.Session;
 import com.mercadopago.android.px.internal.features.disable_payment_method.DisabledPaymentMethodDetailDialog;
 import com.mercadopago.android.px.internal.features.express.animations.BottomSlideAnimationSet;
 import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.view.DynamicHeightViewPager;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.internal.viewmodel.drawables.DrawableFragmentItem;
 import java.util.Arrays;
+
+import static com.mercadopago.android.px.internal.util.AccessibilityUtilsKt.executeIfAccessibilityTalkBackEnable;
 
 public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     extends BaseFragment<PaymentMethodPresenter, T> implements PaymentMethod.View, Focusable {
@@ -28,6 +32,7 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     private BottomSlideAnimationSet animation;
     private boolean focused;
     private MPTextView highlightText;
+    private Handler handler;
 
     @Override
     protected PaymentMethodPresenter createPresenter() {
@@ -39,24 +44,24 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
     }
 
     @Override
-    public void onAttach(final Context context) {
-        super.onAttach(context);
+    public void onCreate(@Nullable final Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         animation = new BottomSlideAnimationSet();
-    }
-
-    @Override
-    public void onDetach() {
-        animation = null;
-        super.onDetach();
+        handler = new Handler();
     }
 
     @CallSuper
     @Override
     public void onViewCreated(@NonNull final View view, @Nullable final Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         initializeViews(view);
-        if (model.getDisabledPaymentMethod() != null) {
+        if (isDisableMethod()) {
             disable();
         }
+    }
+
+    protected boolean isDisableMethod() {
+        return model.getDisabledPaymentMethod() != null;
     }
 
     @CallSuper
@@ -68,6 +73,10 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         if (hasFocus()) {
             onFocusIn();
         }
+    }
+
+    protected String getAccessibilityContentDescription() {
+        return TextUtil.EMPTY;
     }
 
     @Override
@@ -90,6 +99,10 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         focused = true;
         if (presenter != null) {
             presenter.onFocusIn();
+            executeIfAccessibilityTalkBackEnable(getContext(), () -> {
+                updateForAccessibility();
+                return null;
+            });
         }
     }
 
@@ -98,6 +111,44 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
         focused = false;
         if (presenter != null) {
             presenter.onFocusOut();
+            executeIfAccessibilityTalkBackEnable(getContext(), () -> {
+                clearForAccessibility();
+                return null;
+            });
+        }
+    }
+
+    private void updateForAccessibility() {
+        final String description = getAccessibilityContentDescription();
+
+        if (TextUtil.isNotEmpty(description)) {
+            setDescriptionForAccessibility(description);
+        } else if (isDisableMethod()) {
+            String statusMessage = model.getStatus().getMainMessage().getMessage();
+            statusMessage = TextUtil.isNotEmpty(statusMessage) ? statusMessage : TextUtil.EMPTY;
+            if (TextUtil.isNotEmpty(statusMessage)) {
+                setDescriptionForAccessibility(statusMessage);
+            }
+        }
+    }
+
+    private void setDescriptionForAccessibility(@NonNull final String description) {
+        final View rootView = getView();
+        final DynamicHeightViewPager parent;
+        if (rootView != null && (parent = (DynamicHeightViewPager) rootView.getParent()) != null &&
+            parent.hasAccessibilityFocus()) {
+            parent.announceForAccessibility(description);
+        }
+        if (handler != null) {
+            handler.postDelayed(() -> card.setContentDescription(description), 800);
+        }
+    }
+
+    private void clearForAccessibility() {
+        card.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
+        card.setContentDescription(TextUtil.SPACE);
+        if (handler != null) {
+            handler.removeCallbacksAndMessages(null);
         }
     }
 
@@ -135,6 +186,7 @@ public abstract class PaymentMethodFragment<T extends DrawableFragmentItem>
             throw new IllegalStateException(
                 "Should have a disabledPaymentMethod to disable");
         }
+
         card.setOnClickListener(
             v -> DisabledPaymentMethodDetailDialog
                 .showDialog(parentFragment, ((DisabledDetailDialogLauncher) parentFragment).getRequestCode(),

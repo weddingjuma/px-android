@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.configuration.InternalConfiguration;
 import com.mercadopago.android.px.internal.features.Constants;
 import com.mercadopago.android.px.internal.repository.InitRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentSettingRepository;
 import com.mercadopago.android.px.internal.repository.PluginRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -64,7 +65,7 @@ public class CheckoutPresenterTest {
     @Mock private InitRepository initRepository;
     @Mock private PluginRepository pluginRepository;
     @Mock private PaymentRepository paymentRepository;
-    @Mock private PaymentRewardRepository paymentRewardRepository;
+    @Mock private CongratsRepository congratsRepository;
     @Mock private InternalConfiguration internalConfiguration;
 
     private CheckoutPresenter presenter;
@@ -291,14 +292,14 @@ public class CheckoutPresenterTest {
     }
 
     @Test
-    public void whenOneTapPaymentHasInvalidEscThenStartPaymentRecoveryFlow() {
+    public void whenOneTapPaymentHasInvalidEscThenDoNotHandleItInCheckoutActivity() {
         checkoutStateModel.isExpressCheckout = true;
 
         final PaymentRecovery paymentRecovery = mock(PaymentRecovery.class);
 
         presenter.onRecoverPaymentEscInvalid(paymentRecovery);
 
-        verify(checkoutView).startExpressPaymentRecoveryFlow(paymentRecovery);
+        verifyZeroInteractions(checkoutView);
     }
 
     @Test
@@ -619,7 +620,7 @@ public class CheckoutPresenterTest {
         final Checkout.View view, final CheckoutStateModel checkoutStateModel) {
 
         presenter = new CheckoutPresenter(checkoutStateModel, paymentSettingRepository, userSelectionRepository,
-            initRepository, pluginRepository, paymentRepository, paymentRewardRepository, internalConfiguration);
+            initRepository, pluginRepository, paymentRepository, congratsRepository, internalConfiguration);
 
         presenter.attachView(view);
         return presenter;

@@ -1,5 +1,6 @@
 package com.mercadopago.android.px.internal.features.express.installments;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -13,6 +14,7 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.internal.font.FontHelper;
 import com.mercadopago.android.px.internal.font.PxFont;
 import com.mercadopago.android.px.internal.util.CurrenciesUtil;
+import com.mercadopago.android.px.internal.util.TextUtil;
 import com.mercadopago.android.px.internal.util.ViewUtils;
 import com.mercadopago.android.px.internal.view.MPTextView;
 import com.mercadopago.android.px.model.Currency;
@@ -61,6 +63,9 @@ public class InstallmentRowHolder extends RecyclerView.ViewHolder {
             installmentsInterest
                 .setTextColor(ContextCompat.getColor(installmentsInterest.getContext(), R.color.px_color_payer_costs));
             FontHelper.setFont(installmentsInterest, PxFont.REGULAR);
+            installmentsInterest.setContentDescription(
+                TextUtils.concat(String.valueOf(model.payerCost.getTotalAmount().floatValue()),
+                    installmentsInterest.getContext().getString(R.string.px_money)));
         }
     }
 
@@ -82,10 +87,19 @@ public class InstallmentRowHolder extends RecyclerView.ViewHolder {
 
         final String text = installmentsText.getContext().getString(R.string.px_installments_by);
 
-        installmentsText.setText(
-            new SpannableStringBuilder(String.format(Locale.getDefault(), "%d", payerCost.getInstallments()))
-                .append(text).append(" ")
-                .append(spannedInstallmentsText));
+        final String installmentText = String.format(Locale.getDefault(), "%d", payerCost.getInstallments());
+        final Context context = itemView.getContext();
+
+        installmentsText.setText(new SpannableStringBuilder(installmentText)
+            .append(text)
+            .append(TextUtil.SPACE)
+            .append(spannedInstallmentsText));
+
+        installmentsText.setContentDescription(new SpannableStringBuilder(installmentText)
+            .append(context.getString(R.string.px_date_divider))
+            .append(TextUtil.SPACE)
+            .append(String.valueOf(payerCost.getInstallmentAmount().floatValue()))
+            .append(context.getString(R.string.px_money)));
     }
 
     /* default */ void highLight() {

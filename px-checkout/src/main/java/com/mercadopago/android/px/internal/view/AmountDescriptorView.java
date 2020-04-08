@@ -4,6 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.view.AccessibilityDelegateCompat;
+import android.support.v4.view.ViewCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import android.text.SpannableStringBuilder;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -82,7 +86,13 @@ public class AmountDescriptorView extends ConstraintLayout {
     }
 
     private void updateRightLabel(@NonNull final AmountDescriptorView.Model model) {
-        updateLabel(model.right.get(getContext()), rightLabel, rightLabelSemiBold);
+        final String textAmount = model.right.get(getContext()).toString();
+        updateLabel(textAmount, rightLabel, rightLabelSemiBold);
+        final String[] listAmount = textAmount.split(" ");
+        if (listAmount.length > 0) {
+            rightLabel
+                .setContentDescription(listAmount[listAmount.length - 1] + getResources().getString(R.string.px_money));
+        }
     }
 
     private void updateLeftLabel(@NonNull final AmountDescriptorView.Model model) {

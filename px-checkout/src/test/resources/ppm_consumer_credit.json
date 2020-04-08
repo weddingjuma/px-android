@@ -3,6 +3,7 @@
   "id": "consumer_credits",
   "payment_type_id": "digital_currency",
   "payment_method_id": "consumer_credits",
+  "esc_status": "not_available",
   "amount_configurations": {
     "hash_no_discount": {
       "payer_costs": [

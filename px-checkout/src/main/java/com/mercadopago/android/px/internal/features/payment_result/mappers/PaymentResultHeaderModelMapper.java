@@ -6,9 +6,10 @@ import com.mercadopago.android.px.R;
 import com.mercadopago.android.px.configuration.PaymentResultScreenConfiguration;
 import com.mercadopago.android.px.internal.features.PaymentResultViewModelFactory;
 import com.mercadopago.android.px.internal.features.payment_result.model.Badge;
-import com.mercadopago.android.px.internal.util.TextUtil;
+import com.mercadopago.android.px.internal.features.payment_result.remedies.RemediesModel;
 import com.mercadopago.android.px.internal.view.PaymentResultHeader;
 import com.mercadopago.android.px.internal.viewmodel.GenericLocalized;
+import com.mercadopago.android.px.internal.viewmodel.PaymentModel;
 import com.mercadopago.android.px.internal.viewmodel.PaymentResultViewModel;
 import com.mercadopago.android.px.internal.viewmodel.mappers.Mapper;
 import com.mercadopago.android.px.model.Instruction;
@@ -17,7 +18,7 @@ import com.mercadopago.android.px.model.PaymentMethods;
 import com.mercadopago.android.px.model.PaymentResult;
 import com.mercadopago.android.px.model.PaymentTypes;
 
-public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, PaymentResultHeader.Model> {
+public class PaymentResultHeaderModelMapper extends Mapper<PaymentModel, PaymentResultHeader.Model> {
 
     private static final int DEFAULT_LABEL = 0;
     private static final int DEFAULT_ICON_IMAGE = R.drawable.px_icon_default;
@@ -32,15 +33,18 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
 
     private final PaymentResultScreenConfiguration configuration;
     private final Instruction instruction;
+    private final RemediesModel remediesModel;
 
     /* default */ PaymentResultHeaderModelMapper(@NonNull final PaymentResultScreenConfiguration configuration,
-        @Nullable final Instruction instruction) {
+        @Nullable final Instruction instruction, @NonNull final RemediesModel remediesModel) {
         this.configuration = configuration;
         this.instruction = instruction;
+        this.remediesModel = remediesModel;
     }
 
     @Override
-    public PaymentResultHeader.Model map(@NonNull final PaymentResult paymentResult) {
+    public PaymentResultHeader.Model map(@NonNull final PaymentModel model) {
+        final PaymentResult paymentResult = model.getPaymentResult();
         final PaymentResultViewModel viewModel =
             PaymentResultViewModelFactory.createPaymentResultViewModel(paymentResult);
 
@@ -52,8 +56,8 @@ public class PaymentResultHeaderModelMapper extends Mapper<PaymentResult, Paymen
             .setIconImage(getIconImage(paymentResult))
             .setIconUrl(getIconUrl(paymentResult))
             .setBadgeImage(getBadgeImage(paymentResult, viewModel))
-            .setTitle(new GenericLocalized(TextUtil.isNotEmpty(getInstructionsTitle()) ? getInstructionsTitle() : null,
-                viewModel.getTitleResId()))
+            .setTitle(new GenericLocalized(remediesModel.getTitle() != null ? remediesModel.getTitle() :
+                getInstructionsTitle(), viewModel.getTitleResId()))
             .setLabel(new GenericLocalized(null, DEFAULT_LABEL))
             .build();
     }

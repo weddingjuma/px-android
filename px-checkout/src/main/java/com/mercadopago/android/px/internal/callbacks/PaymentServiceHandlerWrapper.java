@@ -7,7 +7,7 @@ import com.mercadopago.android.px.internal.repository.DisabledPaymentMethodRepos
 import com.mercadopago.android.px.internal.repository.EscPaymentManager;
 import com.mercadopago.android.px.internal.repository.InstructionsRepository;
 import com.mercadopago.android.px.internal.repository.PaymentRepository;
-import com.mercadopago.android.px.internal.repository.PaymentRewardRepository;
+import com.mercadopago.android.px.internal.repository.CongratsRepository;
 import com.mercadopago.android.px.internal.repository.UserSelectionRepository;
 import com.mercadopago.android.px.model.BusinessPayment;
 import com.mercadopago.android.px.model.Card;
@@ -32,7 +32,7 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     @Nullable private WeakReference<PaymentServiceHandler> handler;
     @NonNull private final EscPaymentManager escPaymentManager;
     @NonNull private final InstructionsRepository instructionsRepository;
-    @NonNull private final PaymentRewardRepository paymentRewardRepository;
+    @NonNull private final CongratsRepository congratsRepository;
     private UserSelectionRepository userSelectionRepository;
     @NonNull private final Queue<Message> messages;
     @NonNull /* default */ final PaymentRepository paymentRepository;
@@ -84,13 +84,13 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
         @NonNull final DisabledPaymentMethodRepository disabledPaymentMethodRepository,
         @NonNull final EscPaymentManager escPaymentManager,
         @NonNull final InstructionsRepository instructionsRepository,
-        @NonNull final PaymentRewardRepository paymentRewardRepository,
+        @NonNull final CongratsRepository congratsRepository,
         @NonNull final UserSelectionRepository userSelectionRepository) {
         this.paymentRepository = paymentRepository;
         this.disabledPaymentMethodRepository = disabledPaymentMethodRepository;
         this.escPaymentManager = escPaymentManager;
         this.instructionsRepository = instructionsRepository;
-        this.paymentRewardRepository = paymentRewardRepository;
+        this.congratsRepository = congratsRepository;
         this.userSelectionRepository = userSelectionRepository;
         messages = new LinkedList<>();
     }
@@ -133,8 +133,8 @@ public final class PaymentServiceHandlerWrapper implements PaymentServiceHandler
     @Override
     public void onPaymentFinished(@NonNull final IPaymentDescriptor payment) {
         if (handler != null) {
-            paymentRewardRepository.getPaymentReward(payment, paymentRepository.createPaymentResult(payment),
-                (paymentParam, paymentResult, paymentReward) -> {
+            congratsRepository.getPostPaymentData(payment, paymentRepository.createPaymentResult(payment),
+                paymentModel -> {
                     // TODO remove - v5 when paymentTypeId is mandatory for payments
                     payment.process(getHandler());
                 });

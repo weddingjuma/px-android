@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_INIT;
+import static com.mercadopago.android.px.services.BuildConfig.API_ENVIRONMENT_NEW;
 
 public class InitService implements InitRepository {
 
@@ -144,10 +144,10 @@ public class InitService implements InitRepository {
         final String preferenceId = paymentSettingRepository.getCheckoutPreferenceId();
         if (preferenceId != null) {
             return checkoutService
-                .checkout(API_ENVIRONMENT_INIT, preferenceId, language, paymentSettingRepository.getPrivateKey(),
+                .checkout(API_ENVIRONMENT_NEW, preferenceId, language, paymentSettingRepository.getPrivateKey(),
                     JsonUtil.getMapFromObject(initRequest));
         } else {
-            return checkoutService.checkout(API_ENVIRONMENT_INIT, language, paymentSettingRepository.getPrivateKey(),
+            return checkoutService.checkout(API_ENVIRONMENT_NEW, language, paymentSettingRepository.getPrivateKey(),
                 JsonUtil.getMapFromObject(initRequest));
         }
     }

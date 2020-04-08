@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.graphics.drawable.ColorDrawable;
@@ -347,7 +348,10 @@ public class ExplodingFragment extends Fragment {
     }
 
     /* default */ void tintStatusBar(final int color) {
-        ViewUtils.setStatusBarColor(color, getActivity().getWindow());
+        final Activity activity = getActivity();
+        if (activity != null) {
+            ViewUtils.setStatusBarColor(color, activity.getWindow());
+        }
     }
 
     @Override
